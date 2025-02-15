@@ -1,0 +1,72 @@
+# Указываем версию Python по умолчанию для всех хуков
+default_language_version:
+  python: python3.12
+# Список репозиториев с хуками
+repos:
+  # Базовые проверки от pre-commit
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0  # Версия хуков
+    hooks:
+      - id: end-of-file-fixer          # Проверяет наличие пустой строки в конце файла
+      - id: trailing-whitespace         # Удаляет лишние пробелы в конце строк
+      - id: check-yaml                  # Проверяет синтаксис YAML файлов
+      - id: check-docstring-first       # Проверяет, что докстринги идут первыми в файле
+      - id: check-executables-have-shebangs  # Проверяет наличие shebang в исполняемых файлах
+      - id: check-case-conflict         # Проверяет конфликты регистра в именах файлов
+      - id: check-added-large-files     # Проверяет размер добавляемых файлов
+        exclude: ^(.*\/dummy.*|.*\.json)$  # Исключает определенные файлы из проверки
+        args: ["--maxkb=750", "--enforce-all"]  # Максимальный размер файла 750KB
+      - id: detect-private-key          # Ищет случайно закоммиченные приватные ключи
+      - id: check-merge-conflict        # Проверяет наличие конфликтов слияния
+
+  # Обновление кода до современного синтаксиса Python
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.0
+    hooks:
+      - id: pyupgrade
+        args: [--py310-plus]           # Обновляет код до синтаксиса Python 3.10+
+        name: Upgrade code to Python 3.10+
+
+  - repo: https://github.com/asottile/yesqa
+    rev: v1.5.0
+    hooks:
+      - id: yesqa
+        name: Unused noqa
+
+  # Линтер и форматер Ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff                        # Проверка кода
+        args: [ --fix ]                 # Автоматическое исправление проблем
+      - id: ruff-format                 # Форматирование кода
+
+  # Форматирование кода в документации
+  - repo: https://github.com/asottile/blacken-docs
+    rev: 1.16.0
+    hooks:
+      - id: blacken-docs
+        args: [--line-length=130]       # Максимальная длина строки
+        additional_dependencies: [black==22.1.0]  # Зависимость от black
+        exclude: README.md
+  # Форматирование Markdown файлов
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
+        additional_dependencies:         # Дополнительные плагины для markdown
+          - mdformat-gfm                # Поддержка GitHub Flavored Markdown
+          - mdformat_frontmatter        # Поддержка frontmatter
+        exclude: CHANGELOG.md           # Исключает CHANGELOG из форматирования
+
+  # Локальные хуки (запускаются из локальной системы)
+  - repo: local
+    hooks:
+     - id: unit_test                     # Запуск модульных тестов
+       name: Unit test
+       language: system                  # Использует системный Python
+       entry: poetry run pytest          # Команда для запуска тестов
+       pass_filenames: false            # Не передавать имена файлов в команду
+       always_run: true                 # Запускать при каждом коммите
+       types: [python]                  # Только для Python файлов
+       stages: [manual]                 # Запускается только вручнуюА
