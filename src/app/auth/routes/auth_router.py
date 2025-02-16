@@ -1,6 +1,9 @@
 from typing import Optional
 
-from fastapi import APIRouter, Request, Response, status
+from fastapi import APIRouter, Depends, Request, Response, status
+from jwt import InvalidTokenError
+
+from app.auth.dependencies import get_current_auth_user
 
 # from app.core.utils.eskiz_client import code_generator
 from app.auth.schemas import (
@@ -10,15 +13,15 @@ from app.auth.schemas import (
     UserPhoneNumber,
     UserVerifyPhoneNumber,
 )
+from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-from app.core.db.session_maker import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
     TooManyRequestsException,
     UnauthorizedException,
 )
 from app.core.utils import redis_sms, task_queue
-from app.dao.user_dao import UserDAO
+from app.dao.user_dao import TokenBlacklistDAO, UserDAO
 
 from ..functions import helpers, validation
 from ..functions.helpers import REFRESH_TOKEN_TYPE
@@ -85,7 +88,7 @@ async def verify_phone_number(
         user_internal_dict = verify_data.model_dump()
         del user_internal_dict["code"]
         user_internal_dict["is_fully_registered"] = False
-        user_internal_dict["name"] = f"user{verify_data.phone_number[-4:]}"
+        user_internal_dict["name"] = "name"
         user_internal = UserCreateViaPhoneNumberInternal(**user_internal_dict)
         new_user = await UserDAO.add(
             session=session,
@@ -145,9 +148,28 @@ async def refresh_access_token(
 
 @router.post(
     "/logout/",
+    dependencies=[Depends(get_current_auth_user)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def logout_user(
+async def logout(
     request: Request,
+    response: Response,
+    refresh_token_data: Optional[RefreshToken] = None,
+    session=TransactionSessionDep,
 ):
-    pass
+    try:
+        token = refresh_token_data.refresh_token or request.cookies.get("refresh_token")
+        if not token:
+            raise UnauthorizedException("Refresh token is missing")
+        await TokenBlacklistDAO.add_to_blacklist(
+            session=session,
+            token=token,
+        )
+        response.delete_cookie(key="refresh_token")
+
+        return {
+            "message": "Logged out successfully",
+        }
+
+    except InvalidTokenError:
+        raise UnauthorizedException("Invalid token.")

@@ -1,4 +1,4 @@
-<h1 align="center"> Booking </h1>
+<h1 align="center"> Booking App</h1>
 <p align="center" markdown=1>
    Сделано с ❤️ от <a href="https://github.com/al1enn">AL1EN</a>
 </p>

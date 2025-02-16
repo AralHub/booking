@@ -166,6 +166,5 @@ src/certs/jwt-private.pem
 src/certs/jwt-public.pem
 src/.env.prod
 src/.env.dev
-src/migrations/versions/
 .ruff_cache/
 
