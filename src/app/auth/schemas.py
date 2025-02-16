@@ -1,10 +1,9 @@
 from datetime import datetime
-from enum import IntEnum
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.core.db.mixins import TimestampSchema
+from app.core.db.schema_mixins import TimestampSchema
 
 # Константы
 MIN_NAME_LENGTH = 2
@@ -128,3 +127,33 @@ class UserFilter(BaseModel):
     is_fully_registered: bool | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
+
+
+class TokenInfo(BaseModel):
+    access_token: str
+    refresh_token: str | None = None
+    token_type: str = "Bearer"
+
+
+class RefreshToken(BaseModel):
+    refresh_token: str | None = None
+
+
+class TokenBlacklistBase(BaseModel):
+    jti: str
+    expires_at: datetime
+
+
+class TokenBlacklistCreate(TokenBlacklistBase):
+    is_blacklisted: bool = True
+
+
+class TokenBlacklistUpdate(TokenBlacklistBase):
+    pass
+
+
+class TokenBlacklistFilter(BaseModel):
+    id: int | None = None
+    jti: str | None = None
+    expires_at: datetime | None = None
+    is_blacklisted: bool | None = None

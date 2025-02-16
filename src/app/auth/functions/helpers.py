@@ -1,9 +1,9 @@
 from datetime import timedelta
 
-from app.schemas.user import UserBase
-
 from app.core.config import settings
-from app.core.utils import auth_utils
+
+from ..schemas import UserBase
+from .utils import encode_jwt
 
 TOKEN_TYPE_FIELD = settings.crypt.TOKEN_TYPE_FIELD
 ACCESS_TOKEN_TYPE = settings.crypt.ACCESS_TOKEN_TYPE
@@ -20,7 +20,7 @@ async def create_jwt(
         TOKEN_TYPE_FIELD: token_type,
     }
     jwt_payload.update(token_data)
-    return auth_utils.encode_jwt(
+    return encode_jwt(
         payload=jwt_payload,
         expire_minutes=expire_minutes,
         expire_timedelta=expire_timedelta,

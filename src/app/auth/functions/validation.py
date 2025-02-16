@@ -9,14 +9,13 @@ from jwt import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions.http_exceptions import UnauthorizedException
-from app.crud.crud_token_blacklist import crud_token_blacklist, is_token_blacklisted
-from app.crud.crud_user import crud_user
-from ..user import UserBase
+from app.dao.user_dao import TokenBlacklistDAO, UserDAO
 
-from app.core.utils import auth_utils
+from ..schemas import UserBase
 from .helpers import (
     TOKEN_TYPE_FIELD,
 )
+from .utils import decode_jwt, verify_password
 
 http_bearer = HTTPBearer(auto_error=False)
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -42,7 +41,7 @@ def get_current_token_payload(
         token = access_token.credentials if access_token else None
         if not token:
             raise UnauthorizedException("Access token missing")
-        payload = auth_utils.decode_jwt(
+        payload = decode_jwt(
             token=token,
         )
     except InvalidTokenError:
@@ -59,7 +58,7 @@ def get_current_token_payload_for_optional_user(
         if not token:
             return None
 
-        payload = auth_utils.decode_jwt(
+        payload = decode_jwt(
             token=token,
         )
         return payload
@@ -74,11 +73,11 @@ async def get_refresh_token_payload(
     if not refresh_token:
         raise UnauthorizedException("Refresh token missing")
     try:
-        payload = auth_utils.decode_jwt(
+        payload = decode_jwt(
             token=refresh_token,
         )
         # Проверяем, не в черном ли списке токен
-        if await is_token_blacklisted(
+        if await TokenBlacklistDAO.is_token_blacklisted(
             session=session,
             jti=payload.get("jti"),
         ):
@@ -92,9 +91,9 @@ async def get_user_by_token_sub(session: AsyncSession, payload: dict) -> UserBas
     user_id: str | None = payload.get("sub")
     # todo: check token blacklist
     jti = payload.get("jti")
-    is_blacklisted = await crud_token_blacklist.exists(
-        db=session,
-        jti=jti,
+    is_blacklisted = await TokenBlacklistDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=jti,
     )
     if is_blacklisted:
         raise UnauthorizedException("Invalid token (blacklisted)")
@@ -105,8 +104,8 @@ async def get_user_by_token_sub(session: AsyncSession, payload: dict) -> UserBas
     except ValueError:
         raise UnauthorizedException("Invalid token format")
 
-    user = await crud_user.get(
-        db=session,
+    user = await UserDAO.find_one_or_none(
+        session=session,
         id=user_id_int,
     )
     if user:
@@ -120,7 +119,7 @@ async def authenticate_user(
     session: AsyncSession,
 ) -> UserBase | None:
 
-    db_user = await crud_user.get(
+    db_user = await UserDAO.find_one_or_none(
         db=session,
         phone_number=phone_number,
         is_superuser=True,
@@ -128,7 +127,7 @@ async def authenticate_user(
     if not db_user:
         return None
 
-    elif not await auth_utils.verify_password(
+    elif not await verify_password(
         password=password,
         hashed_password=db_user["hashed_password"],
     ):

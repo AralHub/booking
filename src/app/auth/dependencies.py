@@ -9,17 +9,17 @@ from app.core.exceptions.http_exceptions import (
     UnauthorizedException,
 )
 from app.core.logger import logging
-from app.schemas.user import UserBase
 
-from .helpers import (
+from .functions.helpers import (
     ACCESS_TOKEN_TYPE,
 )
-from .validation import (
+from .functions.validation import (
     get_current_token_payload,
     get_current_token_payload_for_optional_user,
     get_user_by_token_sub,
     validate_token_type,
 )
+from .schemas import UserBase
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,6 @@ class UserGetterFromToken:
     ):
         validate_token_type(payload, self.token_type)
         user = await get_user_by_token_sub(session, payload)
-        # if not user.is_active:
         if not user:
             raise UnauthorizedException("Inactive user")
         return user

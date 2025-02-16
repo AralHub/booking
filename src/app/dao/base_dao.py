@@ -2,7 +2,7 @@ import logging
 from typing import Any, Generic, List, TypeVar
 
 from asyncpg.exceptions import NotNullViolationError, UniqueViolationError
-from base.model import Base
+from app.core import Base
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import delete as sqlalchemy_delete
@@ -22,7 +22,7 @@ class BaseDAO(Generic[T]):
     model: type[T]
 
     @classmethod
-    async def find_one_or_none_by_id(cls, data_id: int, session: AsyncSession):
+    async def get_one_or_none_by_id(cls, data_id: int, session: AsyncSession):
         # Найти запись по ID
         logger.info(f"Поиск {cls.model.__name__} с ID: {data_id}")
         try:
@@ -39,7 +39,7 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def find_one_or_none(cls, session: AsyncSession, filters: BaseModel):
+    async def get_one_or_none(cls, session: AsyncSession, filters: BaseModel):
         # Найти одну запись по фильтрам
         filter_dict = filters.model_dump(exclude_unset=True)
         logger.info(
@@ -59,7 +59,7 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def find_all(cls, session: AsyncSession, filters: BaseModel | None):
+    async def get_all(cls, session: AsyncSession, filters: BaseModel | None):
         if filters:
             filter_dict = filters.model_dump(exclude_unset=True)
         else:
@@ -80,7 +80,7 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def add(cls, session: AsyncSession, values: BaseModel):
+    async def create(cls, session: AsyncSession, values: BaseModel):
         # Добавить одну запись
         values_dict = values.model_dump(exclude_unset=True)
         logger.info(
@@ -109,7 +109,7 @@ class BaseDAO(Generic[T]):
         return new_instance
 
     @classmethod
-    async def add_many(cls, session: AsyncSession, instances: List[BaseModel]):
+    async def create_many(cls, session: AsyncSession, instances: List[BaseModel]):
         # Добавить несколько записей
         values_list = [item.model_dump(exclude_unset=True) for item in instances]
         logger.info(
@@ -279,7 +279,7 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def find_by_ids(cls, session: AsyncSession, ids: List[int]) -> List[Any]:
+    async def get_by_ids(cls, session: AsyncSession, ids: List[int]) -> List[Any]:
         """Найти несколько записей по списку ID"""
         logger.info(f"Поиск записей {cls.model.__name__} по списку ID: {ids}")
         try:

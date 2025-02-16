@@ -9,9 +9,8 @@ from starlette.config import Config
 
 SOURCE_DIR = Path(__file__).parent.parent.parent
 LOG_DEFAULT_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-env_path = os.path.join(SOURCE_DIR, ".env")
+env_path = os.path.join(SOURCE_DIR, ".env.template")
 # env_path = os.path.join(SOURCE_DIR, ".env.prod")
-print(env_path)
 config = Config(env_file=env_path)
 
 
@@ -32,16 +31,6 @@ class ApiV1Prefix(BaseSettings):
     prefix: str = "/v1"
     user_prefix: str = "/users"
     superadmin_prefix: str = "/superadmin"
-    rate_limit_prefix: str = "/rate_limit"
-    tier_prefix: str = "/tier"
-    restaurant_prefix: str = "/restaurants"
-    category_prefix: str = "/categories"
-    sub_category_prefix: str = "/sub_categories"
-    product_prefix: str = "/products"
-    sub_product_prefix: str = "/sub_products"
-    additions_prefix: str = "/additions"
-    order_prefix: str = "/orders"
-    feedback_prefix: str = "/feedbacks"
 
 
 class ApiPrefix(BaseSettings):
@@ -165,36 +154,6 @@ class RedisClientSettings(BaseSettings):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
 
 
-class RedisCacheSettings(RedisClientSettings):
-    pass
-    # REDIS_CACHE_HOST: str = config("REDIS_CACHE_HOST", default="localhost")
-    # REDIS_CACHE_PORT: int = config("REDIS_CACHE_PORT", default=6379)
-
-    # @property
-    # def REDIS_CACHE_URL(self) -> str:
-    #     return f"redis://{self.REDIS_CACHE_HOST}:{self.REDIS_CACHE_PORT}"
-
-
-class RedisQueueSettings(RedisClientSettings):
-    pass
-    # REDIS_QUEUE_HOST: str = config("REDIS_QUEUE_HOST", default="localhost")
-    # REDIS_QUEUE_PORT: int = config("REDIS_QUEUE_PORT", default=6379)
-
-    # @property
-    # def REDIS_QUEUE_URL(self) -> str:
-    #     return f"redis://{self.REDIS_QUEUE_HOST}:{self.REDIS_QUEUE_PORT}"
-
-
-class RedisRateLimiterSettings(RedisClientSettings):
-    pass
-    # REDIS_RATE_LIMIT_HOST: str = config("REDIS_RATE_LIMIT_HOST", default="localhost")
-    # REDIS_RATE_LIMIT_PORT: int = config("REDIS_RATE_LIMIT_PORT", default=6379)
-
-    # @property
-    # def REDIS_RATE_LIMIT_URL(self) -> str:
-    #     return f"redis://{self.REDIS_RATE_LIMIT_HOST}:{self.REDIS_RATE_LIMIT_PORT}"
-
-
 class ClientSideCacheSettings(BaseSettings):
     CLIENT_CACHE_MAX_AGE: int = config("CLIENT_CACHE_MAX_AGE", default=60)
 
@@ -246,9 +205,6 @@ class Settings:
     first_user: FirstUserSettings = FirstUserSettings()
     test: TestSettings = TestSettings()
     redis_client: RedisClientSettings = RedisClientSettings()
-    redis_cache: RedisCacheSettings = RedisCacheSettings()
-    redis_queue: RedisQueueSettings = RedisQueueSettings()
-    redis_rate_limiter: RedisRateLimiterSettings = RedisRateLimiterSettings()
     rate_limit: DefaultRateLimitSettings = DefaultRateLimitSettings()
     client_side_cache: ClientSideCacheSettings = ClientSideCacheSettings()
     environment: EnvironmentSettings = EnvironmentSettings()
@@ -257,10 +213,7 @@ class Settings:
 
 settings = Settings()
 
-print(settings.postgres.POSTGRES_ASYNC_URL)
 print(f"Prefix being used: '{settings.api_v1.prefix}'")
-print(f"USER prefix: '{settings.api_v1.user_prefix}'")
-print(f"RATE_LIMIT prefix: '{settings.api_v1.rate_limit_prefix}'")
 print(f"ENVIRONMENT: '{settings.environment.ENVIRONMENT}'")
 print(f"ENVIRONMENT_OPTION: '{EnvironmentOption.LOCAL.value}'")
 print(f"REDIS_URL: '{settings.redis_client.REDIS_URL}'")

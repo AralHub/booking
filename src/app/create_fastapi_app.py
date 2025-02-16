@@ -12,8 +12,8 @@ from fastapi.openapi.docs import (
 from fastapi.responses import JSONResponse
 from redis.asyncio import ConnectionPool, Redis
 
-from app.core import db_helper
-from app.core.auth.dependencies import get_current_superadmin_user
+from app.auth.dependencies import get_current_superadmin_user
+from app.core import Base, db_helper
 
 # from app.core.utils import queue, rate_limit, cache,redis_client
 # from arq import create_pool
@@ -21,15 +21,8 @@ from app.core.auth.dependencies import get_current_superadmin_user
 from app.core.config import EnvironmentOption, settings
 from app.core.logger import logging
 from app.core.utils import redis_client, task_queue
-from app.models import Base
 
 logger = logging.getLogger(__name__)
-# Пример логирования
-# logger.debug("Это отладочное сообщение.")
-# logger.info("Это информационное сообщение.")
-# logger.warning("Это предупреждение.")
-# logger.error("Это сообщение об ошибке.")
-# logger.critical("Это критическое сообщение.")
 
 
 # -------------- database --------------

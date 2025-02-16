@@ -1,10 +1,10 @@
-# from typing import TYPE_CHECKING
+from datetime import datetime
 
-from sqlalchemy import String
+from sqlalchemy import TIMESTAMP, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.core.db.base import Base
-from app.core.db.mixins import IntIdPkMixin, TimestampMixin
+from app.core import Base
+from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
 
 
 class User(IntIdPkMixin, TimestampMixin, Base):
@@ -36,4 +36,19 @@ class User(IntIdPkMixin, TimestampMixin, Base):
     is_superuser: Mapped[bool] = mapped_column(
         default=False,
         server_default="false",
+    )
+
+
+class TokenBlacklist(IntIdPkMixin, Base):
+    jti: Mapped[str] = mapped_column(
+        String,
+        unique=True,
+        index=True,
+    )
+    expires_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True),
+    )
+    is_blacklisted: Mapped[bool] = mapped_column(
+        default=True,
+        server_default="true",
     )
