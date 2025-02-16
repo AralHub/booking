@@ -3,13 +3,13 @@ from datetime import UTC, datetime
 from fastapi import APIRouter, Depends, status
 
 from app.auth.schemas import (
+    PhoneNumber,
     UserFilter,
-    UserNameUpdate,
-    UserPhoneNumber,
-    UserProfileCreate,
     UserRead,
+    UserCreate,
+    UserUpdate,
     UserUpdateInternal,
-    UserVerifyPhoneNumber,
+    VerifyPhoneNumber,
 )
 from app.core import TransactionSessionDep
 from app.core.config import settings
@@ -44,39 +44,45 @@ async def get_my_profile(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_user_profile(
-    user_profile: UserProfileCreate,
+    user_create: UserCreate,
     payload: dict = Depends(get_current_token_payload),
     session=TransactionSessionDep,
 ):
     user_id = int(payload.get("sub"))
-    update_user_profile = UserUpdateInternal(
-        **user_profile.model_dump(exclude_unset=True),
+    update_user_internal = UserUpdateInternal(
+        **user_create.model_dump(exclude_unset=True),
         is_active=True,
         is_fully_registered=True,
         updated_at=datetime.now(UTC),
     )
-    updated_profile = await UserDAO.update(
+    updated_rows_count = await UserDAO.update(
         session=session,
         filters=UserFilter(id=user_id),
-        values=update_user_profile,
+        values=update_user_internal,
+    )
+    if updated_rows_count == 0:
+        raise BadRequestException("User not found")
+    updated_profile = await UserDAO.get_one_or_none(
+        session=session,
+        filters=UserFilter(id=user_id),
     )
     return updated_profile
 
 
 @router.patch("/profile/", status_code=status.HTTP_200_OK)
 async def change_name(
-    change_name: UserNameUpdate,
+    user_update: UserUpdate,
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
-    if change_name.name == current_user.name:
+    if user_update.name == current_user.name:
         raise DuplicateValueException("The same name")
 
-    update_data = change_name.model_dump(
+    user_update_dict = user_update.model_dump(
         exclude_unset=True,
     )
     update_internal = UserUpdateInternal(
-        **update_data,
+        **user_update_dict,
     )
     updated_name = await UserDAO.update(
         session=session,
@@ -88,28 +94,29 @@ async def change_name(
 
 @router.patch("/phone-number/")
 async def change_phone_number(
-    change_phone_number: UserPhoneNumber,
+    user_update: PhoneNumber,
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
+    new_phone_number = user_update.phone_number
     db_user = await UserDAO.get_one_or_none_by_id(
         session=session,
         data_id=current_user.id,
     )
-    if change_phone_number.phone_number == db_user.phone_number:
+    if new_phone_number == db_user.phone_number:
         raise DuplicateValueException("New phone number is the same as the current one")
     db_user = await UserDAO.get_one_or_none(
         session=session,
-        filters=UserFilter(phone_number=change_phone_number.phone_number),
+        filters=UserFilter(phone_number=new_phone_number),
     )
     if db_user:
         raise DuplicateValueException("Phone number is already registered")
-    if await redis_sms.is_blocked(change_phone_number.phone_number):
+    if await redis_sms.is_blocked(user_update.phone_number):
         raise TooManyRequestsException("Phone number is blocked. Try again in an hour")
     code = "12345"
     # code = code_generator()
     success, message = await redis_sms.save_sms_code(
-        phone=change_phone_number.phone_number,
+        phone=new_phone_number,
         code=code,
     )
     if not success:
@@ -123,17 +130,17 @@ async def change_phone_number(
     await task_queue.pool.enqueue_job(
         "send_sms_code",
         message=message,
-        phone_number=change_phone_number.phone_number,
+        phone_number=new_phone_number,
     )
     return {
         "message": "Verification code sent successfully",
-        "phone_number": change_phone_number.phone_number,
+        "phone_number": new_phone_number,
     }
 
 
 @router.post("/phone-number/verify/")
 async def verify_phone_number(
-    verify_data: UserVerifyPhoneNumber,
+    verify_data: VerifyPhoneNumber,
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
@@ -146,11 +153,13 @@ async def verify_phone_number(
     update_user_phone_number = UserUpdateInternal(
         phone_number=verify_data.phone_number,
     )
-    await UserDAO.update(
+    updated_rows_count = await UserDAO.update(
         session=session,
         filters=UserFilter(id=current_user.id),
         values=update_user_phone_number,
     )
+    if updated_rows_count == 0:
+        raise BadRequestException("User not found")
     return {
         "message": "Phone number updated successfully",
         "phone_number": verify_data.phone_number,

@@ -25,7 +25,7 @@ class UserDAO(BaseDAO):
             session=session,
             filters=UserFilter(phone_number=phone_number),
         )
-        return UserRead.model_validate(user) if user else None
+        return user if user else None
 
 
 class TokenBlacklistDAO(BaseDAO):

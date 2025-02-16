@@ -54,23 +54,43 @@ VERIFY_CODE_FIELD = Annotated[
 ]
 
 
-class SuperAdminLogin(BaseModel):
+class Login(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     password: PASSWORD_FIELD
 
+    model_config = ConfigDict(extra="forbid")
 
-class UserPhoneNumber(BaseModel):
+
+class PhoneNumber(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
 
 
-class UserVerifyPhoneNumber(UserPhoneNumber):
+class VerifyPhoneNumber(PhoneNumber):
     code: VERIFY_CODE_FIELD
 
     model_config = ConfigDict(extra="forbid")
 
 
-class UserCreateViaPhoneNumberInternal(UserPhoneNumber):
+class UserBase(BaseModel):
+
     name: NAME_FIELD
+
+
+class UserRead(UserBase, TimestampSchema):
+    id: int
+    phone_number: PHONE_NUMBER_FIELD
+    is_superuser: bool
+    is_active: bool
+    is_verified: bool
+    is_fully_registered: bool
+
+
+class UserCreate(UserBase):
+    pass
+
+
+class UserCreateInternal(UserCreate):
+    phone_number: PHONE_NUMBER_FIELD
     is_active: bool = False
     is_verified: bool = True
     is_fully_registered: bool = False
@@ -78,41 +98,15 @@ class UserCreateViaPhoneNumberInternal(UserPhoneNumber):
     model_config = ConfigDict(extra="forbid")
 
 
-class UserProfileCreate(BaseModel):
-    name: NAME_FIELD
-
-
-class UserBase(BaseModel):
-    """Базовая схема пользователя с основными полями."""
-
-    name: NAME_FIELD
-    phone_number: PHONE_NUMBER_FIELD
-
-
-class UserRead(UserBase, TimestampSchema):
-    id: int
-    is_superuser: bool = False
-    is_active: bool = True
-    is_verified: bool = False
-    is_fully_registered: bool = False
-    tier_id: int | None = None
-
-
 class UserUpdate(BaseModel):
-    """Схема обновления данных пользователя."""
+
+    name: NAME_FIELD_UPDATE
 
     model_config = ConfigDict(extra="forbid")
 
-    name: NAME_FIELD_UPDATE
-    phone_number: PHONE_NUMBER_FIELD_UPDATE
-
-
-class UserNameUpdate(BaseModel):
-    name: NAME_FIELD_UPDATE
-
 
 class UserUpdateInternal(UserUpdate):
-    id: int
+    phone_number: PHONE_NUMBER_FIELD_UPDATE
     updated_at: datetime | None = None
     is_active: bool = True
     is_fully_registered: bool = True

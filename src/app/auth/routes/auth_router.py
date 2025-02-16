@@ -3,16 +3,15 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Request, Response, status
 from jwt import InvalidTokenError
 
-from app.auth.functions.dependencies import get_current_auth_user
-
-# from app.core.utils.eskiz_client import code_generator
 from app.auth.schemas import (
+    PhoneNumber,
     RefreshToken,
     TokenInfo,
-    UserCreateViaPhoneNumberInternal,
-    UserPhoneNumber,
-    UserVerifyPhoneNumber,
+    UserCreateInternal,
+    VerifyPhoneNumber,
 )
+
+# from app.core.utils.eskiz_client import code_generator
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
@@ -23,6 +22,7 @@ from app.core.exceptions.http_exceptions import (
 from app.core.utils import redis_sms, task_queue
 from app.dao import TokenBlacklistDAO, UserDAO
 
+from ..functions.dependencies import get_current_auth_user
 from ..functions.helpers import (
     REFRESH_TOKEN_TYPE,
     create_access_token,
@@ -38,6 +38,7 @@ router = APIRouter(
     tags=["Auth"],
     prefix=settings.api.auth,
 )
+REFRESH_TOKEN_KEY = "refresh_token"
 
 
 @router.post(
@@ -45,12 +46,12 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
 )
 async def register_user(
-    user_phone_number: UserPhoneNumber,
+    register_data: PhoneNumber,
 ):
     code = "12345"
     # code = await code_generator()
     success, message = await redis_sms.save_sms_code(
-        phone=user_phone_number.phone_number,
+        phone=register_data.phone_number,
         code=code,
     )
     if not success:
@@ -64,11 +65,11 @@ async def register_user(
     await task_queue.pool.enqueue_job(
         "send_sms_code",
         message=message,
-        phone_number=user_phone_number.phone_number,
+        phone_number=register_data.phone_number,
     )
     return {
         "message": "Verification code sent successfully",
-        "phone_number": user_phone_number.phone_number,
+        "phone_number": register_data.phone_number,
     }
 
 
@@ -78,7 +79,7 @@ async def register_user(
 )
 async def verify_phone_number(
     response: Response,
-    verify_data: UserVerifyPhoneNumber,
+    verify_data: VerifyPhoneNumber,
     session=TransactionSessionDep,
 ):
     success, message = await redis_sms.verify_sms_code(
@@ -95,21 +96,23 @@ async def verify_phone_number(
     if not db_user:
         user_internal_dict = verify_data.model_dump()
         del user_internal_dict["code"]
-        user_internal_dict["is_fully_registered"] = False
-        user_internal_dict["name"] = "name"
         new_user = await UserDAO.create(
             session=session,
-            values=UserCreateViaPhoneNumberInternal(
+            values=UserCreateInternal(
                 **user_internal_dict,
+                is_active=False,
+                is_verified=True,
+                is_fully_registered=False,
+                name="your name",
             ),
         )
-        db_user = new_user.to_dict()
+        db_user = new_user
     # Создаем токены
     access_token = await create_access_token(db_user)
     refresh_token = await create_refresh_token(db_user)
     response.delete_cookie(key="refresh_token")
     response.set_cookie(
-        key="refresh_token",
+        key=REFRESH_TOKEN_KEY,
         value=refresh_token,
         httponly=settings.crypt.REFRESH_TOKEN_HTTPONLY,
         secure=settings.crypt.REFRESH_TOKEN_COOKIE_SECURE,
@@ -122,7 +125,7 @@ async def verify_phone_number(
             refresh_token=refresh_token,
             token_type="Bearer",
         ),
-        "is_fully_registered": db_user["is_fully_registered"],
+        "is_fully_registered": db_user.is_fully_registered,
     }
 
 
@@ -136,7 +139,7 @@ async def refresh_access_token(
     refresh_token_data: RefreshToken,
     session=SessionDep,
 ):
-    token = refresh_token_data.refresh_token or request.cookies.get("refresh_token")
+    token = refresh_token_data.refresh_token or request.cookies.get(REFRESH_TOKEN_KEY)
     if not token:
         raise UnauthorizedException("Refresh token is missing")
     payload = await get_refresh_token_payload(
@@ -167,18 +170,20 @@ async def logout(
     session=TransactionSessionDep,
 ):
     try:
-        token = refresh_token_data.refresh_token or request.cookies.get("refresh_token")
+        token = refresh_token_data.refresh_token or request.cookies.get(
+            REFRESH_TOKEN_KEY
+        )
         if not token:
             raise UnauthorizedException("Refresh token is missing")
         await TokenBlacklistDAO.add_to_blacklist(
             session=session,
             token=token,
         )
-        response.delete_cookie(key="refresh_token")
+        response.delete_cookie(key=REFRESH_TOKEN_KEY)
 
         return {
             "message": "Logged out successfully",
         }
 
     except InvalidTokenError:
-        raise UnauthorizedException("Invalid token.")
+        raise UnauthorizedException("Invalid token")

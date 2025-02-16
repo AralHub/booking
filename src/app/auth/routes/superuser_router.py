@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Response
 
 from app.auth.schemas import (
-    SuperAdminLogin,
+    Login,
     TokenInfo,
 )
 from app.core import SessionDep
@@ -19,7 +19,7 @@ router = APIRouter(
 
 @router.post("/login/", response_model=TokenInfo)
 async def superuser_login(
-    login_data: SuperAdminLogin,
+    login_data: Login,
     response: Response,
     session=SessionDep,
 ):
