@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Request, Response, status
 from jwt import InvalidTokenError
 
-from app.auth.dependencies import get_current_auth_user
+from app.auth.functions.dependencies import get_current_auth_user
 
 # from app.core.utils.eskiz_client import code_generator
 from app.auth.schemas import (
@@ -23,15 +23,15 @@ from app.core.exceptions.http_exceptions import (
 from app.core.utils import redis_sms, task_queue
 from app.dao import TokenBlacklistDAO, UserDAO
 
-from ..functions.validation import (
-    get_refresh_token_payload,
-    get_user_by_token_sub,
-    validate_token_type,
-)
 from ..functions.helpers import (
     REFRESH_TOKEN_TYPE,
     create_access_token,
     create_refresh_token,
+)
+from ..functions.validation import (
+    get_refresh_token_payload,
+    get_user_by_token_sub,
+    validate_token_type,
 )
 
 router = APIRouter(
@@ -133,7 +133,7 @@ async def verify_phone_number(
 )
 async def refresh_access_token(
     request: Request,
-    refresh_token_data: Optional[RefreshToken] = None,
+    refresh_token_data: RefreshToken,
     session=SessionDep,
 ):
     token = refresh_token_data.refresh_token or request.cookies.get("refresh_token")

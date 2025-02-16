@@ -10,16 +10,14 @@ from app.core.exceptions.http_exceptions import (
 )
 from app.core.logger import logging
 
-from .functions.helpers import (
-    ACCESS_TOKEN_TYPE,
-)
-from .functions.validation import (
+from ..schemas import UserBase
+from .helpers import ACCESS_TOKEN_TYPE
+from .validation import (
     get_current_token_payload,
     get_current_token_payload_for_optional_user,
     get_user_by_token_sub,
     validate_token_type,
 )
-from .schemas import UserBase
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +44,7 @@ get_current_auth_user = UserGetterFromToken(ACCESS_TOKEN_TYPE)
 async def get_current_active_auth_user(
     user: UserBase = Depends(get_current_auth_user),
 ):
-    if user["is_active"]:
+    if user.is_active:
         return user
     raise UnauthorizedException("Inactive user")
 
@@ -54,7 +52,7 @@ async def get_current_active_auth_user(
 async def get_current_superadmin_user(
     user: UserBase = Depends(get_current_auth_user),
 ):
-    if user["is_superuser"]:
+    if user.is_superuser:
         return user
     raise UnauthorizedException("User is not superadmin")
 

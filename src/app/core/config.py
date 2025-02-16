@@ -30,7 +30,7 @@ class LoggingConfig(BaseSettings):
 class ApiV1Prefix(BaseSettings):
     prefix: str = "/v1"
     user_prefix: str = "/users"
-    superadmin_prefix: str = "/superadmin"
+    superuser_prefix: str = "/superuser"
 
 
 class ApiPrefix(BaseSettings):

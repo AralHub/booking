@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions.http_exceptions import UnauthorizedException
 from app.dao import TokenBlacklistDAO, UserDAO
 
-from ..schemas import UserBase
+from ..schemas import UserBase, UserFilter
 from .helpers import (
     TOKEN_TYPE_FIELD,
 )
@@ -119,17 +119,19 @@ async def authenticate_user(
     session: AsyncSession,
 ) -> UserBase | None:
 
-    db_user = await UserDAO.find_one_or_none(
-        db=session,
-        phone_number=phone_number,
-        is_superuser=True,
+    db_user = await UserDAO.get_one_or_none(
+        session=session,
+        filters=UserFilter(
+            phone_number=phone_number,
+            is_superuser=True,
+        ),
     )
     if not db_user:
         return None
 
     elif not await verify_password(
         password=password,
-        hashed_password=db_user["hashed_password"],
+        hashed_password=db_user.hashed_password,
     ):
         return None
 

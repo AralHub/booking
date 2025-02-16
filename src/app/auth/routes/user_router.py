@@ -1,17 +1,27 @@
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
 from app.auth.schemas import (
+    UserFilter,
+    UserNameUpdate,
+    UserPhoneNumber,
     UserProfileCreate,
     UserRead,
     UserUpdateInternal,
+    UserVerifyPhoneNumber,
 )
 from app.core import TransactionSessionDep
 from app.core.config import settings
+from app.core.exceptions.http_exceptions import (
+    BadRequestException,
+    DuplicateValueException,
+    TooManyRequestsException,
+)
+from app.core.utils import redis_sms, task_queue
 from app.dao import UserDAO
 
-from ..dependencies import get_current_active_auth_user
+from ..functions.dependencies import get_current_active_auth_user
 from ..functions.validation import get_current_token_payload
 
 # from app.core.utils.eskiz_client import code_generator
@@ -29,6 +39,10 @@ async def get_my_profile(
     return user
 
 
+@router.post(
+    "/profile/",
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_user_profile(
     user_profile: UserProfileCreate,
     payload: dict = Depends(get_current_token_payload),
@@ -36,31 +50,122 @@ async def create_user_profile(
 ):
     user_id = int(payload.get("sub"))
     update_user_profile = UserUpdateInternal(
-        **user_profile.model_dump(),
+        **user_profile.model_dump(exclude_unset=True),
         is_active=True,
         is_fully_registered=True,
         updated_at=datetime.now(UTC),
-        id=user_id,
     )
     updated_profile = await UserDAO.update(
-        db=session,
-        filters=update_user_profile,
+        session=session,
+        filters=UserFilter(id=user_id),
+        values=update_user_profile,
     )
     return updated_profile
 
 
+@router.patch("/profile/", status_code=status.HTTP_200_OK)
+async def change_name(
+    change_name: UserNameUpdate,
+    current_user: UserRead = Depends(get_current_active_auth_user),
+    session=TransactionSessionDep,
+):
+    if change_name.name == current_user.name:
+        raise DuplicateValueException("The same name")
+
+    update_data = change_name.model_dump(
+        exclude_unset=True,
+    )
+    update_internal = UserUpdateInternal(
+        **update_data,
+    )
+    updated_name = await UserDAO.update(
+        session=session,
+        filters=UserFilter(id=current_user.id),
+        values=update_internal,
+    )
+    return updated_name
+
+
 @router.patch("/phone-number/")
-async def change_phone_number():
-    pass
+async def change_phone_number(
+    change_phone_number: UserPhoneNumber,
+    current_user: UserRead = Depends(get_current_active_auth_user),
+    session=TransactionSessionDep,
+):
+    db_user = await UserDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=current_user.id,
+    )
+    if change_phone_number.phone_number == db_user.phone_number:
+        raise DuplicateValueException("New phone number is the same as the current one")
+    db_user = await UserDAO.get_one_or_none(
+        session=session,
+        filters=UserFilter(phone_number=change_phone_number.phone_number),
+    )
+    if db_user:
+        raise DuplicateValueException("Phone number is already registered")
+    if await redis_sms.is_blocked(change_phone_number.phone_number):
+        raise TooManyRequestsException("Phone number is blocked. Try again in an hour")
+    code = "12345"
+    # code = code_generator()
+    success, message = await redis_sms.save_sms_code(
+        phone=change_phone_number.phone_number,
+        code=code,
+    )
+    if not success:
+        raise TooManyRequestsException(message)
+    message = f"{settings.eskiz.ESKIZ_TEMPLATE_TEXT} {code}"
+    # await task_queue.pool.enqueue_job(
+    #     "send_sms_task",
+    #     message=message,
+    #     phone_number=change_phone_number.phone_number,
+    # )
+    await task_queue.pool.enqueue_job(
+        "send_sms_code",
+        message=message,
+        phone_number=change_phone_number.phone_number,
+    )
+    return {
+        "message": "Verification code sent successfully",
+        "phone_number": change_phone_number.phone_number,
+    }
 
 
 @router.post("/phone-number/verify/")
-async def verify_phone_number():
-    pass
+async def verify_phone_number(
+    verify_data: UserVerifyPhoneNumber,
+    current_user: UserRead = Depends(get_current_active_auth_user),
+    session=TransactionSessionDep,
+):
+    success, message = await redis_sms.verify_sms_code(
+        phone=verify_data.phone_number,
+        code=verify_data.code,
+    )
+    if not success:
+        raise BadRequestException(message)
+    update_user_phone_number = UserUpdateInternal(
+        phone_number=verify_data.phone_number,
+    )
+    await UserDAO.update(
+        session=session,
+        filters=UserFilter(id=current_user.id),
+        values=update_user_phone_number,
+    )
+    return {
+        "message": "Phone number updated successfully",
+        "phone_number": verify_data.phone_number,
+    }
 
 
 @router.delete(
-    "/{user_id}",
+    "/",
+    status_code=status.HTTP_204_NO_CONTENT,
 )
-async def auth_user_delete():
-    pass
+async def user_delete(
+    current_user: UserRead = Depends(get_current_active_auth_user),
+    session=TransactionSessionDep,
+):
+    await UserDAO.delete(
+        session=session,
+        filters=UserFilter(id=current_user.id),
+    )
