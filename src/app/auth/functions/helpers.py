@@ -29,8 +29,8 @@ async def create_jwt(
 
 async def create_access_token(user: UserBase) -> str:
     jwt_payload = {
-        "sub": str(user["id"]),
-        "name": user["name"],
+        "sub": str(user.id),
+        "name": user.name,
     }
     return await create_jwt(
         token_type=ACCESS_TOKEN_TYPE,
@@ -41,8 +41,8 @@ async def create_access_token(user: UserBase) -> str:
 
 async def create_refresh_token(user: UserBase) -> str:
     jwt_payload = {
-        "sub": str(user["id"]),
-        "name": user["name"],
+        "sub": str(user.id),
+        "name": user.name,
     }
 
     return await create_jwt(

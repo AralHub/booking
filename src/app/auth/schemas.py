@@ -112,6 +112,7 @@ class UserNameUpdate(BaseModel):
 
 
 class UserUpdateInternal(UserUpdate):
+    id: int
     updated_at: datetime | None = None
     is_active: bool = True
     is_fully_registered: bool = True

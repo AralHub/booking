@@ -9,7 +9,7 @@ from jwt import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions.http_exceptions import UnauthorizedException
-from app.dao.user_dao import TokenBlacklistDAO, UserDAO
+from app.dao import TokenBlacklistDAO, UserDAO
 
 from ..schemas import UserBase
 from .helpers import (
@@ -91,9 +91,9 @@ async def get_user_by_token_sub(session: AsyncSession, payload: dict) -> UserBas
     user_id: str | None = payload.get("sub")
     # todo: check token blacklist
     jti = payload.get("jti")
-    is_blacklisted = await TokenBlacklistDAO.get_one_or_none_by_id(
+    is_blacklisted = await TokenBlacklistDAO.get_token_by_jti(
         session=session,
-        data_id=jti,
+        jti=jti,
     )
     if is_blacklisted:
         raise UnauthorizedException("Invalid token (blacklisted)")
@@ -104,9 +104,9 @@ async def get_user_by_token_sub(session: AsyncSession, payload: dict) -> UserBas
     except ValueError:
         raise UnauthorizedException("Invalid token format")
 
-    user = await UserDAO.find_one_or_none(
+    user = await UserDAO.get_one_or_none_by_id(
         session=session,
-        id=user_id_int,
+        data_id=user_id_int,
     )
     if user:
         return user

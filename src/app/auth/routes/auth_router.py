@@ -21,10 +21,18 @@ from app.core.exceptions.http_exceptions import (
     UnauthorizedException,
 )
 from app.core.utils import redis_sms, task_queue
-from app.dao.user_dao import TokenBlacklistDAO, UserDAO
+from app.dao import TokenBlacklistDAO, UserDAO
 
-from ..functions import helpers, validation
-from ..functions.helpers import REFRESH_TOKEN_TYPE
+from ..functions.validation import (
+    get_refresh_token_payload,
+    get_user_by_token_sub,
+    validate_token_type,
+)
+from ..functions.helpers import (
+    REFRESH_TOKEN_TYPE,
+    create_access_token,
+    create_refresh_token,
+)
 
 router = APIRouter(
     tags=["Auth"],
@@ -89,15 +97,16 @@ async def verify_phone_number(
         del user_internal_dict["code"]
         user_internal_dict["is_fully_registered"] = False
         user_internal_dict["name"] = "name"
-        user_internal = UserCreateViaPhoneNumberInternal(**user_internal_dict)
-        new_user = await UserDAO.add(
+        new_user = await UserDAO.create(
             session=session,
-            object=user_internal,
+            values=UserCreateViaPhoneNumberInternal(
+                **user_internal_dict,
+            ),
         )
         db_user = new_user.to_dict()
     # Создаем токены
-    access_token = await helpers.create_access_token(db_user)
-    refresh_token = await helpers.create_refresh_token(db_user)
+    access_token = await create_access_token(db_user)
+    refresh_token = await create_refresh_token(db_user)
     response.delete_cookie(key="refresh_token")
     response.set_cookie(
         key="refresh_token",
@@ -130,16 +139,16 @@ async def refresh_access_token(
     token = refresh_token_data.refresh_token or request.cookies.get("refresh_token")
     if not token:
         raise UnauthorizedException("Refresh token is missing")
-    payload = await validation.get_refresh_token_payload(
+    payload = await get_refresh_token_payload(
         session=session,
         refresh_token=token,
     )
-    validation.validate_token_type(payload, REFRESH_TOKEN_TYPE)
-    user = await validation.get_user_by_token_sub(
+    validate_token_type(payload, REFRESH_TOKEN_TYPE)
+    user = await get_user_by_token_sub(
         session=session,
         payload=payload,
     )
-    new_access_token = await helpers.create_access_token(user)
+    new_access_token = await create_access_token(user)
     return TokenInfo(
         access_token=new_access_token,
         token_type="Bearer",

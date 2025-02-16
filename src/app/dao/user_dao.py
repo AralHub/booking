@@ -6,10 +6,10 @@ from app.auth.schemas import (
     TokenBlacklistFilter,
     TokenBlacklistCreate,
 )
-from app.dao.base_dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.auth.functions.utils import decode_jwt
 from datetime import UTC, datetime
+from .base_dao import BaseDAO
 
 
 class UserDAO(BaseDAO):
@@ -25,9 +25,7 @@ class UserDAO(BaseDAO):
             session=session,
             filters=UserFilter(phone_number=phone_number),
         )
-        if not user:
-            raise NotFoundException(detail="User not found")
-        return UserRead.model_validate(user)
+        return UserRead.model_validate(user) if user else None
 
 
 class TokenBlacklistDAO(BaseDAO):
@@ -56,14 +54,27 @@ class TokenBlacklistDAO(BaseDAO):
         )
 
     @classmethod
+    async def get_token_by_jti(
+        cls,
+        session: AsyncSession,
+        jti: str,
+    ):
+        token = await cls.get_one_or_none(
+            session=session,
+            filters=TokenBlacklistFilter(
+                jti=jti,
+            ),
+        )
+
+    @classmethod
     async def is_token_blacklisted(
         cls,
         session: AsyncSession,
         jti: str,
     ) -> bool:
         """Проверяет, находится ли токен в черном списке"""
-        token = await cls.find_one_or_none(
+        token = await cls.get_token_by_jti(
             session=session,
-            filters=TokenBlacklistFilter(jti=jti),
+            jti=jti,
         )
         return token.is_blacklisted if token else False
