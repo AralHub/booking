@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Response
-
-from app.api.country.router import router as country_router
 from app.core import SessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import UnauthorizedException
-
+from app.api.country.router import router as country_router
 from ..functions.helpers import create_access_token, create_refresh_token
 from ..functions.validation import authenticate_user
 from ..schemas import Login, TokenInfo
