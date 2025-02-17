@@ -19,6 +19,8 @@ T = TypeVar("T", bound=Base)
 
 
 class BaseDAO(Generic[T]):
+    """DAO (Data Access Objects) - объекты, предоставляющие абстрактный интерфейс для работы с БД."""
+
     model: type[T]
 
     @classmethod
@@ -108,35 +110,6 @@ class BaseDAO(Generic[T]):
             raise e
         return new_instance
 
-    @classmethod
-    async def create_many(cls, session: AsyncSession, instances: List[BaseModel]):
-        # Добавить несколько записей
-        values_list = [item.model_dump(exclude_unset=True) for item in instances]
-        logger.info(
-            f"Добавление нескольких записей {cls.model.__name__}. Количество: {len(values_list)}"
-        )
-        new_instances = [cls.model(**values) for values in values_list]
-        session.add_all(new_instances)
-        try:
-            await session.flush()
-            logger.info(f"Успешно добавлено {len(new_instances)} записей.")
-        except IntegrityError as e:
-            if isinstance(e.orig, UniqueViolationError):
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail="duplicate key value violates unique constraint",
-                )
-            elif isinstance(e.orig, NotNullViolationError):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="null value in column violates not-null constraint",
-                )
-
-        except SQLAlchemyError as e:
-            await session.rollback()
-            logger.error(f"Ошибка при добавлении нескольких записей: {e}")
-            raise e
-        return new_instances
 
     @classmethod
     async def update(cls, session: AsyncSession, filters: BaseModel, values: BaseModel):
@@ -193,39 +166,7 @@ class BaseDAO(Generic[T]):
             logger.error(f"Ошибка при удалении записей: {e}")
             raise e
 
-    @classmethod
-    async def delete_orm(cls, session, filters: BaseModel):
-        # Удалить записи по фильтру
-        filter_dict = filters.model_dump(exclude_unset=True)
-        logger.info(f"Удаление записей {cls.model.__name__} по фильтру: {filter_dict}")
-        if not filter_dict:
-            logger.error("Нужен хотя бы один фильтр для удаления.")
-            raise ValueError("Нужен хотя бы один фильтр для удаления.")
-
-        try:
-            # Построение запроса для поиска объекта
-            query = select(cls.model).filter_by(**filter_dict)
-            result = await session.execute(query)
-            obj = result.unique().scalar_one_or_none()
-
-            if not obj:
-                logger.warning(
-                    f"Запись {cls.model.__name__} с фильтром {filter_dict} не найдена."
-                )
-                return False
-
-            # Удаление объекта через ORM
-            await session.delete(obj)
-            await session.commit()
-
-            logger.info(f"Запись {cls.model.__name__} успешно удалена: {filter_dict}")
-            return True
-
-        except SQLAlchemyError as e:
-            await session.rollback()
-            logger.error(f"Ошибка при удалении записи: {e}")
-            raise e
-
+   
     @classmethod
     async def count(cls, session: AsyncSession, filters: BaseModel):
         # Подсчитать количество записей

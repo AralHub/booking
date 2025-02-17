@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, status
 
 from app.auth.schemas import (
     PhoneNumber,
+    UserCreate,
     UserFilter,
     UserRead,
-    UserCreate,
     UserUpdate,
     UserUpdateInternal,
     VerifyPhoneNumber,
@@ -178,3 +178,6 @@ async def user_delete(
         session=session,
         filters=UserFilter(id=current_user.id),
     )
+    return {
+        "message": "User deleted successfully",
+    }

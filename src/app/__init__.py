@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
 from app.auth.models import TokenBlacklist, User
-from app.auth.routes.auth_router import router as auth_router
-from app.auth.routes.superuser_router import router as superuser_router
-from app.auth.routes.user_router import router as user_router
+from app.auth.routes.auth import router as auth_router
+from app.auth.routes.superuser import router as superuser_router
+from app.auth.routes.user import router as user_router
 from app.core.config import settings
 
 main_router = APIRouter(
