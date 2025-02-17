@@ -1,13 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.auth.models import User, TokenBlacklist
-from app.auth.schemas import (
+from app.api.user.models import User, TokenBlacklist
+from app.api.user.schemas import (
     UserFilter,
     UserRead,
     TokenBlacklistFilter,
     TokenBlacklistCreate,
 )
 from app.core.exceptions.http_exceptions import NotFoundException
-from app.auth.functions.utils import decode_jwt
+from app.api.user.functions.utils import decode_jwt
 from datetime import UTC, datetime
 from .base_dao import BaseDAO
 

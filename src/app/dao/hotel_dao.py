@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.hotel.models import Hotel, Room
+from app.api.hotel.models.hotel import Hotel
+from app.api.hotel.models.room import Room, RoomType
 from app.core.exceptions.http_exceptions import NotFoundException
-from app.auth.functions.utils import decode_jwt
+from app.api.user.functions.utils import decode_jwt
 from datetime import UTC, datetime
 from .base_dao import BaseDAO
 
@@ -12,3 +13,7 @@ class HotelDAO(BaseDAO):
 
 class RoomDAO(BaseDAO):
     model = Room
+
+
+class RoomTypeDAO(BaseDAO):
+    model = RoomType

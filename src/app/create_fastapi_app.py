@@ -12,7 +12,7 @@ from fastapi.openapi.docs import (
 from fastapi.responses import JSONResponse
 from redis.asyncio import ConnectionPool, Redis
 
-from app.auth.functions.dependencies import get_current_superadmin_user
+from app.api.user.functions.dependencies import get_current_superadmin_user
 from app.core import Base, db_helper
 
 # from app.core.utils import queue, rate_limit, cache,redis_client

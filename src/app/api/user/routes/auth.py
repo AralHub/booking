@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Request, Response, status
 from jwt import InvalidTokenError
 
-from app.auth.schemas import (
+from app.api.user.schemas import (
     PhoneNumber,
     RefreshToken,
     TokenInfo,

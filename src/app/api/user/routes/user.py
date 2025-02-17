@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, status
 
-from app.auth.schemas import (
+from app.api.user.schemas import (
     PhoneNumber,
     UserCreate,
     UserFilter,

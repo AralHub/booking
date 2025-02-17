@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response
 
-from app.auth.schemas import (
+from app.api.user.schemas import (
     Login,
     TokenInfo,
 )

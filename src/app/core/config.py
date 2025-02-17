@@ -31,6 +31,10 @@ class ApiV1Prefix(BaseSettings):
     prefix: str = "/v1"
     user_prefix: str = "/users"
     superuser_prefix: str = "/superuser"
+    hotel_prefix: str = "/hotels"
+    room_prefix: str = "/rooms"
+    room_type_prefix: str = "/room-types"
+    booking_prefix: str = "/bookings"
 
 
 class ApiPrefix(BaseSettings):
