@@ -17,7 +17,7 @@ async def get_booking(
     user: UserRead = Depends(get_current_active_auth_user),
     session=SessionDep,
 ):
-    return await HotelDAO.get_all(
+    return await BookingDAO.get_all(
         session=session,
         filters=None,
     )

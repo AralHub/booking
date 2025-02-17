@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
+# from app.api.country.routes import router as country_router
+from app.api.hotel.routes.hotel import router as hotel_router
 from app.api.user.models import TokenBlacklist, User
 from app.api.user.routes.auth import router as auth_router
 from app.api.user.routes.superuser import router as superuser_router
 from app.api.user.routes.user import router as user_router
-
-# from app.api.country.routes import router as country_router
-from app.api.hotel.routes.hotel import router as hotel_router
+from app.api.booking.router import router as booking_router
 from app.core.config import settings
 
 main_router = APIRouter(
@@ -21,6 +21,10 @@ main_router.include_router(
 )
 main_router.include_router(
     hotel_router,
+    prefix=settings.api_v1.prefix,
+)
+main_router.include_router(
+    booking_router,
     prefix=settings.api_v1.prefix,
 )
 main_router.include_router(
