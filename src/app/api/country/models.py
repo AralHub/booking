@@ -8,6 +8,8 @@ from app.core.db.model_mixins import IntIdPkMixin
 class Country(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(30))
     code: Mapped[str] = mapped_column(String(30), unique=True)
+
+    # relationships
     cities: Mapped[list["City"]] = relationship(
         "City",
         back_populates="country",
@@ -17,5 +19,7 @@ class Country(IntIdPkMixin, Base):
 
 class City(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(30))
+
+    # relationships
     country_id: Mapped[int] = mapped_column(ForeignKey("countrys.id"))
     country: Mapped["Country"] = relationship(back_populates="cities")

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import TIMESTAMP, String
+from sqlalchemy import TIMESTAMP, Date, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core import Base
@@ -8,13 +8,16 @@ from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
 
 
 class User(IntIdPkMixin, TimestampMixin, Base):
-    name: Mapped[str] = mapped_column(String(30))
+    first_name: Mapped[str] = mapped_column(String(30))
+    last_name: Mapped[str] = mapped_column(String(30))
+    birthday: Mapped[datetime] = mapped_column(Date)
     phone_number: Mapped[str] = mapped_column(
         String(15),
         unique=True,
         nullable=False,
         index=True,
     )
+
     hashed_password: Mapped[str] = mapped_column(
         String,
         nullable=True,
