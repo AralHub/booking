@@ -1,10 +1,14 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import TIMESTAMP, Date, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
+
+if TYPE_CHECKING:
+    from app.api.booking.models import Booking
 
 
 class User(IntIdPkMixin, TimestampMixin, Base):
@@ -39,6 +43,12 @@ class User(IntIdPkMixin, TimestampMixin, Base):
     is_superuser: Mapped[bool] = mapped_column(
         default=False,
         server_default="false",
+    )
+    # relationships
+    bookings: Mapped[list["Booking"]] = relationship(
+        "Booking",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
 

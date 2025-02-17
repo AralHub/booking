@@ -28,7 +28,7 @@ class Booking(IntIdPkMixin, Base):
     city_id: Mapped[int] = mapped_column(ForeignKey("citys.id"))
 
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
-    room: Mapped["Room"] = relationship("Rooms", back_populates="booking")
+    room: Mapped["Room"] = relationship("Room", back_populates="booking")
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship("Users", back_populates="booking")
+    user: Mapped["User"] = relationship("User", back_populates="bookings")

@@ -8,7 +8,8 @@ from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
     from .hotel import Hotel
-
+    from app.api.booking.models import Booking
+    
 
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(30))
@@ -41,3 +42,5 @@ class Room(IntIdPkMixin, Base):
     )
     room_type_id: Mapped["RoomType"] = mapped_column(ForeignKey("room_types.id"))
     room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
+
+    booking: Mapped["Booking"] = relationship(back_populates="room")
