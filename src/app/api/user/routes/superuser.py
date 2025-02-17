@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Response
 
+from app.api.country.router import router as country_router
 from app.api.user.schemas import (
     Login,
     TokenInfo,
@@ -15,6 +16,7 @@ router = APIRouter(
     tags=["Superuser"],
     prefix=settings.api_v1.superuser_prefix,
 )
+router.include_router(country_router)
 
 
 @router.post("/login/", response_model=TokenInfo)
