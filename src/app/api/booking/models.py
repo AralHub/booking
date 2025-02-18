@@ -23,7 +23,7 @@ class Booking(IntIdPkMixin, Base):
         default=datetime.now(UTC),
         nullable=False,
     )
-    total_price: Mapped[int] = mapped_column(Integer, nullable=False)
+    total_cost: Mapped[int] = mapped_column(Integer, nullable=False)
     # relationships
     city_id: Mapped[int] = mapped_column(ForeignKey("citys.id"))
 

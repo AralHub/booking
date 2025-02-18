@@ -85,15 +85,11 @@ class User(IntIdPkMixin, TimestampMixin, Base):
     )
 
     # relationships
+    country_id: Mapped[int] = mapped_column(ForeignKey("countrys.id"))
     bookings: Mapped[list["Booking"]] = relationship(
         "Booking",
         back_populates="user",
         cascade="all, delete-orphan",
-    )
-    country_id: Mapped[int] = mapped_column(ForeignKey("countrys.id"))
-    country: Mapped["Country"] = relationship(
-        "Country",
-        back_populates="users",
     )
 
 

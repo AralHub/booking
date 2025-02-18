@@ -8,6 +8,7 @@ from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
     from app.api.hotel.models.hotel import Hotel
+    from app.api.user.models import User
 
 
 class Country(IntIdPkMixin, Base):
@@ -26,7 +27,6 @@ class Country(IntIdPkMixin, Base):
         back_populates="country",
         cascade="all, delete-orphan",
     )
-
 
 class City(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(

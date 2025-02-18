@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -17,10 +17,14 @@ class Hotel(IntIdPkMixin, Base):
     address: Mapped[str] = mapped_column(String(200), nullable=True)
     description: Mapped[str] = mapped_column(String(500), nullable=True)
     preview_photo_path: Mapped[str] = mapped_column(String, nullable=True)
-
+    # rooms_quantity: Mapped[int] = mapped_column(Integer, default=0)
     # relationships
     admin_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-
+    # amenities: Mapped[list["Amenity"]] = relationship(
+    #     "Amenity",
+    #     back_populates="hotels",
+    #     cascade="all, delete-orphan",
+    # )
     rooms: Mapped[list["Room"]] = relationship(
         "Room",
         back_populates="hotel",

@@ -14,11 +14,12 @@ if TYPE_CHECKING:
 
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(30))
+    description: Mapped[str] = mapped_column(String(500), nullable=True)
     max_capacity: Mapped[int] = mapped_column()
-
+    start_price: Mapped[int] = mapped_column()
     # relationships
     rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
-
+    # room_amenities: Mapped[list["RoomAmenity"]] = relationship(back_populates="room_type")
 
 class Room(IntIdPkMixin, Base):
     rating: Mapped[float] = mapped_column(
@@ -28,7 +29,7 @@ class Room(IntIdPkMixin, Base):
         server_default="5",
     )
     preview_photo_path: Mapped[str] = mapped_column(String, nullable=True)
-
+    # quantity: Mapped[int] = mapped_column(Integer, default=0)
     # relationships
     hotel_id: Mapped[int] = mapped_column(
         Integer,

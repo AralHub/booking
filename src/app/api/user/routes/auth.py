@@ -3,14 +3,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Request, Response, status
 from jwt import InvalidTokenError
 
-from app.api.user.schemas import (
-    PhoneNumber,
-    RefreshToken,
-    TokenInfo,
-    UserCreateInternal,
-    VerifyPhoneNumber,
-    UserBase,
-)
 
 # from app.core.utils.eskiz_client import code_generator
 from app.core import SessionDep, TransactionSessionDep
@@ -34,6 +26,13 @@ from ..functions.validation import (
     get_user_by_token_sub,
     validate_token_type,
 )
+from app.api.user.schemas import (
+    RefreshToken,
+    TokenInfo,
+    UserCreateInternal,
+    VerifyPhoneNumber,
+    UserCreate,
+)
 
 router = APIRouter(
     tags=["Auth"],
@@ -47,7 +46,8 @@ REFRESH_TOKEN_KEY = "refresh_token"
     status_code=status.HTTP_201_CREATED,
 )
 async def register_user(
-    register_data: UserBase,
+    register_data: UserCreate,
+    session=TransactionSessionDep,
 ):
     code = "12345"
     # code = await code_generator()
@@ -67,6 +67,15 @@ async def register_user(
         "send_sms_code",
         message=message,
         phone_number=register_data.phone_number,
+    )
+    new_user = await UserDAO.create(
+        session=session,
+        values=UserCreateInternal(
+            **register_data.model_dump(),
+            is_active=False,
+            is_verified=True,
+            is_fully_registered=False,
+        ),
     )
     return {
         "message": "Verification code sent successfully",
@@ -104,7 +113,6 @@ async def verify_phone_number(
                 is_active=False,
                 is_verified=True,
                 is_fully_registered=False,
-                name="your name",
             ),
         )
         db_user = new_user
