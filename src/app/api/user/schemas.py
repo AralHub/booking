@@ -124,7 +124,6 @@ class UserCreate(UserBase):
 
 
 class UserCreateInternal(UserCreate):
-    password: str
     role: ROLE_TYPE_FIELD
     is_active: bool
     is_verified: bool

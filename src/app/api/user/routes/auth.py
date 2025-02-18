@@ -91,7 +91,7 @@ async def register_user(
             is_active=False,
             is_verified=False,
             is_fully_registered=False,
-            hashed_password=hashed_password,
+            password=hashed_password,
         ),
     )
     return {
@@ -130,8 +130,9 @@ async def verify_phone_number(
             id=db_user.id,
         ),
         values=UserUpdateInternal(
-            is_verified=True,
             is_active=True,
+            is_verified=True,
+            is_fully_registered=True,
         ),
     )
     # Создаем токены
