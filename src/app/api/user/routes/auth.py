@@ -1,14 +1,24 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Depends, Request, Response, status, HTTPException
 from jwt import InvalidTokenError
 
+from app.api.user.schemas import (
+    RefreshToken,
+    TokenInfo,
+    UserFilter,
+    UserCreate,
+    UserCreateInternal,
+    UserUpdateInternal,
+    VerifyPhoneNumber,
+)
 
 # from app.core.utils.eskiz_client import code_generator
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
+    NotFoundException,
     TooManyRequestsException,
     UnauthorizedException,
 )
@@ -25,13 +35,6 @@ from ..functions.validation import (
     get_refresh_token_payload,
     get_user_by_token_sub,
     validate_token_type,
-)
-from app.api.user.schemas import (
-    RefreshToken,
-    TokenInfo,
-    UserCreateInternal,
-    VerifyPhoneNumber,
-    UserCreate,
 )
 
 router = APIRouter(
@@ -68,12 +71,19 @@ async def register_user(
         message=message,
         phone_number=register_data.phone_number,
     )
-    new_user = await UserDAO.create(
+    # Проверяем, существует ли пользователь
+    db_user = await UserDAO.get_user_by_phone(
+        session=session,
+        phone_number=register_data.phone_number,
+    )
+    if db_user:
+        raise BadRequestException("User already exists")
+    await UserDAO.create(
         session=session,
         values=UserCreateInternal(
             **register_data.model_dump(),
             is_active=False,
-            is_verified=True,
+            is_verified=False,
             is_fully_registered=False,
         ),
     )
@@ -104,18 +114,18 @@ async def verify_phone_number(
         phone_number=verify_data.phone_number,
     )
     if not db_user:
-        user_internal_dict = verify_data.model_dump()
-        del user_internal_dict["code"]
-        new_user = await UserDAO.create(
-            session=session,
-            values=UserCreateInternal(
-                **user_internal_dict,
-                is_active=False,
-                is_verified=True,
-                is_fully_registered=False,
-            ),
-        )
-        db_user = new_user
+        raise NotFoundException("User not found")
+    user_internal_dict = verify_data.model_dump()
+    del user_internal_dict["code"]
+    await UserDAO.update(
+        session=session,
+        filters=UserFilter(
+            id=db_user.id,
+        ),
+        values=UserUpdateInternal(
+            is_verified=True,
+        ),
+    )
     # Создаем токены
     access_token = await create_access_token(db_user)
     refresh_token = await create_refresh_token(db_user)

@@ -1,5 +1,8 @@
 import uvicorn
+from fastapi import Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app import main_router
 from app.core.config import settings
@@ -7,6 +10,7 @@ from app.core.logger import logging
 from app.create_fastapi_app import create_app
 
 logger = logging.getLogger(__name__)
+
 
 main_app = create_app()
 
@@ -18,6 +22,38 @@ main_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@main_app.exception_handler(Exception)
+async def internal_exception_handler(
+    request: Request,
+    exc: Exception,
+):
+    # Log the error details (without exposing internal information to the client)
+    logging.error(f"Unhandled error occurred: {exc}", exc_info=True)
+
+    # Return a generic error response
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error. Please try again later."},
+    )
+
+
+@main_app.exception_handler(RequestValidationError)
+async def validation_exception_handler(
+    request: Request,
+    exc: RequestValidationError,
+):
+    logger.error(f"Validation error: {exc}")
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "detail": exc.errors(),
+            "body": exc.body,
+        },
+    )
+
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:main_app",

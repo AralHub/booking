@@ -3,8 +3,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.core.db.schema_mixins import TimestampSchema
 from app.api.user.models import GENDER_TYPES, ROLE_TYPES
+from app.core.db.schema_mixins import TimestampSchema
 
 # Константы
 MIN_NAME_LENGTH = 2
@@ -124,9 +124,9 @@ class UserCreate(UserBase):
 
 class UserCreateInternal(UserCreate):
     role: ROLE_TYPE_FIELD
-    is_active: bool = False
-    is_verified: bool = True
-    is_fully_registered: bool = False
+    is_active: bool
+    is_verified: bool
+    is_fully_registered: bool
 
     model_config = ConfigDict(extra="forbid")
 
@@ -140,8 +140,9 @@ class UserUpdate(BaseModel):
 class UserUpdateInternal(UserUpdate):
     phone_number: PHONE_NUMBER_FIELD_UPDATE
     updated_at: datetime | None = None
-    is_active: bool = True
-    is_fully_registered: bool = True
+    is_active: bool | None = None
+    is_verified: bool | None = None
+    is_fully_registered: bool | None = None
 
 
 class UserFilter(BaseModel):
