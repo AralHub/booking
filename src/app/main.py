@@ -18,34 +18,19 @@ main_app = create_app()
 main_app.include_router(main_router)
 
 
-@main_app.exception_handler(Exception)
-async def internal_exception_handler(
-    request: Request,
-    exc: Exception,
-):
-    # Log the error details (without exposing internal information to the client)
-    logging.error(f"Unhandled error occurred: {exc}", exc_info=True)
+# @main_app.exception_handler(Exception)
+# async def internal_exception_handler(
+#     request: Request,
+#     exc: Exception,
+# ):
+#     # Log the error details (without exposing internal information to the client)
+#     logging.error(f"Unhandled error occurred: {exc}", exc_info=True)
 
-    # Return a generic error response
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal Server Error. Please try again later."},
-    )
-
-
-@main_app.exception_handler(RequestValidationError)
-async def validation_exception_handler(
-    request: Request,
-    exc: RequestValidationError,
-):
-    logger.error(f"Validation error: {exc}")
-    return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={
-            "detail": exc.errors(),
-            "body": exc.body,
-        },
-    )
+#     # Return a generic error response
+#     return JSONResponse(
+#         status_code=500,
+#         content={"detail": "Internal Server Error. Please try again later."},
+#     )
 
 
 main_app.add_middleware(ErrorHandleMiddleware)

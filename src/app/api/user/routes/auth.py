@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response, status
 from jwt import InvalidTokenError
 
 from app.api.user.schemas import (
+    LoginUser,
     RefreshToken,
     TokenInfo,
     UserCreate,
@@ -18,6 +19,7 @@ from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
+    DuplicateValueException,
     NotFoundException,
     TooManyRequestsException,
     UnauthorizedException,
@@ -32,16 +34,17 @@ from ..functions.helpers import (
     create_refresh_token,
 )
 from ..functions.validation import (
+    authenticate_user,
     get_refresh_token_payload,
     get_user_by_token_sub,
     validate_token_type,
 )
 
+REFRESH_TOKEN_KEY = "refresh_token"
 router = APIRouter(
     tags=["Auth"],
     prefix=settings.api.auth,
 )
-REFRESH_TOKEN_KEY = "refresh_token"
 
 
 @router.post(
@@ -76,16 +79,17 @@ async def register_user(
         session=session,
         phone_number=register_data.phone_number,
     )
-    if not db_user:
-        await UserDAO.create(
-            session=session,
-            values=UserCreateInternal(
-                **register_data.model_dump(),
-                is_active=False,
-                is_verified=False,
-                is_fully_registered=False,
-            ),
-        )
+    if db_user:
+        raise DuplicateValueException("User already exists")
+    await UserDAO.create(
+        session=session,
+        values=UserCreateInternal(
+            **register_data.model_dump(),
+            is_active=False,
+            is_verified=False,
+            is_fully_registered=False,
+        ),
+    )
     return {
         "message": "Verification code sent successfully",
         "phone_number": register_data.phone_number,
@@ -123,6 +127,7 @@ async def verify_phone_number(
         ),
         values=UserUpdateInternal(
             is_verified=True,
+            is_active=True,
         ),
     )
     # Создаем токены
@@ -147,31 +152,33 @@ async def verify_phone_number(
     }
 
 
-@router.post(
-    "/refresh/",
-    response_model=TokenInfo,
-    status_code=status.HTTP_201_CREATED,
-)
-async def refresh_access_token(
-    request: Request,
-    refresh_token_data: RefreshToken,
+@router.post("/login/", response_model=TokenInfo)
+async def login_user(
+    login_data: LoginUser,
+    response: Response,
     session=SessionDep,
 ):
-    token = refresh_token_data.refresh_token or request.cookies.get(REFRESH_TOKEN_KEY)
-    if not token:
-        raise UnauthorizedException("Refresh token is missing")
-    payload = await get_refresh_token_payload(
+    user = await authenticate_user(
+        phone_number=login_data.phone_number,
+        password=login_data.password,
         session=session,
-        refresh_token=token,
     )
-    validate_token_type(payload, REFRESH_TOKEN_TYPE)
-    user = await get_user_by_token_sub(
-        session=session,
-        payload=payload,
+    if not user:
+        raise UnauthorizedException("Wrong phone number or password.")
+    access_token = await create_access_token(user)
+    refresh_token = await create_refresh_token(user)
+    response.set_cookie(
+        key=REFRESH_TOKEN_KEY,
+        value=refresh_token,
+        httponly=settings.crypt.REFRESH_TOKEN_HTTPONLY,
+        secure=settings.crypt.REFRESH_TOKEN_COOKIE_SECURE,
+        samesite=settings.crypt.REFRESH_TOKEN_COOKIE_SAMESITE,
+        max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS,
     )
-    new_access_token = await create_access_token(user)
+
     return TokenInfo(
-        access_token=new_access_token,
+        access_token=access_token,
+        refresh_token=refresh_token,
         token_type="Bearer",
     )
 
@@ -205,3 +212,32 @@ async def logout(
 
     except InvalidTokenError:
         raise UnauthorizedException("Invalid token")
+
+
+@router.post(
+    "/refresh/",
+    response_model=TokenInfo,
+    status_code=status.HTTP_201_CREATED,
+)
+async def refresh_access_token(
+    request: Request,
+    refresh_token_data: RefreshToken,
+    session=SessionDep,
+):
+    token = refresh_token_data.refresh_token or request.cookies.get(REFRESH_TOKEN_KEY)
+    if not token:
+        raise UnauthorizedException("Refresh token is missing")
+    payload = await get_refresh_token_payload(
+        session=session,
+        refresh_token=token,
+    )
+    validate_token_type(payload, REFRESH_TOKEN_TYPE)
+    user = await get_user_by_token_sub(
+        session=session,
+        payload=payload,
+    )
+    new_access_token = await create_access_token(user)
+    return TokenInfo(
+        access_token=new_access_token,
+        token_type="Bearer",
+    )

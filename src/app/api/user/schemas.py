@@ -83,7 +83,7 @@ VERIFY_CODE_FIELD = Annotated[
 ]
 
 
-class Login(BaseModel):
+class LoginUser(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     password: PASSWORD_FIELD
 
@@ -102,7 +102,7 @@ class VerifyPhoneNumber(PhoneNumber):
 
 class UserBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
-    email: EMAIL_FIELD
+    # email: EMAIL_FIELD
     first_name: NAME_FIELD
     last_name: NAME_FIELD
     birthday: BIRTHDAY_FIELD

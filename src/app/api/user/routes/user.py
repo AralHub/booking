@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, status
 
 from app.api.user.schemas import (
     PhoneNumber,
-    UserCreate,
     UserFilter,
     UserRead,
     UserUpdate,
@@ -16,13 +15,15 @@ from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
     DuplicateValueException,
+    NotFoundException,
     TooManyRequestsException,
 )
 from app.core.utils import redis_sms, task_queue
 from app.dao import UserDAO
 
 from ..functions.dependencies import get_current_active_auth_user
-from ..functions.validation import get_current_token_payload
+
+# from ..functions.validation import get_current_token_payload
 
 # from app.core.utils.eskiz_client import code_generator
 
@@ -39,57 +40,27 @@ async def get_my_profile(
     return user
 
 
-@router.post(
-    "/profile/",
-    status_code=status.HTTP_201_CREATED,
-)
-async def create_user_profile(
-    user_create: UserCreate,
-    payload: dict = Depends(get_current_token_payload),
-    session=TransactionSessionDep,
-):
-    user_id = int(payload.get("sub"))
-    update_user_internal = UserUpdateInternal(
-        **user_create.model_dump(exclude_unset=True),
-        is_active=True,
-        is_fully_registered=True,
-        updated_at=datetime.now(UTC),
-    )
-    updated_rows_count = await UserDAO.update(
-        session=session,
-        filters=UserFilter(id=user_id),
-        values=update_user_internal,
-    )
-    if updated_rows_count == 0:
-        raise BadRequestException("User not found")
-    updated_profile = await UserDAO.get_one_or_none(
-        session=session,
-        filters=UserFilter(id=user_id),
-    )
-    return updated_profile
-
-
-@router.patch("/profile/", status_code=status.HTTP_200_OK)
-async def change_name(
+@router.patch("/", status_code=status.HTTP_200_OK)
+async def update_profile(
     user_update: UserUpdate,
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
-    if user_update.name == current_user.name:
-        raise DuplicateValueException("The same name")
-
     user_update_dict = user_update.model_dump(
         exclude_unset=True,
     )
     update_internal = UserUpdateInternal(
         **user_update_dict,
+        updated_at=datetime.now(UTC),
     )
-    updated_name = await UserDAO.update(
+    updated_rows_count = await UserDAO.update(
         session=session,
         filters=UserFilter(id=current_user.id),
         values=update_internal,
     )
-    return updated_name
+    if updated_rows_count == 0:
+        raise NotFoundException("User not found")
+    return updated_rows_count
 
 
 @router.patch("/phone-number/")
