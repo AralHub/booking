@@ -37,7 +37,7 @@ class User(IntIdPkMixin, TimestampMixin, Base):
         default=None,
         server_default=None,
     )
-    hashed_password: Mapped[str] = mapped_column(
+    password: Mapped[str] = mapped_column(
         String,
         nullable=True,
         default=None,

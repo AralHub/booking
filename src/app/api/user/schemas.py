@@ -102,6 +102,7 @@ class VerifyPhoneNumber(PhoneNumber):
 
 class UserBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
+    password: PASSWORD_FIELD
     # email: EMAIL_FIELD
     first_name: NAME_FIELD
     last_name: NAME_FIELD
@@ -123,6 +124,7 @@ class UserCreate(UserBase):
 
 
 class UserCreateInternal(UserCreate):
+    password: str
     role: ROLE_TYPE_FIELD
     is_active: bool
     is_verified: bool

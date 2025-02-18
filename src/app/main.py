@@ -1,6 +1,5 @@
 import uvicorn
-from fastapi import Request, status
-from fastapi.exceptions import RequestValidationError
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -18,19 +17,19 @@ main_app = create_app()
 main_app.include_router(main_router)
 
 
-# @main_app.exception_handler(Exception)
-# async def internal_exception_handler(
-#     request: Request,
-#     exc: Exception,
-# ):
-#     # Log the error details (without exposing internal information to the client)
-#     logging.error(f"Unhandled error occurred: {exc}", exc_info=True)
+@main_app.exception_handler(Exception)
+async def internal_exception_handler(
+    request: Request,
+    exc: Exception,
+):
+    # Log the error details (without exposing internal information to the client)
+    logging.error(f"Unhandled error occurred: {exc}", exc_info=True)
 
-#     # Return a generic error response
-#     return JSONResponse(
-#         status_code=500,
-#         content={"detail": "Internal Server Error. Please try again later."},
-#     )
+    # Return a generic error response
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error. Please try again later."},
+    )
 
 
 main_app.add_middleware(ErrorHandleMiddleware)

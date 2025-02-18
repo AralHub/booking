@@ -33,6 +33,7 @@ from ..functions.helpers import (
     create_access_token,
     create_refresh_token,
 )
+from ..functions.utils import hash_password
 from ..functions.validation import (
     authenticate_user,
     get_refresh_token_payload,
@@ -81,13 +82,16 @@ async def register_user(
     )
     if db_user:
         raise DuplicateValueException("User already exists")
+    hashed_password = hash_password(register_data.password).decode("utf-8")
+    user_data = register_data.model_dump(exclude={"password"})
     await UserDAO.create(
         session=session,
         values=UserCreateInternal(
-            **register_data.model_dump(),
+            **user_data,
             is_active=False,
             is_verified=False,
             is_fully_registered=False,
+            hashed_password=hashed_password,
         ),
     )
     return {
