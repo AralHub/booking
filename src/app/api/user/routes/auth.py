@@ -1,14 +1,14 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Request, Response, status, HTTPException
+from fastapi import APIRouter, Depends, Request, Response, status
 from jwt import InvalidTokenError
 
 from app.api.user.schemas import (
     RefreshToken,
     TokenInfo,
-    UserFilter,
     UserCreate,
     UserCreateInternal,
+    UserFilter,
     UserUpdateInternal,
     VerifyPhoneNumber,
 )
@@ -76,17 +76,16 @@ async def register_user(
         session=session,
         phone_number=register_data.phone_number,
     )
-    if db_user:
-        raise BadRequestException("User already exists")
-    await UserDAO.create(
-        session=session,
-        values=UserCreateInternal(
-            **register_data.model_dump(),
-            is_active=False,
-            is_verified=False,
-            is_fully_registered=False,
-        ),
-    )
+    if not db_user:
+        await UserDAO.create(
+            session=session,
+            values=UserCreateInternal(
+                **register_data.model_dump(),
+                is_active=False,
+                is_verified=False,
+                is_fully_registered=False,
+            ),
+        )
     return {
         "message": "Verification code sent successfully",
         "phone_number": register_data.phone_number,
