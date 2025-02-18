@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.hotel.models.hotel import Hotel
-from app.api.hotel.models.room import Room, RoomType
+from app.api.hotel.models import Hotel
+from app.api.hotel.room.models import Room, RoomType
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.api.user.functions.utils import decode_jwt
 from datetime import UTC, datetime

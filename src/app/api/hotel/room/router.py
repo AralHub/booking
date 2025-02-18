@@ -6,7 +6,7 @@ from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.dao import RoomDAO
 
-from ..schemas.room import (
+from .schemas import (
     RoomCreate,
     RoomFilter,
     RoomUpdate,

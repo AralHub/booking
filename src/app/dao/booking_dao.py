@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.hotel.models.hotel import Hotel
+from app.api.hotel.models import Hotel
 from app.api.booking.models import Booking
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.api.user.functions.utils import decode_jwt
