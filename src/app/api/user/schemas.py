@@ -66,8 +66,8 @@ BIRTHDAY_FIELD = Annotated[
 GENDER_FIELD = Annotated[
     GENDER_TYPES,
     Field(
-        examples=["MALE"],
-        default=GENDER_TYPES.MALE,
+        examples=["male", "female"],
+        default=GENDER_TYPES.MALE.value,
     ),
 ]
 ROLE_TYPE_FIELD = Annotated[
@@ -111,7 +111,6 @@ class UserBase(BaseModel):
 
 class UserRead(UserBase, TimestampSchema):
     id: int
-    phone_number: PHONE_NUMBER_FIELD
     is_superuser: bool
     is_active: bool
     is_verified: bool
@@ -132,9 +131,8 @@ class UserCreateInternal(UserCreate):
 
 
 class UserUpdate(BaseModel):
-
-    name: NAME_FIELD_UPDATE
-
+    first_name: NAME_FIELD_UPDATE
+    last_name: NAME_FIELD_UPDATE
     model_config = ConfigDict(extra="forbid")
 
 
@@ -147,9 +145,13 @@ class UserUpdateInternal(UserUpdate):
 
 class UserFilter(BaseModel):
     id: int | None = None
-    name: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
     phone_number: str | None = None
-
+    email: str | None = None
+    birthday: datetime | None = None
+    gender: GENDER_TYPES | None = None
+    role: ROLE_TYPES | None = None
     is_verified: bool | None = None
     is_active: bool | None = None
     is_fully_registered: bool | None = None

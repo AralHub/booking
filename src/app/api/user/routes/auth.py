@@ -9,6 +9,7 @@ from app.api.user.schemas import (
     TokenInfo,
     UserCreateInternal,
     VerifyPhoneNumber,
+    UserBase,
 )
 
 # from app.core.utils.eskiz_client import code_generator
@@ -46,7 +47,7 @@ REFRESH_TOKEN_KEY = "refresh_token"
     status_code=status.HTTP_201_CREATED,
 )
 async def register_user(
-    register_data: PhoneNumber,
+    register_data: UserBase,
 ):
     code = "12345"
     # code = await code_generator()
