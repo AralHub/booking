@@ -7,7 +7,8 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from .room.models import Room  # noqa: F401
+    from ..country.models import City
+    from .room.models import Room
 
 
 class Hotel(IntIdPkMixin, Base):
@@ -19,8 +20,26 @@ class Hotel(IntIdPkMixin, Base):
 
     # relationships
     admin_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+
     rooms: Mapped[list["Room"]] = relationship(
         "Room",
         back_populates="hotel",
         cascade="all, delete-orphan",
+    )
+    city_id: Mapped[int] = mapped_column(ForeignKey("citys.id"))
+    city: Mapped["City"] = relationship("City", back_populates="hotels")
+    hotel_category_id: Mapped[int] = mapped_column(
+        ForeignKey("hotel_categorys.id"),
+    )
+    hotel_category: Mapped["HotelCategory"] = relationship(
+        "HotelCategory",
+        back_populates="hotels",
+    )
+
+
+class HotelCategory(IntIdPkMixin, Base):
+    name: Mapped[str] = mapped_column(String(30))
+    hotels: Mapped[list["Hotel"]] = relationship(
+        "Hotel",
+        back_populates="hotel_category",
     )

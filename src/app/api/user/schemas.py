@@ -1,14 +1,14 @@
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from app.core.db.schema_mixins import TimestampSchema
+from app.api.user.models import GENDER_TYPES, ROLE_TYPES
 
 # Константы
 MIN_NAME_LENGTH = 2
 MAX_NAME_LENGTH = 30
-
 
 # Общие поля с аннотациями
 NAME_FIELD = Annotated[
@@ -48,6 +48,35 @@ PHONE_NUMBER_FIELD_UPDATE = Annotated[
         default=None,
     ),
 ]
+
+EMAIL_FIELD = Annotated[
+    EmailStr | None,
+    Field(
+        examples=["user.userson@example.com"],
+        default=None,
+    ),
+]
+BIRTHDAY_FIELD = Annotated[
+    datetime | None,
+    Field(
+        examples=["1990-01-01"],
+        default=None,
+    ),
+]
+GENDER_FIELD = Annotated[
+    GENDER_TYPES,
+    Field(
+        examples=["MALE"],
+        default=GENDER_TYPES.MALE,
+    ),
+]
+ROLE_TYPE_FIELD = Annotated[
+    ROLE_TYPES,
+    Field(
+        examples=["USER"],
+        default=ROLE_TYPES.USER,
+    ),
+]
 VERIFY_CODE_FIELD = Annotated[
     str,
     Field(pattern=r"^\d{5}$", examples=["12345"]),
@@ -72,8 +101,12 @@ class VerifyPhoneNumber(PhoneNumber):
 
 
 class UserBase(BaseModel):
-
-    name: NAME_FIELD
+    phone_number: PHONE_NUMBER_FIELD
+    email: EMAIL_FIELD
+    first_name: NAME_FIELD
+    last_name: NAME_FIELD
+    birthday: BIRTHDAY_FIELD
+    gender: GENDER_FIELD
 
 
 class UserRead(UserBase, TimestampSchema):
@@ -86,11 +119,11 @@ class UserRead(UserBase, TimestampSchema):
 
 
 class UserCreate(UserBase):
-    pass
+    role: ROLE_TYPE_FIELD
 
 
 class UserCreateInternal(UserCreate):
-    phone_number: PHONE_NUMBER_FIELD
+    role: ROLE_TYPE_FIELD
     is_active: bool = False
     is_verified: bool = True
     is_fully_registered: bool = False

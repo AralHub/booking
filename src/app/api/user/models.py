@@ -1,39 +1,72 @@
 from datetime import datetime
+from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import TIMESTAMP, Date, String
+from sqlalchemy import TIMESTAMP, Date, ForeignKey, String, text
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy_utils import ChoiceType
 
 from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
+    from app.api.country.models import Country
 
-ROLE_CHOICES = (
-    ("USER", "user"),
-    ("ADMIN", "admin"),
-)
+
+class ROLE_TYPES(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
+
+
+class GENDER_TYPES(str, Enum):
+    MALE = "male"
+    FEMALE = "female"
 
 
 class User(IntIdPkMixin, TimestampMixin, Base):
-    first_name: Mapped[str] = mapped_column(String(30))
-    last_name: Mapped[str] = mapped_column(String(30))
-    birthday: Mapped[datetime] = mapped_column(Date)
     phone_number: Mapped[str] = mapped_column(
         String(15),
         unique=True,
         nullable=False,
         index=True,
     )
-
+    email: Mapped[str] = mapped_column(
+        String(50),
+        unique=True,
+        nullable=True,
+        default=None,
+        server_default=None,
+    )
     hashed_password: Mapped[str] = mapped_column(
         String,
         nullable=True,
         default=None,
         server_default=None,
     )
+    first_name: Mapped[str] = mapped_column(
+        String(30),
+        nullable=False,
+    )
+    last_name: Mapped[str] = mapped_column(
+        String(30),
+        nullable=False,
+    )
+    birthday: Mapped[datetime] = mapped_column(
+        Date,
+        nullable=True,
+    )
+    gender: Mapped[GENDER_TYPES] = mapped_column(
+        SqlEnum(GENDER_TYPES, name="gender_types"),
+        default=GENDER_TYPES.MALE,
+        server_default=text("'MALE'"),
+    )
+    role: Mapped[ROLE_TYPES] = mapped_column(
+        SqlEnum(ROLE_TYPES, name="role_types"),
+        default=ROLE_TYPES.USER,
+        server_default=text("'USER'"),
+    )
+
     is_verified: Mapped[bool] = mapped_column(
         default=False,
         server_default="false",
@@ -50,15 +83,17 @@ class User(IntIdPkMixin, TimestampMixin, Base):
         default=False,
         server_default="false",
     )
-    role: Mapped[str] = mapped_column(
-        ChoiceType(choices=ROLE_CHOICES),
-        default="user",
-    )
+
     # relationships
     bookings: Mapped[list["Booking"]] = relationship(
         "Booking",
         back_populates="user",
         cascade="all, delete-orphan",
+    )
+    country_id: Mapped[int] = mapped_column(ForeignKey("countrys.id"))
+    country: Mapped["Country"] = relationship(
+        "Country",
+        back_populates="users",
     )
 
 
