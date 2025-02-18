@@ -7,16 +7,22 @@ class HotelBase(BaseModel):
     country_id: int
 
 
-class HotelCreate(HotelBase):
-    pass
+class HotelRead(HotelBase):
+    id: int
+
+
+class HotelCreate(BaseModel):
+    name: str
+    city_id: int
 
 
 class HotelCreateInternal(HotelCreate):
     pass
 
 
-class HotelUpdate(HotelBase):
-    pass
+class HotelUpdate(BaseModel):
+    name: str | None = None
+    city_id: int | None = None
 
 
 class HotelUpdateInternal(HotelUpdate):

@@ -7,9 +7,10 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from .hotel import Hotel
     from app.api.booking.models import Booking
-    
+
+    from .hotel import Hotel
+
 
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(30))

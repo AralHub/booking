@@ -3,12 +3,18 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import TIMESTAMP, Date, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy_utils import ChoiceType
 
 from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
+
+ROLE_CHOICES = (
+    ("USER", "user"),
+    ("ADMIN", "admin"),
+)
 
 
 class User(IntIdPkMixin, TimestampMixin, Base):
@@ -43,6 +49,10 @@ class User(IntIdPkMixin, TimestampMixin, Base):
     is_superuser: Mapped[bool] = mapped_column(
         default=False,
         server_default="false",
+    )
+    role: Mapped[str] = mapped_column(
+        ChoiceType(choices=ROLE_CHOICES),
+        default="user",
     )
     # relationships
     bookings: Mapped[list["Booking"]] = relationship(

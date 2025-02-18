@@ -33,20 +33,24 @@ class CityBase(BaseModel):
     country_id: int
 
 
-class CityCreate(CityBase):
-    pass
+class CityRead(CityBase):
+    id: int
+
+
+class CityCreate(BaseModel):
+    name: str
 
 
 class CityCreateInternal(CityCreate):
-    pass
+    country_id: int
 
 
-class CityUpdate(CityBase):
-    pass
+class CityUpdate(BaseModel):
+    name: str | None = None
 
 
 class CityUpdateInternal(CityUpdate):
-    pass
+    country_id: int
 
 
 class CityFilter(BaseModel):
