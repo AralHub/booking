@@ -19,8 +19,8 @@ from app.core.exceptions.http_exceptions import (
     TooManyRequestsException,
 )
 from app.core.utils import redis_sms, task_queue
-from app.dao import UserDAO
 
+from ..dao import UserDAO
 from ..functions.dependencies import get_current_active_auth_user
 
 # from ..functions.validation import get_current_token_payload

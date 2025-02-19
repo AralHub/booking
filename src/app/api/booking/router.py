@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-from app.dao import BookingDAO
 
+from .dao import BookingDAO
 from .schemas import (
     BookingCreate,
     BookingFilter,

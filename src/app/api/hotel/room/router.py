@@ -4,8 +4,8 @@ from fastapi import APIRouter
 # from app.api.user.schemas import UserRead
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-from app.dao import RoomDAO
 
+from ..dao import RoomDAO
 from .schemas import (
     RoomCreate,
     RoomFilter,

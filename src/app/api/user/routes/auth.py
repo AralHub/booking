@@ -25,8 +25,8 @@ from app.core.exceptions.http_exceptions import (
     UnauthorizedException,
 )
 from app.core.utils import redis_sms, task_queue
-from app.dao import TokenBlacklistDAO, UserDAO
 
+from ..dao import TokenBlacklistDAO, UserDAO
 from ..functions.dependencies import get_current_auth_user
 from ..functions.helpers import (
     REFRESH_TOKEN_TYPE,

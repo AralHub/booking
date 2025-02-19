@@ -2,7 +2,6 @@ import logging
 from typing import Any, Generic, List, TypeVar
 
 from asyncpg.exceptions import NotNullViolationError, UniqueViolationError
-from app.core import Base
 from fastapi import HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import delete as sqlalchemy_delete
@@ -11,6 +10,8 @@ from sqlalchemy import update as sqlalchemy_update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
+from app.core import Base
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +111,6 @@ class BaseDAO(Generic[T]):
             raise e
         return new_instance
 
-
     @classmethod
     async def update(cls, session: AsyncSession, filters: BaseModel, values: BaseModel):
         # Обновить записи по фильтрам
@@ -166,7 +166,6 @@ class BaseDAO(Generic[T]):
             logger.error(f"Ошибка при удалении записей: {e}")
             raise e
 
-   
     @classmethod
     async def count(cls, session: AsyncSession, filters: BaseModel):
         # Подсчитать количество записей

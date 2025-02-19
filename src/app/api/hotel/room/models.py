@@ -9,7 +9,7 @@ from app.core.db.model_mixins import IntIdPkMixin
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
 
-    from .hotel import Hotel
+    from ..models import Hotel
 
 
 class RoomType(IntIdPkMixin, Base):
@@ -20,6 +20,7 @@ class RoomType(IntIdPkMixin, Base):
     # relationships
     rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
     # room_amenities: Mapped[list["RoomAmenity"]] = relationship(back_populates="room_type")
+
 
 class Room(IntIdPkMixin, Base):
     rating: Mapped[float] = mapped_column(

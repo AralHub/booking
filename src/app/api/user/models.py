@@ -11,6 +11,7 @@ from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
+    from app.api.review.models import Review
 
 
 class ROLE_TYPES(str, Enum):
@@ -87,6 +88,11 @@ class User(IntIdPkMixin, TimestampMixin, Base):
     country_id: Mapped[int] = mapped_column(ForeignKey("countrys.id"))
     bookings: Mapped[list["Booking"]] = relationship(
         "Booking",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    reviews: Mapped[list["Review"]] = relationship(
+        "Review",
         back_populates="user",
         cascade="all, delete-orphan",
     )

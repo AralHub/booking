@@ -9,8 +9,8 @@ from jwt import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions.http_exceptions import UnauthorizedException
-from app.dao import TokenBlacklistDAO, UserDAO
 
+from ..dao import TokenBlacklistDAO, UserDAO
 from ..schemas import UserBase, UserFilter
 from .helpers import (
     TOKEN_TYPE_FIELD,
