@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, ForeignKey, Integer, Numeric, String
+from sqlalchemy import Float, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
 
 class RoomType(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String(30))
-    description: Mapped[str] = mapped_column(String(500), nullable=True)
+    name: Mapped[str] = mapped_column(String(255))
+    description: Mapped[str] = mapped_column(Text, nullable=True)
     # relationships
     rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
     # room_amenities: Mapped[list["RoomAmenity"]] = relationship(back_populates="room_type")

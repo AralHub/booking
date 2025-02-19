@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 
+from .amenity.router import router as amenity_router
 from .dao import HotelCategoryDAO, HotelDAO
 from .room.router import router as room_router
 from .schemas import (
@@ -12,13 +13,25 @@ from .schemas import (
     HotelCreate,
     HotelFilter,
     HotelUpdate,
+    HotelCategoryUpdate,
+    HotelCategoryFilter,
 )
-from .amenity.router import router as amenity_router
 
 router = APIRouter(
     tags=["Hotel"],
     prefix=settings.api_v1.hotel_prefix,
 )
+
+
+# region Hotel
+@router.get("/count/")
+async def get_hotels_count(
+    session=SessionDep,
+):
+    return await HotelDAO.count(
+        session=session,
+        filters=None,
+    )
 
 
 @router.get("/")
@@ -68,6 +81,21 @@ async def update_hotel(
     )
 
 
+@router.delete("/{hotel_id}/")
+async def delete_hotel(
+    hotel_id: int,
+    session=TransactionSessionDep,
+):
+    return await HotelDAO.delete(
+        session=session,
+        filters=HotelFilter(id=hotel_id),
+    )
+
+
+# endregion
+
+
+# region Hotel Category
 @router.get("/categories/")
 async def get_hotel_categories(
     session=SessionDep,
@@ -89,5 +117,30 @@ async def create_hotel_category(
     )
 
 
+@router.put("/categories/{category_id}/")
+async def update_hotel_category(
+    category_update_data: HotelCategoryUpdate,
+    category_id: int,
+    session=TransactionSessionDep,
+):
+    return await HotelCategoryDAO.update(
+        session=session,
+        values=category_update_data,
+        filters=HotelCategoryFilter(id=category_id),
+    )
+
+
+@router.delete("/categories/{category_id}/")
+async def delete_hotel_category(
+    category_id: int,
+    session=TransactionSessionDep,
+):
+    return await HotelCategoryDAO.delete(
+        session=session,
+        filters=HotelCategoryFilter(id=category_id),
+    )
+
+
+# endregion
 router.include_router(room_router)
 router.include_router(amenity_router)

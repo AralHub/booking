@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class BedType(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String(30))
+    name: Mapped[str] = mapped_column(String(255))
     max_capacity: Mapped[int] = mapped_column()
 
 

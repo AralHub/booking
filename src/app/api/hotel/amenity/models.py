@@ -21,7 +21,7 @@ class PaymentType(str, Enum):
 class AmenityCategory(IntIdPkMixin, Base):
     __tablename__ = "amenity_categories"
     name: Mapped[str] = mapped_column(
-        String(100),
+        String(255),
         nullable=False,
         unique=True,
     )
@@ -33,11 +33,11 @@ class AmenityCategory(IntIdPkMixin, Base):
 class Amenity(IntIdPkMixin, Base):
     __tablename__ = "amenities"
     name: Mapped[str] = mapped_column(
-        String(30),
+        String(255),
         nullable=False,
         unique=True,
     )
-    description: Mapped[str] = mapped_column(String(200), nullable=True)
+    description: Mapped[str] = mapped_column(String(255), nullable=True)
     is_popular: Mapped[bool] = mapped_column(
         Boolean,
         default=False,

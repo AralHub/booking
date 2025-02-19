@@ -10,12 +10,13 @@ if TYPE_CHECKING:
     from ..locations.models import City
     from ..review.models import Review  # noqa
     from .amenity.models import Amenity, HotelAmenityAssociation
+    from .locations.models import Coordinate
     from .room.models import Room
 
 
 class HotelCategory(IntIdPkMixin, Base):
     __tablename__ = "hotel_categories"
-    name: Mapped[str] = mapped_column(String(30))
+    name: Mapped[str] = mapped_column(String(255), unique=True)
     hotels: Mapped[list["Hotel"]] = relationship(
         "Hotel",
         back_populates="hotel_category",
@@ -23,9 +24,9 @@ class HotelCategory(IntIdPkMixin, Base):
 
 
 class Hotel(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String(30))
-    domain: Mapped[str] = mapped_column(String(30), unique=True)
-    address: Mapped[str] = mapped_column(String(200), nullable=True)
+    name: Mapped[str] = mapped_column(String(255))
+    slug: Mapped[str] = mapped_column(String(255), unique=True)
+    address: Mapped[str] = mapped_column(String(255), nullable=True)
     description: Mapped[str] = mapped_column(String(500), nullable=True)
     preview_photo_path: Mapped[str] = mapped_column(String, nullable=True)
     # rooms_quantity: Mapped[int] = mapped_column(Integer, default=0)
@@ -57,4 +58,12 @@ class Hotel(IntIdPkMixin, Base):
     reviews: Mapped[list["Review"]] = relationship(
         "Review",
         back_populates="hotel",
+    )
+    coordinate_id: Mapped[int | None] = mapped_column(
+        ForeignKey("coordinates.id"),
+    )
+    coordinate: Mapped["Coordinate"] = relationship(
+        "Coordinate",
+        uselist=False,
+        single_parent=True,
     )

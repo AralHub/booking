@@ -1,3 +1,4 @@
+import uuid as uuid_pkg
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, status
@@ -139,15 +140,26 @@ async def verify_phone_number(
 
 @router.delete(
     "/",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 async def user_delete(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
-    await UserDAO.delete(
+    db_user = await UserDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=current_user.id,
+    )
+    deleted_phone_number = f"{db_user.phone_number}_{str(uuid_pkg.uuid4())}"
+    await UserDAO.update(
         session=session,
         filters=UserFilter(id=current_user.id),
+        values=UserFilter(
+            phone_number=deleted_phone_number,
+            is_active=False,
+            is_deleted=True,
+            deleted_at=datetime.now(UTC),
+        ),
     )
     return {
         "message": "User deleted successfully",

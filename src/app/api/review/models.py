@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class ReviewCategory(IntIdPkMixin, Base):
     __tablename__ = "review_categories"
-    name: Mapped[str] = mapped_column(String(30))
+    name: Mapped[str] = mapped_column(String(255))
 
     # relationships
     review_category_ratings = relationship(

@@ -7,13 +7,13 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from app.api.hotel.models.hotel import Hotel
+    from ..hotel.models import Hotel
 
 
 class Country(IntIdPkMixin, Base):
     __tablename__ = "countries"
     name: Mapped[str] = mapped_column(
-        String(30),
+        String(255),
         unique=True,
     )
     code: Mapped[str] = mapped_column(
@@ -32,7 +32,7 @@ class Country(IntIdPkMixin, Base):
 class City(IntIdPkMixin, Base):
     __tablename__ = "cities"
     name: Mapped[str] = mapped_column(
-        String(30),
+        String(255),
         unique=True,
     )
 
@@ -58,3 +58,4 @@ class Coordinate(IntIdPkMixin, Base):
     __tablename__ = "coordinates"
     latitude: Mapped[float] = mapped_column(Float)
     longitude: Mapped[float] = mapped_column(Float)
+    hotel: Mapped["Hotel"] = relationship(back_populates="coordinate")

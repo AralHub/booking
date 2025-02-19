@@ -19,6 +19,7 @@ router = APIRouter(
 )
 
 
+# region Country
 @router.get("/")
 async def get_countries(
     session=SessionDep,
@@ -64,6 +65,10 @@ async def update_country(
     )
 
 
+# endregion
+
+
+# region City
 @router.get("/{country_id}/cities/")
 async def get_all_cities_by_country_id(
     country_id: int,
@@ -92,3 +97,6 @@ async def add_city(
         session=session,
         values=create_city_data,
     )
+
+
+# endregion

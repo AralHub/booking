@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
+# region Country
 class CountryBase(BaseModel):
     name: str
     code: str
@@ -26,6 +27,11 @@ class CountryFilter(BaseModel):
     id: int | None = None
     name: str | None = None
     code: str | None = None
+
+
+# endregion
+
+# region City
 
 
 class CityBase(BaseModel):
@@ -57,3 +63,15 @@ class CityFilter(BaseModel):
     id: int | None = None
     name: str | None = None
     country_id: int | None = None
+
+
+# endregion
+
+
+# region Coordinate
+class CoordinateCreate(BaseModel):
+    latitude: float = Field(..., ge=-90, le=90)
+    longitude: float = Field(..., ge=-180, le=180)
+
+
+# endregion

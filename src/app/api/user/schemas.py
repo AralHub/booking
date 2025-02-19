@@ -144,6 +144,8 @@ class UserUpdateInternal(UserUpdate):
     is_active: bool | None = None
     is_verified: bool | None = None
     is_fully_registered: bool | None = None
+    is_deleted: bool | None = None
+    deleted_at: datetime | None = None
 
 
 class UserFilter(BaseModel):
@@ -160,6 +162,8 @@ class UserFilter(BaseModel):
     is_fully_registered: bool | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    is_deleted: bool | None = None
+    deleted_at: datetime | None = None
 
 
 class TokenInfo(BaseModel):

@@ -167,14 +167,18 @@ class BaseDAO(Generic[T]):
             raise e
 
     @classmethod
-    async def count(cls, session: AsyncSession, filters: BaseModel):
-        # Подсчитать количество записей
-        filter_dict = filters.model_dump(exclude_unset=True)
-        logger.info(
-            f"Подсчет количества записей {cls.model.__name__} по фильтру: {filter_dict}"
-        )
+    async def count(cls, session: AsyncSession, filters: BaseModel | None = None):
         try:
-            query = select(func.count(cls.model.id)).filter_by(**filter_dict)
+            query = select(func.count(cls.model.id))
+            if filters:
+                filter_dict = filters.model_dump(exclude_unset=True)
+                logger.info(
+                    f"Подсчет количества записей {cls.model.__name__} по фильтру: {filter_dict}"
+                )
+                query = query.filter_by(**filter_dict)
+            else:
+                logger.info(f"Подсчет всех записей {cls.model.__name__}")
+
             result = await session.execute(query)
             count = result.scalar()
             logger.info(f"Найдено {count} записей.")

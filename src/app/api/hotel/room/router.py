@@ -13,10 +13,6 @@ from .schemas import (
     RoomUpdate,
 )
 
-# router = APIRouter(
-#     tags=["Room"],
-#     prefix=settings.api_v1.room_prefix,
-# )
 router = APIRouter(
     prefix=settings.api_v1.room_prefix,
 )

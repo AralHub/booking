@@ -9,15 +9,13 @@ from .dao import AmenityCategoryDAO, AmenityDAO
 from .schemas import (
     AmenityCategoryCreate,
     AmenityCreate,
+    AmenityFilter,
+    AmenityUpdate,
 )
 
 router = APIRouter(
     prefix=settings.api_v1.amenity_prefix,
 )
-# router = APIRouter(
-#     tags=["Amenity"],
-#     prefix=settings.api_v1.amenity_prefix,
-# )
 
 
 @router.get("/")
@@ -38,6 +36,19 @@ async def create_amenity(
     return await AmenityDAO.create(
         session=session,
         values=amenity_create_data,
+    )
+
+
+@router.patch("/{amenity_id}")
+async def update_amenity(
+    amenity_id: int,
+    amenity_update_data: AmenityUpdate,
+    session=TransactionSessionDep,
+):
+    return await AmenityDAO.update(
+        session=session,
+        filters=AmenityFilter(id=amenity_id),
+        values=amenity_update_data,
     )
 
 

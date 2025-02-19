@@ -7,7 +7,7 @@ from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
-from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
+from app.core.db.model_mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
@@ -24,15 +24,15 @@ class GENDER_TYPES(str, Enum):
     FEMALE = "female"
 
 
-class User(IntIdPkMixin, TimestampMixin, Base):
+class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
     phone_number: Mapped[str] = mapped_column(
-        String(15),
+        String(255),
         unique=True,
         nullable=False,
         index=True,
     )
     email: Mapped[str] = mapped_column(
-        String(50),
+        String(255),
         unique=True,
         nullable=True,
         default=None,
