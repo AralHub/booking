@@ -1,5 +1,5 @@
 # from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.country.models import City, Country
+from app.api.locations.models import City, Coordinate, Country
 from app.core.dao import BaseDAO
 
 
@@ -9,3 +9,7 @@ class CountryDAO(BaseDAO):
 
 class CityDAO(BaseDAO):
     model = City
+
+
+class CoordinateDAO(BaseDAO):
+    model = Coordinate

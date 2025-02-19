@@ -7,7 +7,7 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from ..country.models import City
+    from ..locations.models import City
     from .amenity.models import Amenity, HotelAmenityAssociation
     from .room.models import Room
 

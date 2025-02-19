@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, Float, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -52,3 +52,9 @@ class City(IntIdPkMixin, Base):
         back_populates="city",
         cascade="all, delete-orphan",
     )
+
+
+class Coordinate(IntIdPkMixin, Base):
+    __tablename__ = "coordinates"
+    latitude: Mapped[float] = mapped_column(Float)
+    longitude: Mapped[float] = mapped_column(Float)
