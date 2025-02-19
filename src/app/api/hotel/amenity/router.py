@@ -12,9 +12,12 @@ from .schemas import (
 )
 
 router = APIRouter(
-    tags=["Amenity"],
     prefix=settings.api_v1.amenity_prefix,
 )
+# router = APIRouter(
+#     tags=["Amenity"],
+#     prefix=settings.api_v1.amenity_prefix,
+# )
 
 
 @router.get("/")
@@ -34,7 +37,7 @@ async def create_amenity(
 ):
     return await AmenityDAO.create(
         session=session,
-        data=amenity_create_data,
+        values=amenity_create_data,
     )
 
 
@@ -55,5 +58,5 @@ async def create_amenity_category(
 ):
     return await AmenityCategoryDAO.create(
         session=session,
-        data=amenity_category_create_data,
+        values=amenity_category_create_data,
     )

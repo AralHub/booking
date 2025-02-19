@@ -3,11 +3,11 @@ from pydantic import BaseModel
 
 class RoomBase(BaseModel):
     name: str
-    hotel_id: int
 
 
 class RoomCreate(RoomBase):
-    pass
+    hotel_id: int
+    room_type_id: int
 
 
 class RoomCreateInternal(RoomCreate):
@@ -25,3 +25,32 @@ class RoomUpdateInternal(RoomUpdate):
 class RoomFilter(BaseModel):
     id: int | None = None
     hotel_id: int | None = None
+    room_type_id: int | None = None
+
+
+class RoomTypeBase(BaseModel):
+    name: str
+    description: str | None = None
+
+
+class RoomTypeCreate(RoomTypeBase):
+    room_id: int
+
+
+class RoomTypeCreateInternal(RoomTypeCreate):
+    pass
+
+
+class RoomTypeUpdate(RoomTypeBase):
+    pass
+
+
+class RoomTypeUpdateInternal(RoomTypeUpdate):
+    pass
+
+
+class RoomTypeFilter(BaseModel):
+    id: int | None = None
+    room_id: int | None = None
+    name: str | None = None
+    description: str | None = None

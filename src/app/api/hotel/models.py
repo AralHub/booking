@@ -8,9 +8,9 @@ from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
     from ..locations.models import City
+    from ..review.models import Review  # noqa
     from .amenity.models import Amenity, HotelAmenityAssociation
     from .room.models import Room
-    from ..review.models import Review  # noqa
 
 
 class HotelCategory(IntIdPkMixin, Base):

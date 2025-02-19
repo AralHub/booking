@@ -5,21 +5,25 @@ from fastapi import APIRouter
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 
-from ..dao import RoomDAO
+from ..dao import RoomDAO, RoomTypeDAO
 from .schemas import (
     RoomCreate,
     RoomFilter,
+    RoomTypeCreate,
     RoomUpdate,
 )
 
+# router = APIRouter(
+#     tags=["Room"],
+#     prefix=settings.api_v1.room_prefix,
+# )
 router = APIRouter(
-    tags=["Room"],
     prefix=settings.api_v1.room_prefix,
 )
 
 
 @router.get("/")
-async def get_rooms(
+async def get_all_rooms(
     session=SessionDep,
 ):
     return await RoomDAO.get_all(
@@ -28,7 +32,7 @@ async def get_rooms(
     )
 
 
-@router.get("/{room_id}")
+@router.get("/{room_id}/")
 async def get_room(
     room_id: int,
     session=SessionDep,
@@ -50,7 +54,7 @@ async def create_room(
     )
 
 
-@router.put("/{room_id}")
+@router.put("/{room_id}/")
 async def update_room(
     room_update_data: RoomUpdate,
     room_id: int,
@@ -62,4 +66,25 @@ async def update_room(
         filters=RoomFilter(
             id=room_id,
         ),
+    )
+
+
+@router.get("/types/")
+async def get_room_types(
+    session=SessionDep,
+):
+    return await RoomTypeDAO.get_all(
+        session=session,
+        filters=None,
+    )
+
+
+@router.post("/types/")
+async def create_room_type(
+    room_type_create_data: RoomTypeCreate,
+    session=TransactionSessionDep,
+):
+    return await RoomTypeDAO.create(
+        session=session,
+        values=room_type_create_data,
     )

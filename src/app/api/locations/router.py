@@ -30,7 +30,7 @@ async def get_countries(
 
 
 @router.get("/{country_id}")
-async def get_country_by_id(
+async def get_country(
     country_id: int,
     session=SessionDep,
 ):

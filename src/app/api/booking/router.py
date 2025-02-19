@@ -26,14 +26,14 @@ async def get_bookings(
     )
 
 
-@router.get("/{hotel_id}")
+@router.get("/{booking_id}/")
 async def get_booking(
-    hotel_id: int,
+    booking_id: int,
     session=SessionDep,
 ):
     return await BookingDAO.get_one_or_none_by_id(
         session=session,
-        data_id=hotel_id,
+        data_id=booking_id,
     )
 
 
@@ -48,16 +48,16 @@ async def create_booking(
     )
 
 
-@router.put("/{hotel_id}")
+@router.put("/{booking_id}")
 async def update_booking(
     booking_update_data: BookingUpdate,
-    hotel_id: int,
+    booking_id: int,
     session=TransactionSessionDep,
 ):
     return await BookingDAO.update(
         session=session,
         values=booking_update_data,
         filters=BookingFilter(
-            id=hotel_id,
+            id=booking_id,
         ),
     )
