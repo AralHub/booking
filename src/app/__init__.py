@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.booking.router import router as booking_router
+from app.api.hotel.amenity.router import router as amenity_router
 from app.api.hotel.room.router import router as room_router
 
 # from app.api.country.routes import router as country_router
@@ -31,6 +32,10 @@ main_router.include_router(
 )
 main_router.include_router(
     booking_router,
+    prefix=settings.api_v1.prefix,
+)
+main_router.include_router(
+    amenity_router,
     prefix=settings.api_v1.prefix,
 )
 main_router.include_router(

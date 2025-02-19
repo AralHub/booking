@@ -32,5 +32,6 @@ if TYPE_CHECKING:
     from .room import RoomType  # noqa: F401
 
 
-class Bed(IntIdPkMixin, Base):
+class Coordinate(IntIdPkMixin, Base):
+    __tablename__ = "coordinates"
     pass

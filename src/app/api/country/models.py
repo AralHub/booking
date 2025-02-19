@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 
 class Country(IntIdPkMixin, Base):
+    __tablename__ = "countries"
     name: Mapped[str] = mapped_column(
         String(30),
         unique=True,
@@ -27,7 +28,9 @@ class Country(IntIdPkMixin, Base):
         cascade="all, delete-orphan",
     )
 
+
 class City(IntIdPkMixin, Base):
+    __tablename__ = "cities"
     name: Mapped[str] = mapped_column(
         String(30),
         unique=True,
@@ -36,7 +39,7 @@ class City(IntIdPkMixin, Base):
     # relationships
     country_id: Mapped[int] = mapped_column(
         ForeignKey(
-            "countrys.id",
+            "countries.id",
             ondelete="CASCADE",
         )
     )

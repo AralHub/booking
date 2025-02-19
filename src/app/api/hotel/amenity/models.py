@@ -1,11 +1,12 @@
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.api.hotel.models import Hotel
@@ -18,6 +19,7 @@ class PaymentType(str, Enum):
 
 
 class AmenityCategory(IntIdPkMixin, Base):
+    __tablename__ = "amenity_categories"
     name: Mapped[str] = mapped_column(
         String(100),
         nullable=False,
@@ -28,6 +30,7 @@ class AmenityCategory(IntIdPkMixin, Base):
 
 
 class Amenity(IntIdPkMixin, Base):
+    __tablename__ = "amenities"
     name: Mapped[str] = mapped_column(String(30), nullable=False)
     description: Mapped[str] = mapped_column(String(200), nullable=True)
     is_popular: Mapped[bool] = mapped_column(
@@ -35,7 +38,7 @@ class Amenity(IntIdPkMixin, Base):
         default=False,
     )
     payment_type: Mapped[PaymentType] = mapped_column(
-        Enum(PaymentType), default=PaymentType.FREE
+        SqlEnum(PaymentType), default=PaymentType.FREE
     )
     amenity_category_id: Mapped[int] = mapped_column(
         ForeignKey("amenity_categories.id"),
@@ -58,9 +61,11 @@ class HotelAmenityAssociation(Base):
     __tablename__ = "hotel_amenity_association"
     hotel_id: Mapped[int] = mapped_column(
         ForeignKey("hotels.id"),
+        primary_key=True,
     )
     amenity_id: Mapped[int] = mapped_column(
-        ForeignKey("amenitys.id"),
+        ForeignKey("amenities.id"),
+        primary_key=True,
     )
     # association between Assocation -> Hotel
     hotel: Mapped["Hotel"] = relationship(

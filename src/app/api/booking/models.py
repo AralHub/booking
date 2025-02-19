@@ -25,7 +25,7 @@ class Booking(IntIdPkMixin, Base):
     )
     total_cost: Mapped[int] = mapped_column(Integer, nullable=False)
     # relationships
-    city_id: Mapped[int] = mapped_column(ForeignKey("citys.id"))
+    city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
 
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
     room: Mapped["Room"] = relationship("Room", back_populates="booking")
