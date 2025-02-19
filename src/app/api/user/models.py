@@ -89,12 +89,10 @@ class User(IntIdPkMixin, TimestampMixin, Base):
     bookings: Mapped[list["Booking"]] = relationship(
         "Booking",
         back_populates="user",
-        cascade="all, delete-orphan",
     )
     reviews: Mapped[list["Review"]] = relationship(
         "Review",
         back_populates="user",
-        cascade="all, delete-orphan",
     )
 
 

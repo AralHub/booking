@@ -1,11 +1,22 @@
 from fastapi import APIRouter
 
 from app.api.booking.router import router as booking_router
+from app.api.hotel.amenity.models import (
+    Amenity,
+    AmenityCategory,
+    HotelAmenityAssociation,
+)
 from app.api.hotel.amenity.router import router as amenity_router
+from app.api.hotel.models import Hotel
+from app.api.hotel.room.models import (
+    Room,
+    RoomType,
+)
 from app.api.hotel.room.router import router as room_router
 
 # from app.api.country.routes import router as country_router
 from app.api.hotel.router import router as hotel_router
+from app.api.review.models import Review, ReviewCategory, ReviewCategoryRating
 from app.api.user.models import TokenBlacklist, User
 from app.api.user.routes.auth import router as auth_router
 from app.api.user.routes.superuser import router as superuser_router

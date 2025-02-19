@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from ..locations.models import City
     from .amenity.models import Amenity, HotelAmenityAssociation
     from .room.models import Room
+    from ..review.models import Review  # noqa
 
 
 class HotelCategory(IntIdPkMixin, Base):
@@ -52,4 +53,8 @@ class Hotel(IntIdPkMixin, Base):
     amenities: Mapped[list["Amenity"]] = relationship(
         secondary="hotel_amenity_association",
         back_populates="hotels",
+    )
+    reviews: Mapped[list["Review"]] = relationship(
+        "Review",
+        back_populates="hotel",
     )
