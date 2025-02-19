@@ -34,3 +34,32 @@ class HotelFilter(BaseModel):
     name: str | None = None
     city: str | None = None
     country: str | None = None
+
+
+class HotelCategoryBase(BaseModel):
+    name: str
+
+
+class HotelCategoryRead(HotelCategoryBase):
+    id: int
+
+
+class HotelCategoryCreate(HotelCategoryBase):
+    pass
+
+
+class HotelCategoryCreateInternal(HotelCategoryCreate):
+    pass
+
+
+class HotelCategoryUpdate(BaseModel):
+    name: str | None = None
+
+
+class HotelCategoryUpdateInternal(HotelCategoryUpdate):
+    pass
+
+
+class HotelCategoryFilter(BaseModel):
+    id: int | None = None
+    name: str | None = None

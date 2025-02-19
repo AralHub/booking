@@ -11,6 +11,14 @@ if TYPE_CHECKING:
     from .room.models import Room
 
 
+class HotelCategory(IntIdPkMixin, Base):
+    name: Mapped[str] = mapped_column(String(30))
+    hotels: Mapped[list["Hotel"]] = relationship(
+        "Hotel",
+        back_populates="hotel_category",
+    )
+
+
 class Hotel(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(30))
     domain: Mapped[str] = mapped_column(String(30), unique=True)
@@ -38,12 +46,4 @@ class Hotel(IntIdPkMixin, Base):
     hotel_category: Mapped["HotelCategory"] = relationship(
         "HotelCategory",
         back_populates="hotels",
-    )
-
-
-class HotelCategory(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String(30))
-    hotels: Mapped[list["Hotel"]] = relationship(
-        "Hotel",
-        back_populates="hotel_category",
     )

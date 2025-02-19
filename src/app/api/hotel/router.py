@@ -4,18 +4,39 @@ from fastapi import APIRouter
 # from app.api.user.schemas import UserRead
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-from app.dao import HotelDAO
+from app.dao import HotelCategoryDAO, HotelDAO
 
 from .schemas import (
     HotelCreate,
     HotelFilter,
     HotelUpdate,
+    HotelCategoryCreate,
 )
 
 router = APIRouter(
     tags=["Hotel"],
     prefix=settings.api_v1.hotel_prefix,
 )
+
+
+@router.get("/categories/")
+async def get_hotel_categories(
+    session=SessionDep,
+):
+    return await HotelCategoryDAO.get_all(
+        session=session,
+    )
+
+
+@router.post("/categories/")
+async def create_hotel_category(
+    hotel_category_create_data: HotelCategoryCreate,
+    session=TransactionSessionDep,
+):
+    return await HotelCategoryDAO.create(
+        session=session,
+        values=hotel_category_create_data,
+    )
 
 
 @router.get("/")

@@ -108,7 +108,7 @@ class UserBase(BaseModel):
     last_name: NAME_FIELD
     birthday: BIRTHDAY_FIELD
     gender: GENDER_FIELD
-    country_id: int
+    country_id: int = 1
 
 
 class UserRead(UserBase, TimestampSchema):
@@ -120,7 +120,7 @@ class UserRead(UserBase, TimestampSchema):
 
 
 class UserCreate(UserBase):
-    pass
+    model_config = ConfigDict(extra="forbid")
 
 
 class UserCreateInternal(UserCreate):
