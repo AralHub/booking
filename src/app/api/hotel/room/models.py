@@ -1,6 +1,7 @@
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, ForeignKey, Integer, String
+from sqlalchemy import Float, ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -15,8 +16,6 @@ if TYPE_CHECKING:
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(30))
     description: Mapped[str] = mapped_column(String(500), nullable=True)
-    max_capacity: Mapped[int] = mapped_column()
-    start_price: Mapped[int] = mapped_column()
     # relationships
     rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
     # room_amenities: Mapped[list["RoomAmenity"]] = relationship(back_populates="room_type")
@@ -30,6 +29,8 @@ class Room(IntIdPkMixin, Base):
         server_default="5",
     )
     preview_photo_path: Mapped[str] = mapped_column(String, nullable=True)
+    max_guests: Mapped[int] = mapped_column()
+    price_per_night: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
     # quantity: Mapped[int] = mapped_column(Integer, default=0)
     # relationships
     hotel_id: Mapped[int] = mapped_column(

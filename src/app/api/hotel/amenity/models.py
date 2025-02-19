@@ -23,6 +23,7 @@ class AmenityCategory(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(
         String(100),
         nullable=False,
+        unique=True,
     )
     amenities: Mapped[list["Amenity"]] = relationship(
         back_populates="amenity_category",
@@ -31,7 +32,11 @@ class AmenityCategory(IntIdPkMixin, Base):
 
 class Amenity(IntIdPkMixin, Base):
     __tablename__ = "amenities"
-    name: Mapped[str] = mapped_column(String(30), nullable=False)
+    name: Mapped[str] = mapped_column(
+        String(30),
+        nullable=False,
+        unique=True,
+    )
     description: Mapped[str] = mapped_column(String(200), nullable=True)
     is_popular: Mapped[bool] = mapped_column(
         Boolean,
