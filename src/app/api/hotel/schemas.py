@@ -1,25 +1,28 @@
 from pydantic import BaseModel
-from ..locations.shemas import CoordinateCreate
+
+from ..locations.schemas import CoordinateCreate
 
 
 # region Hotel
 class HotelBase(BaseModel):
     name: str
-    city_id: int
-    hotel_category_id: int
 
 
 class HotelRead(HotelBase):
     id: int
+    city_id: int
+    hotel_category_id: int
 
 
 class HotelCreate(HotelBase):
     pass
     coordinate: CoordinateCreate | None = None
+    city_id: int
+    hotel_category_id: int
 
 
 class HotelCreateInternal(HotelCreate):
-    pass
+    coordinate_id: int
 
 
 class HotelUpdate(BaseModel):
@@ -28,14 +31,16 @@ class HotelUpdate(BaseModel):
 
 
 class HotelUpdateInternal(HotelUpdate):
-    pass
+    city_id: int | None = None
+    coordinate_id: int | None = None
 
 
 class HotelFilter(BaseModel):
     id: int | None = None
     name: str | None = None
-    city: str | None = None
+    city_id: int | None = None
     hotel_category_id: int | None = None
+    coordinate_id: int | None = None
 
 
 # endregion

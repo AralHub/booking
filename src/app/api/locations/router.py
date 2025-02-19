@@ -4,7 +4,7 @@ from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 
 from .dao import CityDAO, CountryDAO
-from .shemas import (
+from .schemas import (
     CityCreate,
     CityCreateInternal,
     CityFilter,

@@ -1,5 +1,11 @@
 from fastapi import APIRouter
 
+from app.api.locations.dao import CoordinateDAO
+from app.api.locations.schemas import (
+    CoordinateCreateInternal,
+)
+
+# from slugify import slugify
 # from app.api.user.functions.dependencies import get_current_active_auth_user
 # from app.api.user.schemas import UserRead
 from app.core import SessionDep, TransactionSessionDep
@@ -10,11 +16,12 @@ from .dao import HotelCategoryDAO, HotelDAO
 from .room.router import router as room_router
 from .schemas import (
     HotelCategoryCreate,
+    HotelCategoryFilter,
+    HotelCategoryUpdate,
     HotelCreate,
+    HotelCreateInternal,
     HotelFilter,
     HotelUpdate,
-    HotelCategoryUpdate,
-    HotelCategoryFilter,
 )
 
 router = APIRouter(
@@ -60,9 +67,22 @@ async def create_hotel(
     hotel_create_data: HotelCreate,
     session=TransactionSessionDep,
 ):
+
+    created_coordinate = await CoordinateDAO.create(
+        session=session,
+        values=CoordinateCreateInternal(
+            **hotel_create_data.coordinate.model_dump(),
+        ),
+    )
+    hotel_data = HotelCreateInternal(
+        **hotel_create_data.model_dump(
+            exclude={"coordinate"},
+        ),
+        coordinate_id=created_coordinate.id,
+    )
     return await HotelDAO.create(
         session=session,
-        values=hotel_create_data,
+        values=hotel_data,
     )
 
 

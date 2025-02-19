@@ -74,4 +74,23 @@ class CoordinateCreate(BaseModel):
     longitude: float = Field(..., ge=-180, le=180)
 
 
+class CoordinateCreateInternal(CoordinateCreate):
+    pass
+
+
+class CoordinateUpdate(BaseModel):
+    latitude: float | None = None
+    longitude: float | None = None
+
+
+class CoordinateUpdateInternal(CoordinateUpdate):
+    pass
+
+
+class CoordinateFilter(BaseModel):
+    id: int | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+
+
 # endregion
