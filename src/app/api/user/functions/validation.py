@@ -131,7 +131,7 @@ async def authenticate_user(
 
     elif not await verify_password(
         password=password,
-        hashed_password=db_user.hashed_password,
+        hashed_password=db_user.password,
     ):
         return None
 

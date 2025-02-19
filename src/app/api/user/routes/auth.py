@@ -163,15 +163,15 @@ async def login_user(
     response: Response,
     session=SessionDep,
 ):
-    user = await authenticate_user(
+    db_user = await authenticate_user(
         phone_number=login_data.phone_number,
         password=login_data.password,
         session=session,
     )
-    if not user:
+    if not db_user:
         raise UnauthorizedException("Wrong phone number or password.")
-    access_token = await create_access_token(user)
-    refresh_token = await create_refresh_token(user)
+    access_token = await create_access_token(db_user)
+    refresh_token = await create_refresh_token(db_user)
     response.set_cookie(
         key=REFRESH_TOKEN_KEY,
         value=refresh_token,
