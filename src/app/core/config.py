@@ -37,6 +37,7 @@ class ApiV1Prefix(BaseSettings):
     booking_prefix: str = "/bookings"
     country_prefix: str = "/countries"
     review_prefix: str = "/reviews"
+    amenity_prefix: str = "/amenities"
 
 
 class ApiPrefix(BaseSettings):
