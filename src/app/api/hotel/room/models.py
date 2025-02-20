@@ -9,7 +9,7 @@ from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
-
+    from ..amenity.models import RoomAmenityAssociation, RoomAmenity
     from ..models import Hotel
 
 
@@ -27,6 +27,7 @@ class BedType(IntIdPkMixin, Base):
 
 
 class Room(IntIdPkMixin, Base):
+    
     max_guests: Mapped[int] = mapped_column()
     max_children: Mapped[int] = mapped_column()
     description: Mapped[str] = mapped_column(Text, nullable=True)
@@ -36,7 +37,7 @@ class Room(IntIdPkMixin, Base):
         default=5,
         server_default="5",
     )
-    preview_photo_path: Mapped[str] = mapped_column(String, nullable=True)
+    preview_photo_url: Mapped[str] = mapped_column(String, nullable=True)
     is_available: Mapped[bool] = mapped_column(Boolean, default=True)
     price_per_night: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
     # quantity: Mapped[int] = mapped_column(Integer, default=0)
@@ -58,5 +59,13 @@ class Room(IntIdPkMixin, Base):
     )
     hotel: Mapped["Hotel"] = relationship(
         "Hotel",
+        back_populates="rooms",
+    )
+    room_amenity_association: Mapped[list["RoomAmenityAssociation"]] = relationship(
+        "RoomAmenityAssociation",
+        back_populates="room",
+    )
+    room_amenities: Mapped[list["RoomAmenity"]] = relationship(
+        secondary="room_amenity_association",
         back_populates="rooms",
     )

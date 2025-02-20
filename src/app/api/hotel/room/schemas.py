@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 
+# region Room
 class RoomBase(BaseModel):
     name: str
 
@@ -28,6 +29,10 @@ class RoomFilter(BaseModel):
     room_type_id: int | None = None
 
 
+# endregion
+
+
+# region RoomType
 class RoomTypeBase(BaseModel):
     name: str
     description: str | None = None
@@ -54,3 +59,31 @@ class RoomTypeFilter(BaseModel):
     room_id: int | None = None
     name: str | None = None
     description: str | None = None
+
+
+# endregion
+# region Bed
+class BedBase(BaseModel): ...
+
+
+class BedCreate(BedBase):
+    pass
+
+
+class BedCreateInternal(BedCreate):
+    pass
+
+
+class BedUpdate(BedBase):
+    pass
+
+
+class BedUpdateInternal(BedUpdate):
+    pass
+
+
+class BedFilter(BaseModel):
+    id: int | None = None
+
+
+# endregion

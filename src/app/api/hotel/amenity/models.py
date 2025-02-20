@@ -9,13 +9,13 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from app.api.hotel.models import Hotel
+    from ..models import Hotel
+    from ..room.models import Room
 
 
 class PaymentType(str, Enum):
     FREE = "free"
     PAID = "paid"
-    PAID_SEPARATELY = "paid_separately"
 
 
 class HotelAmenityCategory(IntIdPkMixin, Base):
@@ -116,4 +116,33 @@ class RoomAmenity(IntIdPkMixin, Base):
     )
     room_amenity_category: Mapped[RoomAmenityCategory] = relationship(
         back_populates="room_amenities",
+    )
+
+
+class RoomAmenityAssociation(Base):
+    __tablename__ = "room_amenity_association"
+    room_id: Mapped[int] = mapped_column(
+        ForeignKey("rooms.id"),
+        primary_key=True,
+    )
+    room_amenity_id: Mapped[int] = mapped_column(
+        ForeignKey("room_amenities.id"),
+        primary_key=True,
+    )
+    # association between Assocation -> Room
+    room: Mapped["Room"] = relationship(
+        "Room",
+        back_populates="amenity_association",
+    )
+    # association between Assocation -> Amenity
+    room_amenity: Mapped[RoomAmenity] = relationship(
+        "RoomAmenity",
+        back_populates="room_association",
+    )
+    __table_args__ = (
+        UniqueConstraint(
+            "room_id",
+            "room_amenity_id",
+            name="uq_room_amenity",
+        ),
     )

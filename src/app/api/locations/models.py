@@ -46,7 +46,7 @@ class City(IntIdPkMixin, Base):
     aero_lng: Mapped[float] = mapped_column(Float)
     rail_lat: Mapped[float] = mapped_column(Float)
     rail_lng: Mapped[float] = mapped_column(Float)
-
+    image: Mapped[str] = mapped_column(String(255))
     # relationships
     country_id: Mapped[int] = mapped_column(
         ForeignKey(
