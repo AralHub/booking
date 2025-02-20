@@ -1,5 +1,5 @@
 # from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.locations.models import City, Location, Country
+from app.api.locations.models import City, Country, Location
 from app.core.dao import BaseDAO
 
 

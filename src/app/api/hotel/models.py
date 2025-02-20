@@ -25,7 +25,6 @@ class HotelCategory(IntIdPkMixin, Base):
 class Hotel(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
     # slug: Mapped[str] = mapped_column(String(255), unique=True)
-    address: Mapped[str] = mapped_column(String(255), nullable=True)
     description: Mapped[str] = mapped_column(String(500), nullable=True)
     preview_photo_path: Mapped[str] = mapped_column(String, nullable=True)
     # rooms_quantity: Mapped[int] = mapped_column(Integer, default=0)

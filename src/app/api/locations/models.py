@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, ForeignKey, String
+from sqlalchemy import Float, ForeignKey, String, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -40,6 +40,12 @@ class City(IntIdPkMixin, Base):
         String(255),
         unique=True,
     )
+    slug: Mapped[str] = mapped_column(String(255), unique=True)
+    properties_count: Mapped[int] = mapped_column(Integer)
+    aero_lat: Mapped[float] = mapped_column(Float)
+    aero_lng: Mapped[float] = mapped_column(Float)
+    rail_lat: Mapped[float] = mapped_column(Float)
+    rail_lng: Mapped[float] = mapped_column(Float)
 
     # relationships
     country_id: Mapped[int] = mapped_column(
@@ -61,10 +67,13 @@ class City(IntIdPkMixin, Base):
 
 class Location(IntIdPkMixin, Base):
     __tablename__ = "locations"
+    address: Mapped[str] = mapped_column(String(255), nullable=True)
+    geocode_lat: Mapped[float] = mapped_column(Float)
+    geocode_lng: Mapped[float] = mapped_column(Float)
+
+    # relationships
+    hotel: Mapped["Hotel"] = relationship(back_populates="location")
     country_id: Mapped[int] = mapped_column(ForeignKey("countries.id"))
     city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
-    latitude: Mapped[float] = mapped_column(Float)
-    longitude: Mapped[float] = mapped_column(Float)
-    hotel: Mapped["Hotel"] = relationship(back_populates="location")
     country: Mapped["Country"] = relationship(back_populates="locations")
     city: Mapped["City"] = relationship(back_populates="locations")
