@@ -2,9 +2,10 @@ from fastapi import APIRouter
 
 from app.api.booking.router import router as booking_router
 from app.api.hotel.amenity.models import (
-    Amenity,
-    AmenityCategory,
+    HotelAmenity,
     HotelAmenityAssociation,
+    RoomAmenity,
+    RoomAmenityCategory,
 )
 from app.api.hotel.amenity.router import router as amenity_router
 from app.api.hotel.models import Hotel
@@ -34,21 +35,22 @@ main_router.include_router(
     prefix=settings.api_v1.prefix,
 )
 main_router.include_router(
-    hotel_router,
-    prefix=settings.api_v1.prefix,
-)
-# main_router.include_router(
-#     room_router,
-#     prefix=settings.api_v1.prefix,
-# )
-main_router.include_router(
     booking_router,
     prefix=settings.api_v1.prefix,
 )
-# main_router.include_router(
-#     amenity_router,
-#     prefix=settings.api_v1.prefix,
-# )
+main_router.include_router(
+    hotel_router,
+    prefix=settings.api_v1.prefix,
+)
+main_router.include_router(
+    room_router,
+    prefix=settings.api_v1.prefix,
+)
+
+main_router.include_router(
+    amenity_router,
+    prefix=settings.api_v1.prefix,
+)
 main_router.include_router(
     superuser_router,
     prefix=settings.api_v1.prefix,

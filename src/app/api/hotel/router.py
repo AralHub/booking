@@ -162,5 +162,3 @@ async def delete_hotel_category(
 
 
 # endregion
-router.include_router(room_router)
-router.include_router(amenity_router)

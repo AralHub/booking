@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 
-from .dao import AmenityCategoryDAO, AmenityDAO
+from .dao import HotelAmenityCategoryDAO, HotelAmenityDAO
 from .schemas import (
     AmenityCategoryCreate,
     AmenityCreate,
@@ -14,6 +14,7 @@ from .schemas import (
 )
 
 router = APIRouter(
+    tags=["Amenity"],
     prefix=settings.api_v1.amenity_prefix,
 )
 
@@ -22,7 +23,7 @@ router = APIRouter(
 async def get_amenities(
     session=SessionDep,
 ):
-    return await AmenityDAO.get_all(
+    return await HotelAmenityDAO.get_all(
         session=session,
         filters=None,
     )
@@ -33,7 +34,7 @@ async def create_amenity(
     amenity_create_data: AmenityCreate,
     session=TransactionSessionDep,
 ):
-    return await AmenityDAO.create(
+    return await HotelAmenityDAO.create(
         session=session,
         values=amenity_create_data,
     )
@@ -45,7 +46,7 @@ async def update_amenity(
     amenity_update_data: AmenityUpdate,
     session=TransactionSessionDep,
 ):
-    return await AmenityDAO.update(
+    return await HotelAmenityDAO.update(
         session=session,
         filters=AmenityFilter(id=amenity_id),
         values=amenity_update_data,
@@ -56,7 +57,7 @@ async def update_amenity(
 async def get_amenity_categories(
     session=SessionDep,
 ):
-    return await AmenityCategoryDAO.get_all(
+    return await HotelAmenityCategoryDAO.get_all(
         session=session,
         filters=None,
     )
@@ -67,7 +68,7 @@ async def create_amenity_category(
     amenity_category_create_data: AmenityCategoryCreate,
     session=TransactionSessionDep,
 ):
-    return await AmenityCategoryDAO.create(
+    return await HotelAmenityCategoryDAO.create(
         session=session,
         values=amenity_category_create_data,
     )

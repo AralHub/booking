@@ -1,11 +1,11 @@
 from app.core.dao import BaseDAO
 
-from .models import Amenity, AmenityCategory
+from .models import HotelAmenity, HotelAmenityCategory
 
 
-class AmenityDAO(BaseDAO):
-    model = Amenity
+class HotelAmenityDAO(BaseDAO):
+    model = HotelAmenity
 
 
-class AmenityCategoryDAO(BaseDAO):
-    model = AmenityCategory
+class HotelAmenityCategoryDAO(BaseDAO):
+    model = HotelAmenityCategory

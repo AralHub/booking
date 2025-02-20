@@ -9,7 +9,7 @@ from app.core.db.model_mixins import IntIdPkMixin
 if TYPE_CHECKING:
     from ..locations.models import City, Coordinate
     from ..review.models import Review  # noqa
-    from .amenity.models import Amenity, HotelAmenityAssociation
+    from .amenity.models import HotelAmenity, HotelAmenityAssociation
     from .room.models import Room
 
 
@@ -46,11 +46,11 @@ class Hotel(IntIdPkMixin, Base):
         "HotelCategory",
         back_populates="hotels",
     )
-    amenity_association: Mapped[list["HotelAmenityAssociation"]] = relationship(
+    hotel_amenity_association: Mapped[list["HotelAmenityAssociation"]] = relationship(
         "HotelAmenityAssociation",
         back_populates="hotel",
     )
-    amenities: Mapped[list["Amenity"]] = relationship(
+    hotel_amenities: Mapped[list["HotelAmenity"]] = relationship(
         secondary="hotel_amenity_association",
         back_populates="hotels",
     )

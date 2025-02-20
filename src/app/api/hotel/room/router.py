@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 
-from ..dao import RoomDAO, RoomTypeDAO
+from .dao import RoomDAO, RoomTypeDAO
 from .schemas import (
     RoomCreate,
     RoomFilter,
@@ -14,6 +14,7 @@ from .schemas import (
 )
 
 router = APIRouter(
+    tags=["Room"],
     prefix=settings.api_v1.room_prefix,
 )
 
