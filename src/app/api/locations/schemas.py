@@ -68,26 +68,26 @@ class CityFilter(BaseModel):
 # endregion
 
 
-# region Coordinate
-class CoordinateCreate(BaseModel):
+# region Location
+class LocationCreate(BaseModel):
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
 
 
-class CoordinateCreateInternal(CoordinateCreate):
+class LocationCreateInternal(LocationCreate):
     pass
 
 
-class CoordinateUpdate(BaseModel):
+class LocationUpdate(BaseModel):
     latitude: float | None = None
     longitude: float | None = None
 
 
-class CoordinateUpdateInternal(CoordinateUpdate):
+class LocationUpdateInternal(LocationUpdate):
     pass
 
 
-class CoordinateFilter(BaseModel):
+class LocationFilter(BaseModel):
     id: int | None = None
     latitude: float | None = None
     longitude: float | None = None

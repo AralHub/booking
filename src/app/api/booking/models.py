@@ -1,5 +1,7 @@
 from datetime import UTC, datetime
 from decimal import Decimal
+from enum import Enum
+from functools import partial
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
@@ -7,15 +9,15 @@ from sqlalchemy import (
     CheckConstraint,
     ForeignKey,
     Numeric,
-    Enum as SqlEnum,
     text,
+)
+from sqlalchemy import (
+    Enum as SqlEnum,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
-from functools import partial
-from enum import Enum
 
 default_utc_now = partial(datetime.now, UTC)
 if TYPE_CHECKING:

@@ -17,6 +17,7 @@ from app.api.hotel.room.router import router as room_router
 
 # from app.api.country.routes import router as country_router
 from app.api.hotel.router import router as hotel_router
+from app.api.locations.router import router as location_router
 from app.api.review.models import Review, ReviewCategory, ReviewCategoryRating
 from app.api.user.models import TokenBlacklist, User
 from app.api.user.routes.auth import router as auth_router
@@ -46,7 +47,10 @@ main_router.include_router(
     room_router,
     prefix=settings.api_v1.prefix,
 )
-
+main_router.include_router(
+    location_router,
+    prefix=settings.api_v1.prefix,
+)
 main_router.include_router(
     amenity_router,
     prefix=settings.api_v1.prefix,
