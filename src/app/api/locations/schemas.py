@@ -63,6 +63,13 @@ class CityFilter(BaseModel):
     id: int | None = None
     name: str | None = None
     country_id: int | None = None
+    slug: str | None = None
+    properties_count: int | None = None
+    image: str | None = None
+    aero_lat: float | None = None
+    aero_lng: float | None = None
+    rail_lat: float | None = None
+    rail_lng: float | None = None
 
 
 # endregion

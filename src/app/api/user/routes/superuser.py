@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 
-from app.api.locations.router import router as country_router
 from app.core.config import settings
 
 router = APIRouter(
