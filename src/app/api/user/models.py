@@ -11,7 +11,8 @@ from app.core.db.model_mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMix
 
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
-    from app.api.hotel.admin.models import HotelAdmin
+
+    # from app.api.hotel.admin.models import HotelAdmin
     from app.api.review.models import Review
 
 
@@ -95,10 +96,10 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         "Review",
         back_populates="user",
     )
-    hotel_admin: Mapped["HotelAdmin"] = relationship(
-        "HotelAdmin",
-        back_populates="user",
-    )
+    # hotel_admin: Mapped["HotelAdmin"] = relationship(
+    #     "HotelAdmin",
+    #     back_populates="user",
+    # )
 
 
 class TokenBlacklist(IntIdPkMixin, Base):

@@ -146,7 +146,7 @@ class RoomAmenityAssociation(Base):
     # association between Assocation -> Amenity
     room_amenity: Mapped[RoomAmenity] = relationship(
         "RoomAmenity",
-        back_populates="room_associations",
+        back_populates="room_association",
     )
     __table_args__ = (
         UniqueConstraint(

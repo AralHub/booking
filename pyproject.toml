@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "zmenu-v2"
+name = "booking-api"
 version = "0.1.0"
 readme = "README.md"
-description = "ZMenu v2"
-authors = ["al1enn <wipetmp1404@proton.me>"]
+description = "Booking API"
+authors = ["al1enn <zaebaldev@proton.me>"]
 
 [build-system]
 requires = ["poetry-core"]
