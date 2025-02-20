@@ -27,6 +27,11 @@ class Country(IntIdPkMixin, Base):
         back_populates="country",
         cascade="all, delete-orphan",
     )
+    locations: Mapped[list["Location"]] = relationship(
+        "Location",
+        back_populates="country",
+        cascade="all, delete-orphan",
+    )
 
 
 class City(IntIdPkMixin, Base):
@@ -47,15 +52,19 @@ class City(IntIdPkMixin, Base):
         "Country",
         back_populates="cities",
     )
-    hotels: Mapped[list["Hotel"]] = relationship(
-        "Hotel",
+    locations: Mapped[list["Location"]] = relationship(
+        "Location",
         back_populates="city",
         cascade="all, delete-orphan",
     )
 
 
-class Coordinate(IntIdPkMixin, Base):
-    __tablename__ = "coordinates"
+class Location(IntIdPkMixin, Base):
+    __tablename__ = "locations"
+    country_id: Mapped[int] = mapped_column(ForeignKey("countries.id"))
+    city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
     latitude: Mapped[float] = mapped_column(Float)
     longitude: Mapped[float] = mapped_column(Float)
-    hotel: Mapped["Hotel"] = relationship(back_populates="coordinate")
+    hotel: Mapped["Hotel"] = relationship(back_populates="location")
+    country: Mapped["Country"] = relationship(back_populates="locations")
+    city: Mapped["City"] = relationship(back_populates="locations")

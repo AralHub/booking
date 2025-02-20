@@ -7,7 +7,7 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from ..locations.models import City, Coordinate
+    from ..locations.models import Location
     from ..review.models import Review  # noqa
     from .amenity.models import HotelAmenity, HotelAmenityAssociation
     from .room.models import Room
@@ -37,8 +37,6 @@ class Hotel(IntIdPkMixin, Base):
         back_populates="hotel",
         cascade="all, delete-orphan",
     )
-    city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
-    city: Mapped["City"] = relationship("City", back_populates="hotels")
     hotel_category_id: Mapped[int] = mapped_column(
         ForeignKey("hotel_categories.id"),
     )
@@ -58,9 +56,9 @@ class Hotel(IntIdPkMixin, Base):
         "Review",
         back_populates="hotel",
     )
-    coordinate_id: Mapped[int] = mapped_column(ForeignKey("coordinates.id"))
-    coordinate: Mapped["Coordinate"] = relationship(
-        "Coordinate",
+    location_id: Mapped[int] = mapped_column(ForeignKey("locations.id"))
+    location: Mapped["Location"] = relationship(
+        "Location",
         uselist=False,
         single_parent=True,
     )

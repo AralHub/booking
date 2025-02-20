@@ -2,34 +2,56 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import TIMESTAMP, CheckConstraint, ForeignKey, Numeric
+from sqlalchemy import (
+    TIMESTAMP,
+    CheckConstraint,
+    ForeignKey,
+    Numeric,
+    Enum as SqlEnum,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
+from functools import partial
+from enum import Enum
 
+default_utc_now = partial(datetime.now, UTC)
 if TYPE_CHECKING:
     from app.api.hotel.models import Room
     from app.api.user.models import User
 
 
+class BookingStatus(str, Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    CANCELLED = "cancelled"
+
+
 class Booking(IntIdPkMixin, Base):
     check_in_date: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
-        default=datetime.now(UTC),
+        default=default_utc_now,
         nullable=False,
     )
     check_out_date: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
-        default=datetime.now(UTC),
+        default=default_utc_now,
         nullable=False,
     )
-    total_price: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
+    status: Mapped[BookingStatus] = mapped_column(
+        SqlEnum(BookingStatus),
+        nullable=False,
+        default=BookingStatus.PENDING,
+        server_default=text("'PENDING'"),
+    )
+    total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     # relationships
     city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
 
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
-    room: Mapped["Room"] = relationship("Room", back_populates="booking")
+    room: Mapped["Room"] = relationship("Room", back_populates="bookings")
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="bookings")

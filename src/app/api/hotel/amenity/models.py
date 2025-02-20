@@ -43,7 +43,8 @@ class HotelAmenity(IntIdPkMixin, Base):
         default=False,
     )
     payment_type: Mapped[PaymentType] = mapped_column(
-        SqlEnum(PaymentType), default=PaymentType.FREE
+        SqlEnum(PaymentType),
+        default=PaymentType.FREE,
     )
     hotel_amenity_category_id: Mapped[int] = mapped_column(
         ForeignKey("hotel_amenity_categories.id"),
