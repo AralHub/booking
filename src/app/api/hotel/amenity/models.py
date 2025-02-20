@@ -58,13 +58,13 @@ class HotelAmenity(IntIdPkMixin, Base):
         cascade="all, delete-orphan",
     )
     hotels: Mapped[list["Hotel"]] = relationship(
-        secondary="hotel_amenity_association",
+        secondary="hotel_amenity_associations",
         back_populates="hotel_amenities",
     )
 
 
 class HotelAmenityAssociation(Base):
-    __tablename__ = "hotel_amenity_association"
+    __tablename__ = "hotel_amenity_associations"
     hotel_id: Mapped[int] = mapped_column(
         ForeignKey("hotels.id"),
         primary_key=True,
@@ -76,7 +76,7 @@ class HotelAmenityAssociation(Base):
     # association between Assocation -> Hotel
     hotel: Mapped["Hotel"] = relationship(
         "Hotel",
-        back_populates="amenity_association",
+        back_populates="hotel_amenity_association",
     )
     # association between Assocation -> Amenity
     hotel_amenity: Mapped[HotelAmenity] = relationship(
@@ -117,10 +117,19 @@ class RoomAmenity(IntIdPkMixin, Base):
     room_amenity_category: Mapped[RoomAmenityCategory] = relationship(
         back_populates="room_amenities",
     )
+    room_association: Mapped[list["RoomAmenityAssociation"]] = relationship(
+        "RoomAmenityAssociation",
+        back_populates="room_amenity",
+        cascade="all, delete-orphan",
+    )
+    rooms: Mapped[list["Room"]] = relationship(
+        secondary="room_amenity_associations",
+        back_populates="room_amenities",
+    )
 
 
 class RoomAmenityAssociation(Base):
-    __tablename__ = "room_amenity_association"
+    __tablename__ = "room_amenity_associations"
     room_id: Mapped[int] = mapped_column(
         ForeignKey("rooms.id"),
         primary_key=True,
@@ -132,12 +141,12 @@ class RoomAmenityAssociation(Base):
     # association between Assocation -> Room
     room: Mapped["Room"] = relationship(
         "Room",
-        back_populates="amenity_association",
+        back_populates="room_amenity_association",
     )
     # association between Assocation -> Amenity
     room_amenity: Mapped[RoomAmenity] = relationship(
         "RoomAmenity",
-        back_populates="room_association",
+        back_populates="room_associations",
     )
     __table_args__ = (
         UniqueConstraint(

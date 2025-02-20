@@ -13,6 +13,11 @@ if TYPE_CHECKING:
     from ..models import Hotel
 
 
+class BedType(IntIdPkMixin, Base):
+    name: Mapped[str] = mapped_column(String(255))
+    max_capacity: Mapped[int] = mapped_column()
+
+
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
 
@@ -21,26 +26,25 @@ class RoomType(IntIdPkMixin, Base):
     # room_amenities: Mapped[list["RoomAmenity"]] = relationship(back_populates="room_type")
 
 
-class BedType(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String(255))
-    max_capacity: Mapped[int] = mapped_column()
-
-
 class Room(IntIdPkMixin, Base):
-    
+
     max_guests: Mapped[int] = mapped_column()
     max_children: Mapped[int] = mapped_column()
     description: Mapped[str] = mapped_column(Text, nullable=True)
+    preview_photo_url: Mapped[str] = mapped_column(String, nullable=True)
+    quantity: Mapped[int] = mapped_column(
+        Integer,
+        default=1,
+        server_default="1",
+    )
+    base_price: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
+    # is_available: Mapped[bool] = mapped_column(Boolean, default=True)
     rating: Mapped[float] = mapped_column(
         Float,
         nullable=False,
         default=5,
         server_default="5",
     )
-    preview_photo_url: Mapped[str] = mapped_column(String, nullable=True)
-    is_available: Mapped[bool] = mapped_column(Boolean, default=True)
-    price_per_night: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
-    # quantity: Mapped[int] = mapped_column(Integer, default=0)
     # relationships
 
     room_type_id: Mapped["RoomType"] = mapped_column(ForeignKey("room_types.id"))
@@ -52,10 +56,7 @@ class Room(IntIdPkMixin, Base):
     )
     hotel_id: Mapped[int] = mapped_column(
         Integer,
-        ForeignKey(
-            "hotels.id",
-            ondelete="CASCADE",
-        ),
+        ForeignKey("hotels.id"),
     )
     hotel: Mapped["Hotel"] = relationship(
         "Hotel",
@@ -66,6 +67,6 @@ class Room(IntIdPkMixin, Base):
         back_populates="room",
     )
     room_amenities: Mapped[list["RoomAmenity"]] = relationship(
-        secondary="room_amenity_association",
+        secondary="room_amenity_associations",
         back_populates="rooms",
     )

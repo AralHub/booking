@@ -15,6 +15,7 @@ from .schemas import (
 )
 
 router = APIRouter(
+    tags=["Locations"],
     prefix=settings.api_v1.country_prefix,
 )
 

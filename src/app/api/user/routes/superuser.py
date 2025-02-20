@@ -7,7 +7,6 @@ router = APIRouter(
     tags=["Superuser"],
     prefix=settings.api_v1.superuser_prefix,
 )
-router.include_router(country_router)
 
 
 # @router.post("/login/", response_model=TokenInfo)

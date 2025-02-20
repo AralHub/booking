@@ -48,12 +48,7 @@ class City(IntIdPkMixin, Base):
     rail_lng: Mapped[float] = mapped_column(Float)
     image: Mapped[str] = mapped_column(String(255))
     # relationships
-    country_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            "countries.id",
-            ondelete="CASCADE",
-        )
-    )
+    country_id: Mapped[int] = mapped_column(ForeignKey("countries.id"))
     country: Mapped["Country"] = relationship(
         "Country",
         back_populates="cities",

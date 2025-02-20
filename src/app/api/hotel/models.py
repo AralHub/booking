@@ -48,7 +48,7 @@ class Hotel(IntIdPkMixin, Base):
         back_populates="hotel",
     )
     hotel_amenities: Mapped[list["HotelAmenity"]] = relationship(
-        secondary="hotel_amenity_association",
+        secondary="hotel_amenity_associations",
         back_populates="hotels",
     )
     reviews: Mapped[list["Review"]] = relationship(
