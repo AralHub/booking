@@ -7,6 +7,7 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
+    from ..language.models import Language
     from ..locations.models import Location
     from ..review.models import Review  # noqa
     from .amenity.models import HotelAmenity, HotelAmenityAssociation
@@ -60,4 +61,8 @@ class Hotel(IntIdPkMixin, Base):
         "Location",
         uselist=False,
         single_parent=True,
+    )
+    languages: Mapped[list["Language"]] = relationship(
+        secondary="hotel_language_associations",
+        back_populates="hotels",
     )

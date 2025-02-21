@@ -16,10 +16,12 @@ async def create_fake_db(
     session: AsyncSession,
 ):
     try:
-        JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/cities.json"
-        with open(JSON_PATH) as file:
+        CITIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/cities.json"
+        AMENITIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/hotel_amenities.json"
+        with open(CITIES_JSON_PATH, encoding="utf-8") as file:
             fake_data = json.load(file)
-
+        with open(AMENITIES_JSON_PATH, encoding="utf-8") as file:
+            amenities_data = json.load(file)
         logger.info("Creating country...")
         country_create = CountryFilter(
             id=1,

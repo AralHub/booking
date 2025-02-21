@@ -38,9 +38,15 @@ class HotelAmenity(IntIdPkMixin, Base):
         unique=True,
     )
     description: Mapped[str] = mapped_column(String(255), nullable=True)
+    in_hotel: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        server_default="true",
+    )
     is_popular: Mapped[bool] = mapped_column(
         Boolean,
         default=False,
+        server_default="false",
     )
     payment_type: Mapped[PaymentType] = mapped_column(
         SqlEnum(PaymentType),
