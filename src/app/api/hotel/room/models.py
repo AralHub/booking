@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
 class BedType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
-    max_capacity: Mapped[int] = mapped_column()
 
 
 class RoomType(IntIdPkMixin, Base):
@@ -28,7 +27,7 @@ class RoomType(IntIdPkMixin, Base):
 
 
 class Room(IntIdPkMixin, Base):
-
+    name: Mapped[str] = mapped_column(String(255))
     max_guests: Mapped[int] = mapped_column()
     max_children: Mapped[int] = mapped_column()
     description: Mapped[str] = mapped_column(Text, nullable=True)
@@ -46,6 +45,8 @@ class Room(IntIdPkMixin, Base):
         default=5,
         server_default="5",
     )
+    bed_type_id: Mapped[int] = mapped_column(ForeignKey("bed_types.id"))
+    bed_type: Mapped["BedType"] = relationship(back_populates="rooms")
     # relationships
 
     room_type_id: Mapped["RoomType"] = mapped_column(ForeignKey("room_types.id"))
