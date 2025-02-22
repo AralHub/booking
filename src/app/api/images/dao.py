@@ -1,5 +1,5 @@
 from app.api.images.models import Image
-from app.core.db.dao import BaseDAO
+from app.core.dao import BaseDAO
 
 
 class ImageDAO(BaseDAO):

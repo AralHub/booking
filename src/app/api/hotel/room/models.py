@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class BedType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
-
+    rooms: Mapped[list["Room"]] = relationship(back_populates="bed_type")
 
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))

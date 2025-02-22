@@ -7,11 +7,17 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from ..language.models import Language
+    from ..images.models import Image
+
+    # from ..language.models import Language
     from ..locations.models import Location
     from ..review.models import Review  # noqa
     from .amenity.models import HotelAmenity, HotelAmenityAssociation
     from .room.models import Room
+
+
+# class Rules(IntIdPkMixin, Base):
+#     name: Mapped[str] = mapped_column(String(255))
 
 
 class HotelCategory(IntIdPkMixin, Base):
@@ -62,7 +68,11 @@ class Hotel(IntIdPkMixin, Base):
         uselist=False,
         single_parent=True,
     )
-    languages: Mapped[list["Language"]] = relationship(
-        secondary="hotel_language_associations",
-        back_populates="hotels",
+    # languages: Mapped[list["Language"]] = relationship(
+    #     secondary="hotel_language_associations",
+    #     back_populates="hotels",
+    # )
+    images: Mapped[list["Image"]] = relationship(
+        "Image",
+        back_populates="hotel",
     )
