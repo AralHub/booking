@@ -38,6 +38,7 @@ class ApiV1Prefix(BaseSettings):
     country_prefix: str = "/countries"
     review_prefix: str = "/reviews"
     amenity_prefix: str = "/amenities"
+    images_prefix: str = "/images"
 
 
 class ApiPrefix(BaseSettings):

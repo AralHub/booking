@@ -1,13 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from app.core import Base
-from app.core.db.model_mixins import IntIdPkMixin
-
 if TYPE_CHECKING:
-    from ..hotel.models import Hotel
+    pass
 
 
 # class Language(IntIdPkMixin, Base):
