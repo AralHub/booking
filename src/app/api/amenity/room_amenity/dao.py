@@ -1,19 +1,12 @@
+# from sqlalchemy import select
+# from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.dao import BaseDAO
 
 from .models import (
-    HotelAmenity,
-    HotelAmenityCategory,
     RoomAmenity,
     RoomAmenityCategory,
 )
-
-
-class HotelAmenityDAO(BaseDAO):
-    model = HotelAmenity
-
-
-class HotelAmenityCategoryDAO(BaseDAO):
-    model = HotelAmenityCategory
 
 
 class RoomAmenityCategoryDAO(BaseDAO):

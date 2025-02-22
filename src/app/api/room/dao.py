@@ -1,4 +1,4 @@
-from app.api.hotel.room.models import Room, RoomType
+from app.api.room.models import Room, RoomType
 from app.core.dao import BaseDAO
 
 
