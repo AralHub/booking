@@ -103,19 +103,26 @@ async def save_png(
     )
 
 
-async def delete_restaurant_folder(
-    restaurant_id: int,
-    restaurant_domain: str,
+async def delete_hotel_folder(
+    hotel_id: int,
+    hotel_domain: str,
 ) -> None:
     """
-    Deletes restaurant's media folder with all contents
+    Deletes hotel's media folder with all contents
 
     Args:
-        restaurant_id: ID of the restaurant
+        hotel_id: ID of the hotel
     """
     folder_path = os.path.join(
         settings.upload_path,
-        f"restaurant_{restaurant_domain}_{restaurant_id}",
+        f"hotel_{hotel_id}",
     )
     if os.path.exists(folder_path):
         shutil.rmtree(folder_path)
+
+
+async def delete_photo(
+    photo_path: str,
+) -> None:
+    if os.path.exists(photo_path):
+        os.remove(photo_path)

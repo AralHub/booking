@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -16,8 +16,35 @@ if TYPE_CHECKING:
     from .room.models import Room
 
 
-# class Rules(IntIdPkMixin, Base):
-#     name: Mapped[str] = mapped_column(String(255))
+class Rule(IntIdPkMixin, Base):
+    # Check-in time range
+    check_in_from: Mapped[Time] = mapped_column(
+        Time,
+        nullable=False,
+        default="12:00",
+    )
+    check_in_until: Mapped[Time] = mapped_column(
+        Time,
+        nullable=False,
+        default="00:00",
+    )
+
+    # Check-out time range
+    check_out_from: Mapped[Time] = mapped_column(
+        Time,
+        nullable=False,
+        default="12:00",
+    )
+    check_out_until: Mapped[Time] = mapped_column(
+        Time,
+        nullable=True,
+    )
+    is_pet_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel: Mapped["Hotel"] = relationship(
+        "Hotel",
+        back_populates="rule",
+    )
 
 
 class HotelCategory(IntIdPkMixin, Base):
@@ -74,5 +101,9 @@ class Hotel(IntIdPkMixin, Base):
     # )
     images: Mapped[list["Image"]] = relationship(
         "Image",
+        back_populates="hotel",
+    )
+    rule: Mapped["Rule"] = relationship(
+        "Rule",
         back_populates="hotel",
     )

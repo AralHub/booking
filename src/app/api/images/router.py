@@ -30,7 +30,7 @@ async def get_all_hotel_images(
 
 
 @router.post("/hotel/{hotel_id}/images/")
-async def create_hotel_image(
+async def add_hotel_image(
     hotel_id: int,
     photo: UploadFile,
     session=SessionDep,
@@ -42,8 +42,36 @@ async def create_hotel_image(
     )
     return await ImageDAO.create(
         session=session,
-        data=ImageFilter(
+        values=ImageFilter(
             hotel_id=hotel_id,
             image=file_path,
         ),
     )
+
+
+@router.delete("/hotel/{hotel_id}/images/{image_id}/")
+async def delete_hotel_image(
+    hotel_id: int,
+    image_id: int,
+    session=SessionDep,
+):
+    image = await ImageDAO.get_one(
+        session=session,
+        filters=ImageFilter(
+            hotel_id=hotel_id,
+            id=image_id,
+        ),
+    )
+    await file_utils.delete_photo(
+        photo_path=image.image,
+    )
+    await ImageDAO.delete(
+        session=session,
+        filters=ImageFilter(
+            hotel_id=hotel_id,
+            id=image_id,
+        ),
+    )
+    return {
+        "message": "Image deleted successfully",
+    }
