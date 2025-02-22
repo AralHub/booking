@@ -14,7 +14,7 @@ from .schemas import (
 )
 
 router = APIRouter(
-    tags=["Room"],
+    tags=["Rooms"],
     prefix=settings.api_v1.room_prefix,
 )
 

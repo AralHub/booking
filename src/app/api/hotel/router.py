@@ -23,7 +23,7 @@ from .schemas import (
 )
 
 router = APIRouter(
-    tags=["Hotel"],
+    tags=["Hotels"],
     prefix=settings.api_v1.hotel_prefix,
 )
 

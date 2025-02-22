@@ -3,11 +3,10 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.hotel.amenity.dao import HotelAmenityCategoryDAO, HotelAmenityDAO
+from app.api.hotel.amenity.schemas import HotelAmenityCategoryFilter, HotelAmenityFilter
 from app.api.locations.dao import CityDAO, CountryDAO
 from app.api.locations.schemas import CityFilter, CountryFilter
-
-# from app.api.amenities.dao import HotelAmenityCategoryDAO, HotelAmenityDAO
-# from app.api.amenities.schemas import HotelAmenityCategoryFilter, HotelAmenityFilter
 from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
@@ -20,11 +19,13 @@ async def create_fake_db(
 ):
     try:
         CITIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/cities.json"
-        # AMENITIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/hotel_amenities.json"
+        HOTEL_AMENITIES_JSON_PATH = (
+            f"{SOURCE_DIR}/scripts/sample_data/hotel_amenities.json"
+        )
         with open(CITIES_JSON_PATH, encoding="utf-8") as file:
             fake_data = json.load(file)
-        # with open(AMENITIES_JSON_PATH, encoding="utf-8") as file:
-        #     amenities_data = json.load(file)
+        with open(HOTEL_AMENITIES_JSON_PATH, encoding="utf-8") as file:
+            hotel_amenities_data = json.load(file)
         logger.info("Creating country...")
         country_create = CountryFilter(
             id=1,
@@ -60,32 +61,39 @@ async def create_fake_db(
                     f"Failed to add city {city_data.get('name', 'unknown')}: {e}"
                 )
                 continue
-        # for category_name, amenities in amenities_data.items():
-        #     try:
-        #         category_create = AmenityCategoryFilter(
-        #             name=category_name,
-        #         )
-        #         category = await AmenityCategoryDAO.create(
-        #             session=session,
-        #             values=category_create,
-        #         )
+        for (
+            hotel_amenity_category_name,
+            hotel_amenities,
+        ) in hotel_amenities_data.items():
+            try:
+                hotel_amenity_category_create = HotelAmenityCategoryFilter(
+                    name=hotel_amenity_category_name,
+                )
+                created_hotel_amenity_category = await HotelAmenityCategoryDAO.create(
+                    session=session,
+                    values=hotel_amenity_category_create,
+                )
 
-        #         for amenity_name in amenities:
-        #             try:
-        #                 amenity_create = AmenityFilter(
-        #                     name=amenity_name,
-        #                     category_id=category.id,
-        #                 )
-        #                 await AmenityDAO.create(
-        #                     session=session,
-        #                     values=amenity_create,
-        #                 )
-        #             except Exception as e:
-        #                 logger.error(f"Failed to add amenity {amenity_name}: {e}")
-        #                 continue
-        #     except Exception as e:
-        #         logger.error(f"Failed to add category {category_name}: {e}")
-        #         continue
+                for hotel_amenity_name in hotel_amenities:
+                    try:
+                        hotel_amenity_create = HotelAmenityFilter(
+                            name=hotel_amenity_name,
+                            hotel_amenity_category_id=created_hotel_amenity_category.id,
+                        )
+                        await HotelAmenityDAO.create(
+                            session=session,
+                            values=hotel_amenity_create,
+                        )
+                    except Exception as e:
+                        logger.error(
+                            f"Failed to add hotel amenity {hotel_amenity_name}: {e}"
+                        )
+                        continue
+            except Exception as e:
+                logger.error(
+                    f"Failed to add category {hotel_amenity_category_name}: {e}"
+                )
+                continue
         logger.info("Committing transaction...")
         await session.commit()
         logger.info("Transaction committed successfully")

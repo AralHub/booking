@@ -29,7 +29,7 @@ from ..functions.dependencies import get_current_active_auth_user
 # from app.core.utils.eskiz_client import code_generator
 
 router = APIRouter(
-    tags=["User"],
+    tags=["Users"],
     prefix=settings.api_v1.user_prefix,
 )
 

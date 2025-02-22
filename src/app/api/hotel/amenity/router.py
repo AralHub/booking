@@ -3,7 +3,6 @@ from fastapi import APIRouter
 # from app.api.user.functions.dependencies import get_current_active_auth_user
 # from app.api.user.schemas import UserRead
 from app.core import SessionDep, TransactionSessionDep
-from app.core.config import settings
 
 from .dao import (
     HotelAmenityCategoryDAO,
@@ -11,19 +10,39 @@ from .dao import (
     RoomAmenityDAO,
 )
 from .schemas import (
-    AmenityCategoryCreate,
-    AmenityCreate,
-    AmenityFilter,
-    AmenityUpdate,
+    HotelAmenityCategoryCreate,
+    HotelAmenityCreate,
+    HotelAmenityFilter,
+    HotelAmenityUpdate,
 )
 
 router = APIRouter(
-    tags=["Amenity"],
-    prefix=settings.api_v1.amenity_prefix,
+    tags=["Amenities"],
 )
 
 
-@router.get("/hotel/")
+@router.get("/hotel/amenity/categories/")
+async def get_all_hotel_amenity_categories(
+    session=SessionDep,
+):
+    return await HotelAmenityCategoryDAO.get_all(
+        session=session,
+        filters=None,
+    )
+
+
+@router.get("/hotel/amenity/categories/{category_id}/amenities/")
+async def get_hotel_amenities_by_category(
+    category_id: int,
+    session=SessionDep,
+):
+    return await HotelAmenityDAO.get_all(
+        session=session,
+        filters=HotelAmenityFilter(hotel_amenity_category_id=category_id),
+    )
+
+
+@router.get("/hotel/amenities/")
 async def get_all_hotel_amenities(
     session=SessionDep,
 ):
@@ -33,9 +52,9 @@ async def get_all_hotel_amenities(
     )
 
 
-@router.post("/hotel/")
+@router.post("/hotel/amenities/")
 async def create_hotel_amenity(
-    amenity_create_data: AmenityCreate,
+    amenity_create_data: HotelAmenityCreate,
     session=TransactionSessionDep,
 ):
     return await HotelAmenityDAO.create(
@@ -44,20 +63,20 @@ async def create_hotel_amenity(
     )
 
 
-@router.patch("/hotel/{amenity_id}")
+@router.patch("/hotel/amenities/{amenity_id}")
 async def update_hotel_amenity(
     amenity_id: int,
-    amenity_update_data: AmenityUpdate,
+    amenity_update_data: HotelAmenityUpdate,
     session=TransactionSessionDep,
 ):
     return await HotelAmenityDAO.update(
         session=session,
-        filters=AmenityFilter(id=amenity_id),
+        filters=HotelAmenityFilter(id=amenity_id),
         values=amenity_update_data,
     )
 
 
-@router.get("/hotel/categories/")
+@router.get("/hotel/amenity/categories/")
 async def get_hotel_amenity_categories(
     session=SessionDep,
 ):
@@ -67,9 +86,9 @@ async def get_hotel_amenity_categories(
     )
 
 
-@router.post("/hotel/categories/")
+@router.post("/hotel/amenity/categories/")
 async def create_hotel_amenity_category(
-    amenity_category_create_data: AmenityCategoryCreate,
+    amenity_category_create_data: HotelAmenityCategoryCreate,
     session=TransactionSessionDep,
 ):
     return await HotelAmenityCategoryDAO.create(
@@ -78,7 +97,7 @@ async def create_hotel_amenity_category(
     )
 
 
-@router.get("/room/")
+@router.get("/room/amenities/")
 async def get_all_room_amenities(
     session=SessionDep,
 ):

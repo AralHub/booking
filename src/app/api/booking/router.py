@@ -11,7 +11,7 @@ from .schemas import (
 )
 
 router = APIRouter(
-    tags=["Booking"],
+    tags=["Bookings"],
     prefix=settings.api_v1.booking_prefix,
 )
 
