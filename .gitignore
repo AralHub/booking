@@ -167,4 +167,4 @@ src/certs/jwt-public.pem
 src/.env.prod
 src/.env.dev
 .ruff_cache/
-
+src/storage/
