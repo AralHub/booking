@@ -12,10 +12,12 @@ class RoomAmenityCreate(RoomAmenityBase):
 
 class RoomAmenityCreateInternal(RoomAmenityCreate):
     room_id: int | None = None
+    room_amenity_category_id: int
 
 
 class RoomAmenityUpdate(RoomAmenityBase):
     is_popular: bool | None = None
+    room_amenity_category_id: int | None = None
 
 
 class RoomAmenityUpdateInternal(RoomAmenityUpdate):
@@ -26,6 +28,7 @@ class RoomAmenityFilter(BaseModel):
     id: int | None = None
     name: str | None = None
     is_popular: bool | None = None
+    room_amenity_category_id: int | None = None
 
 
 # endregion
