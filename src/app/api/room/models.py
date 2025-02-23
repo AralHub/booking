@@ -9,21 +9,30 @@ from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
-
-    from ..amenity.models import RoomAmenity, RoomAmenityAssociation
-    from ..models import Hotel
+    from app.api.hotel.models import Hotel
 
 
 class BedType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
     rooms: Mapped[list["Room"]] = relationship(back_populates="bed_type")
 
+
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
 
     # relationships
     rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
-    # room_amenities: Mapped[list["RoomAmenity"]] = relationship(back_populates="room_type")
+    # room_amenities: Mapped[list["RoomAmenity"]] = relationship(
+    #     back_populates="room_type"
+    # )
+    # room_amenity_association: Mapped[list["RoomAmenityAssociation"]] = relationship(
+    #     "RoomAmenityAssociation",
+    #     back_populates="room",
+    # )
+    # room_amenities: Mapped[list["RoomAmenity"]] = relationship(
+    #     secondary="room_amenity_associations",
+    #     back_populates="rooms",
+    # )
 
 
 class Room(IntIdPkMixin, Base):
@@ -63,13 +72,5 @@ class Room(IntIdPkMixin, Base):
     )
     hotel: Mapped["Hotel"] = relationship(
         "Hotel",
-        back_populates="rooms",
-    )
-    room_amenity_association: Mapped[list["RoomAmenityAssociation"]] = relationship(
-        "RoomAmenityAssociation",
-        back_populates="room",
-    )
-    room_amenities: Mapped[list["RoomAmenity"]] = relationship(
-        secondary="room_amenity_associations",
         back_populates="rooms",
     )

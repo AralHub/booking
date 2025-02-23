@@ -9,8 +9,7 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from ..models import Hotel
-    from ..room.models import Room
+    from app.api.hotel.models import Hotel
 
 
 class PaymentType(str, Enum):

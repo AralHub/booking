@@ -7,13 +7,14 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from ..images.models import Image
-
-    # from ..language.models import Language
-    from ..locations.models import Location
-    from ..review.models import Review  # noqa
-    from .amenity.models import HotelAmenity, HotelAmenityAssociation
-    from .room.models import Room
+    from app.api.amenity.hotel_amenity.models import (
+        HotelAmenity,
+        HotelAmenityAssociation,
+    )
+    from app.api.images.models import Image
+    from app.api.locations.models import Location
+    from app.api.review.models import Review  # noqa
+    from app.api.room.models import Room
 
 
 class Rule(IntIdPkMixin, Base):
@@ -60,7 +61,7 @@ class Hotel(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
     # slug: Mapped[str] = mapped_column(String(255), unique=True)
     description: Mapped[str] = mapped_column(String(500), nullable=True)
-    preview_photo_path: Mapped[str] = mapped_column(String, nullable=True)
+    image: Mapped[str] = mapped_column(String, nullable=True)
     # rooms_quantity: Mapped[int] = mapped_column(Integer, default=0)
     # relationships
     # admin_id: Mapped[int] = mapped_column(ForeignKey("users.id"))

@@ -15,7 +15,6 @@ class HotelRead(HotelBase):
 
 
 class HotelCreate(HotelBase):
-    pass
     location: LocationCreate | None = None
     city_id: int
     hotel_category_id: int
@@ -31,6 +30,7 @@ class HotelUpdate(BaseModel):
 
 class HotelUpdateInternal(HotelUpdate):
     location_id: int | None = None
+    image: str | None = None
 
 
 class HotelFilter(BaseModel):
