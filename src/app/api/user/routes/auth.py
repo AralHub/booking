@@ -49,7 +49,7 @@ router = APIRouter(
 
 
 @router.post(
-    "/",
+    "",
     status_code=status.HTTP_201_CREATED,
 )
 async def register_user(
@@ -101,7 +101,7 @@ async def register_user(
 
 
 @router.post(
-    "/verify/",
+    "/verify",
     status_code=status.HTTP_201_CREATED,
 )
 async def verify_phone_number(
@@ -157,7 +157,7 @@ async def verify_phone_number(
     }
 
 
-@router.post("/login/", response_model=TokenInfo)
+@router.post("/login", response_model=TokenInfo)
 async def login_user(
     login_data: LoginUser,
     response: Response,
@@ -189,7 +189,7 @@ async def login_user(
 
 
 @router.post(
-    "/logout/",
+    "/logout",
     dependencies=[Depends(get_current_auth_user)],
     status_code=status.HTTP_204_NO_CONTENT,
 )
@@ -220,7 +220,7 @@ async def logout(
 
 
 @router.post(
-    "/refresh/",
+    "/refresh",
     response_model=TokenInfo,
     status_code=status.HTTP_201_CREATED,
 )

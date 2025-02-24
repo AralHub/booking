@@ -34,14 +34,14 @@ router = APIRouter(
 )
 
 
-@router.get("/me/", response_model=UserRead)
+@router.get("/me", response_model=UserRead)
 async def get_my_profile(
     user: UserRead = Depends(get_current_active_auth_user),
 ):
     return user
 
 
-@router.patch("/", status_code=status.HTTP_200_OK)
+@router.patch("", status_code=status.HTTP_200_OK)
 async def update_profile(
     user_update: UserUpdate,
     current_user: UserRead = Depends(get_current_active_auth_user),
@@ -64,7 +64,7 @@ async def update_profile(
     return updated_rows_count
 
 
-@router.patch("/phone-number/")
+@router.patch("/phone-number")
 async def change_phone_number(
     user_update: PhoneNumber,
     current_user: UserRead = Depends(get_current_active_auth_user),
@@ -110,7 +110,7 @@ async def change_phone_number(
     }
 
 
-@router.post("/phone-number/verify/")
+@router.post("/phone-number/verify")
 async def verify_phone_number(
     verify_data: VerifyPhoneNumber,
     current_user: UserRead = Depends(get_current_active_auth_user),
@@ -139,7 +139,7 @@ async def verify_phone_number(
 
 
 @router.delete(
-    "/",
+    "",
     status_code=status.HTTP_200_OK,
 )
 async def user_delete(

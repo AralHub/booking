@@ -2,8 +2,10 @@ from fastapi import APIRouter
 
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
+from app.core.exceptions.http_exceptions import NotFoundException
 
-from .dao import CityDAO, CountryDAO
+
+from .dao import CityDAO, CountryDAO,LocationDAO
 from .schemas import (
     CityCreate,
     CityCreateInternal,
@@ -12,16 +14,19 @@ from .schemas import (
     CountryCreate,
     CountryFilter,
     CountryUpdate,
+    LocationCreate,
+    LocationCreateInternal,
+    LocationUpdate,
+    LocationUpdateInternal,
+    LocationFilter,
 )
-
 router = APIRouter(
     tags=["Locations"],
-    prefix=settings.api_v1.country_prefix,
 )
 
 
 # region Country
-@router.get("/")
+@router.get("/countries")
 async def get_countries(
     session=SessionDep,
 ):
@@ -31,7 +36,7 @@ async def get_countries(
     )
 
 
-@router.get("/{country_id}")
+@router.get("/countries/{country_id}")
 async def get_country(
     country_id: int,
     session=SessionDep,
@@ -42,7 +47,7 @@ async def get_country(
     )
 
 
-@router.post("/")
+@router.post("/countries")
 async def add_country(
     country_create_data: CountryCreate,
     session=TransactionSessionDep,
@@ -53,7 +58,7 @@ async def add_country(
     )
 
 
-@router.patch("/{country_id}")
+@router.patch("/countries/{country_id}")
 async def update_country(
     country_id: int,
     country_update_data: CountryUpdate,
@@ -70,7 +75,7 @@ async def update_country(
 
 
 # region City
-@router.get("/{country_id}/cities/")
+@router.get("/countries/{country_id}/cities")
 async def get_all_cities_by_country_id(
     country_id: int,
     session=SessionDep,
@@ -82,7 +87,7 @@ async def get_all_cities_by_country_id(
 
 
 @router.post(
-    "/{country_id}/cities/",
+    "/countries/{country_id}/cities",
     response_model=CityRead,
 )
 async def add_city(
@@ -101,3 +106,54 @@ async def add_city(
 
 
 # endregion
+
+# region Hotel Location
+@router.get("/hotels/{hotel_id}/location")
+async def get_hotel_location(
+    hotel_id: int,
+    session=SessionDep,
+):
+    db_hotel = await LocationDAO.get(
+        session=session,
+        filters=LocationFilter(
+            hotel_id=hotel_id,
+        ),
+    )
+    if not db_hotel:
+        return NotFoundException("Hotel not found")
+    return db_hotel
+
+
+@router.post("/hotels/{hotel_id}/location")
+async def add_hotel_location(
+    hotel_id: int,
+    location_create_data: LocationCreate,
+    session=TransactionSessionDep,
+):
+    return await LocationDAO.create(
+        session=session,
+        values=LocationCreateInternal(
+            **location_create_data.model_dump(),
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+@router.put("/hotels/{hotel_id}/location")
+async def add_hotel_location(
+    hotel_id: int,
+    location_update_data: LocationUpdate,
+    session=TransactionSessionDep,
+):
+    return await LocationDAO.update(
+        session=session,
+        values=LocationCreateInternal(
+            **location_update_data.model_dump(),
+        ),
+        filters=LocationFilter(
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+# endreginon

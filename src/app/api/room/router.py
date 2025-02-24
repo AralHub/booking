@@ -19,7 +19,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("")
 async def get_all_rooms(
     session=SessionDep,
 ):
@@ -29,7 +29,7 @@ async def get_all_rooms(
     )
 
 
-@router.get("/{room_id}/")
+@router.get("/{room_id}")
 async def get_room(
     room_id: int,
     session=SessionDep,
@@ -40,7 +40,7 @@ async def get_room(
     )
 
 
-@router.post("/")
+@router.post("")
 async def create_room(
     room_create_data: RoomCreate,
     session=TransactionSessionDep,
@@ -51,7 +51,7 @@ async def create_room(
     )
 
 
-@router.put("/{room_id}/")
+@router.put("/{room_id}")
 async def update_room(
     room_update_data: RoomUpdate,
     room_id: int,
@@ -66,7 +66,7 @@ async def update_room(
     )
 
 
-@router.get("/types/")
+@router.get("/types")
 async def get_room_types(
     session=SessionDep,
 ):
@@ -76,7 +76,7 @@ async def get_room_types(
     )
 
 
-@router.post("/types/")
+@router.post("/types")
 async def create_room_type(
     room_type_create_data: RoomTypeCreate,
     session=TransactionSessionDep,

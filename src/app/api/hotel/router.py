@@ -33,7 +33,7 @@ router = APIRouter(
 
 
 # region Hotel
-@router.get("/count/")
+@router.get("/count")
 async def get_hotels_count(
     session=SessionDep,
 ):
@@ -43,7 +43,7 @@ async def get_hotels_count(
     )
 
 
-@router.get("/")
+@router.get("")
 async def get_all_hotels(
     session=SessionDep,
 ):
@@ -53,7 +53,7 @@ async def get_all_hotels(
     )
 
 
-@router.get("/{hotel_id}/")
+@router.get("/{hotel_id}")
 async def get_hotel(
     hotel_id: int,
     session=SessionDep,
@@ -64,7 +64,7 @@ async def get_hotel(
     )
 
 
-@router.post("/")
+@router.post("")
 async def create_hotel(
     hotel_create_data: HotelCreate,
     session=TransactionSessionDep,
@@ -81,7 +81,7 @@ async def create_hotel(
     )
 
 
-@router.put("/{hotel_id}/")
+@router.put("/{hotel_id}")
 async def update_hotel(
     hotel_update_data: HotelUpdate,
     hotel_id: int,
@@ -96,7 +96,7 @@ async def update_hotel(
     )
 
 
-@router.delete("/{hotel_id}/")
+@router.delete("/{hotel_id}")
 async def delete_hotel(
     hotel_id: int,
     session=TransactionSessionDep,
@@ -111,7 +111,7 @@ async def delete_hotel(
 
 
 # region Hotel Category
-@router.get("/categories/")
+@router.get("/categories")
 async def get_hotel_categories(
     session=SessionDep,
 ):
@@ -121,7 +121,7 @@ async def get_hotel_categories(
     )
 
 
-@router.post("/categories/")
+@router.post("/categories")
 async def create_hotel_category(
     hotel_category_create_data: HotelCategoryCreate,
     session=TransactionSessionDep,
@@ -132,7 +132,7 @@ async def create_hotel_category(
     )
 
 
-@router.put("/categories/{category_id}/")
+@router.put("/categories/{category_id}")
 async def update_hotel_category(
     category_update_data: HotelCategoryUpdate,
     category_id: int,
@@ -145,7 +145,7 @@ async def update_hotel_category(
     )
 
 
-@router.delete("/categories/{category_id}/")
+@router.delete("/categories/{category_id}")
 async def delete_hotel_category(
     category_id: int,
     session=TransactionSessionDep,
@@ -158,54 +158,3 @@ async def delete_hotel_category(
 
 # endregion
 
-
-# region Hotel Location
-@router.get("{hotel_id}/location/")
-async def get_hotel_location(
-    hotel_id: int,
-    session=SessionDep,
-):
-    db_hotel = await LocationDAO.get(
-        session=session,
-        filters=LocationFilter(
-            hotel_id=hotel_id,
-        ),
-    )
-    if not db_hotel:
-        return NotFoundException("Hotel not found")
-    return db_hotel
-
-
-@router.post("{hotel_id}/location/")
-async def add_hotel_location(
-    hotel_id: int,
-    location_create_data: LocationCreate,
-    session=TransactionSessionDep,
-):
-    return await LocationDAO.create(
-        session=session,
-        values=LocationCreateInternal(
-            **location_create_data.model_dump(),
-            hotel_id=hotel_id,
-        ),
-    )
-
-
-@router.put("{hotel_id}/location/")
-async def add_hotel_location(
-    hotel_id: int,
-    location_update_data: LocationUpdate,
-    session=TransactionSessionDep,
-):
-    return await LocationDAO.update(
-        session=session,
-        values=LocationCreateInternal(
-            **location_update_data.model_dump(),
-        ),
-        filters=LocationFilter(
-            hotel_id=hotel_id,
-        ),
-    )
-
-
-# endreginon

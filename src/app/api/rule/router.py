@@ -31,7 +31,7 @@ async def get_rule(
     )
 
 
-@router.post("{hotel_id}/rule/")
+@router.post("{hotel_id}/rule")
 async def add_hotel_rule(
     hotel_id: int,
     rule_create_data: RuleCreate,
@@ -46,7 +46,7 @@ async def add_hotel_rule(
     )
 
 
-@router.put("{hotel_id}/location/")
+@router.put("{hotel_id}/location")
 async def add_hotel_location(
     hotel_id: int,
     rule_update_data: RuleUpdate,

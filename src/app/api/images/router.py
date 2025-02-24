@@ -16,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.get("/hotel/{hotel_id}/images/")
+@router.get("/hotel/{hotel_id}/images")
 async def get_all_hotel_images(
     hotel_id: int,
     session=SessionDep,
@@ -29,7 +29,7 @@ async def get_all_hotel_images(
     )
 
 
-@router.post("/hotel/{hotel_id}/images/")
+@router.post("/hotel/{hotel_id}/images")
 async def add_hotel_image(
     hotel_id: int,
     photo: UploadFile,
@@ -49,7 +49,7 @@ async def add_hotel_image(
     )
 
 
-@router.delete("/hotel/{hotel_id}/images/{image_id}/")
+@router.delete("/hotel/{hotel_id}/images/{image_id}")
 async def delete_hotel_image(
     hotel_id: int,
     image_id: int,

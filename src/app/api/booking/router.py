@@ -16,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("")
 async def get_bookings(
     session=SessionDep,
 ):
@@ -26,7 +26,7 @@ async def get_bookings(
     )
 
 
-@router.get("/{booking_id}/")
+@router.get("/{booking_id}")
 async def get_booking(
     booking_id: int,
     session=SessionDep,
@@ -37,7 +37,7 @@ async def get_booking(
     )
 
 
-@router.post("/")
+@router.post("")
 async def create_booking(
     booking_create_data: BookingCreate,
     session=TransactionSessionDep,

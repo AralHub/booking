@@ -8,7 +8,7 @@ router = APIRouter(
 )
 
 
-# @router.post("/login/", response_model=TokenInfo)
+# @router.post("/login", response_model=TokenInfo)
 # async def superuser_login(
 #     login_data: LoginUser,
 #     response: Response,
