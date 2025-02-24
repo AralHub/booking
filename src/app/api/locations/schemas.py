@@ -77,17 +77,19 @@ class CityFilter(BaseModel):
 
 # region Location
 class LocationCreate(BaseModel):
+    city_id: int
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
 
 
 class LocationCreateInternal(LocationCreate):
-    pass
+    hotel_id: int
 
 
 class LocationUpdate(BaseModel):
     latitude: float | None = None
     longitude: float | None = None
+    city_id: int | None = None
 
 
 class LocationUpdateInternal(LocationUpdate):
@@ -98,6 +100,8 @@ class LocationFilter(BaseModel):
     id: int | None = None
     latitude: float | None = None
     longitude: float | None = None
+    hotel_id: int | None = None
+    city_id: int | None = None
 
 
 # endregion

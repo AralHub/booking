@@ -1,7 +1,8 @@
-from app.core.dao import BaseDAO
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+
+from app.core.dao import BaseDAO
 
 from .models import (
     RoomAmenity,
@@ -21,8 +22,8 @@ class RoomAmenityDAO(BaseDAO):
         cls,
         session: AsyncSession,
     ):
-        query = select(RoomAmenityCategoryDAO).options(
-            selectinload(RoomAmenityCategoryDAO.hotel_amenities)
+        query = select(RoomAmenityCategory).options(
+            selectinload(RoomAmenityCategory.room_amenities)
         )
         result = await session.execute(query)
         return result.scalars().all()

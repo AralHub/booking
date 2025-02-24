@@ -20,12 +20,12 @@ class HotelCreate(HotelBase):
 
 
 class HotelCreateInternal(HotelCreate):
-    location_id: int
+    pass
 
 
 class HotelUpdate(BaseModel):
     name: str | None = None
-    location: LocationCreate | None = None
+    location_id: int
 
 
 class HotelUpdateInternal(HotelUpdate):

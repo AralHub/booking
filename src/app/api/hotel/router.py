@@ -2,7 +2,11 @@ from fastapi import APIRouter
 
 from app.api.locations.dao import LocationDAO
 from app.api.locations.schemas import (
+    LocationCreate,
     LocationCreateInternal,
+    LocationUpdate,
+    LocationUpdateInternal,
+    LocationFilter,
 )
 
 # from slugify import slugify
@@ -10,7 +14,7 @@ from app.api.locations.schemas import (
 # from app.api.user.schemas import UserRead
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-
+from app.core.exceptions.http_exceptions import NotFoundException
 from .dao import HotelCategoryDAO, HotelDAO
 from .schemas import (
     HotelCategoryCreate,
@@ -66,17 +70,10 @@ async def create_hotel(
     session=TransactionSessionDep,
 ):
 
-    created_location = await LocationDAO.create(
-        session=session,
-        values=LocationCreateInternal(
-            **hotel_create_data.location.model_dump(),
-        ),
-    )
     hotel_data = HotelCreateInternal(
         **hotel_create_data.model_dump(
             exclude={"location"},
-        ),
-        location_id=created_location.id,
+        )
     )
     return await HotelDAO.create(
         session=session,
@@ -160,3 +157,55 @@ async def delete_hotel_category(
 
 
 # endregion
+
+
+# region Hotel Location
+@router.get("{hotel_id}/location/")
+async def get_hotel_location(
+    hotel_id: int,
+    session=SessionDep,
+):
+    db_hotel = await LocationDAO.get(
+        session=session,
+        filters=LocationFilter(
+            hotel_id=hotel_id,
+        ),
+    )
+    if not db_hotel:
+        return NotFoundException("Hotel not found")
+    return db_hotel
+
+
+@router.post("{hotel_id}/location/")
+async def add_hotel_location(
+    hotel_id: int,
+    location_create_data: LocationCreate,
+    session=TransactionSessionDep,
+):
+    return await LocationDAO.create(
+        session=session,
+        values=LocationCreateInternal(
+            **location_create_data.model_dump(),
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+@router.put("{hotel_id}/location/")
+async def add_hotel_location(
+    hotel_id: int,
+    location_update_data: LocationUpdate,
+    session=TransactionSessionDep,
+):
+    return await LocationDAO.update(
+        session=session,
+        values=LocationCreateInternal(
+            **location_update_data.model_dump(),
+        ),
+        filters=LocationFilter(
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+# endreginon

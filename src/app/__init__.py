@@ -1,9 +1,7 @@
 from fastapi import APIRouter
 
-from app.api.amenity.hotel_amenity.models import (
-    HotelAmenity,
-    HotelAmenityAssociation,
-)
+from app.api.amenity.hotel_amenity.models import HotelAmenity, HotelAmenityAssociation
+from app.api.amenity.room_amenity.models import RoomAmenity, RoomAmenityAssociation
 from app.api.amenity.hotel_amenity.router import router as hotel_amenity_router
 from app.api.amenity.room_amenity.router import router as room_amenity_router
 from app.api.booking.router import router as booking_router
@@ -22,6 +20,8 @@ from app.api.user.models import TokenBlacklist, User
 from app.api.user.routes.auth import router as auth_router
 from app.api.user.routes.superuser import router as superuser_router
 from app.api.user.routes.user import router as user_router
+
+from app.api.rule.router import router as hotel_rule_router
 from app.core.config import settings
 
 main_router = APIRouter(
@@ -43,7 +43,10 @@ main_router.include_router(
     hotel_router,
     prefix=settings.api_v1.prefix,
 )
-
+main_router.include_router(
+    hotel_rule_router,
+    prefix=settings.api_v1.prefix,
+)
 main_router.include_router(
     room_router,
     prefix=settings.api_v1.prefix,

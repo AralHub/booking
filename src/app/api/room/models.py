@@ -8,9 +8,9 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
+    from app.api.amenity.room_amenity.models import RoomAmenity, RoomAmenityAssociation
     from app.api.booking.models import Booking
     from app.api.hotel.models import Hotel
-    from app.api.amenity.room_amenity.models import RoomAmenity, RoomAmenityAssociation
 
 
 class BedType(IntIdPkMixin, Base):

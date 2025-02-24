@@ -15,37 +15,7 @@ if TYPE_CHECKING:
     from app.api.locations.models import Location
     from app.api.review.models import Review  # noqa
     from app.api.room.models import Room
-
-
-class Rule(IntIdPkMixin, Base):
-    # Check-in time range
-    check_in_from: Mapped[Time] = mapped_column(
-        Time,
-        nullable=False,
-        default="12:00",
-    )
-    check_in_until: Mapped[Time] = mapped_column(
-        Time,
-        nullable=False,
-        default="00:00",
-    )
-
-    # Check-out time range
-    check_out_from: Mapped[Time] = mapped_column(
-        Time,
-        nullable=False,
-        default="12:00",
-    )
-    check_out_until: Mapped[Time] = mapped_column(
-        Time,
-        nullable=True,
-    )
-    is_pet_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    hotel: Mapped["Hotel"] = relationship(
-        "Hotel",
-        back_populates="rule",
-    )
+    from app.api.rule.models import Rule
 
 
 class HotelCategory(IntIdPkMixin, Base):
@@ -90,7 +60,6 @@ class Hotel(IntIdPkMixin, Base):
         "Review",
         back_populates="hotel",
     )
-    location_id: Mapped[int] = mapped_column(ForeignKey("locations.id"))
     location: Mapped["Location"] = relationship(
         "Location",
         uselist=False,

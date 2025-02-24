@@ -68,7 +68,6 @@ class Location(IntIdPkMixin, Base):
 
     # relationships
     hotel: Mapped["Hotel"] = relationship(back_populates="location")
-    country_id: Mapped[int] = mapped_column(ForeignKey("countries.id"))
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
-    country: Mapped["Country"] = relationship(back_populates="locations")
     city: Mapped["City"] = relationship(back_populates="locations")

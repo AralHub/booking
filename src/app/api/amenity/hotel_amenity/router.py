@@ -88,7 +88,9 @@ async def create_hotel_amenity(
     return await HotelAmenityDAO.create(
         session=session,
         values=amenity_create_data,
-        filters=HotelAmenityFilter(hotel_amenity_category_id=category_id),
+        filters=HotelAmenityFilter(
+            hotel_amenity_category_id=category_id,
+        ),
     )
 
 
@@ -119,6 +121,4 @@ async def get_all_hotel_amenities(
     """
     Все удобства отеля c разделенные по категориям
     """
-    return await HotelAmenityDAO.get_all_amenities(
-        session=session
-    )
+    return await HotelAmenityDAO.get_all_amenities(session=session)
