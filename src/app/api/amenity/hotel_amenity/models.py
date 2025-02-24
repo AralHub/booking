@@ -36,6 +36,11 @@ class HotelAmenity(IntIdPkMixin, Base):
         nullable=False,
         unique=True,
     )
+    icon: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        unique=True,
+    )
     description: Mapped[str] = mapped_column(String(255), nullable=True)
     in_hotel: Mapped[bool] = mapped_column(
         Boolean,

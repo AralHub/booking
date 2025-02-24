@@ -9,14 +9,17 @@ class RoomBase(BaseModel):
 class RoomCreate(RoomBase):
     hotel_id: int
     room_type_id: int
+    room_amenities: list[int]
 
 
 class RoomCreateInternal(RoomCreate):
     pass
 
 
-class RoomUpdate(RoomBase):
-    pass
+class RoomUpdate(BaseModel):
+    name: str | None = None
+    room_type_id: int | None = None
+    room_amenities: list[int] | None = None
 
 
 class RoomUpdateInternal(RoomUpdate):
@@ -25,8 +28,9 @@ class RoomUpdateInternal(RoomUpdate):
 
 class RoomFilter(BaseModel):
     id: int | None = None
-    hotel_id: int | None = None
+    name: str | None = None
     room_type_id: int | None = None
+    hotel_id: int | None = None
 
 
 # endregion

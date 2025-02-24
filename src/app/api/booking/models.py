@@ -8,6 +8,7 @@ from sqlalchemy import (
     TIMESTAMP,
     CheckConstraint,
     ForeignKey,
+    Integer,
     Numeric,
     text,
 )
@@ -49,6 +50,8 @@ class Booking(IntIdPkMixin, Base):
         server_default=text("'PENDING'"),
     )
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    adults: Mapped[int] = mapped_column(Integer, nullable=False)
+    children: Mapped[int] = mapped_column(Integer, nullable=False)
     # relationships
     city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
 

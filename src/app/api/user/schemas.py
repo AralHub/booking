@@ -3,7 +3,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.api.user.models import GENDER_TYPES, ROLE_TYPES
+from app.api.user.models import GENDER_TYPES
 from app.core.db.schema_mixins import TimestampSchema
 
 # Константы
@@ -70,13 +70,7 @@ GENDER_FIELD = Annotated[
         default=GENDER_TYPES.MALE.value,
     ),
 ]
-ROLE_TYPE_FIELD = Annotated[
-    ROLE_TYPES,
-    Field(
-        examples=["USER"],
-        default=ROLE_TYPES.USER,
-    ),
-]
+
 VERIFY_CODE_FIELD = Annotated[
     str,
     Field(pattern=r"^\d{5}$", examples=["12345"]),
@@ -124,7 +118,7 @@ class UserCreate(UserBase):
 
 
 class UserCreateInternal(UserCreate):
-    role: ROLE_TYPE_FIELD
+    role_id: int
     is_active: bool
     is_verified: bool
     is_fully_registered: bool
@@ -156,7 +150,7 @@ class UserFilter(BaseModel):
     email: str | None = None
     birthday: datetime | None = None
     gender: GENDER_TYPES | None = None
-    role: ROLE_TYPES | None = None
+    role_id: int | None = None
     is_verified: bool | None = None
     is_active: bool | None = None
     is_fully_registered: bool | None = None

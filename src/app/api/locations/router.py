@@ -1,11 +1,9 @@
 from fastapi import APIRouter
 
 from app.core import SessionDep, TransactionSessionDep
-from app.core.config import settings
 from app.core.exceptions.http_exceptions import NotFoundException
 
-
-from .dao import CityDAO, CountryDAO,LocationDAO
+from .dao import CityDAO, CountryDAO, LocationDAO
 from .schemas import (
     CityCreate,
     CityCreateInternal,
@@ -16,10 +14,11 @@ from .schemas import (
     CountryUpdate,
     LocationCreate,
     LocationCreateInternal,
+    LocationFilter,
     LocationUpdate,
     LocationUpdateInternal,
-    LocationFilter,
 )
+
 router = APIRouter(
     tags=["Locations"],
 )
@@ -107,6 +106,7 @@ async def add_city(
 
 # endregion
 
+
 # region Hotel Location
 @router.get("/hotels/{hotel_id}/location")
 async def get_hotel_location(
@@ -140,14 +140,14 @@ async def add_hotel_location(
 
 
 @router.put("/hotels/{hotel_id}/location")
-async def add_hotel_location(
+async def update_hotel_location(
     hotel_id: int,
     location_update_data: LocationUpdate,
     session=TransactionSessionDep,
 ):
     return await LocationDAO.update(
         session=session,
-        values=LocationCreateInternal(
+        values=LocationUpdateInternal(
             **location_update_data.model_dump(),
         ),
         filters=LocationFilter(
@@ -156,4 +156,4 @@ async def add_hotel_location(
     )
 
 
-# endreginon
+# endregion

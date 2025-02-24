@@ -29,6 +29,11 @@ class RoomAmenity(IntIdPkMixin, Base):
         nullable=False,
         unique=True,
     )
+    icon: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+        unique=True,
+    )
     room_amenity_category_id: Mapped[int] = mapped_column(
         ForeignKey("room_amenity_categories.id"),
     )

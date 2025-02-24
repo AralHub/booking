@@ -9,13 +9,13 @@ from .dao import RuleDAO
 from .schemas import (
     RuleCreate,
     RuleCreateInternal,
+    RuleFilter,
     RuleUpdate,
     RuleUpdateInternal,
-    RuleFilter,
 )
 
 router = APIRouter(
-    tags=["Hotels"],
+    tags=["Hotel Rules"],
     prefix=settings.api_v1.hotel_prefix,
 )
 
@@ -46,15 +46,15 @@ async def add_hotel_rule(
     )
 
 
-@router.put("{hotel_id}/location")
-async def add_hotel_location(
+@router.put("{hotel_id}/rule")
+async def update_hotel_rule(
     hotel_id: int,
     rule_update_data: RuleUpdate,
     session=TransactionSessionDep,
 ):
     return await RuleDAO.update(
         session=session,
-        values=RuleCreateInternal(
+        values=RuleUpdateInternal(
             **rule_update_data.model_dump(),
         ),
         filters=RuleFilter(

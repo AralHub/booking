@@ -80,7 +80,11 @@ class DatabaseSessionManager:
                 async with self.session_maker() as session:
                     try:
                         if isolation_level:
-                            await session.execute(text(f"SET TRANSACTION ISOLATION LEVEL {isolation_level}"))
+                            await session.execute(
+                                text(
+                                    f"SET TRANSACTION ISOLATION LEVEL {isolation_level}"
+                                )
+                            )
 
                         result = await method(*args, session=session, **kwargs)
 

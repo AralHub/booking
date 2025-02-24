@@ -12,21 +12,13 @@ from app.core.db.model_mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMix
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
 
-    # from app.api.hotel.admin.models import HotelAdmin
+    from app.api.owner.models import HotelOwner
     from app.api.review.models import Review
 
 
 class GENDER_TYPES(str, Enum):
     MALE = "male"
     FEMALE = "female"
-
-
-class UserRole(IntIdPkMixin, TimestampMixin, Base):
-    name: Mapped = mapped_column(
-        String(30),
-        nullable=False,
-    )
-    user_id: Mapped = mapped_column(ForeignKey("users.id"))
 
 
 class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
@@ -66,7 +58,6 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         default=GENDER_TYPES.MALE,
         server_default=text("'MALE'"),
     )
-    user_role: Mapped[int] = mapped_column(bac)
 
     is_verified: Mapped[bool] = mapped_column(
         default=False,
@@ -95,10 +86,23 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         "Review",
         back_populates="user",
     )
-    # hotel_admin: Mapped["HotelAdmin"] = relationship(
-    #     "HotelAdmin",
-    #     back_populates="user",
-    # )
+    hotel_owner: Mapped["HotelOwner"] = relationship(
+        "HotelOwner",
+        back_populates="user",
+    )
+    role: Mapped["UserRole"] = relationship(
+        "UserRole",
+        back_populates="user",
+    )
+
+
+class UserRole(IntIdPkMixin, TimestampMixin, Base):
+    name: Mapped[str] = mapped_column(
+        String(30),
+        nullable=False,
+    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship(back_populates="role")
 
 
 class TokenBlacklist(IntIdPkMixin, Base):

@@ -8,8 +8,9 @@ from fastapi import APIRouter, UploadFile
 from app.core import SessionDep
 from app.core.utils import file_utils
 
-from .dao import ImageDAO
-from .schemas import ImageFilter
+from .dao import HotelImageDAO, RoomImageDAO
+from .models import HotelImage, RoomImage
+from .schemas import HotelImageFilter, RoomImageFilter
 
 router = APIRouter(
     tags=["Images"],
@@ -21,9 +22,9 @@ async def get_all_hotel_images(
     hotel_id: int,
     session=SessionDep,
 ):
-    return await ImageDAO.get_all(
+    return await HotelImageDAO.get_all(
         session=session,
-        filters=ImageFilter(
+        filters=HotelImageFilter(
             hotel_id=hotel_id,
         ),
     )
@@ -40,9 +41,9 @@ async def add_hotel_image(
         filename=f"logo_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
         folder=f"hotel_{hotel_id}",
     )
-    return await ImageDAO.create(
+    return await HotelImageDAO.create(
         session=session,
-        values=ImageFilter(
+        values=HotelImageFilter(
             hotel_id=hotel_id,
             image=file_path,
         ),
@@ -55,9 +56,9 @@ async def delete_hotel_image(
     image_id: int,
     session=SessionDep,
 ):
-    image = await ImageDAO.get_one(
+    image = await HotelImageDAO.get_one(
         session=session,
-        filters=ImageFilter(
+        filters=HotelImageFilter(
             hotel_id=hotel_id,
             id=image_id,
         ),
@@ -65,9 +66,9 @@ async def delete_hotel_image(
     await file_utils.delete_photo(
         photo_path=image.image,
     )
-    await ImageDAO.delete(
+    await HotelImageDAO.delete(
         session=session,
-        filters=ImageFilter(
+        filters=HotelImageFilter(
             hotel_id=hotel_id,
             id=image_id,
         ),

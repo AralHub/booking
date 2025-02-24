@@ -1,6 +1,10 @@
-from app.api.images.models import Image
+from app.api.images.models import HotelImage, RoomImage
 from app.core.dao import BaseDAO
 
 
-class ImageDAO(BaseDAO):
-    model = Image
+class HotelImageDAO(BaseDAO):
+    model = HotelImage
+
+
+class RoomImageDAO(BaseDAO):
+    model = RoomImage

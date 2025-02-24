@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, ForeignKey, String, Time
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
-from app.core.db.model_mixins import IntIdPkMixin,TimestampMixin
+from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.api.amenity.hotel_amenity.models import (
@@ -13,9 +13,10 @@ if TYPE_CHECKING:
     )
     from app.api.images.models import Image
     from app.api.locations.models import Location
-    from app.api.review.models import Review  # noqa
+    from app.api.review.models import Review
     from app.api.room.models import Room
     from app.api.rule.models import Rule
+    from app.api.owner.models import HotelOwner
 
 
 class HotelCategory(IntIdPkMixin, Base):
@@ -27,15 +28,20 @@ class HotelCategory(IntIdPkMixin, Base):
     )
 
 
-class Hotel(IntIdPkMixin,TimestampMixin, Base):
+class Hotel(IntIdPkMixin, TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
-    # slug: Mapped[str] = mapped_column(String(255), unique=True)
-    description: Mapped[str] = mapped_column(String(500), nullable=True)
+    slug: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=False,
+    )
+    description: Mapped[str] = mapped_column(
+        String(500),
+        nullable=True,
+    )
     image: Mapped[str] = mapped_column(String, nullable=True)
-    # rooms_quantity: Mapped[int] = mapped_column(Integer, default=0)
-    # relationships
-    # admin_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
+    # relationships
     rooms: Mapped[list["Room"]] = relationship(
         "Room",
         back_populates="hotel",
@@ -65,10 +71,7 @@ class Hotel(IntIdPkMixin,TimestampMixin, Base):
         uselist=False,
         single_parent=True,
     )
-    # languages: Mapped[list["Language"]] = relationship(
-    #     secondary="hotel_language_associations",
-    #     back_populates="hotels",
-    # )
+
     images: Mapped[list["Image"]] = relationship(
         "Image",
         back_populates="hotel",
@@ -77,3 +80,11 @@ class Hotel(IntIdPkMixin,TimestampMixin, Base):
         "Rule",
         back_populates="hotel",
     )
+    hotel_owner: Mapped["HotelOwner"] = relationship(
+        "HotelOwner",
+        back_populates="hotel",
+    )
+    # languages: Mapped[list["Language"]] = relationship(
+    #     secondary="hotel_language_associations",
+    #     back_populates="hotels",
+    # )
