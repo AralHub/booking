@@ -16,14 +16,17 @@ if TYPE_CHECKING:
     from app.api.review.models import Review
 
 
-class ROLE_TYPES(str, Enum):
-    USER = "user"
-    ADMIN = "admin"
-
-
 class GENDER_TYPES(str, Enum):
     MALE = "male"
     FEMALE = "female"
+
+
+class UserRole(IntIdPkMixin, TimestampMixin, Base):
+    name: Mapped = mapped_column(
+        String(30),
+        nullable=False,
+    )
+    user_id: Mapped = mapped_column(ForeignKey("users.id"))
 
 
 class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
@@ -63,11 +66,7 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         default=GENDER_TYPES.MALE,
         server_default=text("'MALE'"),
     )
-    role: Mapped[ROLE_TYPES] = mapped_column(
-        SqlEnum(ROLE_TYPES, name="role_types"),
-        default=ROLE_TYPES.USER,
-        server_default=text("'USER'"),
-    )
+    user_role: Mapped[int] = mapped_column(bac)
 
     is_verified: Mapped[bool] = mapped_column(
         default=False,
