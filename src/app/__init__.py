@@ -43,15 +43,16 @@ main_router.include_router(
     hotel_router,
     prefix=settings.api_v1.prefix,
 )
-main_router.include_router(
-    hotel_amenity_router,
-    prefix=settings.api_v1.prefix,
-)
 
 main_router.include_router(
     room_router,
     prefix=settings.api_v1.prefix,
 )
+main_router.include_router(
+    hotel_amenity_router,
+    prefix=settings.api_v1.prefix,
+)
+
 main_router.include_router(
     room_amenity_router,
     prefix=settings.api_v1.prefix,

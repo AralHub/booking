@@ -3,10 +3,16 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.hotel.amenity.dao import HotelAmenityCategoryDAO, HotelAmenityDAO
-from app.api.hotel.amenity.schemas import HotelAmenityCategoryFilter, HotelAmenityFilter
-from app.api.locations.dao import CityDAO, CountryDAO
-from app.api.locations.schemas import CityFilter, CountryFilter
+from app.api.amenity.hotel_amenity.dao import HotelAmenityCategoryDAO, HotelAmenityDAO
+from app.api.amenity.hotel_amenity.schemas import (
+    HotelAmenityCategoryFilter,
+    HotelAmenityFilter,
+)
+from app.api.amenity.room_amenity.dao import RoomAmenityCategoryDAO, RoomAmenityDAO
+from app.api.amenity.room_amenity.schemas import (
+    RoomAmenityCategoryFilter,
+    RoomAmenityFilter,
+)
 from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
@@ -18,49 +24,18 @@ async def create_fake_db(
     session: AsyncSession,
 ):
     try:
-        CITIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/cities.json"
         HOTEL_AMENITIES_JSON_PATH = (
             f"{SOURCE_DIR}/scripts/sample_data/hotel_amenities.json"
         )
-        with open(CITIES_JSON_PATH, encoding="utf-8") as file:
-            fake_data = json.load(file)
+        ROOM_AMENITIES_JSON_PATH = (
+            f"{SOURCE_DIR}/scripts/sample_data/room_amenities.json"
+        )
         with open(HOTEL_AMENITIES_JSON_PATH, encoding="utf-8") as file:
             hotel_amenities_data = json.load(file)
-        logger.info("Creating country...")
-        country_create = CountryFilter(
-            id=1,
-            name="Uzbekistan",
-            code="UZ",
-        )
-        country = await CountryDAO.create(
-            session=session,
-            values=country_create,
-        )
+        with open(ROOM_AMENITIES_JSON_PATH, encoding="utf-8") as file:
+            room_amenities_data = json.load(file)
 
-        logger.info("Creating cities...")
-        for city_data in fake_data:
-            try:
-                city_create = CityFilter(
-                    id=city_data["id"],
-                    name=city_data["name"],
-                    slug=city_data["slug"],
-                    properties_count=city_data["properties_count"],
-                    image=city_data["image"],
-                    aero_lat=float(city_data["aero_geocode_lat"]),
-                    aero_lng=float(city_data["aero_geocode_lng"]),
-                    rail_lat=float(city_data["rail_geocode_lat"]),
-                    rail_lng=float(city_data["rail_geocode_lng"]),
-                    country_id=country.id,
-                )
-                await CityDAO.create(
-                    session=session,
-                    values=city_create,
-                )
-            except Exception as e:
-                logger.error(
-                    f"Failed to add city {city_data.get('name', 'unknown')}: {e}"
-                )
-                continue
+        # Create hotel amenities
         for (
             hotel_amenity_category_name,
             hotel_amenities,
@@ -94,7 +69,40 @@ async def create_fake_db(
                     f"Failed to add category {hotel_amenity_category_name}: {e}"
                 )
                 continue
-        logger.info("Committing transaction...")
+        # Create room amenities
+        for (
+            room_amenity_category_name,
+            room_amenities,
+        ) in room_amenities_data.items():
+            try:
+                room_amenity_category_create = RoomAmenityCategoryFilter(
+                    name=room_amenity_category_name,
+                )
+                created_room_amenity_category = await RoomAmenityCategoryDAO.create(
+                    session=session,
+                    values=room_amenity_category_create,
+                )
+
+                for room_amenity_name in room_amenities:
+                    try:
+                        room_amenity_create = RoomAmenityFilter(
+                            name=room_amenity_name,
+                            room_amenity_category_id=created_room_amenity_category.id,
+                        )
+                        await RoomAmenityDAO.create(
+                            session=session,
+                            values=room_amenity_create,
+                        )
+                    except Exception as e:
+                        logger.error(
+                            f"Failed to add room amenity {room_amenity_name}: {e}"
+                        )
+                        continue
+            except Exception as e:
+                logger.error(
+                    f"Failed to add category {hotel_amenity_category_name}: {e}"
+                )
+                continue
         await session.commit()
         logger.info("Transaction committed successfully")
 
