@@ -7,8 +7,8 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from app.api.user.models import User
     from app.api.hotel.models import Hotel
+    from app.api.user.models import User
 
 
 class HotelOwner(IntIdPkMixin, Base):

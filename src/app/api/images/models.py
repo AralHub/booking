@@ -7,8 +7,8 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from ..hotel.models import Hotel
-    from ..room.models import Room
+    from app.api.hotel.models import Hotel
+    from app.api.room.models import Room
 
 
 class HotelImage(IntIdPkMixin, Base):

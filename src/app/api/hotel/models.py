@@ -11,12 +11,12 @@ if TYPE_CHECKING:
         HotelAmenity,
         HotelAmenityAssociation,
     )
-    from app.api.images.models import Image
+    from app.api.images.models import HotelImage
     from app.api.locations.models import Location
+    from app.api.owner.models import HotelOwner
     from app.api.review.models import Review
     from app.api.room.models import Room
     from app.api.rule.models import Rule
-    from app.api.owner.models import HotelOwner
 
 
 class HotelCategory(IntIdPkMixin, Base):
@@ -72,18 +72,15 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         single_parent=True,
     )
 
-    images: Mapped[list["Image"]] = relationship(
-        "Image",
+    hotel_images: Mapped[list["HotelImage"]] = relationship(
+        "HotelImage",
         back_populates="hotel",
     )
     rule: Mapped["Rule"] = relationship(
         "Rule",
         back_populates="hotel",
     )
-    hotel_owner: Mapped["HotelOwner"] = relationship(
-        "HotelOwner",
-        back_populates="hotel",
-    )
+    hotel_owner: Mapped["HotelOwner"] = relationship(back_populates="hotel")
     # languages: Mapped[list["Language"]] = relationship(
     #     secondary="hotel_language_associations",
     #     back_populates="hotels",

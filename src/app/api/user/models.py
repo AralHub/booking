@@ -11,7 +11,6 @@ from app.core.db.model_mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMix
 
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
-
     from app.api.owner.models import HotelOwner
     from app.api.review.models import Review
 
