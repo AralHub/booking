@@ -1,31 +1,55 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from datetime import datetime
+from typing import Annotated
+from ..locations.schemas import LocationCreate, LocationUpdate
 
-from ..locations.schemas import LocationCreate
+NAME_MAX_LENGTH = 255
+NAME_MIN_LENGTH = 3
+NAME_FIELD = Annotated[
+    str,
+    Field(
+        min_length=NAME_MIN_LENGTH,
+        max_length=NAME_MAX_LENGTH,
+        examples=["Hotel1"],
+    ),
+]
+NAME_FIELD_UPDATE = Annotated[
+    str | None,
+    Field(
+        min_length=NAME_MIN_LENGTH,
+        max_length=NAME_MAX_LENGTH,
+        examples=["Hotel2"],
+        default=None,
+    ),
+]
 
 
 # region Hotel
 class HotelBase(BaseModel):
-    name: str
+    name: NAME_FIELD
+    slug: str
 
 
 class HotelRead(HotelBase):
     id: int
-    city_id: int
+    name: str
+    slug: str
     hotel_category_id: int
 
 
 class HotelCreate(HotelBase):
-    city_id: int
+    slug: str
     hotel_category_id: int
 
 
 class HotelCreateInternal(HotelCreate):
-    pass
+    created_at: datetime
 
 
 class HotelUpdate(BaseModel):
-    name: str | None = None
-    location_id: int
+    name: NAME_FIELD_UPDATE = None
+    slug: str | None = None
+    location: LocationUpdate | None = None
 
 
 class HotelUpdateInternal(HotelUpdate):
@@ -35,9 +59,9 @@ class HotelUpdateInternal(HotelUpdate):
 
 class HotelFilter(BaseModel):
     id: int | None = None
-    name: str | None = None
+    name: NAME_FIELD_UPDATE = None
+    slug: str | None = None
     hotel_category_id: int | None = None
-    location_id: int | None = None
 
 
 # endregion

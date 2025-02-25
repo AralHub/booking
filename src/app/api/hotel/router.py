@@ -1,3 +1,4 @@
+from datetime import datetime, UTC
 from fastapi import APIRouter
 
 # from slugify import slugify
@@ -5,6 +6,7 @@ from fastapi import APIRouter
 # from app.api.user.schemas import UserRead
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
+from app.core.exceptions.http_exceptions import DuplicateValueException
 
 from .dao import HotelCategoryDAO, HotelDAO
 from .schemas import (
@@ -60,11 +62,17 @@ async def create_hotel(
     hotel_create_data: HotelCreate,
     session=TransactionSessionDep,
 ):
-
+    db_hotel = await HotelDAO.get_one_or_none(
+        session=session,
+        filters=HotelFilter(
+            slug=hotel_create_data.slug,
+        ),
+    )
+    if db_hotel:
+        raise DuplicateValueException("Hotel with this slug already exists")
     hotel_data = HotelCreateInternal(
-        **hotel_create_data.model_dump(
-            exclude={"location"},
-        )
+        **hotel_create_data.model_dump(),
+        created_at=datetime.now(UTC),
     )
     return await HotelDAO.create(
         session=session,
