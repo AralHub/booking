@@ -1,0 +1,60 @@
+import asyncio
+import json
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.hotel.models import HotelCategory
+from app.api.hotel.schemas import HotelCategoryCreateInternal, HotelCategoryFilter
+from app.api.hotel.dao import HotelCategoryDAO
+from app.core import db_helper
+from app.core.config import SOURCE_DIR
+from app.core.logger import logging
+
+logger = logging.getLogger(__name__)
+
+
+async def create_fake_db(
+    session: AsyncSession,
+):
+    try:
+        HOTEL_CATEGORIES_JSON_PATH = (
+            f"{SOURCE_DIR}/scripts/sample_data/hotel_categories.json"
+        )
+
+        with open(HOTEL_CATEGORIES_JSON_PATH, encoding="utf-8") as file:
+            hotel_categories_data = json.load(file)
+
+        # Create hotel categories
+        for hotel_category in hotel_categories_data["hotel_categories"]:
+            try:
+                hotel_category_create = HotelCategoryCreateInternal(
+                    name=hotel_category["name"],
+                    description=hotel_category.get("description"),
+                )
+                await HotelCategoryDAO.create(
+                    session=session,
+                    values=hotel_category_create,
+                )
+            except Exception as e:
+                logger.error(
+                    f"Failed to add category {hotel_category.get('name')}: {e}"
+                )
+                continue
+
+        await session.commit()
+        logger.info("Transaction committed successfully")
+
+    except Exception as e:
+        logger.error(f"Failed to create fake db: {e}")
+        await session.rollback()
+        raise
+
+
+async def main():
+    async with db_helper.session_factory() as session:
+        await create_fake_db(session)
+        logger.info("Database population completed")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

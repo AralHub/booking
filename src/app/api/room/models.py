@@ -39,12 +39,6 @@ class Room(IntIdPkMixin, Base):
     price_per_night: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
     room_area: Mapped[float] = mapped_column(Float, nullable=True)
     # is_available: Mapped[bool] = mapped_column(Boolean, default=True)
-    rating: Mapped[float] = mapped_column(
-        Float,
-        nullable=False,
-        default=5,
-        server_default="5",
-    )
 
     # relationships
     bed_type_id: Mapped[int] = mapped_column(ForeignKey("bed_types.id"))

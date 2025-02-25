@@ -31,7 +31,9 @@ class RoomAmenity(IntIdPkMixin, Base):
     )
     icon: Mapped[str] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
+        default=None,
+        server_default=None,
         unique=True,
     )
     room_amenity_category_id: Mapped[int] = mapped_column(
