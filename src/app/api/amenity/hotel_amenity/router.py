@@ -21,6 +21,7 @@ router = APIRouter(
 )
 
 
+# region Hotel Amenity Category
 @router.get("/amenity-categories")
 async def get_hotel_amenity_categories(
     session=SessionDep,
@@ -122,3 +123,6 @@ async def get_all_hotel_amenities(
     Все удобства отеля c разделенные по категориям
     """
     return await HotelAmenityDAO.get_all_amenities(session=session)
+
+
+# endregion

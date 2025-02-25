@@ -19,6 +19,7 @@ router = APIRouter(
 )
 
 
+# region Room
 @router.get("")
 async def get_all_rooms(
     session=SessionDep,
@@ -66,6 +67,12 @@ async def update_room(
     )
 
 
+# endregion
+
+
+# region Room Type
+
+
 @router.get("/types")
 async def get_room_types(
     session=SessionDep,
@@ -85,3 +92,11 @@ async def create_room_type(
         session=session,
         values=room_type_create_data,
     )
+
+
+# endregion
+
+# region Room Price
+
+
+# endregion

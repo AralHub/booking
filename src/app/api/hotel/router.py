@@ -158,3 +158,19 @@ async def delete_hotel_category(
 
 
 # endregion
+# region Hotel Amenity Assign
+@router.post("/{hotel_id}/amenities")
+async def add_hotel_amenities(
+    hotel_id: int,
+    hotel_amenities_data: list[int],
+    session=TransactionSessionDep,
+):
+    await HotelDAO.add_hotel_amenities(
+        session=session,
+        hotel_id=hotel_id,
+        hotel_amenities_data=hotel_amenities_data,
+    )
+    return
+
+
+# endregion
