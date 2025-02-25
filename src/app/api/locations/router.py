@@ -113,15 +113,15 @@ async def get_hotel_location(
     hotel_id: int,
     session=SessionDep,
 ):
-    db_hotel = await LocationDAO.get(
+    db_hotel_location = await LocationDAO.get_one_or_none(
         session=session,
         filters=LocationFilter(
             hotel_id=hotel_id,
         ),
     )
-    if not db_hotel:
-        return NotFoundException("Hotel not found")
-    return db_hotel
+    if not db_hotel_location:
+        raise NotFoundException("Hotel location not found")
+    return db_hotel_location
 
 
 @router.post("/hotels/{hotel_id}/location")

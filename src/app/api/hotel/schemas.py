@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Annotated
+
+from pydantic import BaseModel, Field
+
 from ..locations.schemas import LocationCreate, LocationUpdate
 
 NAME_MAX_LENGTH = 255
@@ -43,6 +45,7 @@ class HotelCreate(HotelBase):
 
 
 class HotelCreateInternal(HotelCreate):
+    hotel_owner_id: int
     created_at: datetime
 
 

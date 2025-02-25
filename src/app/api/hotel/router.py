@@ -1,4 +1,5 @@
-from datetime import datetime, UTC
+from datetime import UTC, datetime
+
 from fastapi import APIRouter
 
 # from slugify import slugify
@@ -72,6 +73,7 @@ async def create_hotel(
         raise DuplicateValueException("Hotel with this slug already exists")
     hotel_data = HotelCreateInternal(
         **hotel_create_data.model_dump(),
+        hotel_owner_id=1,
         created_at=datetime.now(UTC),
     )
     return await HotelDAO.create(

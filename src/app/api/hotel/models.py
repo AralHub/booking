@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from app.api.review.models import Review
     from app.api.room.models import Room
     from app.api.rule.models import Rule
+    from app.api.owner.models import HotelOwnerInfo
 
 
 class HotelCategory(IntIdPkMixin, Base):
@@ -80,6 +81,7 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         back_populates="hotel",
     )
     hotel_owner: Mapped["HotelOwner"] = relationship(back_populates="hotel")
+    hotel_owner_info: Mapped["HotelOwnerInfo"] = relationship(back_populates="hotel")
     # languages: Mapped[list["Language"]] = relationship(
     #     secondary="hotel_language_associations",
     #     back_populates="hotels",

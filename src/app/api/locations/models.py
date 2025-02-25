@@ -52,7 +52,7 @@ class City(IntIdPkMixin, Base):
         "Location",
         back_populates="city",
     )
-    
+
 
 class Location(IntIdPkMixin, Base):
     __tablename__ = "locations"

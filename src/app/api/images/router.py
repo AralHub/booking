@@ -8,7 +8,7 @@ from fastapi import APIRouter, UploadFile
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
-
+from app.api.hotel.dao import HotelDAO
 from .dao import HotelImageDAO, RoomImageDAO
 from .schemas import HotelImageFilter, RoomImageFilter
 
@@ -23,15 +23,15 @@ async def get_all_hotel_images(
     hotel_id: int,
     session=SessionDep,
 ):
-    db_hotel = await HotelImageDAO.get_all(
+    db_hotel_images = await HotelImageDAO.get_all(
         session=session,
         filters=HotelImageFilter(
             hotel_id=hotel_id,
         ),
     )
-    if not db_hotel:
-        raise NotFoundException("Hotel not found")
-    return db_hotel
+    if not db_hotel_images:
+        raise NotFoundException("Hotel doesn't have any images")
+    return db_hotel_images
 
 
 @router.post("/hotels/{hotel_id}/images")
