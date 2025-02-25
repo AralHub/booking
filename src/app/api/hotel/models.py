@@ -71,7 +71,6 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         uselist=False,
         single_parent=True,
     )
-
     hotel_images: Mapped[list["HotelImage"]] = relationship(
         "HotelImage",
         back_populates="hotel",

@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from app.api.amenity.room_amenity.models import RoomAmenity, RoomAmenityAssociation
     from app.api.booking.models import Booking
     from app.api.hotel.models import Hotel
+    from app.api.images.models import RoomImage
 
 
 class BedType(IntIdPkMixin, Base):
@@ -70,4 +71,7 @@ class Room(IntIdPkMixin, Base):
     room_amenities: Mapped[list["RoomAmenity"]] = relationship(
         secondary="room_amenity_associations",
         back_populates="rooms",
+    )
+    room_images: Mapped[list["RoomImage"]] = relationship(
+        back_populates="room",
     )
