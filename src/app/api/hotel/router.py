@@ -8,7 +8,7 @@ from fastapi import APIRouter
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import DuplicateValueException
-
+from app.api.room.dao import RoomDAO
 from .dao import HotelCategoryDAO, HotelDAO
 from .schemas import (
     HotelCategoryCreate,
@@ -18,6 +18,12 @@ from .schemas import (
     HotelCreateInternal,
     HotelFilter,
     HotelUpdate,
+)
+from app.api.room.schemas import (
+    RoomCreate,
+    RoomCreateInternal,
+    RoomUpdate,
+    RoomFilter,
 )
 
 router = APIRouter(
@@ -158,7 +164,7 @@ async def delete_hotel_category(
 
 
 # endregion
-# region Hotel Amenity Assign
+# region Hotel Amenity
 @router.post("/{hotel_id}/amenities")
 async def add_hotel_amenities(
     hotel_id: int,
@@ -170,7 +176,45 @@ async def add_hotel_amenities(
         hotel_id=hotel_id,
         hotel_amenities_data=hotel_amenities_data,
     )
-    return
+    return {
+        "message": "Amenities added successfully",
+    }
+
+
+# endregion
+
+
+# region Hotel Rooms
+@router.post("/{hotel_id}/rooms")
+async def add_hotel_room(
+    hotel_id: int,
+    session=TransactionSessionDep,
+):
+    await RoomDAO.create(
+        session=session,
+        values=RoomCreate.create_room_data(
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+@router.post("/{hotel_id}/rooms/{room_id}/amenities")
+async def add_room_amenities(
+    hotel_id: int,
+    room_id: int,
+    room_amenities_list: list[int],
+    session=TransactionSessionDep,
+):
+    pass
+    # await RoomDAO.add_hotel_amenities(
+    #     session=session,
+    #     hotel_id=hotel_id,
+    #     room_id=room_id,
+    #     room_amenities_list=room_amenities_list,
+    # )
+    return {
+        "message": "Amenities added successfully",
+    }
 
 
 # endregion
