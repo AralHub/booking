@@ -1,5 +1,5 @@
-from app.api.room.models import Room, RoomType
 from app.core.dao import BaseDAO
+from .models import Room, RoomType, RoomTypeVariant
 
 
 class RoomDAO(BaseDAO):
@@ -8,3 +8,7 @@ class RoomDAO(BaseDAO):
 
 class RoomTypeDAO(BaseDAO):
     model = RoomType
+
+
+class RoomTypeVariantDAO(BaseDAO):
+    model = RoomTypeVariant

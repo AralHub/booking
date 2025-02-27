@@ -19,10 +19,19 @@ class BedType(IntIdPkMixin, Base):
     rooms: Mapped[list["Room"]] = relationship(back_populates="bed_type")
 
 
+class RoomTypeVariant(IntIdPkMixin, Base):
+    name: Mapped[str] = mapped_column(String(255))
+    room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
+    room_type: Mapped["RoomType"] = relationship(back_populates="room_type_variants")
+
+
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
     # relationships
     rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
+    room_type_variants: Mapped[list["RoomTypeVariant"]] = relationship(
+        back_populates="room_type"
+    )
 
 
 class Room(IntIdPkMixin, Base):
