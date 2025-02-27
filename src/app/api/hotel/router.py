@@ -1,14 +1,47 @@
 from datetime import UTC, datetime
 
 from fastapi import APIRouter
+from app.core import SessionDep, TransactionSessionDep
+from app.core.config import settings
 
 # from slugify import slugify
 # from app.api.user.functions.dependencies import get_current_active_auth_user
 # from app.api.user.schemas import UserRead
-from app.core import SessionDep, TransactionSessionDep
-from app.core.config import settings
-from app.core.exceptions.http_exceptions import DuplicateValueException
+
+from app.core.exceptions.http_exceptions import (
+    DuplicateValueException,
+    NotFoundException,
+)
+from app.api.locations.dao import LocationDAO
+from app.api.locations.schemas import (
+    LocationCreate,
+    LocationCreateInternal,
+    LocationFilter,
+    LocationUpdate,
+    LocationUpdateInternal,
+)
 from app.api.room.dao import RoomDAO
+from app.api.room.schemas import (
+    RoomCreate,
+    RoomFilter,
+    RoomUpdate,
+)
+from app.api.rule.dao import RuleDAO
+from app.api.rule.schemas import (
+    RuleCreate,
+    RuleCreateInternal,
+    RuleFilter,
+    RuleUpdate,
+    RuleUpdateInternal,
+)
+from app.api.owner.dao import HotelOwnerDAO, HotelOwnerInfoDAO
+from app.api.owner.schemas import (
+    HotelOwnerInfoCreate,
+    HotelOwnerInfoCreateInternal,
+    HotelOwnerInfoFilter,
+    HotelOwnerInfoRead,
+)
+
 from .dao import HotelCategoryDAO, HotelDAO
 from .schemas import (
     HotelCategoryCreate,
@@ -18,12 +51,6 @@ from .schemas import (
     HotelCreateInternal,
     HotelFilter,
     HotelUpdate,
-)
-from app.api.room.schemas import (
-    RoomCreate,
-    RoomCreateInternal,
-    RoomUpdate,
-    RoomFilter,
 )
 
 router = APIRouter(
@@ -117,6 +144,66 @@ async def delete_hotel(
 # endregion
 
 
+# region Hotel Owner
+@router.get("/{hotel_id}/owner")
+async def get_hotel_owner(
+    hotel_id: int,
+    session=SessionDep,
+):
+    db_hotel_owner = await HotelOwnerDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=hotel_id,
+    )
+    if not db_hotel_owner:
+        raise NotFoundException("Hotel owner not found")
+    return db_hotel_owner
+
+
+@router.get(
+    "/{hotel_id}/owner/info",
+    response_model=HotelOwnerInfoRead,
+)
+async def get_hotel_owner_info(
+    hotel_id: int,
+    session=TransactionSessionDep,
+):
+    db_hotel = await HotelDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=hotel_id,
+    )
+    if not db_hotel:
+        raise NotFoundException("Hotel not found")
+    return await HotelOwnerInfoDAO.get_one_or_none(
+        session=session,
+        filters=HotelOwnerInfoFilter(hotel_id=hotel_id),
+    )
+
+
+@router.post("/{hotel_id}/owner/info")
+async def add_hotel_owner_info(
+    hotel_id: int,
+    hotel_owner_info_create_data: HotelOwnerInfoCreate,
+    session=TransactionSessionDep,
+):
+    db_hotel = await HotelDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=hotel_id,
+    )
+    if not db_hotel:
+        raise NotFoundException("Hotel not found")
+
+    return await HotelOwnerInfoDAO.create(
+        session=session,
+        values=HotelOwnerInfoCreateInternal(
+            **hotel_owner_info_create_data.model_dump(),
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+# endregion
+
+
 # region Hotel Category
 @router.get("/categories")
 async def get_hotel_categories(
@@ -164,6 +251,56 @@ async def delete_hotel_category(
 
 
 # endregion
+# region Hotel Location
+@router.get("/hotels/{hotel_id}/location")
+async def get_hotel_location(
+    hotel_id: int,
+    session=SessionDep,
+):
+    db_hotel_location = await LocationDAO.get_one_or_none(
+        session=session,
+        filters=LocationFilter(
+            hotel_id=hotel_id,
+        ),
+    )
+    if not db_hotel_location:
+        raise NotFoundException("Hotel location not found")
+    return db_hotel_location
+
+
+@router.post("/hotels/{hotel_id}/location")
+async def add_hotel_location(
+    hotel_id: int,
+    location_create_data: LocationCreate,
+    session=TransactionSessionDep,
+):
+    return await LocationDAO.create(
+        session=session,
+        values=LocationCreateInternal(
+            **location_create_data.model_dump(),
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+@router.put("/hotels/{hotel_id}/location")
+async def update_hotel_location(
+    hotel_id: int,
+    location_update_data: LocationUpdate,
+    session=TransactionSessionDep,
+):
+    return await LocationDAO.update(
+        session=session,
+        values=LocationUpdateInternal(
+            **location_update_data.model_dump(),
+        ),
+        filters=LocationFilter(
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+# endregion
 # region Hotel Amenity
 @router.post("/{hotel_id}/amenities")
 async def add_hotel_amenities(
@@ -185,17 +322,58 @@ async def add_hotel_amenities(
 
 
 # region Hotel Rooms
+@router.get("/{hotel_id}/rooms")
+async def get_all_rooms(
+    session=SessionDep,
+):
+    pass
+    # return await RoomDAO.get_all(
+    #     session=session,
+    #     filters=None,
+    # )
+
+
+@router.get("/{hotel_id}/rooms/{room_id}")
+async def get_room(
+    hotel_id: int,
+    room_id: int,
+    session=SessionDep,
+):
+    pass
+    # return await RoomDAO.get_one_or_none_by_id(
+    #     session=session,
+    #     data_id=room_id,
+    # )
+
+
 @router.post("/{hotel_id}/rooms")
-async def add_hotel_room(
+async def add_room(
     hotel_id: int,
     session=TransactionSessionDep,
 ):
-    await RoomDAO.create(
-        session=session,
-        values=RoomCreate.create_room_data(
-            hotel_id=hotel_id,
-        ),
-    )
+    pass
+    # await RoomDAO.create(
+    #     session=session,
+    #     values=RoomCreate.create_room_data(
+    #         hotel_id=hotel_id,
+    #     ),
+    # )
+
+
+@router.put("/{hotel_id}/rooms/{room_id}")
+async def update_room(
+    room_update_data: RoomUpdate,
+    room_id: int,
+    session=TransactionSessionDep,
+):
+    pass
+    # return await RoomDAO.update(
+    #     session=session,
+    #     values=room_update_data,
+    #     filters=RoomFilter(
+    #         id=room_id,
+    #     ),
+    # )
 
 
 @router.post("/{hotel_id}/rooms/{room_id}/amenities")
@@ -215,6 +393,54 @@ async def add_room_amenities(
     return {
         "message": "Amenities added successfully",
     }
+
+
+# endregion
+
+# region Hotel Rules
+
+
+@router.get("/{hotel_id}/rules")
+async def get_hotel_rule(
+    hotel_id: int,
+    session=SessionDep,
+):
+    return await RuleDAO.get_one_or_none(
+        session=session,
+        filters=RuleFilter(hotel_id=hotel_id),
+    )
+
+
+@router.post("/{hotel_id}/rules")
+async def add_hotel_rule(
+    hotel_id: int,
+    rule_create_data: RuleCreate,
+    session=TransactionSessionDep,
+):
+    return await RuleDAO.create(
+        session=session,
+        values=RuleCreateInternal(
+            **rule_create_data.model_dump(),
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+@router.put("/{hotel_id}/rules")
+async def update_hotel_rule(
+    hotel_id: int,
+    rule_update_data: RuleUpdate,
+    session=TransactionSessionDep,
+):
+    return await RuleDAO.update(
+        session=session,
+        values=RuleUpdateInternal(
+            **rule_update_data.model_dump(),
+        ),
+        filters=RuleFilter(
+            hotel_id=hotel_id,
+        ),
+    )
 
 
 # endregion

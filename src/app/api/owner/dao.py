@@ -1,7 +1,6 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from .models import HotelOwner, HotelOwnerInfo
 from app.core.dao import BaseDAO
-from sqlalchemy import select
+
+from .models import HotelOwner, HotelOwnerInfo
 
 
 class HotelOwnerDAO(BaseDAO):

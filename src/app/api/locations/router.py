@@ -1,9 +1,8 @@
 from fastapi import APIRouter
 
 from app.core import SessionDep, TransactionSessionDep
-from app.core.exceptions.http_exceptions import NotFoundException
 
-from .dao import CityDAO, CountryDAO, LocationDAO
+from .dao import CityDAO, CountryDAO
 from .schemas import (
     CityCreate,
     CityCreateInternal,
@@ -12,11 +11,6 @@ from .schemas import (
     CountryCreate,
     CountryFilter,
     CountryUpdate,
-    LocationCreate,
-    LocationCreateInternal,
-    LocationFilter,
-    LocationUpdate,
-    LocationUpdateInternal,
 )
 
 router = APIRouter(
@@ -101,58 +95,6 @@ async def add_city(
     return await CityDAO.create(
         session=session,
         values=create_city_data,
-    )
-
-
-# endregion
-
-
-# region Hotel Location
-@router.get("/hotels/{hotel_id}/location")
-async def get_hotel_location(
-    hotel_id: int,
-    session=SessionDep,
-):
-    db_hotel_location = await LocationDAO.get_one_or_none(
-        session=session,
-        filters=LocationFilter(
-            hotel_id=hotel_id,
-        ),
-    )
-    if not db_hotel_location:
-        raise NotFoundException("Hotel location not found")
-    return db_hotel_location
-
-
-@router.post("/hotels/{hotel_id}/location")
-async def add_hotel_location(
-    hotel_id: int,
-    location_create_data: LocationCreate,
-    session=TransactionSessionDep,
-):
-    return await LocationDAO.create(
-        session=session,
-        values=LocationCreateInternal(
-            **location_create_data.model_dump(),
-            hotel_id=hotel_id,
-        ),
-    )
-
-
-@router.put("/hotels/{hotel_id}/location")
-async def update_hotel_location(
-    hotel_id: int,
-    location_update_data: LocationUpdate,
-    session=TransactionSessionDep,
-):
-    return await LocationDAO.update(
-        session=session,
-        values=LocationUpdateInternal(
-            **location_update_data.model_dump(),
-        ),
-        filters=LocationFilter(
-            hotel_id=hotel_id,
-        ),
     )
 
 

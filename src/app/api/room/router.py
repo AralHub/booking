@@ -19,57 +19,6 @@ router = APIRouter(
 )
 
 
-# region Room
-@router.get("")
-async def get_all_rooms(
-    session=SessionDep,
-):
-    return await RoomDAO.get_all(
-        session=session,
-        filters=None,
-    )
-
-
-@router.get("/{room_id}")
-async def get_room(
-    room_id: int,
-    session=SessionDep,
-):
-    return await RoomDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=room_id,
-    )
-
-
-@router.post("")
-async def create_room(
-    room_create_data: RoomCreate,
-    session=TransactionSessionDep,
-):
-    return await RoomDAO.create(
-        session=session,
-        values=room_create_data,
-    )
-
-
-@router.put("/{room_id}")
-async def update_room(
-    room_update_data: RoomUpdate,
-    room_id: int,
-    session=TransactionSessionDep,
-):
-    return await RoomDAO.update(
-        session=session,
-        values=room_update_data,
-        filters=RoomFilter(
-            id=room_id,
-        ),
-    )
-
-
-# endregion
-
-
 # region Room Type
 
 
@@ -96,7 +45,17 @@ async def create_room_type(
 
 # endregion
 
-# region Room Price
+
+# region RoomTypeVariants
+@router.get("/types/{room_type_id}/variants")
+async def get_room_type_variants(
+    room_type_id: int,
+    session=SessionDep,
+):
+    return await RoomTypeDAO.get_room_type_variants(
+        room_type_id=room_type_id,
+        session=session,
+    )
 
 
 # endregion

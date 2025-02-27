@@ -8,7 +8,7 @@ from fastapi import APIRouter, UploadFile
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
-from app.api.hotel.dao import HotelDAO
+
 from .dao import HotelImageDAO, RoomImageDAO
 from .schemas import HotelImageFilter, RoomImageFilter
 
