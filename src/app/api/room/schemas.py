@@ -25,6 +25,7 @@ class BedTypeUpdateInternal(BedTypeUpdate):
 class BedFilter(BaseModel):
     id: int | None = None
     name: str | None = None
+    bed_type_id: int | None = None
 
 
 # endregion
@@ -34,12 +35,19 @@ class BedConfCreate(BaseModel):
     quantity: int = Field(..., gt=0, description="Количество кроватей данного типа")
 
 
-class RoomBedConfUpdate(BaseModel):
+class RoomBedConfCreate(BaseModel):
     bed_configurations: list[BedConfCreate]
 
 
-class RoomBedConfUpdateInternal(BaseModel):
+class RoomBedConfCreateInternal(BedConfCreate):
     room_id: int
+
+
+class RoomBedConfFilter(BaseModel):
+    id: int | None = None
+    bed_type_id: int | None = None
+    quantity: int | None = None
+    room_id: int | None = None
 
 
 # endregion

@@ -22,14 +22,17 @@ from app.api.owner.schemas import (
     HotelOwnerInfoFilter,
     HotelOwnerInfoRead,
 )
-from app.api.room.dao import RoomDAO, RoomTypeVariantDAO
+from app.api.room.dao import RoomDAO, RoomTypeVariantDAO, RoomBedConfDAO, BedTypeDAO
 from app.api.room.schemas import (
     RoomCreate,
     RoomCreateInternal,
     RoomFilter,
     RoomTypeVariantFilter,
     RoomUpdate,
-    RoomBedConfUpdate,
+    RoomBedConfCreate,
+    RoomBedConfCreateInternal,
+    RoomBedConfFilter,
+    BedFilter,
 )
 from app.api.rule.dao import RuleDAO
 from app.api.rule.schemas import (
@@ -337,6 +340,22 @@ async def update_room(
         values=room_update_data,
         filters=RoomFilter(
             id=room_id,
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+# region Room Beds
+@router.get("/{hotel_id}/rooms/{room_id}/beds")
+async def get_room_beds(
+    hotel_id: int,
+    room_id: int,
+    session=SessionDep,
+):
+    return await RoomBedConfDAO.get_all(
+        session=session,
+        filters=RoomBedConfFilter(
+            room_id=room_id,
         ),
     )
 
@@ -345,12 +364,35 @@ async def update_room(
 async def add_room_beds(
     hotel_id: int,
     room_id: int,
-    room_bed_conf: RoomBedConfUpdate,
+    room_bed_conf: RoomBedConfCreate,
     session=TransactionSessionDep,
 ):
-    pass
+
+    for bed_conf in room_bed_conf.bed_configurations:
+        bed_type = await BedTypeDAO.get_one_or_none(
+            session=session,
+            filters=BedFilter(id=bed_conf.bed_type_id),
+        )
+        if not bed_type:
+            raise NotFoundException(f"Bed type {bed_conf.bed_type_id} not found")
+        bed_conf_create_data = RoomBedConfCreateInternal(
+            room_id=room_id,
+            **bed_conf.model_dump(),
+        )
+        print(bed_conf_create_data)
+        await RoomBedConfDAO.create(
+            session=session,
+            values=bed_conf_create_data,
+        )
+    return {
+        "message": "Beds added successfully",
+    }
 
 
+# endregion
+
+
+# region Room Amenities
 @router.post("/{hotel_id}/rooms/{room_id}/amenities")
 async def add_room_amenities(
     hotel_id: int,
@@ -369,6 +411,8 @@ async def add_room_amenities(
         "message": "Amenities added successfully",
     }
 
+
+# endregion
 
 # endregion
 

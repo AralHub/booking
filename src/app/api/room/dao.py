@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core.dao import BaseDAO
 
-from .models import BedType, Room, RoomType, RoomTypeVariant
+from .models import BedType, Room, RoomType, RoomTypeVariant, RoomBedConfiguration
 
 
 class RoomDAO(BaseDAO):
@@ -35,3 +35,7 @@ class RoomTypeVariantDAO(BaseDAO):
 
 class BedTypeDAO(BaseDAO):
     model = BedType
+
+
+class RoomBedConfDAO(BaseDAO):
+    model = RoomBedConfiguration
