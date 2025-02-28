@@ -1,17 +1,7 @@
 from datetime import UTC, datetime
 
 from fastapi import APIRouter
-from app.core import SessionDep, TransactionSessionDep
-from app.core.config import settings
 
-# from slugify import slugify
-# from app.api.user.functions.dependencies import get_current_active_auth_user
-# from app.api.user.schemas import UserRead
-
-from app.core.exceptions.http_exceptions import (
-    DuplicateValueException,
-    NotFoundException,
-)
 from app.api.locations.dao import LocationDAO
 from app.api.locations.schemas import (
     LocationCreate,
@@ -20,10 +10,18 @@ from app.api.locations.schemas import (
     LocationUpdate,
     LocationUpdateInternal,
 )
-from app.api.room.dao import RoomDAO
+from app.api.owner.dao import HotelOwnerDAO, HotelOwnerInfoDAO
+from app.api.owner.schemas import (
+    HotelOwnerInfoCreate,
+    HotelOwnerInfoCreateInternal,
+    HotelOwnerInfoFilter,
+    HotelOwnerInfoRead,
+)
+from app.api.room.dao import RoomDAO, RoomTypeVariantDAO
 from app.api.room.schemas import (
     RoomCreate,
-    RoomFilter,
+    RoomCreateInternal,
+    RoomTypeVariantFilter,
     RoomUpdate,
 )
 from app.api.rule.dao import RuleDAO
@@ -34,12 +32,15 @@ from app.api.rule.schemas import (
     RuleUpdate,
     RuleUpdateInternal,
 )
-from app.api.owner.dao import HotelOwnerDAO, HotelOwnerInfoDAO
-from app.api.owner.schemas import (
-    HotelOwnerInfoCreate,
-    HotelOwnerInfoCreateInternal,
-    HotelOwnerInfoFilter,
-    HotelOwnerInfoRead,
+from app.core import SessionDep, TransactionSessionDep
+from app.core.config import settings
+
+# from slugify import slugify
+# from app.api.user.functions.dependencies import get_current_active_auth_user
+# from app.api.user.schemas import UserRead
+from app.core.exceptions.http_exceptions import (
+    DuplicateValueException,
+    NotFoundException,
 )
 
 from .dao import HotelCategoryDAO, HotelDAO
@@ -70,27 +71,6 @@ async def get_hotels_count(
     )
 
 
-@router.get("")
-async def get_all_hotels(
-    session=SessionDep,
-):
-    return await HotelDAO.get_all(
-        session=session,
-        filters=None,
-    )
-
-
-@router.get("/{hotel_id}")
-async def get_hotel(
-    hotel_id: int,
-    session=SessionDep,
-):
-    return await HotelDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=hotel_id,
-    )
-
-
 @router.post("")
 async def create_hotel(
     hotel_create_data: HotelCreate,
@@ -112,6 +92,17 @@ async def create_hotel(
     return await HotelDAO.create(
         session=session,
         values=hotel_data,
+    )
+
+
+@router.get("/{hotel_id}")
+async def get_hotel(
+    hotel_id: int,
+    session=SessionDep,
+):
+    return await HotelDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=hotel_id,
     )
 
 
@@ -204,53 +195,6 @@ async def add_hotel_owner_info(
 # endregion
 
 
-# region Hotel Category
-@router.get("/categories")
-async def get_hotel_categories(
-    session=SessionDep,
-):
-    return await HotelCategoryDAO.get_all(
-        session=session,
-        filters=None,
-    )
-
-
-@router.post("/categories")
-async def create_hotel_category(
-    hotel_category_create_data: HotelCategoryCreate,
-    session=TransactionSessionDep,
-):
-    return await HotelCategoryDAO.create(
-        session=session,
-        values=hotel_category_create_data,
-    )
-
-
-@router.put("/categories/{category_id}")
-async def update_hotel_category(
-    category_update_data: HotelCategoryUpdate,
-    category_id: int,
-    session=TransactionSessionDep,
-):
-    return await HotelCategoryDAO.update(
-        session=session,
-        values=category_update_data,
-        filters=HotelCategoryFilter(id=category_id),
-    )
-
-
-@router.delete("/categories/{category_id}")
-async def delete_hotel_category(
-    category_id: int,
-    session=TransactionSessionDep,
-):
-    return await HotelCategoryDAO.delete(
-        session=session,
-        filters=HotelCategoryFilter(id=category_id),
-    )
-
-
-# endregion
 # region Hotel Location
 @router.get("/hotels/{hotel_id}/location")
 async def get_hotel_location(
@@ -349,15 +293,26 @@ async def get_room(
 @router.post("/{hotel_id}/rooms")
 async def add_room(
     hotel_id: int,
+    hotel_room_data: RoomCreate,
     session=TransactionSessionDep,
 ):
-    pass
-    # await RoomDAO.create(
-    #     session=session,
-    #     values=RoomCreate.create_room_data(
-    #         hotel_id=hotel_id,
-    #     ),
-    # )
+    db_room_type_varinat = await RoomTypeVariantDAO.get_one_or_none(
+        session=session,
+        filters=RoomTypeVariantFilter(
+            id=hotel_room_data.room_type_variant_id,
+            room_type_id=hotel_room_data.room_type_id,
+        ),
+    )
+    if not db_room_type_varinat:
+        raise NotFoundException("Room type variant not found")
+    hotel_room_create_data = RoomCreateInternal(
+        **hotel_room_data.model_dump(),
+        hotel_id=hotel_id,
+    )
+    await RoomDAO.create(
+        session=session,
+        values=hotel_room_create_data,
+    )
 
 
 @router.put("/{hotel_id}/rooms/{room_id}")
@@ -440,6 +395,55 @@ async def update_hotel_rule(
         filters=RuleFilter(
             hotel_id=hotel_id,
         ),
+    )
+
+
+# endregion
+
+
+# region Hotel Category
+@router.get("/categories")
+async def get_hotel_categories(
+    session=SessionDep,
+):
+    return await HotelCategoryDAO.get_all(
+        session=session,
+        filters=None,
+    )
+
+
+@router.post("/categories")
+async def create_hotel_category(
+    hotel_category_create_data: HotelCategoryCreate,
+    session=TransactionSessionDep,
+):
+    return await HotelCategoryDAO.create(
+        session=session,
+        values=hotel_category_create_data,
+    )
+
+
+@router.put("/categories/{category_id}")
+async def update_hotel_category(
+    category_update_data: HotelCategoryUpdate,
+    category_id: int,
+    session=TransactionSessionDep,
+):
+    return await HotelCategoryDAO.update(
+        session=session,
+        values=category_update_data,
+        filters=HotelCategoryFilter(id=category_id),
+    )
+
+
+@router.delete("/categories/{category_id}")
+async def delete_hotel_category(
+    category_id: int,
+    session=TransactionSessionDep,
+):
+    return await HotelCategoryDAO.delete(
+        session=session,
+        filters=HotelCategoryFilter(id=category_id),
     )
 
 

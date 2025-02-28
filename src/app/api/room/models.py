@@ -23,23 +23,23 @@ class RoomTypeVariant(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
     room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
     room_type: Mapped["RoomType"] = relationship(back_populates="room_type_variants")
+    rooms: Mapped[list["Room"]] = relationship(back_populates="room_type_variant")
 
 
 class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
     # relationships
-    rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
+    # rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
     room_type_variants: Mapped[list["RoomTypeVariant"]] = relationship(
         back_populates="room_type"
     )
 
 
 class Room(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String(255))
     max_guests: Mapped[int] = mapped_column()
     max_children: Mapped[int] = mapped_column()
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    preview_photo_url: Mapped[str] = mapped_column(String, nullable=True)
+    image: Mapped[str] = mapped_column(String, nullable=True)
     quantity: Mapped[int] = mapped_column(
         Integer,
         default=1,
@@ -52,9 +52,12 @@ class Room(IntIdPkMixin, Base):
     # relationships
     bed_type_id: Mapped[int] = mapped_column(ForeignKey("bed_types.id"))
     bed_type: Mapped["BedType"] = relationship(back_populates="rooms")
-    room_type_id: Mapped["RoomType"] = mapped_column(ForeignKey("room_types.id"))
-    room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
-
+    # room_type_id: Mapped["RoomType"] = mapped_column(ForeignKey("room_types.id"))
+    # room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
+    room_type_variant_id: Mapped[int] = mapped_column(
+        ForeignKey("room_type_variants.id")
+    )
+    room_type_variant: Mapped["RoomTypeVariant"] = relationship(back_populates="rooms")
     bookings: Mapped[list["Booking"]] = relationship(
         "Booking",
         back_populates="room",
