@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     )
     from app.api.images.models import HotelImage
     from app.api.locations.models import Location
-    from app.api.owner.models import HotelOwner, HotelOwnerInfo
+    from app.api.hotel_admin.models import HotelAdmin, HotelAdminInfo
     from app.api.review.models import Review
     from app.api.room.models import Room
     from app.api.rule.models import Rule
@@ -79,8 +79,8 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         "Rule",
         back_populates="hotel",
     )
-    hotel_owner: Mapped["HotelOwner"] = relationship(back_populates="hotel")
-    hotel_owner_info: Mapped["HotelOwnerInfo"] = relationship(back_populates="hotel")
+    hotel_admin: Mapped["HotelAdmin"] = relationship(back_populates="hotel")
+    hotel_admin_info: Mapped["HotelAdminInfo"] = relationship(back_populates="hotel")
     # languages: Mapped[list["Language"]] = relationship(
     #     secondary="hotel_language_associations",
     #     back_populates="hotels",

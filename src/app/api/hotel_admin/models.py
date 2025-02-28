@@ -11,14 +11,14 @@ if TYPE_CHECKING:
     from app.api.user.models import User
 
 
-class HotelOwner(IntIdPkMixin, Base):
+class HotelAdmin(IntIdPkMixin, Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship(back_populates="hotel_owner")
+    user: Mapped["User"] = relationship(back_populates="hotel_admin")
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    hotel: Mapped["Hotel"] = relationship(back_populates="hotel_owner")
+    hotel: Mapped["Hotel"] = relationship(back_populates="hotel_admin")
 
 
-class HotelOwnerInfo(IntIdPkMixin, Base):
+class HotelAdminInfo(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(
         String(30),
         unique=True,
@@ -33,4 +33,4 @@ class HotelOwnerInfo(IntIdPkMixin, Base):
     )
 
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    hotel = relationship("Hotel", back_populates="hotel_owner_info")
+    hotel = relationship("Hotel", back_populates="hotel_admin_info")

@@ -44,7 +44,7 @@ class HotelCreate(HotelBase):
 
 
 class HotelCreateInternal(HotelCreate):
-    hotel_owner_id: int
+    hotel_admin_id: int
     created_at: datetime
 
 

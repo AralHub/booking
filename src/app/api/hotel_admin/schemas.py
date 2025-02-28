@@ -12,35 +12,35 @@ PHONE_NUMBER_FIELD_UPDATE = Annotated[
 ]
 
 
-class HotelOwnerInfoBase(BaseModel):
+class HotelAdminInfoBase(BaseModel):
     name: str
 
 
-class HotelOwnerInfoRead(HotelOwnerInfoBase):
+class HotelAdminInfoRead(HotelAdminInfoBase):
     first_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
     second_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
 
 
-class HotelOwnerInfoCreate(HotelOwnerInfoBase):
+class HotelAdminInfoCreate(HotelAdminInfoBase):
     first_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
     second_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
 
 
-class HotelOwnerInfoCreateInternal(HotelOwnerInfoCreate):
+class HotelAdminInfoCreateInternal(HotelAdminInfoCreate):
     hotel_id: int
 
 
-class HotelOwnerInfoUpdate(BaseModel):
+class HotelAdminInfoUpdate(BaseModel):
     name: str | None = None
     first_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
     second_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
 
 
-class HotelOwnerInfoUpdateInternal(HotelOwnerInfoUpdate):
-    pass
+class HotelAdminInfoUpdateInternal(HotelAdminInfoUpdate):
+    hotel_id: int
 
 
-class HotelOwnerInfoFilter(BaseModel):
+class HotelAdminInfoFilter(BaseModel):
     id: int | None = None
     name: str | None = None
     first_phone_number: str | None = None

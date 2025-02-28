@@ -19,15 +19,12 @@ class HotelDAO(BaseDAO):
         session: AsyncSession,
     ):
         query = (
-            select(Hotel)
-            .options(selectinload(Hotel.hotel_amenities))
-            .where(Hotel.id == hotel_id)
+            select(cls.model)
+            .options(selectinload(cls.model.hotel_amenities))
+            .where(cls.model.id == hotel_id)
         )
         result = await session.execute(query)
         db_hotel = result.scalar_one_or_none()
-        # db_hotel = await session.scalar(
-        #     select(Hotel).where(Hotel.id == hotel_id),
-        # )
         if not db_hotel:
             raise NotFoundException("Hotel not found")
         for hotel_amenity_id in hotel_amenities_data:
@@ -38,6 +35,20 @@ class HotelDAO(BaseDAO):
             if hotel_amenity:
                 db_hotel.hotel_amenities.append(hotel_amenity)
         await session.commit()
+
+    @classmethod
+    async def get_hotel_amenities(cls, hotel_id: int, session: AsyncSession):
+        query = (
+            select(cls.model)
+            .options(selectinload(cls.model.hotel_amenities))
+            .where(cls.model.id == hotel_id)
+        )
+        result = await session.execute(query)
+        db_hotel = result.scalar_one_or_none()
+
+        if not db_hotel:
+            raise NotFoundException("Hotel not found")
+        return db_hotel.hotel_amenities
 
 
 class HotelCategoryDAO(BaseDAO):

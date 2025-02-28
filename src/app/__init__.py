@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.api.user.models import TokenBlacklist, User
 from app.api.hotel.models import Hotel
-from app.api.owner.models import HotelOwner
+from app.api.hotel_admin.models import HotelAdmin
 from app.api.images.models import HotelImage
 from app.api.amenity.hotel_amenity.models import HotelAmenity, HotelAmenityAssociation
 from app.api.amenity.room_amenity.models import RoomAmenity, RoomAmenityAssociation

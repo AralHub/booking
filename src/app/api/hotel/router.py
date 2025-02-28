@@ -15,12 +15,14 @@ from app.api.locations.schemas import (
     LocationUpdate,
     LocationUpdateInternal,
 )
-from app.api.owner.dao import HotelOwnerDAO, HotelOwnerInfoDAO
-from app.api.owner.schemas import (
-    HotelOwnerInfoCreate,
-    HotelOwnerInfoCreateInternal,
-    HotelOwnerInfoFilter,
-    HotelOwnerInfoRead,
+from app.api.hotel_admin.dao import HotelAdminDAO, HotelAdminInfoDAO
+from app.api.hotel_admin.schemas import (
+    HotelAdminInfoCreate,
+    HotelAdminInfoCreateInternal,
+    HotelAdminInfoUpdate,
+    HotelAdminInfoUpdateInternal,
+    HotelAdminInfoFilter,
+    HotelAdminInfoRead,
 )
 from app.api.room.dao import RoomDAO, RoomTypeVariantDAO, RoomBedConfDAO, BedTypeDAO
 from app.api.room.schemas import (
@@ -96,7 +98,7 @@ async def create_hotel(
         raise DuplicateValueException("Hotel with this slug already exists")
     hotel_data = HotelCreateInternal(
         **hotel_create_data.model_dump(),
-        hotel_owner_id=1,
+        hotel_admin_id=1,
         created_at=datetime.now(UTC),
     )
     return await HotelDAO.create(
@@ -145,26 +147,14 @@ async def delete_hotel(
 # endregion
 
 
-# region Hotel Owner
-@router.get("/{hotel_id}/owner")
-async def get_hotel_owner(
-    hotel_id: int,
-    session=SessionDep,
-):
-    db_hotel_owner = await HotelOwnerDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=hotel_id,
-    )
-    if not db_hotel_owner:
-        raise NotFoundException("Hotel owner not found")
-    return db_hotel_owner
+# region Hotel Admin
 
 
 @router.get(
-    "/{hotel_id}/owner/info",
-    response_model=HotelOwnerInfoRead,
+    "/{hotel_id}/admin/info",
+    response_model=HotelAdminInfoRead,
 )
-async def get_hotel_owner_info(
+async def get_hotel_admin_info(
     hotel_id: int,
     session=TransactionSessionDep,
 ):
@@ -174,16 +164,16 @@ async def get_hotel_owner_info(
     )
     if not db_hotel:
         raise NotFoundException("Hotel not found")
-    return await HotelOwnerInfoDAO.get_one_or_none(
+    return await HotelAdminInfoDAO.get_one_or_none(
         session=session,
-        filters=HotelOwnerInfoFilter(hotel_id=hotel_id),
+        filters=HotelAdminInfoFilter(hotel_id=hotel_id),
     )
 
 
-@router.post("/{hotel_id}/owner/info")
-async def add_hotel_owner_info(
+@router.post("/{hotel_id}/admin/info")
+async def add_hotel_admin_info(
     hotel_id: int,
-    hotel_owner_info_create_data: HotelOwnerInfoCreate,
+    hotel_admin_info_create_data: HotelAdminInfoCreate,
     session=TransactionSessionDep,
 ):
     db_hotel = await HotelDAO.get_one_or_none_by_id(
@@ -193,10 +183,34 @@ async def add_hotel_owner_info(
     if not db_hotel:
         raise NotFoundException("Hotel not found")
 
-    return await HotelOwnerInfoDAO.create(
+    return await HotelAdminInfoDAO.create(
         session=session,
-        values=HotelOwnerInfoCreateInternal(
-            **hotel_owner_info_create_data.model_dump(),
+        values=HotelAdminInfoCreateInternal(
+            **hotel_admin_info_create_data.model_dump(),
+            hotel_id=hotel_id,
+        ),
+    )
+
+
+@router.put("/{hotel_id}/admin/info")
+async def add_hotel_admin_info(
+    hotel_id: int,
+    hotel_admin_info_update_data: HotelAdminInfoUpdate,
+    session=TransactionSessionDep,
+):
+    db_hotel = await HotelDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=hotel_id,
+    )
+    if not db_hotel:
+        raise NotFoundException("Hotel not found")
+    return await HotelAdminInfoDAO.update(
+        session=session,
+        values=HotelAdminInfoUpdateInternal(
+            **hotel_admin_info_update_data.model_dump(),
+            hotel_id=hotel_id,
+        ),
+        filters=HotelAdminInfoFilter(
             hotel_id=hotel_id,
         ),
     )
@@ -262,6 +276,17 @@ async def update_hotel_location(
 
 # endregion
 # region Hotel Amenity
+@router.get("/{hotel_id}/amenities")
+async def get_hotel_amenities(
+    hotel_id: int,
+    session=SessionDep,
+):
+    return await HotelDAO.get_hotel_amenities(
+        session=session,
+        hotel_id=hotel_id,
+    )
+
+
 @router.post("/{hotel_id}/amenities")
 async def add_hotel_amenities(
     hotel_id: int,
