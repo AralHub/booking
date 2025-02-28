@@ -29,13 +29,12 @@ NAME_FIELD_UPDATE = Annotated[
 # region Hotel
 class HotelBase(BaseModel):
     name: NAME_FIELD
+    description: str
     slug: str
 
 
 class HotelRead(HotelBase):
     id: int
-    name: str
-    slug: str
     hotel_category_id: int
 
 
@@ -51,13 +50,12 @@ class HotelCreateInternal(HotelCreate):
 
 class HotelUpdate(BaseModel):
     name: NAME_FIELD_UPDATE = None
+    description: str | None = None
     slug: str | None = None
-    location: LocationUpdate | None = None
 
 
 class HotelUpdateInternal(HotelUpdate):
     image: str | None = None
-    location: LocationCreate | None = None
 
 
 class HotelFilter(BaseModel):
