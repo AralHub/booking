@@ -57,8 +57,8 @@ class City(IntIdPkMixin, Base):
 class Location(IntIdPkMixin, Base):
     __tablename__ = "locations"
     address: Mapped[str] = mapped_column(String(255), nullable=True)
-    geocode_lat: Mapped[float] = mapped_column(Float)
-    geocode_lng: Mapped[float] = mapped_column(Float)
+    latitude: Mapped[float] = mapped_column(Float)
+    longitude: Mapped[float] = mapped_column(Float)
 
     # relationships
     hotel: Mapped["Hotel"] = relationship(back_populates="location")

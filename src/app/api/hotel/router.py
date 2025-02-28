@@ -7,7 +7,7 @@ from app.api.images.schemas import (
     HotelImageFilter,
     RoomImageFilter,
 )
-from app.api.locations.dao import LocationDAO
+from app.api.locations.dao import CityDAO, LocationDAO
 from app.api.locations.schemas import (
     LocationCreate,
     LocationCreateInternal,
@@ -228,6 +228,12 @@ async def add_hotel_location(
     location_create_data: LocationCreate,
     session=TransactionSessionDep,
 ):
+    db_city = await CityDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=location_create_data.city_id,
+    )
+    if not db_city:
+        raise NotFoundException("City not found")
     return await LocationDAO.create(
         session=session,
         values=LocationCreateInternal(

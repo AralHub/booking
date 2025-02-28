@@ -20,6 +20,7 @@ from app.api.hotel.router import router as hotel_router
 from app.api.amenity.hotel_amenity.router import router as hotel_amenity_router
 from app.api.amenity.room_amenity.router import router as room_amenity_router
 from app.api.booking.router import router as booking_router
+
 # from app.api.images.router import router as image_router
 from app.api.locations.router import router as location_router
 from app.api.room.router import router as room_router
@@ -59,10 +60,7 @@ main_router.include_router(
 #     hotel_rule_router,
 #     prefix=settings.api_v1.prefix,
 # )
-main_router.include_router(
-    location_router,
-    prefix=settings.api_v1.prefix,
-)
+
 main_router.include_router(
     room_router,
     prefix=settings.api_v1.prefix,
@@ -75,6 +73,10 @@ main_router.include_router(
 #     image_router,
 #     prefix=settings.api_v1.prefix,
 # )
+main_router.include_router(
+    location_router,
+    prefix=settings.api_v1.prefix,
+)
 
 main_router.include_router(
     superuser_router,
