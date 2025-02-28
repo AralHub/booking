@@ -1,7 +1,12 @@
 from datetime import UTC, datetime
 
-from fastapi import APIRouter
-
+from fastapi import APIRouter, UploadFile
+from app.core.utils import file_utils
+from app.api.images.dao import HotelImageDAO, RoomImageDAO
+from app.api.images.schemas import (
+    HotelImageFilter,
+    RoomImageFilter,
+)
 from app.api.locations.dao import LocationDAO
 from app.api.locations.schemas import (
     LocationCreate,
@@ -21,8 +26,10 @@ from app.api.room.dao import RoomDAO, RoomTypeVariantDAO
 from app.api.room.schemas import (
     RoomCreate,
     RoomCreateInternal,
+    RoomFilter,
     RoomTypeVariantFilter,
     RoomUpdate,
+    RoomBedConfUpdate,
 )
 from app.api.rule.dao import RuleDAO
 from app.api.rule.schemas import (
@@ -268,13 +275,15 @@ async def add_hotel_amenities(
 # region Hotel Rooms
 @router.get("/{hotel_id}/rooms")
 async def get_all_rooms(
+    hotel_id: int,
     session=SessionDep,
 ):
-    pass
-    # return await RoomDAO.get_all(
-    #     session=session,
-    #     filters=None,
-    # )
+    return await RoomDAO.get_all(
+        session=session,
+        filters=RoomFilter(
+            hotel_id=hotel_id,
+        ),
+    )
 
 
 @router.get("/{hotel_id}/rooms/{room_id}")
@@ -283,11 +292,13 @@ async def get_room(
     room_id: int,
     session=SessionDep,
 ):
-    pass
-    # return await RoomDAO.get_one_or_none_by_id(
-    #     session=session,
-    #     data_id=room_id,
-    # )
+    return await RoomDAO.get_one_or_none(
+        session=session,
+        filters=RoomFilter(
+            hotel_id=hotel_id,
+            id=room_id,
+        ),
+    )
 
 
 @router.post("/{hotel_id}/rooms")
@@ -300,7 +311,6 @@ async def add_room(
         session=session,
         filters=RoomTypeVariantFilter(
             id=hotel_room_data.room_type_variant_id,
-            room_type_id=hotel_room_data.room_type_id,
         ),
     )
     if not db_room_type_varinat:
@@ -317,18 +327,28 @@ async def add_room(
 
 @router.put("/{hotel_id}/rooms/{room_id}")
 async def update_room(
-    room_update_data: RoomUpdate,
+    hotel_id: int,
     room_id: int,
+    room_update_data: RoomUpdate,
+    session=TransactionSessionDep,
+):
+    return await RoomDAO.update(
+        session=session,
+        values=room_update_data,
+        filters=RoomFilter(
+            id=room_id,
+        ),
+    )
+
+
+@router.post("/{hotel_id}/rooms/{room_id}/beds")
+async def add_room_beds(
+    hotel_id: int,
+    room_id: int,
+    room_bed_conf: RoomBedConfUpdate,
     session=TransactionSessionDep,
 ):
     pass
-    # return await RoomDAO.update(
-    #     session=session,
-    #     values=room_update_data,
-    #     filters=RoomFilter(
-    #         id=room_id,
-    #     ),
-    # )
 
 
 @router.post("/{hotel_id}/rooms/{room_id}/amenities")
@@ -348,6 +368,129 @@ async def add_room_amenities(
     return {
         "message": "Amenities added successfully",
     }
+
+
+# endregion
+
+
+# region Hotel Images
+@router.get("/{hotel_id}/images")
+async def get_all_hotel_images(
+    hotel_id: int,
+    session=SessionDep,
+):
+    db_hotel_images = await HotelImageDAO.get_all(
+        session=session,
+        filters=HotelImageFilter(
+            hotel_id=hotel_id,
+        ),
+    )
+    if not db_hotel_images:
+        raise NotFoundException("Hotel doesn't have any images")
+    return db_hotel_images
+
+
+@router.post("/{hotel_id}/images")
+async def add_hotel_image(
+    hotel_id: int,
+    photo: UploadFile,
+    session=TransactionSessionDep,
+):
+    file_path = await file_utils.save_png(
+        file=photo,
+        filename=f"hotel_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
+        folder=f"hotel_{hotel_id}",
+    )
+    return await HotelImageDAO.create(
+        session=session,
+        values=HotelImageFilter(
+            hotel_id=hotel_id,
+            image=file_path,
+        ),
+    )
+
+
+@router.delete("/{hotel_id}/images/{image_id}")
+async def delete_hotel_image(
+    hotel_id: int,
+    image_id: int,
+    session=TransactionSessionDep,
+):
+    image = await HotelImageDAO.get_one(
+        session=session,
+        filters=HotelImageFilter(
+            hotel_id=hotel_id,
+            id=image_id,
+        ),
+    )
+    await file_utils.delete_photo(
+        photo_path=image.image,
+    )
+    await HotelImageDAO.delete(
+        session=session,
+        filters=HotelImageFilter(
+            hotel_id=hotel_id,
+            id=image_id,
+        ),
+    )
+    return {
+        "message": "Image deleted successfully",
+    }
+
+
+@router.get("/{hotel_id}/rooms/{room_id}/images")
+async def get_all_room_images(
+    hotel_id: int,
+    room_id: int,
+    session=SessionDep,
+):
+    return await RoomImageDAO.get_all(
+        session=session,
+        filters=RoomImageFilter(
+            hotel_id=hotel_id,
+            room_id=room_id,
+        ),
+    )
+
+
+@router.post("/{hotel_id}/rooms/{room_id}/images")
+async def add_room_image(
+    hotel_id: int,
+    room_id: int,
+    photo: UploadFile,
+    session=TransactionSessionDep,
+):
+    file_path = await file_utils.save_png(
+        file=photo,
+        filename=f"room_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
+        folder=f"room_{room_id}",
+    )
+    return await RoomImageDAO.create(
+        session=session,
+        values=RoomImageFilter(
+            hotel_id=hotel_id,
+            room_id=room_id,
+            image=file_path,
+        ),
+    )
+
+
+@router.delete("/{hotel_id}/rooms/{room_id}/images/{image_id}")
+async def delete_room_image(
+    hotel_id: int,
+    room_id: int,
+    image_id: int,
+    session=TransactionSessionDep,
+):
+    # image = await RoomImageDAO.get_one(
+    #     session=session,
+    #     filters=RoomImageFilter(
+    #         hotel_id=hotel_id,
+    #         room_id=room_id,
+    #         id=image_id,
+    #     ),
+    # )
+    pass
 
 
 # endregion

@@ -16,7 +16,19 @@ if TYPE_CHECKING:
 
 class BedType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
-    rooms: Mapped[list["Room"]] = relationship(back_populates="bed_type")
+    room_bed_configs: Mapped[list["RoomBedConfiguration"]] = relationship(
+        back_populates="bed_type"
+    )
+
+
+class RoomBedConfiguration(IntIdPkMixin, Base):
+    room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
+    bed_type_id: Mapped[int] = mapped_column(ForeignKey("bed_types.id"))
+    quantity: Mapped[int] = mapped_column(Integer, default=0)
+
+    # relationships
+    room: Mapped["Room"] = relationship(back_populates="bed_configurations")
+    bed_type: Mapped["BedType"] = relationship(back_populates="room_bed_configs")
 
 
 class RoomTypeVariant(IntIdPkMixin, Base):
@@ -36,8 +48,8 @@ class RoomType(IntIdPkMixin, Base):
 
 
 class Room(IntIdPkMixin, Base):
-    max_guests: Mapped[int] = mapped_column()
-    max_children: Mapped[int] = mapped_column()
+    max_guests: Mapped[int] = mapped_column(nullable=True)
+    max_children: Mapped[int] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     image: Mapped[str] = mapped_column(String, nullable=True)
     quantity: Mapped[int] = mapped_column(
@@ -45,15 +57,11 @@ class Room(IntIdPkMixin, Base):
         default=1,
         server_default="1",
     )
-    price_per_night: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
+    price_per_night: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
     room_area: Mapped[float] = mapped_column(Float, nullable=True)
     # is_available: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # relationships
-    bed_type_id: Mapped[int] = mapped_column(ForeignKey("bed_types.id"))
-    bed_type: Mapped["BedType"] = relationship(back_populates="rooms")
-    # room_type_id: Mapped["RoomType"] = mapped_column(ForeignKey("room_types.id"))
-    # room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
     room_type_variant_id: Mapped[int] = mapped_column(
         ForeignKey("room_type_variants.id")
     )
@@ -80,6 +88,9 @@ class Room(IntIdPkMixin, Base):
     )
     room_images: Mapped[list["RoomImage"]] = relationship(
         back_populates="room",
+    )
+    bed_configurations: Mapped[list["RoomBedConfiguration"]] = relationship(
+        "RoomBedConfiguration", back_populates="room"
     )
 
 

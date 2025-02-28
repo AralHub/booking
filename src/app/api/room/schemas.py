@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 # region Bed
@@ -28,6 +28,21 @@ class BedFilter(BaseModel):
 
 
 # endregion
+# region BedConf
+class BedConfCreate(BaseModel):
+    bed_type_id: int = Field(..., description="ID типа кровати")
+    quantity: int = Field(..., gt=0, description="Количество кроватей данного типа")
+
+
+class RoomBedConfUpdate(BaseModel):
+    bed_configurations: list[BedConfCreate]
+
+
+class RoomBedConfUpdateInternal(BaseModel):
+    room_id: int
+
+
+# endregion
 
 
 # region Room
@@ -45,6 +60,7 @@ class RoomCreate(BaseModel):
     quantity: int
     max_guests: int
     room_amenities: list[int] | None = []
+    room_area: float | None = None
 
 
 class RoomCreateInternal(RoomCreate):
@@ -52,8 +68,17 @@ class RoomCreateInternal(RoomCreate):
 
 
 class RoomUpdate(BaseModel):
-    room_type_variant_id: int | None = None
     room_amenities: list[int] | None = None
+    max_guests: int | None = None
+    max_children: int | None = None
+    description: str | None = None
+    image: str | None = None
+    quantity: int | None = None
+    price_per_night: float | None = None
+    room_area: float | None = None
+    bed_type_id: int | None = None
+    room_type_variant_id: int | None = None
+    hotel_id: int | None = None
 
 
 class RoomUpdateInternal(RoomUpdate):
