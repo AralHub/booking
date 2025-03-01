@@ -12,11 +12,11 @@ class RuleBase(BaseModel):
 
 
 class RuleCreate(RuleBase):
-    hotel_id: int
+    pass
 
 
 class RuleCreateInternal(RuleCreate):
-    pass
+    hotel_id: int
 
 
 class RuleUpdate(BaseModel):

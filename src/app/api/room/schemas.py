@@ -65,10 +65,6 @@ class RoomBase(BaseModel):
 
 class RoomCreate(BaseModel):
     room_type_variant_id: int
-    quantity: int
-    max_guests: int
-    room_amenities: list[int] | None = []
-    room_area: float | None = None
 
 
 class RoomCreateInternal(RoomCreate):
@@ -76,10 +72,10 @@ class RoomCreateInternal(RoomCreate):
 
 
 class RoomUpdate(BaseModel):
+    description: str | None = None
     room_amenities: list[int] | None = None
     max_guests: int | None = None
     max_children: int | None = None
-    description: str | None = None
     image: str | None = None
     quantity: int | None = None
     price_per_night: float | None = None

@@ -47,6 +47,13 @@ class RoomType(IntIdPkMixin, Base):
     )
 
 
+class RoomPrice(IntIdPkMixin, Base):
+    room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
+    guest_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    price: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
+    room: Mapped["Room"] = relationship(back_populates="room_prices")
+
+
 class Room(IntIdPkMixin, Base):
     max_guests: Mapped[int] = mapped_column(nullable=True)
     max_children: Mapped[int] = mapped_column(nullable=True)
@@ -92,10 +99,7 @@ class Room(IntIdPkMixin, Base):
     bed_configurations: Mapped[list["RoomBedConfiguration"]] = relationship(
         "RoomBedConfiguration", back_populates="room"
     )
-
-
-# class RoomPrice(IntIdPkMixin, Base):
-#     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
-#     guest_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-#     price: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
-#     room: Mapped["Room"] = relationship(back_populates="room_prices")
+    room_prices: Mapped[list["RoomPrice"]] = relationship(
+        "RoomPrice",
+        back_populates="room",
+    )

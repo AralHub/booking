@@ -320,6 +320,17 @@ async def get_all_rooms(
     )
 
 
+@router.get("/{hotel_id}/rooms/types")
+async def get_room_categories(
+    hotel_id: int,
+    session=SessionDep,
+):
+    return await RoomDAO.get_hotel_room_types(
+        session=session,
+        hotel_id=hotel_id,
+    )
+
+
 @router.get("/{hotel_id}/rooms/{room_id}")
 async def get_room(
     hotel_id: int,

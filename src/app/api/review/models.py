@@ -7,7 +7,7 @@ from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
-    from ..user.models import User  # noqa
+    from app.api.user.models import User  # noqa
     from app.api.hotel.models import Hotel  # noqa
 
 

@@ -3,7 +3,6 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-from ..locations.schemas import LocationCreate, LocationUpdate
 
 NAME_MAX_LENGTH = 255
 NAME_MIN_LENGTH = 3

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, distinct
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -9,6 +9,17 @@ from .models import BedType, Room, RoomBedConfiguration, RoomType, RoomTypeVaria
 
 class RoomDAO(BaseDAO):
     model = Room
+
+    @classmethod
+    async def get_hotel_room_types(cls, hotel_id: int, session: AsyncSession):
+        query = (
+            select(RoomType)
+            .join(RoomTypeVariant)
+            .join(Room)
+            .where(Room.hotel_id == hotel_id)
+        )
+        result = await session.execute(query)
+        return result.scalars().all()
 
 
 class RoomTypeDAO(BaseDAO):
