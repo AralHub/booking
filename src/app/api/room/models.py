@@ -64,7 +64,7 @@ class Room(IntIdPkMixin, Base):
         default=1,
         server_default="1",
     )
-    price_per_night: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
+    base_price: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
     room_area: Mapped[float] = mapped_column(Float, nullable=True)
     # is_available: Mapped[bool] = mapped_column(Boolean, default=True)
 

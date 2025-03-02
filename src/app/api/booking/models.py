@@ -1,11 +1,11 @@
-from datetime import UTC, datetime
+from datetime import date
 from decimal import Decimal
 from enum import Enum
 from functools import partial
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    TIMESTAMP,
+    Date,
     CheckConstraint,
     ForeignKey,
     Integer,
@@ -20,7 +20,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core import Base
 from app.core.db.model_mixins import IntIdPkMixin
 
-default_utc_now = partial(datetime.now, UTC)
 if TYPE_CHECKING:
     from app.api.hotel.models import Room
     from app.api.user.models import User
@@ -33,14 +32,14 @@ class BookingStatus(str, Enum):
 
 
 class Booking(IntIdPkMixin, Base):
-    check_in_date: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True),
-        default=default_utc_now,
+    check_in_date: Mapped[date] = mapped_column(
+        Date,
+        default=date.today,
         nullable=False,
     )
-    check_out_date: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True),
-        default=default_utc_now,
+    check_out_date: Mapped[date] = mapped_column(
+        Date,
+        default=date.today,
         nullable=False,
     )
     status: Mapped[BookingStatus] = mapped_column(

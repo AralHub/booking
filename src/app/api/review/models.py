@@ -22,6 +22,25 @@ class ReviewCategory(IntIdPkMixin, Base):
     )
 
 
+class ReviewCategoryRating(IntIdPkMixin, Base):
+    rating: Mapped[float] = mapped_column(Float)
+
+    # relationships
+    review_id: Mapped[int] = mapped_column(ForeignKey("reviews.id"))
+    review = relationship(
+        "Review",
+        back_populates="review_category_ratings",
+    )
+
+    review_category_id: Mapped[int] = mapped_column(
+        ForeignKey("review_categories.id"),
+    )
+    review_category = relationship(
+        "ReviewCategory",
+        back_populates="review_category_ratings",
+    )
+
+
 class Review(IntIdPkMixin, TimestampMixin, Base):
     rating: Mapped[float] = mapped_column(Float)
     comment: Mapped[str] = mapped_column(Text)
@@ -40,25 +59,4 @@ class Review(IntIdPkMixin, TimestampMixin, Base):
     review_category_ratings = relationship(
         "ReviewCategoryRating",
         back_populates="review",
-    )
-
-
-class ReviewCategoryRating(IntIdPkMixin, Base):
-    """Модель для хранения оценок по категориям"""
-
-    rating: Mapped[float] = mapped_column(Float)
-
-    # relationships
-    review_id: Mapped[int] = mapped_column(ForeignKey("reviews.id"))
-    review = relationship(
-        "Review",
-        back_populates="review_category_ratings",
-    )
-
-    review_category_id: Mapped[int] = mapped_column(
-        ForeignKey("review_categories.id"),
-    )
-    review_category = relationship(
-        "ReviewCategory",
-        back_populates="review_category_ratings",
     )

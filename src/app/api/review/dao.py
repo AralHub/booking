@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dao import BaseDAO
 
-from .models import Review
+from .models import Review, ReviewCategory, ReviewCategoryRating
 from .schemas import ReviewCreate
 
 
@@ -26,3 +26,7 @@ class ReviewDAO(BaseDAO):
             rating=overall_rating,
         )
         print(review)
+
+
+class ReviewCategoryDAO(BaseDAO):
+    model = ReviewCategory
