@@ -50,12 +50,8 @@ class Booking(IntIdPkMixin, Base):
     )
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     total_days: Mapped[int] = mapped_column(Integer, nullable=False)
-    adults: Mapped[int] = mapped_column(Integer, nullable=False)
-    children: Mapped[int] = mapped_column(Integer, nullable=False)
-
+    guest_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     # relationships
-    city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
-
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
     room: Mapped["Room"] = relationship("Room", back_populates="bookings")
 

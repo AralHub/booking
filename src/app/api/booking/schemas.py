@@ -7,6 +7,7 @@ class BookingBase(BaseModel):
     check_in_date: date
     check_out_date: date
     room_id: int
+    guest_quantity: int
 
 
 class BookingCreate(BookingBase):
@@ -15,6 +16,7 @@ class BookingCreate(BookingBase):
 
 class BookingCreateInternal(BookingCreate):
     total_price: int
+    total_days: int
     user_id: int
 
 

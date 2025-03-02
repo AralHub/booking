@@ -41,10 +41,12 @@ async def get_booking(
 async def create_booking(
     booking_create_data: BookingCreate,
     session=TransactionSessionDep,
+    current_user_id=5,
 ):
-    return await BookingDAO.create(
+    return await BookingDAO.create_booking(
         session=session,
-        values=booking_create_data,
+        booking_data=booking_create_data,
+        user_id=current_user_id,
     )
 
 
