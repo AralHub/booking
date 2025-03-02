@@ -61,3 +61,14 @@ async def update_booking(
             id=booking_id,
         ),
     )
+
+
+@router.delete("/{booking_id}")
+async def delete_booking(
+    booking_id: int,
+    session=TransactionSessionDep,
+):
+    return await BookingDAO.delete(
+        session=session,
+        filters=BookingFilter(id=booking_id),
+    )

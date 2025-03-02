@@ -59,7 +59,9 @@ class Location(IntIdPkMixin, Base):
     address: Mapped[str] = mapped_column(String(255), nullable=True)
     latitude: Mapped[float] = mapped_column(Float)
     longitude: Mapped[float] = mapped_column(Float)
-
+    to_airport: Mapped[float] = mapped_column(Float)
+    to_railway: Mapped[float] = mapped_column(Float)
+    to_city_center: Mapped[float] = mapped_column(Float)
     # relationships
     hotel: Mapped["Hotel"] = relationship(back_populates="location")
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))

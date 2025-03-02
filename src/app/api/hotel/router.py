@@ -307,6 +307,17 @@ async def add_hotel_amenities(
 
 
 # region Hotel Rooms
+@router.get("/{hotel_id}/rooms/chessboard")
+async def get_hotel_rooms_chessboard(
+    hotel_id: int,
+    session=SessionDep,
+):
+    return await RoomDAO.get_hotel_rooms_chessboard(
+        session=session,
+        hotel_id=hotel_id,
+    )
+
+
 @router.get("/{hotel_id}/rooms")
 async def get_all_rooms(
     hotel_id: int,
@@ -625,6 +636,26 @@ async def update_hotel_rule(
             hotel_id=hotel_id,
         ),
     )
+
+
+# endregion
+
+
+# region Hotel Reviews
+@router.get("/{hotel_id}/reviews")
+async def get_hotel_reviews(
+    hotel_id: int,
+    session=SessionDep,
+):
+    pass
+
+
+@router.post("/{hotel_id}/reviews")
+async def create_hotel_reviews(
+    hotel_id: int,
+    session=TransactionSessionDep,
+):
+    pass
 
 
 # endregion

@@ -4,9 +4,8 @@ from pydantic import BaseModel
 
 
 class BookingBase(BaseModel):
-    start_date: datetime
-    end_date: datetime
-    total_price: int
+    check_in_date: datetime
+    check_in_out: datetime
     room_id: int
     user_id: int
 
@@ -16,7 +15,7 @@ class BookingCreate(BookingBase):
 
 
 class BookingCreateInternal(BookingCreate):
-    pass
+    total_price: int
 
 
 class BookingUpdate(BookingBase):
@@ -29,8 +28,8 @@ class BookingUpdateInternal(BookingUpdate):
 
 class BookingFilter(BaseModel):
     id: int | None = None
-    start_date: datetime | None = None
-    end_date: datetime | None = None
+    check_in_date: datetime | None = None
+    check_in_out: datetime | None = None
     total_price: int | None = None
     room_id: int | None = None
     user_id: int | None = None
