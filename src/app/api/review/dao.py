@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dao import BaseDAO
 
-from .models import Review, ReviewCategory, ReviewCategoryRating
+from .models import Review, ReviewCategory
 from .schemas import ReviewCreate
 
 

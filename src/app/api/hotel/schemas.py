@@ -3,7 +3,6 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-
 NAME_MAX_LENGTH = 255
 NAME_MIN_LENGTH = 3
 NAME_FIELD = Annotated[
@@ -62,6 +61,14 @@ class HotelFilter(BaseModel):
     name: NAME_FIELD_UPDATE = None
     slug: str | None = None
     hotel_category_id: int | None = None
+
+
+class HotelSearch(BaseModel):
+    rating: float | None = None
+    amenities: list[int] | None = None
+    city_id: int | None = None
+    to_city_center: float | None = None
+    total_cost: float | None = None
 
 
 # endregion

@@ -11,9 +11,9 @@ if TYPE_CHECKING:
         HotelAmenity,
         HotelAmenityAssociation,
     )
+    from app.api.hotel_admin.models import HotelAdmin, HotelAdminInfo
     from app.api.images.models import HotelImage
     from app.api.locations.models import Location
-    from app.api.hotel_admin.models import HotelAdmin, HotelAdminInfo
     from app.api.review.models import Review
     from app.api.room.models import Room
     from app.api.rule.models import Rule

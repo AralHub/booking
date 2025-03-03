@@ -1,12 +1,11 @@
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from functools import partial
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    Date,
     CheckConstraint,
+    Date,
     ForeignKey,
     Integer,
     Numeric,

@@ -1,7 +1,16 @@
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, UploadFile
-from app.core.utils import file_utils
+from fastapi import APIRouter, Depends, Query, UploadFile
+
+from app.api.hotel_admin.dao import HotelAdminInfoDAO
+from app.api.hotel_admin.schemas import (
+    HotelAdminInfoCreate,
+    HotelAdminInfoCreateInternal,
+    HotelAdminInfoFilter,
+    HotelAdminInfoRead,
+    HotelAdminInfoUpdate,
+    HotelAdminInfoUpdateInternal,
+)
 from app.api.images.dao import HotelImageDAO, RoomImageDAO
 from app.api.images.schemas import (
     HotelImageFilter,
@@ -15,26 +24,17 @@ from app.api.locations.schemas import (
     LocationUpdate,
     LocationUpdateInternal,
 )
-from app.api.hotel_admin.dao import HotelAdminDAO, HotelAdminInfoDAO
-from app.api.hotel_admin.schemas import (
-    HotelAdminInfoCreate,
-    HotelAdminInfoCreateInternal,
-    HotelAdminInfoUpdate,
-    HotelAdminInfoUpdateInternal,
-    HotelAdminInfoFilter,
-    HotelAdminInfoRead,
-)
-from app.api.room.dao import RoomDAO, RoomTypeVariantDAO, RoomBedConfDAO, BedTypeDAO
+from app.api.room.dao import BedTypeDAO, RoomBedConfDAO, RoomDAO, RoomTypeVariantDAO
 from app.api.room.schemas import (
+    BedFilter,
+    RoomBedConfCreate,
+    RoomBedConfCreateInternal,
+    RoomBedConfFilter,
     RoomCreate,
     RoomCreateInternal,
     RoomFilter,
     RoomTypeVariantFilter,
     RoomUpdate,
-    RoomBedConfCreate,
-    RoomBedConfCreateInternal,
-    RoomBedConfFilter,
-    BedFilter,
 )
 from app.api.rule.dao import RuleDAO
 from app.api.rule.schemas import (
@@ -54,9 +54,12 @@ from app.core.exceptions.http_exceptions import (
     DuplicateValueException,
     NotFoundException,
 )
+from app.core.utils import file_utils
 
 from .dao import HotelCategoryDAO, HotelDAO
+from .dependencies import validate_hotel_id
 from .schemas import (
+    HotelBase,
     HotelCategoryCreate,
     HotelCategoryFilter,
     HotelCategoryUpdate,
@@ -73,6 +76,23 @@ router = APIRouter(
 
 
 # region Hotel
+@router.get("/search")
+async def search_hotels(
+    session=SessionDep,
+    city_id: int = Query(default=None),
+    check_in: str = Query(default=None),
+    check_out: str = Query(default=None),
+    guest_quantity: int = Query(default=None),
+):
+    return await HotelDAO.find_hotels(
+        session=session,
+        city_id=city_id,
+        check_in=check_in,
+        check_out=check_out,
+        guest_quantity=guest_quantity,
+    )
+
+
 @router.get("/count")
 async def get_hotels_count(
     session=SessionDep,
@@ -156,14 +176,9 @@ async def delete_hotel(
 )
 async def get_hotel_admin_info(
     hotel_id: int,
+    hotel: HotelBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
-    db_hotel = await HotelDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=hotel_id,
-    )
-    if not db_hotel:
-        raise NotFoundException("Hotel not found")
     return await HotelAdminInfoDAO.get_one_or_none(
         session=session,
         filters=HotelAdminInfoFilter(hotel_id=hotel_id),
@@ -174,14 +189,9 @@ async def get_hotel_admin_info(
 async def add_hotel_admin_info(
     hotel_id: int,
     hotel_admin_info_create_data: HotelAdminInfoCreate,
+    hotel: HotelBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
-    db_hotel = await HotelDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=hotel_id,
-    )
-    if not db_hotel:
-        raise NotFoundException("Hotel not found")
 
     return await HotelAdminInfoDAO.create(
         session=session,
@@ -193,17 +203,12 @@ async def add_hotel_admin_info(
 
 
 @router.put("/{hotel_id}/admin/info")
-async def add_hotel_admin_info(
+async def update_hotel_admin_info(
     hotel_id: int,
     hotel_admin_info_update_data: HotelAdminInfoUpdate,
+    hotel: HotelBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
-    db_hotel = await HotelDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=hotel_id,
-    )
-    if not db_hotel:
-        raise NotFoundException("Hotel not found")
     return await HotelAdminInfoDAO.update(
         session=session,
         values=HotelAdminInfoUpdateInternal(
@@ -220,7 +225,21 @@ async def add_hotel_admin_info(
 
 
 # region Hotel Location
-@router.get("/hotels/{hotel_id}/location")
+@router.get("/location/{city_id}")
+async def get_hotels_by_city_id(
+    city_id: int,
+    session=SessionDep,
+):
+    db_hotels = await HotelDAO.get_all(
+        session=session,
+        filters=HotelFilter(
+            city_id=city_id,
+        ),
+    )
+    return db_hotels
+
+
+@router.get("/{hotel_id}/location")
 async def get_hotel_location(
     hotel_id: int,
     session=SessionDep,
@@ -236,7 +255,7 @@ async def get_hotel_location(
     return db_hotel_location
 
 
-@router.post("/hotels/{hotel_id}/location")
+@router.post("/{hotel_id}/location")
 async def add_hotel_location(
     hotel_id: int,
     location_create_data: LocationCreate,
@@ -257,7 +276,7 @@ async def add_hotel_location(
     )
 
 
-@router.put("/hotels/{hotel_id}/location")
+@router.put("/{hotel_id}/location")
 async def update_hotel_location(
     hotel_id: int,
     location_update_data: LocationUpdate,
