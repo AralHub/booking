@@ -23,6 +23,13 @@ class BookingDAO(BaseDAO):
         booking_data: BookingCreate,
         user_id: int,
     ):
+        """
+        Создание и добавление Букинга в Бд
+
+        В функции проверяется наличие номера на период, указанный пользователем.
+        Проверяется путем подсчета кол-ва букингов задевающих этот период и
+        Вычитанием этого кол-ва из кол-ва Доступных номеров.
+        """
         if booking_data.check_in_date >= booking_data.check_out_date:
             raise BadRequestException("Check-out date must be after check-in date")
         db_user = await UserDAO.get_one_or_none_by_id(
@@ -37,7 +44,7 @@ class BookingDAO(BaseDAO):
             values=BookingCreateInternal(
                 **booking_data.model_dump(),
                 total_days=total_days,
-                total_price=total_days * 100,
+                total_price=total_days,
                 user_id=user_id,
             ),
         )
@@ -50,4 +57,19 @@ class BookingDAO(BaseDAO):
         check_out: date,
         room_id: int,
     ):
-        booked_room_query = ()
+        booked_room_query = select(Booking).where(
+            and_(
+                Booking.room_id == room_id,
+                or_(
+                    and_(
+                        Booking.check_in_date >= check_in,
+                        Booking.check_in_date <= check_out,
+                    ),
+                    and_(
+                        Booking.check_in_date <= check_in,
+                        Booking.check_out_date > check_in,
+                    ),
+                ),
+            )
+        )
+        return (await session.execute(booked_room_query)).scalars().all()
