@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, date
 
 from fastapi import APIRouter, Depends, Query, UploadFile
 
@@ -84,11 +84,20 @@ async def search_hotels(
     check_out: str = Query(default=None),
     guest_quantity: int = Query(default=None),
 ):
+    def parse_date(date_str: str) -> date:
+        # Replace dot with hyphen for parsing
+        if "." in date_str:
+            date_str = date_str.replace(".", "-")
+        return date.fromisoformat(date_str)
+
+    parsed_check_in = parse_date(check_in)
+    parsed_check_out = parse_date(check_out)
+
     return await HotelDAO.find_hotels(
         session=session,
         city_id=city_id,
-        check_in=check_in,
-        check_out=check_out,
+        check_in=parsed_check_in,
+        check_out=parsed_check_out,
         guest_quantity=guest_quantity,
     )
 
@@ -326,17 +335,6 @@ async def add_hotel_amenities(
 
 
 # region Hotel Rooms
-@router.get("/{hotel_id}/rooms/chessboard")
-async def get_hotel_rooms_chessboard(
-    hotel_id: int,
-    session=SessionDep,
-):
-    return await RoomDAO.get_hotel_rooms_chessboard(
-        session=session,
-        hotel_id=hotel_id,
-    )
-
-
 @router.get("/{hotel_id}/rooms")
 async def get_all_rooms(
     hotel_id: int,

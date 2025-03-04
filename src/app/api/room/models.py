@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import Boolean, Float, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -65,7 +65,6 @@ class Room(IntIdPkMixin, Base):
     )
     base_price: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
     room_area: Mapped[float] = mapped_column(Float, nullable=True)
-    # is_available: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # relationships
     room_type_variant_id: Mapped[int] = mapped_column(

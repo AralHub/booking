@@ -1,17 +1,20 @@
 from datetime import date
 
-from sqlalchemy import and_, func, select
+from sqlalchemy import select, and_, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, selectinload
-
-from app.api.amenity.hotel_amenity.dao import HotelAmenityDAO
-from app.api.booking.models import Booking
-from app.api.locations.models import Location
-from app.api.room.models import Room
+from sqlalchemy.orm import selectinload, joinedload
 from app.core.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 
+from app.api.room.dao import RoomDAO
+from app.api.room.models import Room
+from app.api.room.schemas import RoomFilter
+from app.api.locations.dao import LocationDAO
+from app.api.locations.models import Location
+from app.api.amenity.hotel_amenity.dao import HotelAmenityDAO
+from app.api.booking.models import Booking, BookingStatus
 from .models import Hotel, HotelCategory
+from .schemas import HotelFilter
 
 
 class HotelDAO(BaseDAO):
@@ -61,70 +64,50 @@ class HotelDAO(BaseDAO):
         cls,
         session: AsyncSession,
         city_id: int,
-        check_in: str,
-        check_out: str,
+        check_in: date,
+        check_out: date,
         guest_quantity: int,
     ):
-        def parse_date(date_str: str) -> date:
-            # Replace dot with hyphen for parsing
-            if "." in date_str:
-                date_str = date_str.replace(".", "-")
-            return date.fromisoformat(date_str)
 
-        parsed_check_in = parse_date(check_in)
-        parsed_check_out = parse_date(check_out)
-
-        subquery = (
-            select(
-                Room.hotel_id,
-                func.count(Room.id).label("available_rooms"),
-                func.sum(Room.max_guests).label("total_capacity"),
-            )
-            .outerjoin(
-                Booking,
-                and_(
-                    Booking.room_id == Room.id,
-                    Booking.check_in_date < parsed_check_out,
-                    Booking.check_out_date > parsed_check_in,
+        hotels_query = select(Hotel).join(Location).where(Location.city_id == city_id)
+        hotels = (await session.execute(hotels_query)).scalars().all()
+        for hotel in hotels:
+            rooms = await RoomDAO.get_all(
+                session=session,
+                filters=RoomFilter(
+                    hotel_id=hotel.id,
                 ),
             )
-            .where(Booking.id.is_(None))
-            .group_by(Room.hotel_id)
-            .subquery()
-        )
-
-        stmt = (
-            select(Hotel)
-            .join(subquery, Hotel.id == subquery.c.hotel_id)
-            .join(Location, Hotel.id == Room.hotel_id)
-            .options(joinedload(Hotel.rooms))
-            .where(subquery.c.total_capacity >= guest_quantity)
-            .where(Location.city_id == city_id)
-        )
-        result = await session.execute(stmt)
-        hotels = result.scalars().all()
-
-        results = []
-        for hotel in hotels:
-            room_summary = {}
-            for room in hotel.rooms:
-                room_type = room.room_type_variant.name
-                if room_type not in room_summary:
-                    room_summary[room_type] = {"count": 0, "beds": []}
-                room_summary[room_type]["count"] += 1
-                room_summary[room_type]["beds"].append(
-                    f"{room.max_guests} спальных мест"
+        for room in rooms:
+            bookings = await session.execute(
+                select(Booking).filter(
+                    Booking.room_id == room.id,
+                    Booking.check_in_date <= check_in,
+                    Booking.check_out_date >= check_out,
                 )
-
-            results.append(
-                {
-                    "hotel_name": hotel.name,
-                    "location": hotel.location.name,
-                    "room_details": room_summary,
-                }
             )
+            bookings = bookings.scalars().all()
+        return bookings
+        # Подзапрос для подсчета активных бронирований по комнатам
 
-        return results
+
+        # # Основной запрос
+        # stmt = (
+        #     select(Hotel)
+        #     .join(Hotel.rooms)
+        #     .outerjoin(booked_cte, Room.id == booked_cte.c.room_id)
+        #     .where(
+        #         and_(
+        #             Room.max_guests >= guest_quantity,
+        #             Room.quantity > func.coalesce(booked_cte.c.booked_count, 0),
+        #         )
+        #     )
+        #     .options(selectinload(Hotel.rooms))  # Жадно загружаем комнаты
+        #     .distinct()
+        # )
+
+        # result = await session.execute(stmt)
+        # return result.scalars().all()
 
 
 class HotelCategoryDAO(BaseDAO):

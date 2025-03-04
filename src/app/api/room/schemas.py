@@ -45,7 +45,6 @@ class RoomBedConfCreateInternal(BedConfCreate):
 
 class RoomBedConfFilter(BaseModel):
     id: int | None = None
-    bed_type_id: int | None = None
     quantity: int | None = None
     room_id: int | None = None
 
@@ -55,11 +54,10 @@ class RoomBedConfFilter(BaseModel):
 
 # region Room
 class RoomBase(BaseModel):
-    max_children: int
     description: str | None = None
     image: str
     quantity: int
-    price_per_night: float
+    base_price: float
     room_area: float
 
 
@@ -73,16 +71,12 @@ class RoomCreateInternal(RoomCreate):
 
 class RoomUpdate(BaseModel):
     description: str | None = None
-    room_amenities: list[int] | None = None
     max_guests: int | None = None
-    max_children: int | None = None
     image: str | None = None
     quantity: int | None = None
-    price_per_night: float | None = None
+    base_price: float | None = None
     room_area: float | None = None
-    bed_type_id: int | None = None
     room_type_variant_id: int | None = None
-    hotel_id: int | None = None
 
 
 class RoomUpdateInternal(RoomUpdate):
@@ -92,13 +86,11 @@ class RoomUpdateInternal(RoomUpdate):
 class RoomFilter(BaseModel):
     id: int | None = None
     max_guests: int | None = None
-    max_children: int | None = None
     description: str | None = None
     image: str | None = None
     quantity: int | None = None
-    price_per_night: float | None = None
+    base_price: float | None = None
     room_area: float | None = None
-    bed_type_id: int | None = None
     room_type_variant_id: int | None = None
     hotel_id: int | None = None
 

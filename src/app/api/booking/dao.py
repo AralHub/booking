@@ -1,10 +1,15 @@
+from datetime import date
+from sqlalchemy import select, and_, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload, joinedload
+from app.core.dao import BaseDAO
+from app.core.exceptions.http_exceptions import NotFoundException
 
-from app.api.booking.models import Booking
 from app.api.user.dao import UserDAO
 from app.core.dao import BaseDAO
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 
+from .models import Booking, BookingStatus
 from .schemas import BookingCreate, BookingCreateInternal
 
 
@@ -36,3 +41,13 @@ class BookingDAO(BaseDAO):
                 user_id=user_id,
             ),
         )
+
+    @classmethod
+    async def get_booked_room(
+        cls,
+        session: AsyncSession,
+        check_in: date,
+        check_out: date,
+        room_id: int,
+    ):
+        booked_room_query = ()
