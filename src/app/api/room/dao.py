@@ -21,6 +21,14 @@ class RoomDAO(BaseDAO):
         result = await session.execute(query)
         return result.scalars().all()
 
+    @classmethod
+    async def get_room_price(cls, session: AsyncSession, room_id: int):
+        room = await cls.get_one_or_none_by_id(
+            session=session,
+            data_id=room_id,
+        )
+        return room.base_price if room else None
+
 
 class RoomTypeDAO(BaseDAO):
     model = RoomType

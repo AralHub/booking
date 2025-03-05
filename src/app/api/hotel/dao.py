@@ -64,79 +64,60 @@ class HotelDAO(BaseDAO):
         cls,
         session: AsyncSession,
         city_id: int,
-        check_in: date,
-        check_out: date,
+        check_in_date: date,
+        check_out_date: date,
         guest_quantity: int,
     ):
-
-        # hotels_query = select(Hotel).join(Location).where(Location.city_id == city_id)
-        # hotels = (await session.execute(hotels_query)).scalars().all()
-        # for hotel in hotels:
-        #     rooms = await RoomDAO.get_all(
-        #         session=session,
-        #         filters=RoomFilter(
-        #             hotel_id=hotel.id,
-        #         ),
-        #     )
-        # for room in rooms:
-        #     booked_rooms_query = (
-        #         select(Booking)
-        #         .where(Booking.room_id == room.id)
-        #         .filter(
-        #             (check_in < Booking.check_out_date)
-        #             & (check_out > Booking.check_in_date)
-        #         )
-        #     )
-        #     available_rooms_query = (
-        #         select(Room)
-        #         .where(Room.id == room.id)
-        #         .filter((func.count(Booking.id) == 0))
-        #     )
-        # return (await session.execute(booked_rooms_query)).scalars().all()
-
-        # Подзапрос для подсчета пересекающихся бронирований для каждого номера
-        overlapping_bookings_stmt = (
+        # Определение количества свободных номеров для каждого типа
+        overlapping_bookings = (
             select(Booking.room_id, func.count(Booking.id).label("booking_count"))
             .where(
                 and_(
-                    Booking.check_out_date > check_in,
-                    Booking.check_in_date < check_out,
+                    Booking.check_out_date > check_in_date,
+                    Booking.check_in_date < check_out_date,
                     Booking.status != BookingStatus.CANCELLED,
                 )
             )
             .group_by(Booking.room_id)
-            .subquery()
+            .cte("overlapping_bookings")
         )
-
-        # Поиск номеров с достаточной вместимостью и доступностью
-        available_rooms_stmt = (
-            select(Room)
-            .outerjoin(
-                overlapping_bookings_stmt,
-                Room.id == overlapping_bookings_stmt.c.room_id,
+        room_availability = (
+            select(
+                Room.id,
+                Room.hotel_id,
+                Room.max_guests,
+                Room.quantity,
+                func.greatest(
+                    0,
+                    Room.quantity
+                    - func.coalesce(overlapping_bookings.c.booking_count, 0),
+                ).label("free_rooms"),
             )
-            .where(
-                and_(
-                    Room.max_guests >= guest_quantity,
-                    func.coalesce(overlapping_bookings_stmt.c.booking_count, 0)
-                    < Room.quantity,
-                )
+            .outerjoin(overlapping_bookings, Room.id == overlapping_bookings.c.room_id)
+            .cte("room_availability")
+        )
+        # Вычисление общей вместимости отеля
+        hotel_capacity = (
+            select(
+                room_availability.c.hotel_id,
+                func.sum(
+                    room_availability.c.free_rooms * room_availability.c.max_guests
+                ).label("total_capacity"),
             )
+            .group_by(room_availability.c.hotel_id)
+            .cte("hotel_capacity")
         )
 
-        # Выполняем запрос для получения доступных номеров
-        available_rooms = (await session.execute(available_rooms_stmt)).scalars().all()
-
-        # Создаем множество уникальных отелей
-        hotel_ids = {room.hotel_id for room in available_rooms}
-
-        # Получаем список отелей по их ID
-        available_hotels_stmt = select(Hotel).where(Hotel.id.in_(hotel_ids))
-        available_hotels = (
-            (await session.execute(available_hotels_stmt)).scalars().all()
+        # Выборка отелей с достаточной вместимостью
+        stmt = (
+            select(Hotel)
+            .join(hotel_capacity, Hotel.id == hotel_capacity.c.hotel_id)
+            .where(hotel_capacity.c.total_capacity >= guest_quantity)
         )
 
-        return available_rooms
+        available_hotels = (await session.execute(stmt)).scalars().all()
+
+        return available_hotels
 
 
 class HotelCategoryDAO(BaseDAO):

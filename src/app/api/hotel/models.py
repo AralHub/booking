@@ -40,7 +40,10 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         nullable=True,
     )
     image: Mapped[str] = mapped_column(String, nullable=True)
-
+    # is_active: Mapped[bool] = mapped_column(
+    #     default=True,
+    #     server_default="true",
+    # )
     # relationships
     rooms: Mapped[list["Room"]] = relationship(
         "Room",

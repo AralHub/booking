@@ -1,7 +1,7 @@
 from datetime import UTC, datetime, date
 
 from fastapi import APIRouter, Depends, Query, UploadFile
-
+from app.core.utils.parse_date import parse_date
 from app.api.hotel_admin.dao import HotelAdminInfoDAO
 from app.api.hotel_admin.schemas import (
     HotelAdminInfoCreate,
@@ -35,6 +35,7 @@ from app.api.room.schemas import (
     RoomFilter,
     RoomTypeVariantFilter,
     RoomUpdate,
+    RoomUpdateInternal,
 )
 from app.api.rule.dao import RuleDAO
 from app.api.rule.schemas import (
@@ -84,11 +85,6 @@ async def search_hotels(
     check_out: str = Query(default=None),
     guest_quantity: int = Query(default=None),
 ):
-    def parse_date(date_str: str) -> date:
-        # Replace dot with hyphen for parsing
-        if "." in date_str:
-            date_str = date_str.replace(".", "-")
-        return date.fromisoformat(date_str)
 
     parsed_check_in = parse_date(check_in)
     parsed_check_out = parse_date(check_out)
@@ -96,8 +92,8 @@ async def search_hotels(
     return await HotelDAO.find_hotels(
         session=session,
         city_id=city_id,
-        check_in=parsed_check_in,
-        check_out=parsed_check_out,
+        check_in_date=parsed_check_in,
+        check_out_date=parsed_check_out,
         guest_quantity=guest_quantity,
     )
 
@@ -403,16 +399,26 @@ async def update_room(
     hotel_id: int,
     room_id: int,
     room_update_data: RoomUpdate,
+    hotel: HotelBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
-    return await RoomDAO.update(
+    updated_row_count = await RoomDAO.update(
         session=session,
-        values=room_update_data,
+        values=RoomUpdateInternal(
+            **room_update_data.model_dump(
+                exclude_none=True,
+            )
+        ),
         filters=RoomFilter(
             id=room_id,
             hotel_id=hotel_id,
         ),
     )
+    if updated_row_count == 0:
+        raise NotFoundException("Room not found")
+    return {
+        "message": "Room updated successfully",
+    }
 
 
 # region Room Beds

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-
+from app.core.utils.parse_date import parse_date
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 
@@ -23,17 +23,6 @@ async def get_bookings(
     return await BookingDAO.get_all(
         session=session,
         filters=None,
-    )
-
-
-@router.get("/{booking_id}")
-async def get_booking(
-    booking_id: int,
-    session=SessionDep,
-):
-    return await BookingDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=booking_id,
     )
 
 
