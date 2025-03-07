@@ -1,7 +1,7 @@
-from datetime import UTC, datetime, date
+from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, Query, UploadFile
-from app.core.utils.parse_date import parse_date
+from fastapi import APIRouter, Depends, UploadFile
+
 from app.api.hotel_admin.dao import HotelAdminInfoDAO
 from app.api.hotel_admin.schemas import (
     HotelAdminInfoCreate,
@@ -16,13 +16,20 @@ from app.api.images.schemas import (
     HotelImageFilter,
     RoomImageFilter,
 )
-from app.api.locations.dao import CityDAO, LocationDAO
+from app.api.locations.dao import LocationDAO
 from app.api.locations.schemas import (
     LocationCreate,
     LocationCreateInternal,
     LocationFilter,
     LocationUpdate,
     LocationUpdateInternal,
+)
+from app.api.review.dao import ReviewDAO, ReviewCategoryRatingDAO
+from app.api.review.schemas import (
+    ReviewCategoryCreateInternal,
+    ReviewCreate,
+    ReviewCreateInternal,
+    ReviewFilter,
 )
 from app.api.room.dao import BedTypeDAO, RoomBedConfDAO, RoomDAO, RoomTypeVariantDAO
 from app.api.room.schemas import (
@@ -47,16 +54,15 @@ from app.api.rule.schemas import (
 )
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-
-# from slugify import slugify
-# from app.api.user.functions.dependencies import get_current_active_auth_user
-# from app.api.user.schemas import UserRead
 from app.core.exceptions.http_exceptions import (
     DuplicateValueException,
     NotFoundException,
 )
 from app.core.utils import file_utils
 
+# from slugify import slugify
+# from app.api.user.functions.dependencies import get_current_active_auth_user
+# from app.api.user.schemas import UserRead
 from .dao import HotelCategoryDAO, HotelDAO
 from .dependencies import validate_hotel_id
 from .schemas import (
@@ -78,24 +84,18 @@ router = APIRouter(
 
 # region Hotel
 @router.get("/search")
-async def search_hotels(
-    session=SessionDep,
-    city_id: int = Query(default=None),
-    check_in: str = Query(default=None),
-    check_out: str = Query(default=None),
-    guest_quantity: int = Query(default=None),
-):
+async def search_hotels(session=SessionDep):
+    pass
+    # parsed_check_in = parse_date(check_in)
+    # parsed_check_out = parse_date(check_out)
 
-    parsed_check_in = parse_date(check_in)
-    parsed_check_out = parse_date(check_out)
-
-    return await HotelDAO.find_hotels(
-        session=session,
-        city_id=city_id,
-        check_in_date=parsed_check_in,
-        check_out_date=parsed_check_out,
-        guest_quantity=guest_quantity,
-    )
+    # return await HotelDAO.find_hotels(
+    #     session=session,
+    #     city_id=city_id,
+    #     check_in_date=parsed_check_in,
+    #     check_out_date=parsed_check_out,
+    #     rooms=rooms,
+    # )
 
 
 @router.get("/count")
@@ -266,16 +266,13 @@ async def add_hotel_location(
     location_create_data: LocationCreate,
     session=TransactionSessionDep,
 ):
-    db_city = await CityDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=location_create_data.city_id,
-    )
-    if not db_city:
-        raise NotFoundException("City not found")
-    return await LocationDAO.create(
+    return await LocationDAO.add_hotel_location(
         session=session,
         values=LocationCreateInternal(
-            **location_create_data.model_dump(),
+            **location_create_data.model_dump(
+                exclude_none=True,
+                excluce_unset=True,
+            ),
             hotel_id=hotel_id,
         ),
     )
@@ -668,17 +665,50 @@ async def update_hotel_rule(
 @router.get("/{hotel_id}/reviews")
 async def get_hotel_reviews(
     hotel_id: int,
+    hotel: HotelBase = Depends(validate_hotel_id),
     session=SessionDep,
 ):
-    pass
+    return await ReviewDAO.get_all(
+        session=session,
+        filters=ReviewFilter(
+            hotel_id=hotel_id,
+        ),
+    )
 
 
 @router.post("/{hotel_id}/reviews")
 async def create_hotel_reviews(
     hotel_id: int,
+    review_create_data: ReviewCreate,
+    hotel: HotelBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
-    pass
+
+    craeted_review = await ReviewDAO.create(
+        session=session,
+        values=ReviewCreateInternal(
+            **review_create_data.model_dump(
+                exclude={
+                    "category_ratings",
+                }
+            ),
+            hotel_id=hotel_id,
+            user_id=5,
+        ),
+    )
+    if len(review_create_data.category_ratings) > 0:
+        for review_category_rating in review_create_data.category_ratings:
+            review_category_rating_create_data = ReviewCategoryCreateInternal(
+                review_category_id=review_category_rating.review_category_id,
+                rating=review_category_rating.rating,
+                review_id=craeted_review.id,
+            )
+
+        await ReviewCategoryRatingDAO.create(
+            session=session,
+            values=review_category_rating_create_data,
+        )
+    return craeted_review
 
 
 # endregion

@@ -39,6 +39,8 @@ async def create_fake_db(
                     slug=city_data["slug"],
                     properties_count=city_data["properties_count"],
                     image=city_data["image"],
+                    geocode_lng=float(city_data["geocode_lng"]),
+                    geocode_lat=float(city_data["geocode_lat"]),
                     aero_lat=float(city_data["aero_geocode_lat"]),
                     aero_lng=float(city_data["aero_geocode_lng"]),
                     rail_lat=float(city_data["rail_geocode_lat"]),

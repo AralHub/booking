@@ -1,14 +1,48 @@
 from pydantic import BaseModel
 
 
+# region ReviewCategory
+class ReviewCategoryBase(BaseModel):
+    name: str
+
+
+class ReviewCategoryRead(ReviewCategoryBase):
+    id: int
+
+
+class ReviewCategoryCreate(ReviewCategoryBase):
+    pass
+
+
+class ReviewCategoryFilter(BaseModel):
+    id: int | None = None
+    name: str | None = None
+
+
+# endregion
+
+
+# region ReviewCategoryRating
+class ReviewCategoryRatingBase(BaseModel):
+    review_category_id: int
+    rating: int
+
+
+class ReviewCategoryRatingCreate(ReviewCategoryRatingBase):
+    pass
+
+
+class ReviewCategoryCreateInternal(ReviewCategoryRatingCreate):
+    review_id: int
+
+
+# endregion
+
+
 # region Review
 class ReviewBase(BaseModel):
-    name: str
     rating: float
     comment: str
-    hotel_id: int
-    user_id: int
-    category_ratings: dict[int, float]
 
 
 class ReviewRead(ReviewBase):
@@ -16,11 +50,12 @@ class ReviewRead(ReviewBase):
 
 
 class ReviewCreate(ReviewBase):
-    pass
+    category_ratings: list[ReviewCategoryRatingCreate] | None = None
 
 
 class ReviewCreateInternal(ReviewCreate):
-    pass
+    hotel_id: int
+    user_id: int
 
 
 class ReviewUpdate(BaseModel):
@@ -35,24 +70,6 @@ class ReviewFilter(BaseModel):
     comment: str | None = None
     hotel_id: int | None = None
     user_id: int | None = None
-
-
-# endregion
-
-
-# region ReviewCategory
-class ReviewCategoryBase(BaseModel):
-    name: str
-
-
-# endregion
-
-
-# region ReviewCategoryRating
-class ReviewCategoryRatingBase(BaseModel):
-    review_id: int
-    review_category_id: int
-    rating: float
 
 
 # endregion

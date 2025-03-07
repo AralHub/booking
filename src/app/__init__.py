@@ -22,7 +22,7 @@ from app.api.amenity.room_amenity.router import router as room_amenity_router
 from app.api.booking.router import router as booking_router
 from app.api.locations.router import router as location_router
 from app.api.room.router import router as room_router
-
+from app.api.review.router import router as review_router
 from app.core.config import settings
 
 main_router = APIRouter(
@@ -44,19 +44,14 @@ main_router.include_router(
     hotel_router,
     prefix=settings.api_v1.prefix,
 )
-# main_router.include_router(
-#     owner_router,
-#     prefix=settings.api_v1.prefix,
-# )
+main_router.include_router(
+    review_router,
+    prefix=settings.api_v1.prefix,
+)
 main_router.include_router(
     hotel_amenity_router,
     prefix=settings.api_v1.prefix,
 )
-# main_router.include_router(
-#     hotel_rule_router,
-#     prefix=settings.api_v1.prefix,
-# )
-
 main_router.include_router(
     room_router,
     prefix=settings.api_v1.prefix,
@@ -65,10 +60,6 @@ main_router.include_router(
     room_amenity_router,
     prefix=settings.api_v1.prefix,
 )
-# main_router.include_router(
-#     image_router,
-#     prefix=settings.api_v1.prefix,
-# )
 main_router.include_router(
     location_router,
     prefix=settings.api_v1.prefix,

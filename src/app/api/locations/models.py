@@ -37,10 +37,13 @@ class City(IntIdPkMixin, Base):
     )
     slug: Mapped[str] = mapped_column(String(255), unique=True)
     properties_count: Mapped[int] = mapped_column(Integer)
+    geocode_lng: Mapped[float] = mapped_column(Float)
+    geocode_lat: Mapped[float] = mapped_column(Float)
     aero_lat: Mapped[float] = mapped_column(Float)
     aero_lng: Mapped[float] = mapped_column(Float)
     rail_lat: Mapped[float] = mapped_column(Float)
     rail_lng: Mapped[float] = mapped_column(Float)
+
     image: Mapped[str] = mapped_column(String(255))
     # relationships
     country_id: Mapped[int] = mapped_column(ForeignKey("countries.id"))

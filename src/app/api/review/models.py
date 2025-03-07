@@ -25,16 +25,17 @@ class ReviewCategory(IntIdPkMixin, Base):
 class ReviewCategoryRating(IntIdPkMixin, Base):
     rating: Mapped[float] = mapped_column(Float)
 
-    # relationships
+    review_category_id: Mapped[int] = mapped_column(
+        ForeignKey("review_categories.id"),
+    )
     review_id: Mapped[int] = mapped_column(ForeignKey("reviews.id"))
+    # relationships
+
     review = relationship(
         "Review",
         back_populates="review_category_ratings",
     )
 
-    review_category_id: Mapped[int] = mapped_column(
-        ForeignKey("review_categories.id"),
-    )
     review_category = relationship(
         "ReviewCategory",
         back_populates="review_category_ratings",

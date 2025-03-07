@@ -1,16 +1,13 @@
 from datetime import date
-from sqlalchemy import select, and_, or_, func
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload, joinedload
-from app.core.dao import BaseDAO
-from app.core.exceptions.http_exceptions import NotFoundException
 
-from app.api.user.dao import UserDAO
-from app.core.dao import BaseDAO
-from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
+from sqlalchemy import and_, func, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.room.dao import RoomDAO
 from app.api.room.models import Room
+from app.api.user.dao import UserDAO
+from app.core.dao import BaseDAO
+from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 
 from .models import Booking, BookingStatus
 from .schemas import BookingCreate, BookingCreateInternal

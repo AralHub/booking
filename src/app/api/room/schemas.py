@@ -95,6 +95,10 @@ class RoomFilter(BaseModel):
     hotel_id: int | None = None
 
 
+class RoomSearch(BaseModel):
+    guest_count: int
+
+
 # endregion
 
 

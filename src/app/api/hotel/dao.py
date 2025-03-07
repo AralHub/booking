@@ -1,20 +1,15 @@
 from datetime import date
 
-from sqlalchemy import select, and_, or_, func
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm import selectinload
+
+from app.api.amenity.hotel_amenity.dao import HotelAmenityDAO
+from app.api.room.schemas import RoomFilter
 from app.core.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 
-from app.api.room.dao import RoomDAO
-from app.api.room.models import Room
-from app.api.room.schemas import RoomFilter
-from app.api.locations.dao import LocationDAO
-from app.api.locations.models import Location
-from app.api.amenity.hotel_amenity.dao import HotelAmenityDAO
-from app.api.booking.models import Booking, BookingStatus
 from .models import Hotel, HotelCategory
-from .schemas import HotelFilter
 
 
 class HotelDAO(BaseDAO):
@@ -59,6 +54,40 @@ class HotelDAO(BaseDAO):
             raise NotFoundException("Hotel not found")
         return db_hotel.hotel_amenities
 
+    # @classmethod
+    # async def find_hotels(
+    #     cls,
+    #     session: AsyncSession,
+    #     city_id: int,
+    #     check_in_date: date,
+    #     check_out_date: date,
+    #     guest_quantity: int,
+    # ):
+    #     # Подзапрос для подсчета суммарной вместимости свободных комнат в отеле
+    #     available_capacity_subquery = (
+    #         select(func.sum(Room.max_guests).label("total_guests"))
+    #         .select_from(Room)
+    #         .where(
+    #             Room.hotel_id == Hotel.id,  # Связь с текущим отелем
+    #             Room.quantity > 0,  # Комната доступна в количестве
+    #             ~exists().where(  # Нет пересекающихся броней
+    #                 and_(
+    #                     Booking.room_id == Room.id,
+    #                     Booking.check_in_date < check_out_date,
+    #                     Booking.check_out_date > check_in_date,
+    #                 )
+    #             ),
+    #         )
+    #     ).scalar_subquery()
+
+    #     # Основной запрос: отели в указанном городе с суммарной вместимостью >= guest_quantity
+    #     hotels_query = select(Hotel).where(
+    #         Hotel.location.has(city_id=city_id),
+    #         available_capacity_subquery >= guest_quantity,  # Проверка общей вместимости
+    #     )
+
+    #     result = await session.execute(hotels_query)
+    #     return result.scalars().all()
     @classmethod
     async def find_hotels(
         cls,
@@ -66,58 +95,9 @@ class HotelDAO(BaseDAO):
         city_id: int,
         check_in_date: date,
         check_out_date: date,
-        guest_quantity: int,
+        rooms: list[RoomFilter],
     ):
-        # Определение количества свободных номеров для каждого типа
-        overlapping_bookings = (
-            select(Booking.room_id, func.count(Booking.id).label("booking_count"))
-            .where(
-                and_(
-                    Booking.check_out_date > check_in_date,
-                    Booking.check_in_date < check_out_date,
-                    Booking.status != BookingStatus.CANCELLED,
-                )
-            )
-            .group_by(Booking.room_id)
-            .cte("overlapping_bookings")
-        )
-        room_availability = (
-            select(
-                Room.id,
-                Room.hotel_id,
-                Room.max_guests,
-                Room.quantity,
-                func.greatest(
-                    0,
-                    Room.quantity
-                    - func.coalesce(overlapping_bookings.c.booking_count, 0),
-                ).label("free_rooms"),
-            )
-            .outerjoin(overlapping_bookings, Room.id == overlapping_bookings.c.room_id)
-            .cte("room_availability")
-        )
-        # Вычисление общей вместимости отеля
-        hotel_capacity = (
-            select(
-                room_availability.c.hotel_id,
-                func.sum(
-                    room_availability.c.free_rooms * room_availability.c.max_guests
-                ).label("total_capacity"),
-            )
-            .group_by(room_availability.c.hotel_id)
-            .cte("hotel_capacity")
-        )
-
-        # Выборка отелей с достаточной вместимостью
-        stmt = (
-            select(Hotel)
-            .join(hotel_capacity, Hotel.id == hotel_capacity.c.hotel_id)
-            .where(hotel_capacity.c.total_capacity >= guest_quantity)
-        )
-
-        available_hotels = (await session.execute(stmt)).scalars().all()
-
-        return available_hotels
+        pass
 
 
 class HotelCategoryDAO(BaseDAO):

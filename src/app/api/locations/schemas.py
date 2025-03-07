@@ -1,4 +1,23 @@
+from typing import Annotated
+
 from pydantic import BaseModel, Field
+
+LONG_FIELD = Annotated[
+    float | None,
+    Field(
+        ge=-180,
+        le=180,
+        default=None,
+    ),
+]
+LAT_FIELD = Annotated[
+    float | None,
+    Field(
+        ge=-90,
+        le=90,
+        default=None,
+    ),
+]
 
 
 # region Country
@@ -70,7 +89,8 @@ class CityFilter(BaseModel):
     aero_lng: float | None = None
     rail_lat: float | None = None
     rail_lng: float | None = None
-
+    geocode_lng: float | None = None
+    geocode_lat: float | None = None
 
 # endregion
 
@@ -79,22 +99,29 @@ class CityFilter(BaseModel):
 class LocationCreate(BaseModel):
     address: str
     city_id: int
-    latitude: float = Field(..., ge=-90, le=90)
-    longitude: float = Field(..., ge=-180, le=180)
+    longitude: LONG_FIELD
+
+    latitude: LAT_FIELD
 
 
 class LocationCreateInternal(LocationCreate):
+    to_airport: float
+    to_railway: float
+    to_city_center: float
     hotel_id: int
 
 
 class LocationUpdate(BaseModel):
+    address: str
     latitude: float | None = None
     longitude: float | None = None
     city_id: int | None = None
 
 
 class LocationUpdateInternal(LocationUpdate):
-    pass
+    to_airport: float | None = None
+    to_railway: float | None = None
+    to_city_center: float | None = None
 
 
 class LocationFilter(BaseModel):
@@ -106,3 +133,39 @@ class LocationFilter(BaseModel):
 
 
 # endregion
+
+
+class Coordinates(BaseModel):
+    longitude: LONG_FIELD
+    latitude: LAT_FIELD
+
+    def to_string(self) -> str:
+        return f"{self.longitude},{self.latitude}"
+
+
+class RoutePoint(BaseModel):
+    coordinates: Coordinates
+    name: str
+
+
+class RouteRequest(BaseModel):
+    points: list[RoutePoint] = Field(..., min_length=2)
+
+    def get_coordinates_string(self) -> str:
+        return ";".join(point.coordinates.to_string() for point in self.points)
+
+
+class DistanceResponse(BaseModel):
+    distance: float
+    duration: float
+
+
+class RouteSegment(DistanceResponse):
+    start_point: RoutePoint
+    end_point: RoutePoint
+
+
+class RouteResponse(BaseModel):
+    segments: list[RouteSegment]
+    total_distance: float
+    total_duration: float

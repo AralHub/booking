@@ -8,21 +8,41 @@ from app.core.db.model_mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
     from app.api.hotel.models import Hotel
-    from app.api.user.models import User
 
 
 class HotelAdmin(IntIdPkMixin, Base):
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship(back_populates="hotel_admin")
+    phone_number: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+    email: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=True,
+        default=None,
+        server_default=None,
+    )
+    password: Mapped[str] = mapped_column(
+        String,
+        nullable=True,
+        default=None,
+        server_default=None,
+    )
+    first_name: Mapped[str] = mapped_column(
+        String(30),
+        nullable=False,
+    )
+    last_name: Mapped[str] = mapped_column(
+        String(30),
+        nullable=False,
+    )
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     hotel: Mapped["Hotel"] = relationship(back_populates="hotel_admin")
 
 
 class HotelAdminInfo(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(
-        String(30),
-        unique=True,
-    )
     first_phone_number: Mapped[str] = mapped_column(
         String(255),
         nullable=True,
