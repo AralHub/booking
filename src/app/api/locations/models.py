@@ -58,7 +58,7 @@ class City(IntIdPkMixin, Base):
 
 
 class Location(IntIdPkMixin, Base):
-    __tablename__ = "locations"
+    city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
     address: Mapped[str] = mapped_column(String(255), nullable=True)
     latitude: Mapped[float] = mapped_column(Float)
     longitude: Mapped[float] = mapped_column(Float)
@@ -68,7 +68,6 @@ class Location(IntIdPkMixin, Base):
     # relationships
     hotel: Mapped["Hotel"] = relationship(back_populates="location")
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    city_id: Mapped[int] = mapped_column(ForeignKey("cities.id"))
     city: Mapped["City"] = relationship(
         "City",
         back_populates="locations",

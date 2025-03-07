@@ -92,6 +92,7 @@ class CityFilter(BaseModel):
     geocode_lng: float | None = None
     geocode_lat: float | None = None
 
+
 # endregion
 
 
@@ -100,7 +101,6 @@ class LocationCreate(BaseModel):
     address: str
     city_id: int
     longitude: LONG_FIELD
-
     latitude: LAT_FIELD
 
 

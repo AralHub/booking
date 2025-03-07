@@ -2,15 +2,6 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, UploadFile
 
-from app.api.hotel_admin.dao import HotelAdminInfoDAO
-from app.api.hotel_admin.schemas import (
-    HotelAdminInfoCreate,
-    HotelAdminInfoCreateInternal,
-    HotelAdminInfoFilter,
-    HotelAdminInfoRead,
-    HotelAdminInfoUpdate,
-    HotelAdminInfoUpdateInternal,
-)
 from app.api.images.dao import HotelImageDAO, RoomImageDAO
 from app.api.images.schemas import (
     HotelImageFilter,
@@ -24,12 +15,11 @@ from app.api.locations.schemas import (
     LocationUpdate,
     LocationUpdateInternal,
 )
-from app.api.review.dao import ReviewDAO, ReviewCategoryRatingDAO
+from app.api.review.dao import ReviewCategoryRatingDAO, ReviewDAO
 from app.api.review.schemas import (
     ReviewCategoryCreateInternal,
     ReviewCreate,
     ReviewCreateInternal,
-    ReviewFilter,
 )
 from app.api.room.dao import BedTypeDAO, RoomBedConfDAO, RoomDAO, RoomTypeVariantDAO
 from app.api.room.schemas import (
@@ -55,7 +45,6 @@ from app.api.rule.schemas import (
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
-    DuplicateValueException,
     NotFoundException,
 )
 from app.core.utils import file_utils
@@ -63,17 +52,23 @@ from app.core.utils import file_utils
 # from slugify import slugify
 # from app.api.user.functions.dependencies import get_current_active_auth_user
 # from app.api.user.schemas import UserRead
-from .dao import HotelCategoryDAO, HotelDAO
+from .dao import HotelCategoryDAO, HotelDAO, HotelInfoDAO
 from .dependencies import validate_hotel_id
 from .schemas import (
-    HotelBase,
+    HotelInfoCreate,
+    HotelInfoCreateInternal,
+    HotelInfoFilter,
+    HotelInfoRead,
+    HotelInfoUpdate,
+    HotelInfoUpdateInternal,
     HotelCategoryCreate,
     HotelCategoryFilter,
     HotelCategoryUpdate,
-    HotelCreate,
-    HotelCreateInternal,
-    HotelFilter,
-    HotelUpdate,
+    HotelFullCreate,
+    HotelFullUpdate,
+    HotelNameBase,
+    HotelNameCreateInternal,
+    HotelNameFilter,
 )
 
 router = APIRouter(
@@ -83,6 +78,73 @@ router = APIRouter(
 
 
 # region Hotel
+@router.post("/")
+async def create_hotel(
+    hotel_create_data: HotelFullCreate,
+    session=TransactionSessionDep,
+):
+    # Validate hotel category exists
+    db_hotel_category = await HotelCategoryDAO.get_one_or_none(
+        session=session,
+        filters=HotelCategoryFilter(id=hotel_create_data.hotel_category_id),
+    )
+    if not db_hotel_category:
+        raise NotFoundException("Hotel category not found")
+    # Create main hotel record
+    db_hotel = await HotelDAO.create(
+        session=session,
+        values=HotelNameCreateInternal(
+            name=hotel_create_data.name,
+            description=hotel_create_data.description,
+            slug=hotel_create_data.slug,
+            hotel_category_id=hotel_create_data.hotel_category_id,
+            hotel_admin_id=5,  # TODO: Get from current user
+            created_at=datetime.now(UTC),
+        ),
+    )
+    # Create location record
+    await LocationDAO.create(
+        session=session,
+        values=LocationCreateInternal(
+            hotel_id=db_hotel.id,
+            address=hotel_create_data.address,
+            latitude=hotel_create_data.latitude,
+            longitude=hotel_create_data.longitude,
+            city_id=hotel_create_data.city_id,
+        ),
+    )
+    # Create hotel info
+    await HotelInfoDAO.create(
+        session=session,
+        values=HotelInfoCreateInternal(
+            hotel_id=db_hotel.id,
+            first_phone_number=hotel_create_data.information_for_guests.first_phone_for_guests,
+            second_phone_number=hotel_create_data.information_for_guests.second_phone_for_guests,
+            email=hotel_create_data.information_for_guests.email_for_guests,
+            site_url=hotel_create_data.information_for_guests.site_url,
+        ),
+    )
+
+    # Create hotel rules
+    await RuleDAO.create(
+        session=session,
+        values=RuleCreateInternal(
+            hotel_id=db_hotel.id,
+            check_in_from=hotel_create_data.information_for_booking.check_in,
+            check_out_from=hotel_create_data.information_for_booking.check_out,
+        ),
+    )
+    # Add hotel amenities
+    if hotel_create_data.facilities:
+        await HotelDAO.add_hotel_amenities(
+            session=session,
+            hotel_id=db_hotel.id,
+            hotel_amenities_data=hotel_create_data.facilities,
+        )
+
+    return db_hotel
+
+
 @router.get("/search")
 async def search_hotels(session=SessionDep):
     pass
@@ -98,61 +160,16 @@ async def search_hotels(session=SessionDep):
     # )
 
 
-@router.get("/count")
-async def get_hotels_count(
-    session=SessionDep,
-):
-    return await HotelDAO.count(
-        session=session,
-        filters=None,
-    )
-
-
-@router.post("")
-async def create_hotel(
-    hotel_create_data: HotelCreate,
-    session=TransactionSessionDep,
-):
-    db_hotel = await HotelDAO.get_one_or_none(
-        session=session,
-        filters=HotelFilter(
-            slug=hotel_create_data.slug,
-        ),
-    )
-    if db_hotel:
-        raise DuplicateValueException("Hotel with this slug already exists")
-    hotel_data = HotelCreateInternal(
-        **hotel_create_data.model_dump(),
-        hotel_admin_id=1,
-        created_at=datetime.now(UTC),
-    )
-    return await HotelDAO.create(
-        session=session,
-        values=hotel_data,
-    )
-
-
-@router.get("/{hotel_id}")
-async def get_hotel(
-    hotel_id: int,
-    session=SessionDep,
-):
-    return await HotelDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=hotel_id,
-    )
-
-
 @router.put("/{hotel_id}")
 async def update_hotel(
-    hotel_update_data: HotelUpdate,
+    hotel_update_data: HotelFullUpdate,
     hotel_id: int,
     session=TransactionSessionDep,
 ):
     return await HotelDAO.update(
         session=session,
         values=hotel_update_data,
-        filters=HotelFilter(
+        filters=HotelNameFilter(
             id=hotel_id,
         ),
     )
@@ -165,62 +182,62 @@ async def delete_hotel(
 ):
     return await HotelDAO.delete(
         session=session,
-        filters=HotelFilter(id=hotel_id),
+        filters=HotelNameFilter(id=hotel_id),
     )
 
 
 # endregion
 
 
-# region Hotel Admin
+# region Hotel Info
 
 
 @router.get(
-    "/{hotel_id}/admin/info",
-    response_model=HotelAdminInfoRead,
+    "/{hotel_id}/info",
+    response_model=HotelInfoRead,
 )
 async def get_hotel_admin_info(
     hotel_id: int,
-    hotel: HotelBase = Depends(validate_hotel_id),
+    hotel: HotelNameBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
-    return await HotelAdminInfoDAO.get_one_or_none(
+    return await HotelInfoDAO.get_one_or_none(
         session=session,
-        filters=HotelAdminInfoFilter(hotel_id=hotel_id),
+        filters=HotelInfoFilter(hotel_id=hotel_id),
     )
 
 
-@router.post("/{hotel_id}/admin/info")
+@router.post("/{hotel_id}/info")
 async def add_hotel_admin_info(
     hotel_id: int,
-    hotel_admin_info_create_data: HotelAdminInfoCreate,
-    hotel: HotelBase = Depends(validate_hotel_id),
+    hotel_info_create_data: HotelInfoCreate,
+    hotel: HotelNameBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
 
-    return await HotelAdminInfoDAO.create(
+    return await HotelInfoDAO.create(
         session=session,
-        values=HotelAdminInfoCreateInternal(
-            **hotel_admin_info_create_data.model_dump(),
+        values=HotelInfoCreateInternal(
+            **hotel_info_create_data.model_dump(),
             hotel_id=hotel_id,
         ),
     )
 
 
-@router.put("/{hotel_id}/admin/info")
-async def update_hotel_admin_info(
+@router.put("/{hotel_id}/info")
+async def update_hotel_info(
     hotel_id: int,
-    hotel_admin_info_update_data: HotelAdminInfoUpdate,
-    hotel: HotelBase = Depends(validate_hotel_id),
+    hotel_info_update_data: HotelInfoUpdate,
+    hotel: HotelNameBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
-    return await HotelAdminInfoDAO.update(
+    return await HotelInfoDAO.update(
         session=session,
-        values=HotelAdminInfoUpdateInternal(
-            **hotel_admin_info_update_data.model_dump(),
+        values=HotelInfoUpdateInternal(
+            **hotel_info_update_data.model_dump(),
             hotel_id=hotel_id,
         ),
-        filters=HotelAdminInfoFilter(
+        filters=HotelInfoFilter(
             hotel_id=hotel_id,
         ),
     )
@@ -237,7 +254,7 @@ async def get_hotels_by_city_id(
 ):
     db_hotels = await HotelDAO.get_all(
         session=session,
-        filters=HotelFilter(
+        filters=HotelNameFilter(
             city_id=city_id,
         ),
     )
@@ -396,7 +413,7 @@ async def update_room(
     hotel_id: int,
     room_id: int,
     room_update_data: RoomUpdate,
-    hotel: HotelBase = Depends(validate_hotel_id),
+    hotel: HotelNameBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
     updated_row_count = await RoomDAO.update(
@@ -665,14 +682,12 @@ async def update_hotel_rule(
 @router.get("/{hotel_id}/reviews")
 async def get_hotel_reviews(
     hotel_id: int,
-    hotel: HotelBase = Depends(validate_hotel_id),
+    hotel: HotelNameBase = Depends(validate_hotel_id),
     session=SessionDep,
 ):
-    return await ReviewDAO.get_all(
+    return await ReviewDAO.get_all_hotel_reviews(
         session=session,
-        filters=ReviewFilter(
-            hotel_id=hotel_id,
-        ),
+        hotel_id=hotel_id,
     )
 
 
@@ -680,7 +695,7 @@ async def get_hotel_reviews(
 async def create_hotel_reviews(
     hotel_id: int,
     review_create_data: ReviewCreate,
-    hotel: HotelBase = Depends(validate_hotel_id),
+    hotel: HotelNameBase = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
 

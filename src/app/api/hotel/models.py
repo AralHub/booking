@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -40,10 +40,11 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         nullable=True,
     )
     image: Mapped[str] = mapped_column(String, nullable=True)
-    # is_active: Mapped[bool] = mapped_column(
-    #     default=True,
-    #     server_default="true",
-    # )
+    is_active: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        server_default="true",
+    )
     # relationships
     rooms: Mapped[list["Room"]] = relationship(
         "Room",
@@ -83,8 +84,32 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         back_populates="hotel",
     )
     hotel_admin: Mapped["HotelAdmin"] = relationship(back_populates="hotel")
-    hotel_admin_info: Mapped["HotelAdminInfo"] = relationship(back_populates="hotel")
+    hotel_info: Mapped["HotelAdminInfo"] = relationship(back_populates="hotel")
     # languages: Mapped[list["Language"]] = relationship(
     #     secondary="hotel_language_associations",
     #     back_populates="hotels",
     # )
+
+
+class HotelInfo(IntIdPkMixin, Base):
+    first_phone_number: Mapped[str] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+    second_phone_number: Mapped[str] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+    email: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=True,
+        default=None,
+        server_default=None,
+    )
+    site_url: Mapped[str] = mapped_column(
+        String,
+        nullable=True,
+    )
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel = relationship("Hotel", back_populates="hotel_admin_info")

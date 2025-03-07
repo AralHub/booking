@@ -9,7 +9,15 @@ from app.api.room.schemas import RoomFilter
 from app.core.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 
-from .models import Hotel, HotelCategory
+from .models import Hotel, HotelCategory, HotelInfo
+
+
+class HotelCategoryDAO(BaseDAO):
+    model = HotelCategory
+
+
+class HotelInfoDAO(BaseDAO):
+    model = HotelInfo
 
 
 class HotelDAO(BaseDAO):
@@ -98,7 +106,3 @@ class HotelDAO(BaseDAO):
         rooms: list[RoomFilter],
     ):
         pass
-
-
-class HotelCategoryDAO(BaseDAO):
-    model = HotelCategory

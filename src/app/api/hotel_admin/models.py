@@ -40,17 +40,3 @@ class HotelAdmin(IntIdPkMixin, Base):
     )
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     hotel: Mapped["Hotel"] = relationship(back_populates="hotel_admin")
-
-
-class HotelAdminInfo(IntIdPkMixin, Base):
-    first_phone_number: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True,
-    )
-    second_phone_number: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True,
-    )
-
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    hotel = relationship("Hotel", back_populates="hotel_admin_info")

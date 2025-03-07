@@ -19,8 +19,7 @@ class Rule(IntIdPkMixin, Base):
     )
     check_in_until: Mapped[Time] = mapped_column(
         Time,
-        nullable=False,
-        default="00:00",
+        nullable=True,
     )
 
     # Check-out time range
