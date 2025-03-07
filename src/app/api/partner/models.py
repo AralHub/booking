@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from app.api.hotel.models import Hotel
 
 
-class HotelAdmin(IntIdPkMixin, Base):
+class Partner(IntIdPkMixin, Base):
     phone_number: Mapped[str] = mapped_column(
         String(255),
         unique=True,
@@ -38,5 +38,4 @@ class HotelAdmin(IntIdPkMixin, Base):
         String(30),
         nullable=False,
     )
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     hotel: Mapped["Hotel"] = relationship(back_populates="hotel_admin")

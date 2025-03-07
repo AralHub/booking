@@ -11,7 +11,7 @@ if TYPE_CHECKING:
         HotelAmenity,
         HotelAmenityAssociation,
     )
-    from app.api.hotel_admin.models import HotelAdmin, HotelAdminInfo
+    from app.api.partner.models import Partner
     from app.api.images.models import HotelImage
     from app.api.locations.models import Location
     from app.api.review.models import Review
@@ -83,8 +83,12 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         "Rule",
         back_populates="hotel",
     )
-    hotel_admin: Mapped["HotelAdmin"] = relationship(back_populates="hotel")
-    hotel_info: Mapped["HotelAdminInfo"] = relationship(back_populates="hotel")
+    hotel_admin_id: Mapped[int] = mapped_column(ForeignKey("hotel_admins.id"))
+    hotel_admin: Mapped["Partner"] = relationship(
+        "Partner",
+        back_populates="hotel",
+    )
+    hotel_info: Mapped["HotelInfo"] = relationship(back_populates="hotel")
     # languages: Mapped[list["Language"]] = relationship(
     #     secondary="hotel_language_associations",
     #     back_populates="hotels",
@@ -112,4 +116,4 @@ class HotelInfo(IntIdPkMixin, Base):
         nullable=True,
     )
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    hotel = relationship("Hotel", back_populates="hotel_admin_info")
+    hotel = relationship("Hotel", back_populates="hotel_info")

@@ -42,8 +42,9 @@ class GuestInformation(BaseModel):
 
 class HotelFullCreate(BaseModel):
     name: NAME_FIELD
-    hotel_category_id: int
+    hotel_category_id: int = 1
     description: str | None = None
+    address: str
     city_id: int
     latitude: float
     longitude: float
@@ -84,11 +85,11 @@ class HotelNameRead(HotelNameBase):
 class HotelNameCreate(BaseModel):
     name: NAME_FIELD
     description: str | None = None
-    slug: str
     hotel_category_id: int
 
 
 class HotelNameCreateInternal(HotelNameCreate):
+    slug: str
     hotel_admin_id: int
     created_at: datetime
 

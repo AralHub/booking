@@ -30,6 +30,7 @@ aioredis = "^2.0.1"
 aiofiles = "^24.1.0"
 pillow = "^11.1.0"
 aiohttp = "^3.11.13"
+python-slugify = "^8.0.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"

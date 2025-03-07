@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, UploadFile
+from slugify import slugify as slugify_func
 
 from app.api.images.dao import HotelImageDAO, RoomImageDAO
 from app.api.images.schemas import (
@@ -55,17 +56,17 @@ from app.core.utils import file_utils
 from .dao import HotelCategoryDAO, HotelDAO, HotelInfoDAO
 from .dependencies import validate_hotel_id
 from .schemas import (
+    HotelCategoryCreate,
+    HotelCategoryFilter,
+    HotelCategoryUpdate,
+    HotelFullCreate,
+    HotelFullUpdate,
     HotelInfoCreate,
     HotelInfoCreateInternal,
     HotelInfoFilter,
     HotelInfoRead,
     HotelInfoUpdate,
     HotelInfoUpdateInternal,
-    HotelCategoryCreate,
-    HotelCategoryFilter,
-    HotelCategoryUpdate,
-    HotelFullCreate,
-    HotelFullUpdate,
     HotelNameBase,
     HotelNameCreateInternal,
     HotelNameFilter,
@@ -90,15 +91,16 @@ async def create_hotel(
     )
     if not db_hotel_category:
         raise NotFoundException("Hotel category not found")
+    generated_slug = slugify_func(hotel_create_data.name)
     # Create main hotel record
     db_hotel = await HotelDAO.create(
         session=session,
         values=HotelNameCreateInternal(
             name=hotel_create_data.name,
             description=hotel_create_data.description,
-            slug=hotel_create_data.slug,
+            slug=generated_slug,
             hotel_category_id=hotel_create_data.hotel_category_id,
-            hotel_admin_id=5,  # TODO: Get from current user
+            hotel_admin_id=1,  # TODO: Get from current user
             created_at=datetime.now(UTC),
         ),
     )

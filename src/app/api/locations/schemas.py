@@ -105,9 +105,9 @@ class LocationCreate(BaseModel):
 
 
 class LocationCreateInternal(LocationCreate):
-    to_airport: float
-    to_railway: float
-    to_city_center: float
+    to_airport: float | None = None
+    to_railway: float | None = None
+    to_city_center: float | None = None
     hotel_id: int
 
 

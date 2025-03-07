@@ -77,6 +77,7 @@ VERIFY_CODE_FIELD = Annotated[
 ]
 
 
+# region Login
 class LoginUser(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     password: PASSWORD_FIELD
@@ -94,6 +95,10 @@ class VerifyPhoneNumber(PhoneNumber):
     model_config = ConfigDict(extra="forbid")
 
 
+# endregion
+
+
+# region User
 class UserBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     password: PASSWORD_FIELD
@@ -160,6 +165,10 @@ class UserFilter(BaseModel):
     deleted_at: datetime | None = None
 
 
+# endregion
+
+
+# region Token
 class TokenInfo(BaseModel):
     access_token: str
     refresh_token: str | None = None
@@ -188,3 +197,6 @@ class TokenBlacklistFilter(BaseModel):
     jti: str | None = None
     expires_at: datetime | None = None
     is_blacklisted: bool | None = None
+
+
+# endregion
