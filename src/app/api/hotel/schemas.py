@@ -1,10 +1,13 @@
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import AnyUrl, BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
+
+from app.api.user.schemas import PHONE_NUMBER_FIELD, PHONE_NUMBER_FIELD_UPDATE
 
 NAME_MAX_LENGTH = 255
 NAME_MIN_LENGTH = 3
+URL_PATTERN = r"^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$"
 NAME_FIELD = Annotated[
     str,
     Field(
@@ -22,9 +25,29 @@ NAME_FIELD_UPDATE = Annotated[
         default=None,
     ),
 ]
+EMAIL_FIELD = Annotated[
+    EmailStr,
+    Field(
+        examples=["example@example.com"],
+    ),
+]
+EMAIL_FIELD_UPDATE = Annotated[
+    EmailStr | None,
+    Field(
+        examples=["example@example.com"],
+        default=None,
+    ),
+]
+SITE_URL_FIELD_UPDATE = Annotated[
+    str | None,
+    Field(
+        pattern=URL_PATTERN,
+        examples=["https://www.burger-king.com"],
+        default=None,
+    ),
+]
 
-
-# region Hotel
+# region Hotel Full
 
 
 class BookingInformation(BaseModel):
@@ -34,10 +57,10 @@ class BookingInformation(BaseModel):
 
 
 class GuestInformation(BaseModel):
-    email_for_guests: str
-    first_phone_for_guests: str
-    second_phone_for_guests: str | None = None
-    site_url: AnyUrl | None = None
+    email_for_guests: EMAIL_FIELD
+    first_phone_for_guests: PHONE_NUMBER_FIELD
+    second_phone_for_guests: PHONE_NUMBER_FIELD_UPDATE
+    site_url: SITE_URL_FIELD_UPDATE
 
 
 class HotelFullCreate(BaseModel):
@@ -110,6 +133,51 @@ class HotelNameFilter(BaseModel):
 
 
 # endregion
+# region HotelInfo
+
+
+class HotelInfoBase(BaseModel):
+    first_phone_number: PHONE_NUMBER_FIELD
+    email: EMAIL_FIELD
+
+
+class HotelInfoRead(HotelInfoBase):
+    id: int
+    second_phone_number: PHONE_NUMBER_FIELD_UPDATE
+    site_url: SITE_URL_FIELD_UPDATE
+    hotel_id: int
+
+
+class HotelInfoCreate(HotelInfoBase):
+    second_phone_number: PHONE_NUMBER_FIELD_UPDATE
+    site_url: SITE_URL_FIELD_UPDATE
+
+
+class HotelInfoCreateInternal(HotelInfoCreate):
+    hotel_id: int
+
+
+class HotelInfoUpdate(BaseModel):
+    first_phone_number: PHONE_NUMBER_FIELD_UPDATE
+    second_phone_number: PHONE_NUMBER_FIELD_UPDATE
+    email: EMAIL_FIELD_UPDATE
+    site_url: SITE_URL_FIELD_UPDATE
+
+
+class HotelInfoUpdateInternal(HotelInfoUpdate):
+    hotel_id: int
+
+
+class HotelInfoFilter(BaseModel):
+    id: int | None = None
+    first_phone_number: str | None = None
+    second_phone_number: str | None = None
+    email: EMAIL_FIELD_UPDATE
+    site_url: SITE_URL_FIELD_UPDATE
+    hotel_id: int | None = None
+
+
+# endregion
 
 
 # region Hotel Category
@@ -140,64 +208,6 @@ class HotelCategoryUpdateInternal(HotelCategoryUpdate):
 class HotelCategoryFilter(BaseModel):
     id: int | None = None
     name: str | None = None
-
-
-# endregion
-
-# region HotelInfo
-
-PHONE_NUMBER_FIELD_UPDATE = Annotated[
-    str | None,
-    Field(
-        pattern=r"^\+?[1-9]\d{1,14}$",
-        examples=["+998991112233"],
-        default=None,
-    ),
-]
-
-
-class HotelInfoBase(BaseModel):
-    name: str
-
-
-class HotelInfoRead(HotelInfoBase):
-    first_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
-    second_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
-    email: str | None = None
-    site_url: AnyUrl | None = None
-
-
-class HotelInfoCreate(HotelInfoBase):
-    first_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
-    second_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
-    email: str | None = None
-    site_url: AnyUrl | None = None
-
-
-class HotelInfoCreateInternal(HotelInfoCreate):
-    hotel_id: int
-
-
-class HotelInfoUpdate(BaseModel):
-    name: str | None = None
-    first_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
-    second_phone_number: PHONE_NUMBER_FIELD_UPDATE = None
-    email: str | None = None
-    site_url: AnyUrl | None = None
-
-
-class HotelInfoUpdateInternal(HotelInfoUpdate):
-    hotel_id: int
-
-
-class HotelInfoFilter(BaseModel):
-    id: int | None = None
-    name: str | None = None
-    first_phone_number: str | None = None
-    second_phone_number: str | None = None
-    email: str | None = None
-    site_url: AnyUrl | None = None
-    hotel_id: int | None = None
 
 
 # endregion

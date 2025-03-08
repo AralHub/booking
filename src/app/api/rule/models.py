@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, ForeignKey, Time
+from sqlalchemy import ForeignKey, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -32,7 +32,6 @@ class Rule(IntIdPkMixin, Base):
         Time,
         nullable=True,
     )
-    is_pet_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     hotel: Mapped["Hotel"] = relationship(
         "Hotel",

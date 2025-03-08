@@ -50,6 +50,7 @@ from app.core.exceptions.http_exceptions import (
     NotFoundException,
 )
 from app.core.utils import file_utils
+from app.core.utils.parse_date import parse_time
 
 # from slugify import slugify
 # from app.api.user.functions.dependencies import get_current_active_auth_user
@@ -81,6 +82,21 @@ router = APIRouter(
 
 
 # region Hotel
+@router.get("/search")
+async def search_hotels(session=SessionDep):
+    pass
+    # parsed_check_in = parse_date(check_in)
+    # parsed_check_out = parse_date(check_out)
+
+    # return await HotelDAO.find_hotels(
+    #     session=session,
+    #     city_id=city_id,
+    #     check_in_date=parsed_check_in,
+    #     check_out_date=parsed_check_out,
+    #     rooms=rooms,
+    # )
+
+
 @router.post("/")
 async def create_hotel(
     hotel_create_data: HotelFullCreate,
@@ -94,9 +110,6 @@ async def create_hotel(
     if not db_hotel_category:
         raise NotFoundException("Hotel category not found")
     generated_slug = slugify_func(hotel_create_data.name)
-    # Add debug logging
-    logger.info("Creating hotel with data:", hotel_create_data.model_dump())
-    logger.info("Generated slug:", generated_slug)
     hotel_create_internal = HotelNameCreateInternal(
         name=hotel_create_data.name,
         description=hotel_create_data.description,
@@ -111,65 +124,54 @@ async def create_hotel(
         session=session,
         values=hotel_create_internal,
     )
-    if not db_hotel.id:
-        raise RuntimeError("Hotel was created without an ID")
-    logger.info(f"Created hotel with ID: {db_hotel}")
+    # Create hotel info
+    await HotelInfoDAO.create(
+        session=session,
+        values=HotelInfoCreateInternal(
+            hotel_id=db_hotel.id,
+            first_phone_number=hotel_create_data.information_for_guests.first_phone_for_guests,
+            second_phone_number=hotel_create_data.information_for_guests.second_phone_for_guests,
+            email=hotel_create_data.information_for_guests.email_for_guests,
+            site_url=hotel_create_data.information_for_guests.site_url,
+        ),
+    )
     # Create location record
-    # await LocationDAO.create(
-    #     session=session,
-    #     values=LocationCreateInternal(
-    #         hotel_id=db_hotel.id,
-    #         address=hotel_create_data.address,
-    #         latitude=hotel_create_data.latitude,
-    #         longitude=hotel_create_data.longitude,
-    #         city_id=hotel_create_data.city_id,
-    #     ),
-    # )
-    # # Create hotel info
-    # await HotelInfoDAO.create(
-    #     session=session,
-    #     values=HotelInfoCreateInternal(
-    #         hotel_id=db_hotel.id,
-    #         first_phone_number=hotel_create_data.information_for_guests.first_phone_for_guests,
-    #         second_phone_number=hotel_create_data.information_for_guests.second_phone_for_guests,
-    #         email=hotel_create_data.information_for_guests.email_for_guests,
-    #         site_url=hotel_create_data.information_for_guests.site_url,
-    #     ),
-    # )
-
-    # # Create hotel rules
-    # await RuleDAO.create(
-    #     session=session,
-    #     values=RuleCreateInternal(
-    #         hotel_id=db_hotel.id,
-    #         check_in_from=hotel_create_data.information_for_booking.check_in,
-    #         check_out_from=hotel_create_data.information_for_booking.check_out,
-    #     ),
-    # )
-    # # Add hotel amenities
-    # if hotel_create_data.facilities:
-    #     await HotelDAO.add_hotel_amenities(
-    #         session=session,
-    #         hotel_id=db_hotel.id,
-    #         hotel_amenities_data=hotel_create_data.facilities,
-    #     )
+    await LocationDAO.create(
+        session=session,
+        values=LocationCreateInternal(
+            hotel_id=db_hotel.id,
+            address=hotel_create_data.address,
+            latitude=hotel_create_data.latitude,
+            longitude=hotel_create_data.longitude,
+            city_id=hotel_create_data.city_id,
+        ),
+    )
+    # Create hotel rules
+    await RuleDAO.create(
+        session=session,
+        values=RuleCreateInternal(
+            hotel_id=db_hotel.id,
+            check_in_from=(
+                parse_time(hotel_create_data.information_for_booking.check_in)
+                if hotel_create_data.information_for_booking.check_in
+                else None
+            ),
+            check_out_from=(
+                parse_time(hotel_create_data.information_for_booking.check_out)
+                if hotel_create_data.information_for_booking.check_out
+                else None
+            ),
+        ),
+    )
+    # Add hotel amenities
+    if hotel_create_data.facilities:
+        await HotelDAO.add_hotel_amenities(
+            session=session,
+            hotel_id=db_hotel.id,
+            hotel_amenities_data=hotel_create_data.facilities,
+        )
 
     return db_hotel
-
-
-@router.get("/search")
-async def search_hotels(session=SessionDep):
-    pass
-    # parsed_check_in = parse_date(check_in)
-    # parsed_check_out = parse_date(check_out)
-
-    # return await HotelDAO.find_hotels(
-    #     session=session,
-    #     city_id=city_id,
-    #     check_in_date=parsed_check_in,
-    #     check_out_date=parsed_check_out,
-    #     rooms=rooms,
-    # )
 
 
 @router.put("/{hotel_id}")

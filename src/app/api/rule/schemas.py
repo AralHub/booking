@@ -1,14 +1,13 @@
-from datetime import datetime
+from datetime import time
 
 from pydantic import BaseModel
 
 
 class RuleBase(BaseModel):
-    check_in_from: datetime
-    check_in_until: datetime
-    check_out_from: datetime
-    check_out_until: datetime
-    is_pet_allowed: bool
+    check_in_from: time
+    check_in_until: time | None = None
+    check_out_from: time
+    check_out_until: time | None = None
 
 
 class RuleCreate(RuleBase):
@@ -20,11 +19,10 @@ class RuleCreateInternal(RuleCreate):
 
 
 class RuleUpdate(BaseModel):
-    check_in_from: datetime | None = None
-    check_in_until: datetime | None = None
-    check_out_from: datetime | None = None
-    check_out_until: datetime | None = None
-    is_pet_allowed: bool | None = None
+    check_in_from: time | None = None
+    check_in_until: time | None = None
+    check_out_from: time | None = None
+    check_out_until: time | None = None
 
 
 class RuleUpdateInternal(RuleUpdate):
@@ -33,9 +31,7 @@ class RuleUpdateInternal(RuleUpdate):
 
 class RuleFilter(BaseModel):
     id: int | None = None
-    check_in_from: datetime | None = None
-    check_in_until: datetime | None = None
-    check_out_from: datetime | None = None
-    check_out_until: datetime | None = None
-    is_pet_allowed: bool | None = None
-    hotel_id: int | None = None
+    check_in_from: time | None = None
+    check_in_until: time | None = None
+    check_out_from: time | None = None
+    check_out_until: time | None = None
