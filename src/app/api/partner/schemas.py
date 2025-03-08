@@ -1,9 +1,6 @@
 from pydantic import BaseModel
 
 
-class PartnerLogin(BaseModel):
-    
-
 class PartnerRead(BaseModel):
     pass
 

@@ -91,6 +91,7 @@ class HotelNameCreate(BaseModel):
 class HotelNameCreateInternal(HotelNameCreate):
     slug: str
     hotel_admin_id: int
+    is_active: bool = False
     created_at: datetime
 
 

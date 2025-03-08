@@ -11,9 +11,9 @@ if TYPE_CHECKING:
         HotelAmenity,
         HotelAmenityAssociation,
     )
-    from app.api.partner.models import Partner
     from app.api.images.models import HotelImage
     from app.api.locations.models import Location
+    from app.api.partner.models import Partner
     from app.api.review.models import Review
     from app.api.room.models import Room
     from app.api.rule.models import Rule
@@ -42,8 +42,8 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
     image: Mapped[str] = mapped_column(String, nullable=True)
     is_active: Mapped[bool] = mapped_column(
         Boolean,
-        default=True,
-        server_default="true",
+        default=False,
+        server_default="false",
     )
     # relationships
     rooms: Mapped[list["Room"]] = relationship(
@@ -83,7 +83,7 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         "Rule",
         back_populates="hotel",
     )
-    hotel_admin_id: Mapped[int] = mapped_column(ForeignKey("hotel_admins.id"))
+    hotel_admin_id: Mapped[int] = mapped_column(ForeignKey("partners.id"))
     hotel_admin: Mapped["Partner"] = relationship(
         "Partner",
         back_populates="hotel",
