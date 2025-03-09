@@ -4,6 +4,7 @@ from app.api.user.schemas import (
     NAME_FIELD,
     NAME_FIELD_UPDATE,
     PHONE_NUMBER_FIELD,
+    PHONE_NUMBER_FIELD_UPDATE,
 )
 
 
@@ -35,9 +36,10 @@ class PartnerUpdate(PartnerBase):
 
 
 class PartnerUpdateInternal(PartnerUpdate):
+    phone_number: PHONE_NUMBER_FIELD_UPDATE
     is_active: bool
     is_verified: bool
-    is_full_verified: bool
+    is_fully_registered: bool
     model_config = ConfigDict(extra="forbid")
 
 

@@ -2,7 +2,6 @@ from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.user.functions.utils import decode_jwt
 from app.api.user.models import TokenBlacklist, User
 from app.api.user.schemas import (
     TokenBlacklistCreate,
@@ -10,6 +9,7 @@ from app.api.user.schemas import (
     UserFilter,
     UserRead,
 )
+from app.core.auth.utils import decode_jwt
 from app.core.dao import BaseDAO
 
 

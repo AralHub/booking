@@ -1,6 +1,4 @@
-from fastapi import (
-    Depends,
-)
+from fastapi import Depends
 
 # from fastapi.security import OAuth2PasswordBearer
 from fastapi.security import HTTPBearer
@@ -8,13 +6,13 @@ from fastapi.security.http import HTTPAuthorizationCredentials
 from jwt import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.partner.dao import PartnerDAO
+from app.api.partner.schemas import PartnerBase
+from app.api.user.dao import TokenBlacklistDAO, UserDAO
+from app.api.user.schemas import UserBase, UserFilter
 from app.core.exceptions.http_exceptions import UnauthorizedException
 
-from ..dao import TokenBlacklistDAO, UserDAO
-from ..schemas import UserBase, UserFilter
-from .helpers import (
-    TOKEN_TYPE_FIELD,
-)
+from .helpers import TOKEN_TYPE_FIELD
 from .utils import decode_jwt, verify_password
 
 http_bearer = HTTPBearer(auto_error=False)
@@ -110,6 +108,28 @@ async def get_user_by_token_sub(session: AsyncSession, payload: dict) -> UserBas
     )
     if user:
         return user
+    raise UnauthorizedException("Invalid token (user not found)")
+
+
+async def get_partner_by_token_sub(session: AsyncSession, payload: dict) -> PartnerBase:
+    partner_id: str | None = payload.get("sub")
+    # todo: check token blacklist
+    jti = payload.get("jti")
+    is_blacklisted = await TokenBlacklistDAO.get_token_by_jti(
+        session=session,
+        jti=jti,
+    )
+    if is_blacklisted:
+        raise UnauthorizedException("Invalid token (blacklisted)")
+    if not partner_id:
+        raise UnauthorizedException("Invalid token (partner not found)")
+
+    partner = await PartnerDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=int(partner_id),
+    )
+    if partner:
+        return partner
     raise UnauthorizedException("Invalid token (user not found)")
 
 

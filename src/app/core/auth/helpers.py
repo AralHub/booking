@@ -1,8 +1,8 @@
 from datetime import timedelta
 
+from app.api.user.schemas import UserBase
 from app.core.config import settings
 
-from ..schemas import UserBase
 from .utils import encode_jwt
 
 TOKEN_TYPE_FIELD = settings.crypt.TOKEN_TYPE_FIELD

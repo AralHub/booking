@@ -4,20 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response, status
 from jwt import InvalidTokenError
 
 from app.api.user.dao import TokenBlacklistDAO
-from app.api.user.functions.helpers import (
-    create_access_token,
-    create_refresh_token,
-)
-from app.api.user.functions.utils import send_verification_sms
-from app.api.user.functions.validation import (
-    authenticate_user,
-    get_refresh_token_payload,
-    get_user_by_token_sub,
-    validate_token_type,
-)
-from app.api.user.routes.auth import REFRESH_TOKEN_TYPE
 from app.api.user.schemas import (
-    LoginUser,
     RefreshToken,
     TokenInfo,
     VerifyPhoneNumber,
@@ -25,10 +12,19 @@ from app.api.user.schemas import (
 
 # from app.core.utils.eskiz_client import code_generator
 from app.core import SessionDep, TransactionSessionDep
+from app.core.auth.helpers import (
+    REFRESH_TOKEN_TYPE,
+    create_access_token,
+    create_refresh_token,
+)
+from app.core.auth.validation import (
+    get_partner_by_token_sub,
+    get_refresh_token_payload,
+    validate_token_type,
+)
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
-    DuplicateValueException,
     NotFoundException,
     TooManyRequestsException,
     UnauthorizedException,
@@ -38,6 +34,7 @@ from app.core.exceptions.http_exceptions import (
 # from app.api.user.schemas import UserRead
 # from app.core.utils.eskiz_client import code_generator
 from app.core.utils import redis_sms
+from app.core.utils.send_sms import send_verification_sms
 
 from ..dao import PartnerDAO
 from ..dependencies import get_current_auth_partner
@@ -52,7 +49,7 @@ REFRESH_TOKEN_KEY = "refresh_token"
 
 router = APIRouter(
     tags=["Partners"],
-    prefix="/partners/auth",
+    prefix="/auth",
 )
 
 
@@ -111,14 +108,14 @@ async def verify_phone_number(
     )
     if not db_partner:
         raise NotFoundException("User not found")
-    user_internal_dict = verify_data.model_dump()
-    del user_internal_dict["code"]
+
     await PartnerDAO.update(
         session=session,
         filters=PartnerFilter(
             id=db_partner.id,
         ),
         values=PartnerUpdateInternal(
+            phone_number=verify_data.phone_number,
             is_active=True,
             is_verified=True,
             is_fully_registered=True,
@@ -195,11 +192,11 @@ async def refresh_access_token(
         refresh_token=token,
     )
     validate_token_type(payload, REFRESH_TOKEN_TYPE)
-    user = await get_user_by_token_sub(
+    partner = await get_partner_by_token_sub(
         session=session,
         payload=payload,
     )
-    new_access_token = await create_access_token(user)
+    new_access_token = await create_access_token(partner)
     return TokenInfo(
         access_token=new_access_token,
         token_type="Bearer",

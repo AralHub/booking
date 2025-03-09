@@ -25,6 +25,7 @@ from app.api.booking.router import router as booking_router
 from app.api.locations.router import router as location_router
 from app.api.room.router import router as room_router
 from app.api.review.router import router as review_router
+from app.api.partner.routes import router as partner_router
 from app.core.config import settings
 
 main_router = APIRouter(

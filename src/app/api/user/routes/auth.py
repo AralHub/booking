@@ -11,6 +11,16 @@ from app.api.user.schemas import (
     VerifyPhoneNumber,
 )
 from app.core import SessionDep, TransactionSessionDep
+from app.core.auth.helpers import (
+    REFRESH_TOKEN_TYPE,
+    create_access_token,
+    create_refresh_token,
+)
+from app.core.auth.validation import (
+    get_refresh_token_payload,
+    get_user_by_token_sub,
+    validate_token_type,
+)
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
@@ -18,20 +28,10 @@ from app.core.exceptions.http_exceptions import (
     UnauthorizedException,
 )
 from app.core.utils import redis_sms
+from app.core.utils.send_sms import send_verification_sms
 
 from ..dao import TokenBlacklistDAO, UserDAO
-from ..functions.dependencies import get_current_auth_user
-from ..functions.helpers import (
-    REFRESH_TOKEN_TYPE,
-    create_access_token,
-    create_refresh_token,
-)
-from ..functions.utils import send_verification_sms
-from ..functions.validation import (
-    get_refresh_token_payload,
-    get_user_by_token_sub,
-    validate_token_type,
-)
+from ..dependencies import get_current_auth_user
 
 REFRESH_TOKEN_KEY = "refresh_token"
 router = APIRouter(prefix=settings.api.auth)

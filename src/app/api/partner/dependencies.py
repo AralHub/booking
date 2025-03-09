@@ -4,13 +4,13 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.partner.schemas import PartnerBase
-from app.api.user.functions.helpers import ACCESS_TOKEN_TYPE
-from app.api.user.functions.validation import (
+from app.core import db_helper
+from app.core.auth.helpers import ACCESS_TOKEN_TYPE
+from app.core.auth.validation import (
     get_current_token_payload,
-    get_user_by_token_sub,
+    get_partner_by_token_sub,
     validate_token_type,
 )
-from app.core import db_helper
 from app.core.exceptions.http_exceptions import (
     UnauthorizedException,
 )
@@ -29,7 +29,7 @@ class PartnerGetterFromToken:
         session: AsyncSession = Depends(db_helper.session_getter),
     ):
         validate_token_type(payload, self.token_type)
-        user = await get_user_by_token_sub(session, payload)
+        user = await get_partner_by_token_sub(session, payload)
         if not user:
             raise UnauthorizedException("Inactive user")
         return user

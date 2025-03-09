@@ -20,13 +20,14 @@ from app.core.exceptions.http_exceptions import (
     TooManyRequestsException,
 )
 from app.core.utils import redis_sms
+from app.core.utils.send_sms import send_verification_sms
 
 from ..dao import UserDAO
-from ..functions.dependencies import get_current_active_auth_user, get_current_auth_user
-from ..functions.utils import send_verification_sms
+from ..dependencies import (
+    get_current_active_auth_user,
+    get_current_auth_user,
+)
 from .auth import router as auth_router
-
-# from ..functions.validation import get_current_token_payload
 
 # from app.core.utils.eskiz_client import code_generator
 
