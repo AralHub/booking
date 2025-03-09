@@ -2,7 +2,6 @@ import logging
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, UploadFile
-from slugify import slugify as slugify_func
 
 from app.api.images.dao import HotelImageDAO, RoomImageDAO
 from app.api.images.schemas import (
@@ -50,7 +49,6 @@ from app.core.exceptions.http_exceptions import (
     NotFoundException,
 )
 from app.core.utils import file_utils
-from app.core.utils.parse_date import parse_time
 
 # from slugify import slugify
 # from app.api.user.functions.dependencies import get_current_active_auth_user
@@ -70,7 +68,6 @@ from .schemas import (
     HotelInfoUpdate,
     HotelInfoUpdateInternal,
     HotelNameBase,
-    HotelNameCreateInternal,
     HotelNameFilter,
 )
 
@@ -102,76 +99,10 @@ async def create_hotel(
     hotel_create_data: HotelFullCreate,
     session=TransactionSessionDep,
 ):
-    # Validate hotel category exists
-    db_hotel_category = await HotelCategoryDAO.get_one_or_none(
+    return await HotelDAO.create_new_hotel(
         session=session,
-        filters=HotelCategoryFilter(id=hotel_create_data.hotel_category_id),
+        hotel_create_data=hotel_create_data,
     )
-    if not db_hotel_category:
-        raise NotFoundException("Hotel category not found")
-    generated_slug = slugify_func(hotel_create_data.name)
-    hotel_create_internal = HotelNameCreateInternal(
-        name=hotel_create_data.name,
-        description=hotel_create_data.description,
-        slug=generated_slug,
-        hotel_category_id=hotel_create_data.hotel_category_id,
-        hotel_admin_id=1,  # TODO: Get from current user
-        is_active=False,
-        created_at=datetime.now(UTC),
-    )
-    # Create main hotel record
-    db_hotel = await HotelDAO.create(
-        session=session,
-        values=hotel_create_internal,
-    )
-    # Create hotel info
-    await HotelInfoDAO.create(
-        session=session,
-        values=HotelInfoCreateInternal(
-            hotel_id=db_hotel.id,
-            first_phone_number=hotel_create_data.information_for_guests.first_phone_for_guests,
-            second_phone_number=hotel_create_data.information_for_guests.second_phone_for_guests,
-            email=hotel_create_data.information_for_guests.email_for_guests,
-            site_url=hotel_create_data.information_for_guests.site_url,
-        ),
-    )
-    # Create location record
-    await LocationDAO.create(
-        session=session,
-        values=LocationCreateInternal(
-            hotel_id=db_hotel.id,
-            address=hotel_create_data.address,
-            latitude=hotel_create_data.latitude,
-            longitude=hotel_create_data.longitude,
-            city_id=hotel_create_data.city_id,
-        ),
-    )
-    # Create hotel rules
-    await RuleDAO.create(
-        session=session,
-        values=RuleCreateInternal(
-            hotel_id=db_hotel.id,
-            check_in_from=(
-                parse_time(hotel_create_data.information_for_booking.check_in)
-                if hotel_create_data.information_for_booking.check_in
-                else None
-            ),
-            check_out_from=(
-                parse_time(hotel_create_data.information_for_booking.check_out)
-                if hotel_create_data.information_for_booking.check_out
-                else None
-            ),
-        ),
-    )
-    # Add hotel amenities
-    if hotel_create_data.facilities:
-        await HotelDAO.add_hotel_amenities(
-            session=session,
-            hotel_id=db_hotel.id,
-            hotel_amenities_data=hotel_create_data.facilities,
-        )
-
-    return db_hotel
 
 
 @router.put("/{hotel_id}")
@@ -180,29 +111,14 @@ async def update_hotel(
     hotel_id: int,
     session=TransactionSessionDep,
 ):
-    return await HotelDAO.update(
+    return await HotelDAO.update_hotel(
         session=session,
-        values=hotel_update_data,
-        filters=HotelNameFilter(
-            id=hotel_id,
-        ),
-    )
-
-
-@router.delete("/{hotel_id}")
-async def delete_hotel(
-    hotel_id: int,
-    session=TransactionSessionDep,
-):
-    return await HotelDAO.delete(
-        session=session,
-        filters=HotelNameFilter(id=hotel_id),
+        hotel_update_data=hotel_update_data,
+        hotel_id=hotel_id,
     )
 
 
 # endregion
-
-
 # region Hotel Info
 
 

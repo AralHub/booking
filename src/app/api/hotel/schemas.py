@@ -8,6 +8,9 @@ from app.api.user.schemas import PHONE_NUMBER_FIELD, PHONE_NUMBER_FIELD_UPDATE
 NAME_MAX_LENGTH = 255
 NAME_MIN_LENGTH = 3
 URL_PATTERN = r"^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$"
+TIME_PATTERN = r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
+
+
 NAME_FIELD = Annotated[
     str,
     Field(
@@ -46,13 +49,31 @@ SITE_URL_FIELD_UPDATE = Annotated[
         default=None,
     ),
 ]
+TIME_FIELD = Annotated[
+    str,
+    Field(
+        pattern=TIME_PATTERN,
+        examples=["14:30"],
+        description="Time in 24-hour format (HH:MM)",
+    ),
+]
+TIME_FIELD_UPDATE = Annotated[
+    str | None,
+    Field(
+        pattern=TIME_PATTERN,
+        examples=["14:30"],
+        description="Time in 24-hour format (HH:MM)",
+        default=None,
+    ),
+]
+
 
 # region Hotel Full
 
 
 class BookingInformation(BaseModel):
-    check_in: str  # Format: "HH:MM"
-    check_out: str  # Format: "HH:MM"
+    check_in: TIME_FIELD
+    check_out: TIME_FIELD
     star_rating: int | None = None
 
 
@@ -82,12 +103,34 @@ class HotelFullCreateInternal(HotelFullCreate):
     slug: str | None = None
 
 
+class BookingInformationUpdate(BaseModel):
+    check_in: TIME_FIELD_UPDATE
+    check_out: TIME_FIELD_UPDATE
+    star_rating: int | None = None
+
+
+class GuestInformationUpdate(BaseModel):
+    email_for_guests: EMAIL_FIELD_UPDATE
+    first_phone_for_guests: PHONE_NUMBER_FIELD_UPDATE
+    second_phone_for_guests: PHONE_NUMBER_FIELD_UPDATE
+    site_url: SITE_URL_FIELD_UPDATE
+
+
 class HotelFullUpdate(BaseModel):
-    pass
+    name: NAME_FIELD_UPDATE
+    hotel_category_id: int | None = None
+    description: str | None = None
+    address: str | None = None
+    city_id: int | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    facilities: list[int] | None = None
+    information_for_booking: BookingInformationUpdate
+    information_for_guests: GuestInformationUpdate
 
 
 class HotelFullUpdateInternal(HotelFullUpdate):
-    pass
+    hotel_id: int
 
 
 # endregion
@@ -125,9 +168,14 @@ class HotelNameUpdate(BaseModel):
     hotel_category_id: int | None = None
 
 
+class HotelNameUpdateInternal(HotelNameUpdate):
+    id: int
+
+
 class HotelNameFilter(BaseModel):
     id: int | None = None
     name: NAME_FIELD_UPDATE = None
+    description: str | None = None
     slug: str | None = None
     hotel_category_id: int | None = None
 
@@ -170,11 +218,11 @@ class HotelInfoUpdateInternal(HotelInfoUpdate):
 
 class HotelInfoFilter(BaseModel):
     id: int | None = None
+    hotel_id: int | None = None
     first_phone_number: str | None = None
     second_phone_number: str | None = None
     email: EMAIL_FIELD_UPDATE
     site_url: SITE_URL_FIELD_UPDATE
-    hotel_id: int | None = None
 
 
 # endregion

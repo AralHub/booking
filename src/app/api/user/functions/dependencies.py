@@ -54,7 +54,7 @@ async def get_current_superadmin_user(
 ):
     if user.is_superuser:
         return user
-    raise UnauthorizedException("User is not superadmin")
+    raise UnauthorizedException("User is not superuser")
 
 
 async def get_optional_user(

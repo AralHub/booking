@@ -14,9 +14,10 @@ from app.api.room.models import (
 
 
 from app.api.user.routes.user import router as user_router
-from app.api.user.routes.auth import router as auth_router
+
+# from app.api.user.routes.auth import router as auth_router
 from app.api.user.routes.superuser import router as superuser_router
-from app.api.partner.router import router as partner_router
+from app.api.partner.routes.auth import router as partner_router
 from app.api.hotel.router import router as hotel_router
 from app.api.amenity.hotel_amenity.router import router as hotel_amenity_router
 from app.api.amenity.room_amenity.router import router as room_amenity_router
@@ -29,11 +30,15 @@ from app.core.config import settings
 main_router = APIRouter(
     prefix=settings.api.prefix,
 )
-main_router.include_router(
-    auth_router,
-)
+# main_router.include_router(
+#     auth_router,
+# )
 main_router.include_router(
     user_router,
+    prefix=settings.api_v1.prefix,
+)
+main_router.include_router(
+    partner_router,
     prefix=settings.api_v1.prefix,
 )
 main_router.include_router(

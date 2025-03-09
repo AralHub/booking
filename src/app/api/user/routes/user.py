@@ -19,10 +19,12 @@ from app.core.exceptions.http_exceptions import (
     NotFoundException,
     TooManyRequestsException,
 )
-from app.core.utils import redis_sms, task_queue
+from app.core.utils import redis_sms
 
 from ..dao import UserDAO
-from ..functions.dependencies import get_current_active_auth_user
+from ..functions.dependencies import get_current_active_auth_user, get_current_auth_user
+from ..functions.utils import send_verification_sms
+from .auth import router as auth_router
 
 # from ..functions.validation import get_current_token_payload
 
@@ -32,6 +34,7 @@ router = APIRouter(
     tags=["Users"],
     prefix=settings.api_v1.user_prefix,
 )
+router.include_router(auth_router)
 
 
 @router.get("/me", response_model=UserRead)
@@ -41,10 +44,10 @@ async def get_my_profile(
     return user
 
 
-@router.patch("", status_code=status.HTTP_200_OK)
+@router.put("", status_code=status.HTTP_200_OK)
 async def update_profile(
     user_update: UserUpdate,
-    current_user: UserRead = Depends(get_current_active_auth_user),
+    current_user: UserRead = Depends(get_current_auth_user),
     session=TransactionSessionDep,
 ):
     user_update_dict = user_update.model_dump(
@@ -52,6 +55,7 @@ async def update_profile(
     )
     update_internal = UserUpdateInternal(
         **user_update_dict,
+        is_active=True,
         updated_at=datetime.now(UTC),
     )
     updated_rows_count = await UserDAO.update(
@@ -85,25 +89,9 @@ async def change_phone_number(
         raise DuplicateValueException("Phone number is already registered")
     if await redis_sms.is_blocked(user_update.phone_number):
         raise TooManyRequestsException("Phone number is blocked. Try again in an hour")
-    code = "12345"
-    # code = code_generator()
-    success, message = await redis_sms.save_sms_code(
-        phone=new_phone_number,
-        code=code,
-    )
+    success, message = await send_verification_sms(new_phone_number)
     if not success:
         raise TooManyRequestsException(message)
-    message = f"{settings.eskiz.ESKIZ_TEMPLATE_TEXT} {code}"
-    # await task_queue.pool.enqueue_job(
-    #     "send_sms_task",
-    #     message=message,
-    #     phone_number=change_phone_number.phone_number,
-    # )
-    await task_queue.pool.enqueue_job(
-        "send_sms_code",
-        message=message,
-        phone_number=new_phone_number,
-    )
     return {
         "message": "Verification code sent successfully",
         "phone_number": new_phone_number,

@@ -1,0 +1,46 @@
+from fastapi import (
+    Depends,
+)
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.partner.schemas import PartnerBase
+from app.api.user.functions.helpers import ACCESS_TOKEN_TYPE
+from app.api.user.functions.validation import (
+    get_current_token_payload,
+    get_user_by_token_sub,
+    validate_token_type,
+)
+from app.core import db_helper
+from app.core.exceptions.http_exceptions import (
+    UnauthorizedException,
+)
+from app.core.logger import logging
+
+logger = logging.getLogger(__name__)
+
+
+class PartnerGetterFromToken:
+    def __init__(self, token_type: str):
+        self.token_type = token_type
+
+    async def __call__(
+        self,
+        payload: dict = Depends(get_current_token_payload),
+        session: AsyncSession = Depends(db_helper.session_getter),
+    ):
+        validate_token_type(payload, self.token_type)
+        user = await get_user_by_token_sub(session, payload)
+        if not user:
+            raise UnauthorizedException("Inactive user")
+        return user
+
+
+get_current_auth_partner = PartnerGetterFromToken(ACCESS_TOKEN_TYPE)
+
+
+async def get_current_active_auth_partner(
+    partner: PartnerBase = Depends(get_current_auth_partner),
+):
+    if partner.is_active:
+        return partner
+    raise UnauthorizedException("Inactive user")

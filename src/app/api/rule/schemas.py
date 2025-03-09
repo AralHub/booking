@@ -1,13 +1,13 @@
-from datetime import time
-
 from pydantic import BaseModel
+
+from app.api.hotel.schemas import TIME_FIELD, TIME_FIELD_UPDATE
 
 
 class RuleBase(BaseModel):
-    check_in_from: time
-    check_in_until: time | None = None
-    check_out_from: time
-    check_out_until: time | None = None
+    check_in_from: TIME_FIELD
+    check_in_until: TIME_FIELD_UPDATE
+    check_out_from: TIME_FIELD
+    check_out_until: TIME_FIELD_UPDATE
 
 
 class RuleCreate(RuleBase):
@@ -19,10 +19,10 @@ class RuleCreateInternal(RuleCreate):
 
 
 class RuleUpdate(BaseModel):
-    check_in_from: time | None = None
-    check_in_until: time | None = None
-    check_out_from: time | None = None
-    check_out_until: time | None = None
+    check_in_from: TIME_FIELD_UPDATE
+    check_in_until: TIME_FIELD_UPDATE
+    check_out_from: TIME_FIELD_UPDATE
+    check_out_until: TIME_FIELD_UPDATE
 
 
 class RuleUpdateInternal(RuleUpdate):
@@ -31,7 +31,8 @@ class RuleUpdateInternal(RuleUpdate):
 
 class RuleFilter(BaseModel):
     id: int | None = None
-    check_in_from: time | None = None
-    check_in_until: time | None = None
-    check_out_from: time | None = None
-    check_out_until: time | None = None
+    hotel_id: int | None = None
+    check_in_from: TIME_FIELD_UPDATE | None = None
+    check_in_until: TIME_FIELD_UPDATE | None = None
+    check_out_from: TIME_FIELD_UPDATE | None = None
+    check_out_until: TIME_FIELD_UPDATE | None = None

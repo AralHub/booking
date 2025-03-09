@@ -106,7 +106,6 @@ class HotelInfo(IntIdPkMixin, Base):
     )
     email: Mapped[str] = mapped_column(
         String(255),
-        unique=True,
         nullable=True,
         default=None,
         server_default=None,

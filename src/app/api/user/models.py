@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import TIMESTAMP, Date, ForeignKey, String, text
+from sqlalchemy import TIMESTAMP, Date, ForeignKey, String
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -12,6 +12,11 @@ from app.core.db.model_mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMix
 if TYPE_CHECKING:
     from app.api.booking.models import Booking
     from app.api.review.models import Review
+
+
+class USER_ROLES(str, Enum):
+    SUPERADMIN = "superadmin"
+    USER = "user"
 
 
 class GENDER_TYPES(str, Enum):
@@ -26,13 +31,6 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         nullable=False,
         index=True,
     )
-    email: Mapped[str] = mapped_column(
-        String(255),
-        unique=True,
-        nullable=True,
-        default=None,
-        server_default=None,
-    )
     password: Mapped[str] = mapped_column(
         String,
         nullable=True,
@@ -40,21 +38,20 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         server_default=None,
     )
     first_name: Mapped[str] = mapped_column(
-        String(30),
-        nullable=False,
+        String(255),
+        nullable=True,
     )
     last_name: Mapped[str] = mapped_column(
-        String(30),
-        nullable=False,
+        String(255),
+        nullable=True,
     )
-    birthday: Mapped[datetime] = mapped_column(
+    birthday: Mapped[date] = mapped_column(
         Date,
         nullable=True,
     )
     gender: Mapped[GENDER_TYPES] = mapped_column(
         SqlEnum(GENDER_TYPES, name="gender_types"),
-        default=GENDER_TYPES.MALE,
-        server_default=text("'MALE'"),
+        nullable=True,
     )
 
     is_verified: Mapped[bool] = mapped_column(
@@ -73,9 +70,11 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         default=False,
         server_default="false",
     )
-
     # relationships
-    country_id: Mapped[int] = mapped_column(ForeignKey("countries.id"))
+    country_id: Mapped[int] = mapped_column(
+        ForeignKey("countries.id"),
+        nullable=True,
+    )
     bookings: Mapped[list["Booking"]] = relationship(
         "Booking",
         back_populates="user",
@@ -84,19 +83,6 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         "Review",
         back_populates="user",
     )
-    role: Mapped["UserRole"] = relationship(
-        "UserRole",
-        back_populates="user",
-    )
-
-
-class UserRole(IntIdPkMixin, TimestampMixin, Base):
-    name: Mapped[str] = mapped_column(
-        String(30),
-        nullable=False,
-    )
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship(back_populates="role")
 
 
 class TokenBlacklist(IntIdPkMixin, Base):

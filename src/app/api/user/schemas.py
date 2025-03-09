@@ -95,14 +95,24 @@ class VerifyPhoneNumber(PhoneNumber):
     model_config = ConfigDict(extra="forbid")
 
 
+class SuperAdminLogin(BaseModel):
+    phone_number: PHONE_NUMBER_FIELD
+    password: PASSWORD_FIELD
+
+
+class UserCreateViaPhoneNumberInternal(PhoneNumber):
+    is_active: bool = False
+    is_verified: bool = True
+    is_fully_registered: bool = False
+    model_config = ConfigDict(extra="forbid")
+
+
 # endregion
 
 
 # region User
 class UserBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
-    password: PASSWORD_FIELD
-    # email: EMAIL_FIELD
     first_name: NAME_FIELD
     last_name: NAME_FIELD
     birthday: BIRTHDAY_FIELD
@@ -112,39 +122,40 @@ class UserBase(BaseModel):
 
 class UserRead(UserBase, TimestampSchema):
     id: int
-    is_superuser: bool
     is_active: bool
     is_verified: bool
     is_fully_registered: bool
 
 
-class UserCreate(UserBase):
-    model_config = ConfigDict(extra="forbid")
+# class UserCreate(UserBase):
+#     model_config = ConfigDict(extra="forbid")
 
 
-class UserCreateInternal(UserCreate):
-    role_id: int
-    is_active: bool
-    is_verified: bool
-    is_fully_registered: bool
-
-    model_config = ConfigDict(extra="forbid")
+# class UserCreateInternal(UserCreate):
+#     is_active: bool
+#     is_verified: bool
+#     is_fully_registered: bool
+#     role: USER_ROLES = USER_ROLES.USER
+#     model_config = ConfigDict(extra="forbid")
 
 
 class UserUpdate(BaseModel):
     first_name: NAME_FIELD_UPDATE
     last_name: NAME_FIELD_UPDATE
+    birthday: BIRTHDAY_FIELD | None = None
+    gender: GENDER_FIELD | None = None
+    country_id: int | None = None
     model_config = ConfigDict(extra="forbid")
 
 
 class UserUpdateInternal(UserUpdate):
     phone_number: PHONE_NUMBER_FIELD_UPDATE
-    updated_at: datetime | None = None
     is_active: bool | None = None
     is_verified: bool | None = None
     is_fully_registered: bool | None = None
     is_deleted: bool | None = None
     deleted_at: datetime | None = None
+    updated_at: datetime | None = None
 
 
 class UserFilter(BaseModel):
@@ -152,7 +163,6 @@ class UserFilter(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
     phone_number: str | None = None
-    email: str | None = None
     birthday: datetime | None = None
     gender: GENDER_TYPES | None = None
     role_id: int | None = None

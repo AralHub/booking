@@ -126,9 +126,9 @@ class LocationUpdateInternal(LocationUpdate):
 
 class LocationFilter(BaseModel):
     id: int | None = None
+    hotel_id: int | None = None
     latitude: float | None = None
     longitude: float | None = None
-    hotel_id: int | None = None
     city_id: int | None = None
 
 
