@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from app.api.partner.schemas import PartnerBase
 from app.api.user.schemas import UserBase
 from app.core.config import settings
 
@@ -44,6 +45,21 @@ async def create_refresh_token(user: UserBase) -> str:
         "sub": str(user.id),
         "first_name": user.first_name,
         "last_name": user.last_name,
+    }
+
+    return await create_jwt(
+        token_type=REFRESH_TOKEN_TYPE,
+        token_data=jwt_payload,
+        expire_timedelta=timedelta(days=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS),
+    )
+
+
+async def create_refresh_token_partner(partner: PartnerBase) -> str:
+    jwt_payload = {
+        "sub": str(partner.id),
+        "first_name": partner.first_name,
+        "last_name": partner.last_name,
+        "role": "partner",
     }
 
     return await create_jwt(

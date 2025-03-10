@@ -1,33 +1,31 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, date
 
 from fastapi import Depends
 from slugify import slugify as slugify_func
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-
+from app.core.dao import BaseDAO
+from app.core.exceptions.http_exceptions import NotFoundException
 from app.api.amenity.hotel_amenity.dao import HotelAmenityDAO
 from app.api.amenity.hotel_amenity.models import HotelAmenityAssociation
-from app.api.locations.dao import LocationDAO
+from app.api.locations.dao import CityDAO, LocationDAO
 from app.api.locations.schemas import (
+    CityFilter,
     LocationCreateInternal,
     LocationFilter,
     LocationUpdate,
 )
+from app.api.booking.models import Booking
 from app.api.rule.dao import RuleDAO
 from app.api.rule.schemas import (
     RuleCreateInternal,
     RuleFilter,
     RuleUpdate,
 )
-from app.core.dao import BaseDAO
-from app.core.exceptions.http_exceptions import NotFoundException
 
 from .dependencies import validate_hotel_id
 
-# from slugify import slugify
-# from app.api.user.functions.dependencies import get_current_active_auth_user
-# from app.api.user.schemas import UserRead
 from .models import Hotel, HotelCategory, HotelInfo
 from .schemas import (
     HotelCategoryFilter,
@@ -120,6 +118,7 @@ class HotelDAO(BaseDAO):
         cls,
         hotel_create_data: HotelFullCreate,
         session: AsyncSession,
+        hotel_admin_id: int,
     ):
         db_hotel_category = await HotelCategoryDAO.get_one_or_none(
             session=session,
@@ -128,18 +127,26 @@ class HotelDAO(BaseDAO):
 
         if not db_hotel_category:
             raise NotFoundException("Hotel category not found")
+        db_city = await CityDAO.get_one_or_none(
+            session=session,
+            filters=CityFilter(
+                id=hotel_create_data.city_id,
+            ),
+        )
+        if not db_city:
+            raise NotFoundException("City not found")
         generated_slug = slugify_func(hotel_create_data.name)
         hotel_create_internal = HotelNameCreateInternal(
             name=hotel_create_data.name,
             description=hotel_create_data.description,
             slug=generated_slug,
             hotel_category_id=hotel_create_data.hotel_category_id,
-            hotel_admin_id=1,  # TODO: Get from current user
+            hotel_admin_id=hotel_admin_id,
             is_active=False,
             created_at=datetime.now(UTC),
         )
         # Create main hotel record
-        db_hotel = await cls.create(
+        db_hotel = await HotelDAO.create(
             session=session,
             values=hotel_create_internal,
         )
@@ -274,3 +281,35 @@ class HotelDAO(BaseDAO):
             )
 
         return hotel
+
+    @classmethod
+    async def find_hotel_for_booking(
+        cls,
+        session: AsyncSession,
+        city_id: int,
+        check_in_date: date,
+        check_out_date: date,
+        guests: str,
+    ):
+        unavailable_room_query = select(Booking.room_id, Booking.guest_quantity).where(
+            and_(
+                # Booking.status != BookingStatus.CANCELLED,
+                or_(
+                    and_(
+                        Booking.check_in_date <= check_in_date,
+                        Booking.check_out_date > check_in_date,
+                    ),
+                    and_(
+                        Booking.check_in_date < check_out_date,
+                        Booking.check_out_date >= check_out_date,
+                    ),
+                    and_(
+                        Booking.check_in_date >= check_in_date,
+                        Booking.check_out_date <= check_out_date,
+                    ),
+                ),
+            )
+        )
+        unavailable_rooms = await session.execute(unavailable_room_query)
+        unavailable_rooms = unavailable_rooms.scalars().all()
+        return unavailable_rooms

@@ -37,14 +37,17 @@ class PartnerUpdate(PartnerBase):
 
 class PartnerUpdateInternal(PartnerUpdate):
     phone_number: PHONE_NUMBER_FIELD_UPDATE
-    is_active: bool
-    is_verified: bool
-    is_fully_registered: bool
+    is_active: bool | None = None
+    is_verified: bool | None = None
+    is_fully_registered: bool | None = None
     model_config = ConfigDict(extra="forbid")
 
 
 class PartnerFilter(BaseModel):
     id: int | None = None
-    phone_number: PHONE_NUMBER_FIELD | None = None
-    first_name: NAME_FIELD | None = None
-    last_name: NAME_FIELD | None = None
+    phone_number: PHONE_NUMBER_FIELD_UPDATE | None = None
+    first_name: NAME_FIELD_UPDATE | None = None
+    last_name: NAME_FIELD_UPDATE | None = None
+    is_active: bool | None = None
+    is_verified: bool | None = None
+    is_fully_registered: bool | None = None

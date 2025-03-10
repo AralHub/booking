@@ -1,0 +1,19 @@
+from app.core import SessionDep
+from app.core.exceptions.http_exceptions import (
+    NotFoundException,
+)
+
+from .dao import CityDAO
+
+
+async def validate_city_id(
+    city_id: int,
+    session=SessionDep,
+):
+    db_city = await CityDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=city_id,
+    )
+    if not db_city:
+        raise NotFoundException("City not found")
+    return db_city

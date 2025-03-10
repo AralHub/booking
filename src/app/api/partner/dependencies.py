@@ -29,10 +29,10 @@ class PartnerGetterFromToken:
         session: AsyncSession = Depends(db_helper.session_getter),
     ):
         validate_token_type(payload, self.token_type)
-        user = await get_partner_by_token_sub(session, payload)
-        if not user:
-            raise UnauthorizedException("Inactive user")
-        return user
+        partner = await get_partner_by_token_sub(session, payload)
+        if not partner:
+            raise UnauthorizedException("Inactive partner")
+        return partner
 
 
 get_current_auth_partner = PartnerGetterFromToken(ACCESS_TOKEN_TYPE)
@@ -43,4 +43,4 @@ async def get_current_active_auth_partner(
 ):
     if partner.is_active:
         return partner
-    raise UnauthorizedException("Inactive user")
+    raise UnauthorizedException("Inactive partner")

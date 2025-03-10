@@ -3,8 +3,8 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.room.dao import RoomTypeDAO, RoomTypeVariantDAO
-from app.api.room.schemas import RoomTypeCreateInternal, RoomTypeVariantCreateInternal
+from app.api.room.dao import RoomTypeDAO
+from app.api.room.schemas import RoomTypeCreateInternal
 from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
@@ -27,28 +27,13 @@ async def create_fake_db(
                 room_type_create = RoomTypeCreateInternal(
                     name=room_type["name"],
                 )
-                room_type_db = await RoomTypeDAO.create(
+                await RoomTypeDAO.create(
                     session=session,
                     values=room_type_create,
                 )
-                # Создаем варианты комнаты
-                for variant_name in room_type["room_type_variants"]:
-                    logger.info(
-                        f"Current variant_name: {variant_name}"
-                    )  # Log variant name
-                    room_create = RoomTypeVariantCreateInternal(
-                        name=variant_name,
-                        room_type_id=room_type_db.id,
-                    )  # используем room_type.id
-                    await RoomTypeVariantDAO.create(
-                        session=session,
-                        values=room_create,
-                    )
 
             except Exception as e:
-                logger.error(
-                    f"Failed to add room type or variant {room_type.get('name', 'N/A')}: {e}"
-                )
+                logger.error(f"Failed to add room type {room_type}: {e}")
                 continue
 
         await session.commit()

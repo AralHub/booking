@@ -5,6 +5,7 @@ from jwt import InvalidTokenError
 
 from app.api.user.dao import TokenBlacklistDAO
 from app.api.user.schemas import (
+    PhoneNumber,
     RefreshToken,
     TokenInfo,
     VerifyPhoneNumber,
@@ -39,8 +40,6 @@ from app.core.utils.send_sms import send_verification_sms
 from ..dao import PartnerDAO
 from ..dependencies import get_current_auth_partner
 from ..schemas import (
-    PartnerCreate,
-    PartnerCreateInternal,
     PartnerFilter,
     PartnerUpdateInternal,
 )
@@ -53,36 +52,19 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post(
+    "/",
+    status_code=status.HTTP_201_CREATED,
+)
 async def register_partner(
-    register_data: PartnerCreate,
-    session=TransactionSessionDep,
+    partner_data: PhoneNumber,
 ):
-    success, message = await send_verification_sms(register_data.phone_number)
+    success, message = await send_verification_sms(partner_data.phone_number)
     if not success:
         raise TooManyRequestsException(message)
-    # Проверяем, существует ли партнер
-    db_partner = await PartnerDAO.get_partner_by_phone(
-        session=session,
-        phone_number=register_data.phone_number,
-    )
-    if not db_partner:
-        await PartnerDAO.create(
-            session=session,
-            values=PartnerCreateInternal(
-                **register_data.model_dump(),
-                is_active=False,
-                is_verified=False,
-                is_fully_registered=False,
-            ),
-        )
-        return {
-            "message": "Verification code sent successfully",
-            "phone_number": register_data.phone_number,
-        }
     return {
         "message": "Verification code sent successfully",
-        "phone_number": register_data.phone_number,
+        "phone_number": partner_data.phone_number,
     }
 
 

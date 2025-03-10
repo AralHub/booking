@@ -129,31 +129,3 @@ class RoomTypeFilter(BaseModel):
 
 
 # endregion
-# region RoomTypeVariant
-class RoomTypeVariantBase(BaseModel):
-    name: str
-
-
-class RoomTypeVariantCreate(RoomTypeVariantBase):
-    pass
-
-
-class RoomTypeVariantCreateInternal(RoomTypeVariantCreate):
-    room_type_id: int
-
-
-class RoomTypeVariantUpdate(BaseModel):
-    name: str | None = None
-
-
-class RoomTypeVariantUpdateInternal(RoomTypeVariantUpdate):
-    pass
-
-
-class RoomTypeVariantFilter(BaseModel):
-    id: int | None = None
-    name: str | None = None
-    room_type_id: int | None = None
-
-
-# endregion

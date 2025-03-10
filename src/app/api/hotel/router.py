@@ -1,7 +1,7 @@
 import logging
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, Query, UploadFile
 
 from app.api.images.dao import HotelImageDAO, RoomImageDAO
 from app.api.images.schemas import (
@@ -16,13 +16,15 @@ from app.api.locations.schemas import (
     LocationUpdate,
     LocationUpdateInternal,
 )
+from app.api.partner.dependencies import get_current_active_auth_partner
+from app.api.partner.schemas import PartnerRead
 from app.api.review.dao import ReviewCategoryRatingDAO, ReviewDAO
 from app.api.review.schemas import (
     ReviewCategoryCreateInternal,
     ReviewCreate,
     ReviewCreateInternal,
 )
-from app.api.room.dao import BedTypeDAO, RoomBedConfDAO, RoomDAO, RoomTypeVariantDAO
+from app.api.room.dao import BedTypeDAO, RoomBedConfDAO, RoomDAO, RoomTypeDAO
 from app.api.room.schemas import (
     BedFilter,
     RoomBedConfCreate,
@@ -31,7 +33,7 @@ from app.api.room.schemas import (
     RoomCreate,
     RoomCreateInternal,
     RoomFilter,
-    RoomTypeVariantFilter,
+    RoomTypeFilter,
     RoomUpdate,
     RoomUpdateInternal,
 )
@@ -49,6 +51,7 @@ from app.core.exceptions.http_exceptions import (
     NotFoundException,
 )
 from app.core.utils import file_utils
+from app.core.utils.parse_date import parse_date
 
 # from slugify import slugify
 # from app.api.user.functions.dependencies import get_current_active_auth_user
@@ -80,28 +83,36 @@ router = APIRouter(
 
 # region Hotel
 @router.get("/search")
-async def search_hotels(session=SessionDep):
-    pass
-    # parsed_check_in = parse_date(check_in)
-    # parsed_check_out = parse_date(check_out)
-
-    # return await HotelDAO.find_hotels(
-    #     session=session,
-    #     city_id=city_id,
-    #     check_in_date=parsed_check_in,
-    #     check_out_date=parsed_check_out,
-    #     rooms=rooms,
-    # )
+async def search_hotels(
+    city_id: int = Query(..., description="ID города"),
+    check_in: str = Query(..., description="Дата заезда"),
+    check_out: str = Query(..., description="Дата выезда"),
+    guests: str = Query(
+        ..., description="Количество гостей по комнатам, например: 3-1 для 2 комнат"
+    ),
+    session=SessionDep,
+):
+    parsed_check_in = parse_date(check_in)
+    parsed_check_out = parse_date(check_out)
+    return await HotelDAO.find_hotels(
+        session=session,
+        city_id=city_id,
+        check_in_date=parsed_check_in,
+        check_out_date=parsed_check_out,
+        guests=guests,
+    )
 
 
 @router.post("/")
 async def create_hotel(
     hotel_create_data: HotelFullCreate,
+    partner: PartnerRead = Depends(get_current_active_auth_partner),
     session=TransactionSessionDep,
 ):
     return await HotelDAO.create_new_hotel(
         session=session,
         hotel_create_data=hotel_create_data,
+        hotel_admin_id=partner.id,
     )
 
 
@@ -109,6 +120,7 @@ async def create_hotel(
 async def update_hotel(
     hotel_update_data: HotelFullUpdate,
     hotel_id: int,
+    partner: PartnerRead = Depends(get_current_active_auth_partner),
     session=TransactionSessionDep,
 ):
     return await HotelDAO.update_hotel(
@@ -320,14 +332,14 @@ async def add_room(
     hotel_room_data: RoomCreate,
     session=TransactionSessionDep,
 ):
-    db_room_type_varinat = await RoomTypeVariantDAO.get_one_or_none(
+    db_room_type = await RoomTypeDAO.get_one_or_none(
         session=session,
-        filters=RoomTypeVariantFilter(
-            id=hotel_room_data.room_type_variant_id,
+        filters=RoomTypeFilter(
+            id=hotel_room_data.room_type_id,
         ),
     )
-    if not db_room_type_varinat:
-        raise NotFoundException("Room type variant not found")
+    if not db_room_type:
+        raise NotFoundException("Room type not found")
     hotel_room_create_data = RoomCreateInternal(
         **hotel_room_data.model_dump(),
         hotel_id=hotel_id,

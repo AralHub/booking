@@ -7,7 +7,6 @@ from .dao import BookingDAO
 from .schemas import (
     BookingCreate,
     BookingFilter,
-    BookingUpdate,
 )
 
 router = APIRouter(
@@ -35,21 +34,6 @@ async def create_booking(
         session=session,
         booking_data=booking_create_data,
         user_id=5,
-    )
-
-
-@router.put("/{booking_id}")
-async def update_booking(
-    booking_update_data: BookingUpdate,
-    booking_id: int,
-    session=TransactionSessionDep,
-):
-    return await BookingDAO.update(
-        session=session,
-        values=booking_update_data,
-        filters=BookingFilter(
-            id=booking_id,
-        ),
     )
 
 
