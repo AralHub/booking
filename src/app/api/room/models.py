@@ -35,7 +35,7 @@ class RoomType(IntIdPkMixin, Base):
     name: Mapped[str] = mapped_column(String(255))
     # relationships
     # rooms: Mapped`[list["Room"]] = relationship(back_populates="room_type")
-    rooms: Mapped[list["Room"]] = relationship(back_populates="room_type_variant")
+    rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
 
 
 class RoomPrice(IntIdPkMixin, Base):

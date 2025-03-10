@@ -25,7 +25,7 @@ async def create_fake_db(
         for room_type in room_types_data["room_types"]:
             try:
                 room_type_create = RoomTypeCreateInternal(
-                    name=room_type["name"],
+                    name=room_type,
                 )
                 await RoomTypeDAO.create(
                     session=session,
