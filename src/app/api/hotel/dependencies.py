@@ -1,9 +1,12 @@
 from fastapi import Depends
 from sqlalchemy import select
 
+from app.api.user.dependencies import get_current_auth_user
+from app.api.user.schemas import UserRead
 from app.core import SessionDep
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
+    UnauthorizedException,
 )
 
 from .models import Hotel
@@ -42,3 +45,13 @@ async def validate_hotel_room_id(
     session=SessionDep,
 ):
     pass
+
+
+async def valid_hotel_admin(
+    hotel: HotelNameBase = Depends(validate_hotel_id),
+    current_user: UserRead = Depends(get_current_auth_user),
+):
+    if hotel.admin_id != current_user.id:
+        raise UnauthorizedException("Permission denied")
+
+    return hotel

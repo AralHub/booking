@@ -18,12 +18,6 @@ from app.api.locations.schemas import (
 )
 from app.api.partner.dependencies import get_current_active_auth_partner
 from app.api.partner.schemas import PartnerRead
-from app.api.review.dao import ReviewCategoryRatingDAO, ReviewDAO
-from app.api.review.schemas import (
-    ReviewCategoryCreateInternal,
-    ReviewCreate,
-    ReviewCreateInternal,
-)
 from app.api.room.dao import BedTypeDAO, RoomBedConfDAO, RoomDAO, RoomTypeDAO
 from app.api.room.schemas import (
     BedFilter,
@@ -377,7 +371,6 @@ async def update_room(
     }
 
 
-# region Room Beds
 @router.get("/{hotel_id}/rooms/{room_id}/beds")
 async def get_room_beds(
     hotel_id: int,
@@ -429,22 +422,19 @@ async def add_room_beds(
 async def add_room_amenities(
     hotel_id: int,
     room_id: int,
-    room_amenities_list: list[int],
+    room_amenities: list[int],
     session=TransactionSessionDep,
 ):
-    pass
-    # await RoomDAO.add_hotel_amenities(
-    #     session=session,
-    #     hotel_id=hotel_id,
-    #     room_id=room_id,
-    #     room_amenities_list=room_amenities_list,
-    # )
+    await RoomDAO.add_hotel_amenities(
+        session=session,
+        hotel_id=hotel_id,
+        room_id=room_id,
+        room_amenities_list=room_amenities,
+    )
     return {
         "message": "Amenities added successfully",
     }
 
-
-# endregion
 
 # endregion
 
@@ -536,37 +526,42 @@ async def add_room_image(
     photo: UploadFile,
     session=TransactionSessionDep,
 ):
-    file_path = await file_utils.save_png(
+    file_path = await file_utils.save_photo(
         file=photo,
         filename=f"room_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
-        folder=f"room_{room_id}",
+        folder=f"hotel_{hotel_id}",
     )
-    return await RoomImageDAO.create(
+    await RoomImageDAO.add_room_image(
         session=session,
-        values=RoomImageFilter(
-            hotel_id=hotel_id,
-            room_id=room_id,
-            image=file_path,
-        ),
+        room_id=room_id,
+        image=file_path,
     )
+    return {
+        "message": "Room image added successfully",
+    }
 
 
-@router.delete("/{hotel_id}/rooms/{room_id}/images/{image_id}")
+@router.delete("/{hotel_id}/rooms/images/{image_id}")
 async def delete_room_image(
     hotel_id: int,
-    room_id: int,
     image_id: int,
     session=TransactionSessionDep,
 ):
-    # image = await RoomImageDAO.get_one(
-    #     session=session,
-    #     filters=RoomImageFilter(
-    #         hotel_id=hotel_id,
-    #         room_id=room_id,
-    #         id=image_id,
-    #     ),
-    # )
-    pass
+    image = await RoomImageDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=image_id,
+    )
+    if not image:
+        raise NotFoundException("Image not found")
+    await file_utils.delete_photo(
+        photo_path=image.image,
+    )
+    await RoomImageDAO.delete(
+        session=session,
+        filters=RoomImageFilter(
+            id=image_id,
+        ),
+    )
 
 
 # endregion
@@ -615,57 +610,6 @@ async def update_hotel_rule(
             hotel_id=hotel_id,
         ),
     )
-
-
-# endregion
-
-
-# region Hotel Reviews
-@router.get("/{hotel_id}/reviews")
-async def get_hotel_reviews(
-    hotel_id: int,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
-    session=SessionDep,
-):
-    return await ReviewDAO.get_all_hotel_reviews(
-        session=session,
-        hotel_id=hotel_id,
-    )
-
-
-@router.post("/{hotel_id}/reviews")
-async def create_hotel_reviews(
-    hotel_id: int,
-    review_create_data: ReviewCreate,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
-    session=TransactionSessionDep,
-):
-
-    craeted_review = await ReviewDAO.create(
-        session=session,
-        values=ReviewCreateInternal(
-            **review_create_data.model_dump(
-                exclude={
-                    "category_ratings",
-                }
-            ),
-            hotel_id=hotel_id,
-            user_id=5,
-        ),
-    )
-    if len(review_create_data.category_ratings) > 0:
-        for review_category_rating in review_create_data.category_ratings:
-            review_category_rating_create_data = ReviewCategoryCreateInternal(
-                review_category_id=review_category_rating.review_category_id,
-                rating=review_category_rating.rating,
-                review_id=craeted_review.id,
-            )
-
-        await ReviewCategoryRatingDAO.create(
-            session=session,
-            values=review_category_rating_create_data,
-        )
-    return craeted_review
 
 
 # endregion

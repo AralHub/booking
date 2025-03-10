@@ -1,14 +1,14 @@
-from datetime import UTC, datetime, date
+from datetime import UTC, date, datetime
 
 from fastapi import Depends
 from slugify import slugify as slugify_func
-from sqlalchemy import delete, select, and_, or_, select
+from sqlalchemy import and_, delete, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from app.core.dao import BaseDAO
-from app.core.exceptions.http_exceptions import NotFoundException
+
 from app.api.amenity.hotel_amenity.dao import HotelAmenityDAO
 from app.api.amenity.hotel_amenity.models import HotelAmenityAssociation
+from app.api.booking.models import Booking
 from app.api.locations.dao import CityDAO, LocationDAO
 from app.api.locations.schemas import (
     CityFilter,
@@ -16,16 +16,16 @@ from app.api.locations.schemas import (
     LocationFilter,
     LocationUpdate,
 )
-from app.api.booking.models import Booking
 from app.api.rule.dao import RuleDAO
 from app.api.rule.schemas import (
     RuleCreateInternal,
     RuleFilter,
     RuleUpdate,
 )
+from app.core.dao import BaseDAO
+from app.core.exceptions.http_exceptions import NotFoundException
 
 from .dependencies import validate_hotel_id
-
 from .models import Hotel, HotelCategory, HotelInfo
 from .schemas import (
     HotelCategoryFilter,

@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import Float, ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
@@ -47,7 +47,6 @@ class RoomPrice(IntIdPkMixin, Base):
 
 class Room(IntIdPkMixin, Base):
     max_guests: Mapped[int] = mapped_column(nullable=True)
-    description: Mapped[str] = mapped_column(Text, nullable=True)
     image: Mapped[str] = mapped_column(String, nullable=True)
     quantity: Mapped[int] = mapped_column(
         Integer,
