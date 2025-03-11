@@ -4,12 +4,8 @@ from app.core.config import settings
 
 from .hotel import router as hotel_router
 from .partner import router as partner_router
-from .user import (
-    router as user_router,
-)
-from .user.superuser import (
-    router as superuser_router,
-)
+from .superuser import router as superuser_router
+from .user import router as user_router
 
 router = APIRouter(
     prefix=settings.api_v1.prefix,
@@ -21,9 +17,10 @@ router.include_router(
 router.include_router(
     partner_router,
 )
-router.include_router(
-    superuser_router,
-)
+
 router.include_router(
     hotel_router,
+)
+router.include_router(
+    superuser_router,
 )

@@ -12,11 +12,11 @@ from app.schemas.hotel.category import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
-    tags=["Hotel Categories"],
+    prefix="/hotel-categories",
 )
 
 
-@router.get("/categories")
+@router.get("")
 async def get_hotel_categories(
     session=SessionDep,
 ):
@@ -26,7 +26,7 @@ async def get_hotel_categories(
     )
 
 
-@router.post("/categories")
+@router.post("")
 async def create_hotel_category(
     hotel_category_create_data: HotelCategoryCreate,
     session=TransactionSessionDep,
@@ -37,7 +37,7 @@ async def create_hotel_category(
     )
 
 
-@router.put("/categories/{category_id}")
+@router.put("/{category_id}")
 async def update_hotel_category(
     category_update_data: HotelCategoryUpdate,
     category_id: int,
@@ -50,7 +50,7 @@ async def update_hotel_category(
     )
 
 
-@router.delete("/categories/{category_id}")
+@router.delete("/{category_id}")
 async def delete_hotel_category(
     category_id: int,
     session=TransactionSessionDep,

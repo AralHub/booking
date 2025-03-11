@@ -15,10 +15,7 @@ from app.schemas.user import (
     TokenInfo,
 )
 
-router = APIRouter(
-    tags=["Superuser"],
-    prefix=settings.api_v1.superuser_prefix,
-)
+router = APIRouter(prefix="/auth")
 
 
 @router.post("/login", response_model=TokenInfo)
