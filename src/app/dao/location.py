@@ -1,4 +1,4 @@
-from app.core.dao import BaseDAO
+from app.dao import BaseDAO
 from app.models.location import City, Country
 
 

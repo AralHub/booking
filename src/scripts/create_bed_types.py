@@ -3,11 +3,11 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.room.dao import BedTypeDAO
-from app.api.room.schemas import BedFilter
 from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
+from app.dao.room import BedTypeDAO
+from app.schemas.room import BedFilter
 
 logger = logging.getLogger(__name__)
 

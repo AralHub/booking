@@ -3,19 +3,19 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.amenity.hotel_amenity.dao import HotelAmenityCategoryDAO, HotelAmenityDAO
-from app.api.amenity.hotel_amenity.schemas import (
-    HotelAmenityCategoryFilter,
-    HotelAmenityFilter,
-)
-from app.api.amenity.room_amenity.dao import RoomAmenityCategoryDAO, RoomAmenityDAO
-from app.api.amenity.room_amenity.schemas import (
-    RoomAmenityCategoryFilter,
-    RoomAmenityFilter,
-)
 from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
+from app.dao.hotel.amenities import HotelAmenityCategoryDAO, HotelAmenityDAO
+from app.dao.room.amenities import RoomAmenityCategoryDAO, RoomAmenityDAO
+from app.schemas.hotel.amenities import (
+    HotelAmenityCategoryFilter,
+    HotelAmenityFilter,
+)
+from app.schemas.room.amenities import (
+    RoomAmenityCategoryFilter,
+    RoomAmenityFilter,
+)
 
 logger = logging.getLogger(__name__)
 

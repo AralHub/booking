@@ -2,9 +2,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.core.dao import BaseDAO
+from app.dao import BaseDAO
 
-from .models import Review, ReviewCategory, ReviewCategoryRating
+from app.models.review import Review, ReviewCategory, ReviewCategoryRating
 
 
 class ReviewDAO(BaseDAO):

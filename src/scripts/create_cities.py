@@ -3,11 +3,11 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.locations.dao import CityDAO, CountryDAO
-from app.api.locations.schemas import CityFilter, CountryFilter
 from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
+from app.dao.location import CityDAO, CountryDAO
+from app.schemas.location import CityFilter, CountryFilter
 
 logger = logging.getLogger(__name__)
 

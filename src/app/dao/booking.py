@@ -1,15 +1,14 @@
-
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.room.dao import RoomDAO
-from app.api.room.models import Room
-from app.api.user.dao import UserDAO
-from app.core.dao import BaseDAO
-from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
+from app.dao import BaseDAO
+from app.dao.room import RoomDAO
+from app.models.booking import Booking, BookingStatus
+from app.models.room import Room
+from app.models.user import User
 
-from .models import Booking, BookingStatus
-from .schemas import BookingCreate, BookingCreateInternal
+from app.models.booking import Booking, BookingStatus
+from app.schemas.booking import BookingCreate, BookingCreateInternal
 
 
 class BookingDAO(BaseDAO):

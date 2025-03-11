@@ -1,7 +1,7 @@
 # from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.dao import BaseDAO
+from app.dao import BaseDAO
 
-from .models import Language
+from app.models.language import Language
 
 
 class LanguageDAO(BaseDAO):

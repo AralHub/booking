@@ -17,8 +17,8 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import db_helper
+from app.core.auth.utils import hash_password
 from app.core.config import settings
-from app.core.utils.auth_utils import hash_password
 from app.models.user import User
 
 logging.basicConfig(level=logging.INFO)
