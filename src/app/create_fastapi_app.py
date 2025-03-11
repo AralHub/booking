@@ -12,8 +12,8 @@ from fastapi.openapi.docs import (
 from fastapi.responses import JSONResponse
 from redis.asyncio import ConnectionPool, Redis
 
-from app.api.user.dependencies import get_current_superadmin_user
-from app.core import Base, db_helper
+from app.api.dependencies.user import get_current_superadmin_user
+from app.core import db_helper
 
 # from app.core.utils import queue, rate_limit, cache,redis_client
 # from arq import create_pool
@@ -21,6 +21,7 @@ from app.core import Base, db_helper
 from app.core.config import EnvironmentOption, settings
 from app.core.logger import logging
 from app.core.utils import redis_client, task_queue
+from app.models import Base
 
 logger = logging.getLogger(__name__)
 

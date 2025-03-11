@@ -6,11 +6,11 @@ from fastapi.security.http import HTTPAuthorizationCredentials
 from jwt import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.partner.dao import PartnerDAO
-from app.api.partner.schemas import PartnerBase
-from app.api.user.dao import TokenBlacklistDAO, UserDAO
-from app.api.user.schemas import UserBase, UserFilter
 from app.core.exceptions.http_exceptions import UnauthorizedException
+from app.dao.partner import PartnerDAO
+from app.dao.user import TokenBlacklistDAO, UserDAO
+from app.schemas.partner import PartnerBase
+from app.schemas.user import UserBase, UserFilter
 
 from .helpers import TOKEN_TYPE_FIELD
 from .utils import decode_jwt, verify_password

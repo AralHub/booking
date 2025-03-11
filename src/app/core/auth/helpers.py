@@ -1,8 +1,8 @@
 from datetime import timedelta
 
-from app.api.partner.schemas import PartnerBase
-from app.api.user.schemas import UserBase
 from app.core.config import settings
+from app.schemas.partner import PartnerBase
+from app.schemas.user import UserBase
 
 from .utils import encode_jwt
 

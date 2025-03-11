@@ -3,7 +3,7 @@ from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app import main_router
+from app.api.v1 import router as api_v1_router
 from app.core.config import settings
 from app.core.logger import logging
 from app.create_fastapi_app import create_app
@@ -14,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 main_app = create_app()
 
-main_app.include_router(main_router)
+main_app.include_router(
+    api_v1_router,
+    prefix=settings.api.prefix,
+)
 
 
 @main_app.exception_handler(Exception)
