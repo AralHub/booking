@@ -11,6 +11,18 @@ from app.models.room.bed import BedType, RoomBedConfiguration
 from app.models.room.types import RoomType
 
 
+class RoomTypeDAO(BaseDAO):
+    model = RoomType
+
+
+class BedTypeDAO(BaseDAO):
+    model = BedType
+
+
+class RoomBedConfDAO(BaseDAO):
+    model = RoomBedConfiguration
+
+
 class RoomDAO(BaseDAO):
     model = Room
 
@@ -67,15 +79,3 @@ class RoomDAO(BaseDAO):
 
         room_with_availability = result.scalar()
         return room_with_availability
-
-
-class RoomTypeDAO(BaseDAO):
-    model = RoomType
-
-
-class BedTypeDAO(BaseDAO):
-    model = BedType
-
-
-class RoomBedConfDAO(BaseDAO):
-    model = RoomBedConfiguration
