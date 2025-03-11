@@ -8,7 +8,7 @@ from app.core.exceptions.http_exceptions import (
     UnauthorizedException,
 )
 from app.models.hotel import Hotel
-from app.schemas.hotel import HotelNameBase
+from app.schemas.hotel.info import HotelNameBase
 from app.schemas.user import UserRead
 
 

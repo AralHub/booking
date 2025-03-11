@@ -13,7 +13,7 @@ from app.schemas.hotel.location import (
 )
 
 
-class LocationDAO(BaseDAO):
+class HotelLocationDAO(BaseDAO):
     model = HotelLocation
 
     @classmethod
@@ -77,7 +77,7 @@ class LocationDAO(BaseDAO):
         #     to_city_center_request
         # )
 
-        return await LocationDAO.create(
+        return await HotelLocationDAO.create(
             session=session,
             values=LocationCreateInternal(
                 **location_create_data.model_dump(),

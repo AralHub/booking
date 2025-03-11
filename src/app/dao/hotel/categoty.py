@@ -1,12 +1,7 @@
 from app.dao import BaseDAO
-from app.core.exceptions.http_exceptions import NotFoundException
 
-from app.models.hotel import HotelCategory, HotelInfo
+from app.models.hotel.category import HotelCategory
 
 
 class HotelCategoryDAO(BaseDAO):
     model = HotelCategory
-
-
-class HotelInfoDAO(BaseDAO):
-    model = HotelInfo

@@ -5,10 +5,9 @@ from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
 )
+from app.dao.room import BedTypeDAO, RoomBedConfDAO, RoomDAO, RoomTypeDAO
 from app.schemas.hotel import HotelNameBase
-
-from .dao import BedTypeDAO, RoomBedConfDAO, RoomDAO, RoomTypeDAO
-from .schemas import (
+from app.schemas.room import (
     BedFilter,
     RoomBedConfCreate,
     RoomBedConfCreateInternal,

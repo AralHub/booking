@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.dao.hotel.amenities import HotelAmenityDAO
-from app.dao.hotel.location import LocationDAO
+from app.dao.hotel.location import HotelLocationDAO
 from app.dao.location import CityDAO
 from app.models.hotel.amenities import HotelAmenityAssociation
 from app.models.booking import Booking
@@ -27,11 +27,13 @@ from app.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 
 from app.api.dependencies.hotel import validate_hotel_id
-from app.models.hotel import Hotel, HotelCategory, HotelInfo
-from app.schemas.hotel import (
-    HotelCategoryFilter,
-    HotelFullCreate,
-    HotelFullUpdate,
+from app.dao.hotel.categoty import HotelCategoryDAO
+from app.dao.hotel.info import HotelInfoDAO
+from app.models.hotel import Hotel
+from app.models.hotel.category import HotelCategory
+from app.schemas.hotel.category import HotelCategoryFilter
+from app.schemas.hotel.info import HotelInfoFilter, HotelInfoUpdate
+from app.schemas.hotel.info import (
     HotelInfoCreateInternal,
     HotelInfoFilter,
     HotelInfoUpdate,
@@ -40,8 +42,7 @@ from app.schemas.hotel import (
     HotelNameFilter,
     HotelNameUpdate,
 )
-
-from .categoty import HotelCategoryDAO, HotelInfoDAO
+from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
 
 
 class HotelDAO(BaseDAO):
@@ -157,7 +158,7 @@ class HotelDAO(BaseDAO):
             ),
         )
         # Create location record
-        await LocationDAO.create(
+        await HotelLocationDAO.create(
             session=session,
             values=LocationCreateInternal(
                 hotel_id=db_hotel.id,
@@ -238,7 +239,7 @@ class HotelDAO(BaseDAO):
             ),
         )
         # Create location record
-        await LocationDAO.update(
+        await HotelLocationDAO.update(
             session=session,
             values=LocationUpdate(
                 address=hotel_update_data.address,

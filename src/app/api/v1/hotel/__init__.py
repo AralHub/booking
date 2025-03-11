@@ -14,7 +14,12 @@ from app.schemas.hotel import (
 )
 from app.schemas.partner import PartnerRead
 
+from .amenities import router as amenities_router
+from .category import router as category_router
 from .images import router as images_router
+from .info import router as info_router
+from .location import router as location_router
+from .rules import router as rules_router
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
@@ -71,4 +76,9 @@ async def update_hotel(
     )
 
 
+router.include_router(amenities_router)
+router.include_router(location_router)
+router.include_router(info_router)
 router.include_router(images_router)
+router.include_router(rules_router)
+router.include_router(category_router)

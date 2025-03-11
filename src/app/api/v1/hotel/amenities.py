@@ -6,7 +6,7 @@ from app.dao.hotel.amenities import (
     HotelAmenityCategoryDAO,
     HotelAmenityDAO,
 )
-from app.models.hotel.amenities import (
+from app.schemas.hotel.amenities import (
     HotelAmenityCategoryCreate,
     HotelAmenityCreate,
     HotelAmenityFilter,

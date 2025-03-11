@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from .models import PaymentType
+from app.models.hotel.amenities import PaymentType
 
 
 # region HotelAmenity

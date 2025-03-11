@@ -4,9 +4,8 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_id
 from app.core import TransactionSessionDep
-from app.core.config import settings
 from app.dao.hotel import HotelInfoDAO
-from app.schemas.hotel import (
+from app.schemas.hotel.info import (
     HotelInfoCreate,
     HotelInfoCreateInternal,
     HotelInfoFilter,
@@ -18,8 +17,7 @@ from app.schemas.hotel import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
-    tags=["Hotel Infos"],
-    prefix=settings.api_v1.hotel_prefix,
+    tags=["Hotel Info"],
 )
 
 

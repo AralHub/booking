@@ -11,21 +11,14 @@ if TYPE_CHECKING:
         HotelAmenity,
         HotelAmenityAssociation,
     )
+    from app.models.hotel.category import HotelCategory
     from app.models.hotel.images import HotelImage
+    from app.models.hotel.info import HotelInfo
     from app.models.hotel.location import HotelLocation
     from app.models.hotel.rules import Rule
     from app.models.partner import Partner
     from app.models.review import Review
     from app.models.room import Room
-
-
-class HotelCategory(IntIdPkMixin, Base):
-    __tablename__ = "hotel_categories"
-    name: Mapped[str] = mapped_column(String(255), unique=True)
-    hotels: Mapped[list["Hotel"]] = relationship(
-        "Hotel",
-        back_populates="hotel_category",
-    )
 
 
 class Hotel(IntIdPkMixin, TimestampMixin, Base):
@@ -93,26 +86,3 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
     #     secondary="hotel_language_associations",
     #     back_populates="hotels",
     # )
-
-
-class HotelInfo(IntIdPkMixin, Base):
-    first_phone_number: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True,
-    )
-    second_phone_number: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True,
-    )
-    email: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True,
-        default=None,
-        server_default=None,
-    )
-    site_url: Mapped[str] = mapped_column(
-        String,
-        nullable=True,
-    )
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    hotel = relationship("Hotel", back_populates="hotel_info")
