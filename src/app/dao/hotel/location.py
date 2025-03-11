@@ -1,11 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.counrty.dao import CityDAO
-from app.core.dao import BaseDAO
+from app.dao.location import CityDAO
+from app.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 
-from .models import Location
-from .schemas import (
+from app.models.hotel.location import HotelLocation
+from app.schemas.hotel.location import (
     Coordinates,
     LocationCreate,
     LocationCreateInternal,
@@ -14,7 +14,7 @@ from .schemas import (
 
 
 class LocationDAO(BaseDAO):
-    model = Location
+    model = HotelLocation
 
     @classmethod
     async def add_hotel_location(

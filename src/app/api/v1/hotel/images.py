@@ -2,16 +2,13 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, UploadFile
 
-from app.api.image.dao import HotelImageDAO, RoomImageDAO
-from app.api.image.schemas import (
-    HotelImageFilter,
-    RoomImageFilter,
-)
 from app.core import SessionDep, TransactionSessionDep
-from app.core.exceptions.http_exceptions import (
-    NotFoundException,
-)
+from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
+from app.dao.hotel.images import HotelImageDAO
+from app.dao.room.images import RoomImageDAO
+from app.schemas.hotel.images import HotelImageFilter
+from app.schemas.room.images import RoomImageFilter
 
 router = APIRouter(
     tags=["Images"],

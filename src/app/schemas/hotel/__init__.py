@@ -3,7 +3,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, EmailStr, Field
 
-from app.api.user.schemas import PHONE_NUMBER_FIELD, PHONE_NUMBER_FIELD_UPDATE
+from app.schemas.user import PHONE_NUMBER_FIELD, PHONE_NUMBER_FIELD_UPDATE
 
 NAME_MAX_LENGTH = 255
 NAME_MIN_LENGTH = 3

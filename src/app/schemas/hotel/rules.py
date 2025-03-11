@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from app.api.hotel.schemas import TIME_FIELD, TIME_FIELD_UPDATE
+from app.schemas.hotel import TIME_FIELD, TIME_FIELD_UPDATE
 
 
 class RuleBase(BaseModel):

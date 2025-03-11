@@ -6,28 +6,29 @@ from sqlalchemy import and_, delete, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.api.amenity.hotel.dao import HotelAmenityDAO
-from app.api.amenity.hotel.models import HotelAmenityAssociation
-from app.api.booking.models import Booking
-from app.api.location.dao import CityDAO, LocationDAO
-from app.api.location.schemas import (
+from app.dao.hotel.amenities import HotelAmenityDAO
+from app.dao.hotel.location import LocationDAO
+from app.dao.location import CityDAO
+from app.models.hotel.amenities import HotelAmenityAssociation
+from app.models.booking import Booking
+from app.schemas.location import (
     CityFilter,
     LocationCreateInternal,
     LocationFilter,
     LocationUpdate,
 )
-from app.api.rule.dao import RuleDAO
-from app.api.rule.schemas import (
+from app.dao.hotel.rules import RuleDAO
+from app.schemas.hotel.rules import (
     RuleCreateInternal,
     RuleFilter,
     RuleUpdate,
 )
-from app.core.dao import BaseDAO
+from app.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 
-from .dependencies import validate_hotel_id
-from .models import Hotel, HotelCategory, HotelInfo
-from .schemas import (
+from app.api.dependencies.hotel import validate_hotel_id
+from app.models.hotel import Hotel, HotelCategory, HotelInfo
+from app.schemas.hotel import (
     HotelCategoryFilter,
     HotelFullCreate,
     HotelFullUpdate,

@@ -2,9 +2,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.dao import BaseDAO
+from app.dao import BaseDAO
 
-from .models import HotelAmenity, HotelAmenityCategory
+from app.models.hotel.amenities import HotelAmenity, HotelAmenityCategory
 
 
 class HotelAmenityDAO(BaseDAO):

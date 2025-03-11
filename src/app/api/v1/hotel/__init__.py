@@ -14,6 +14,8 @@ from app.schemas.hotel import (
 )
 from app.schemas.partner import PartnerRead
 
+from .images import router as images_router
+
 logger = logging.getLogger(__name__)
 router = APIRouter(
     tags=["Hotels"],
@@ -67,3 +69,6 @@ async def update_hotel(
         hotel_update_data=hotel_update_data,
         hotel_id=hotel_id,
     )
+
+
+router.include_router(images_router)

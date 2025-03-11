@@ -1,5 +1,5 @@
-from app.core.dao import BaseDAO
-from app.models.rule import Rule
+from app.dao import BaseDAO
+from app.models.hotel.rules import Rule
 
 
 class RuleDAO(BaseDAO):

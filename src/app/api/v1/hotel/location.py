@@ -1,17 +1,17 @@
 from fastapi import APIRouter
 
-from app.api.hotel.dao import HotelDAO
-from app.api.hotel.schemas import HotelNameFilter
-from app.api.location.dao import LocationDAO
-from app.api.location.schemas import (
+from app.core import SessionDep, TransactionSessionDep
+from app.core.exceptions.http_exceptions import NotFoundException
+from app.dao.hotel import HotelDAO
+from app.dao.location import LocationDAO
+from app.schemas.hotel import HotelNameFilter
+from app.schemas.location import (
     LocationCreate,
     LocationCreateInternal,
     LocationFilter,
     LocationUpdate,
     LocationUpdateInternal,
 )
-from app.core import SessionDep, TransactionSessionDep
-from app.core.exceptions.http_exceptions import NotFoundException
 
 router = APIRouter(
     tags=["Locations"],

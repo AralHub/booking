@@ -1,16 +1,15 @@
 from fastapi import Depends
 from sqlalchemy import select
 
-from app.api.user.dependencies import get_current_auth_user
-from app.api.user.schemas import UserRead
+from app.api.dependencies.user import get_current_auth_user
 from app.core import SessionDep
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
     UnauthorizedException,
 )
-
-from .models import Hotel
-from .schemas import HotelNameBase
+from app.models.hotel import Hotel
+from app.schemas.hotel import HotelNameBase
+from app.schemas.user import UserRead
 
 
 async def validate_active_hotel(
