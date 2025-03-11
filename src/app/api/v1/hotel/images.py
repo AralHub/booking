@@ -11,8 +11,7 @@ from app.schemas.hotel.images import HotelImageFilter
 from app.schemas.room.images import RoomImageFilter
 
 router = APIRouter(
-    tags=["Images"],
-    prefix="/hotels",
+    tags=["Hotel Images"],
 )
 
 

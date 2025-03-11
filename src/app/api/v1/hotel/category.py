@@ -3,9 +3,8 @@ import logging
 from fastapi import APIRouter
 
 from app.core import SessionDep, TransactionSessionDep
-
-from .dao import HotelCategoryDAO
-from .schemas import (
+from app.dao.hotel.categoty import HotelCategoryDAO
+from app.schemas.hotel.category import (
     HotelCategoryCreate,
     HotelCategoryFilter,
     HotelCategoryUpdate,

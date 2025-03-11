@@ -2,8 +2,7 @@ from app.core import SessionDep
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
 )
-
-from .dao import CityDAO
+from app.dao.location import CityDAO
 
 
 async def validate_city_id(

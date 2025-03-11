@@ -12,8 +12,8 @@ if TYPE_CHECKING:
         HotelAmenityAssociation,
     )
     from app.models.hotel.images import HotelImage
+    from app.models.hotel.location import HotelLocation
     from app.models.hotel.rules import Rule
-    from app.models.location import Location
     from app.models.partner import Partner
     from app.models.review import Review
     from app.models.room import Room
@@ -70,8 +70,8 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         "Review",
         back_populates="hotel",
     )
-    location: Mapped["Location"] = relationship(
-        "Location",
+    location: Mapped["HotelLocation"] = relationship(
+        "HotelLocation",
         uselist=False,
         single_parent=True,
     )

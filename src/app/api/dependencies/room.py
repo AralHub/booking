@@ -3,12 +3,11 @@ from fastapi import APIRouter
 # from app.api.user.functions.dependencies import get_current_active_auth_user
 # from app.api.user.schemas import UserRead
 from app.core import SessionDep, TransactionSessionDep
-
-from .dao import (
+from app.dao.room.amenities import (
     RoomAmenityCategoryDAO,
     RoomAmenityDAO,
 )
-from .schemas import (
+from app.schemas.room.amenities import (
     RoomAmenityCategoryCreate,
     RoomAmenityCreate,
     RoomAmenityFilter,

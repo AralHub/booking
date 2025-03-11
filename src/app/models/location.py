@@ -52,6 +52,6 @@ class City(IntIdPkMixin, Base):
         back_populates="cities",
     )
     locations: Mapped[list["HotelLocation"]] = relationship(
-        "Location",
+        "HotelLocation",
         back_populates="city",
     )

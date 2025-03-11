@@ -41,13 +41,7 @@ from app.schemas.hotel import (
     HotelNameUpdate,
 )
 
-
-class HotelCategoryDAO(BaseDAO):
-    model = HotelCategory
-
-
-class HotelInfoDAO(BaseDAO):
-    model = HotelInfo
+from .categoty import HotelCategoryDAO, HotelInfoDAO
 
 
 class HotelDAO(BaseDAO):
