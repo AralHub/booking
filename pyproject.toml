@@ -76,7 +76,7 @@ exclude = [
     "src/certs",
     "src/migrations",
     "README.md",
-    "src/app/core/dao",
+    "src/app/dao",
     "src/app/__init__.py"
 
 ]
