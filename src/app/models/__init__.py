@@ -6,7 +6,9 @@ from .hotel.location import HotelLocation
 from .location import City, Country
 from .partner import Partner
 from .review import Review, ReviewCategory, ReviewCategoryRating
-from .room import BedType, Room, RoomBedConfiguration, RoomType
+from .room import Room
 from .room.amenities import RoomAmenity, RoomAmenityAssociation
+from .room.bed import BedType, RoomBedConfiguration
+from .room.types import RoomType
 from .user import User
 from .user.token_blacklist import TokenBlacklist

@@ -6,7 +6,9 @@ from app.dao import BaseDAO
 from app.models.booking import Booking
 
 
-from app.models.room import BedType, Room, RoomBedConfiguration, RoomType
+from app.models.room import Room
+from app.models.room.bed import BedType, RoomBedConfiguration
+from app.models.room.types import RoomType
 
 
 class RoomDAO(BaseDAO):

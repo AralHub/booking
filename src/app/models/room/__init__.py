@@ -11,31 +11,9 @@ if TYPE_CHECKING:
     from app.models.booking import Booking
     from app.models.hotel import Hotel
     from app.models.room.amenities import RoomAmenity, RoomAmenityAssociation
+    from app.models.room.bed import RoomBedConfiguration
     from app.models.room.images import RoomImage
-
-
-class BedType(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String(255))
-    room_bed_configs: Mapped[list["RoomBedConfiguration"]] = relationship(
-        back_populates="bed_type"
-    )
-
-
-class RoomBedConfiguration(IntIdPkMixin, Base):
-    room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
-    bed_type_id: Mapped[int] = mapped_column(ForeignKey("bed_types.id"))
-    quantity: Mapped[int] = mapped_column(Integer, default=0)
-
-    # relationships
-    room: Mapped["Room"] = relationship(back_populates="bed_configurations")
-    bed_type: Mapped["BedType"] = relationship(back_populates="room_bed_configs")
-
-
-class RoomType(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String(255))
-    # relationships
-    # rooms: Mapped`[list["Room"]] = relationship(back_populates="room_type")
-    rooms: Mapped[list["Room"]] = relationship(back_populates="room_type")
+    from app.models.room.types import RoomType
 
 
 class RoomPrice(IntIdPkMixin, Base):
