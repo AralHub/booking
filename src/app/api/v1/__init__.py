@@ -4,9 +4,9 @@ from app.core.config import settings
 
 from .hotel import router as hotel_router
 from .partner import router as partner_router
+from .room import router as room_router
 from .superuser import router as superuser_router
 from .user import router as user_router
-from .room import router as room_router
 
 router = APIRouter(
     prefix=settings.api_v1.prefix,

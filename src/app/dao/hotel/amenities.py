@@ -34,13 +34,14 @@ class HotelAmenityDAO(BaseDAO):
         session: AsyncSession,
         hotel_id: int,
     ):
-        hotel_amenities = (
+        query = (
             select(Hotel)
             .where(Hotel.id == hotel_id)
             .options(selectinload(Hotel.hotel_amenities))
         )
-        result = await session.execute(hotel_amenities)
-        return result.scalars().all()
+        result = await session.execute(query)
+        hotel = result.scalar()
+        return hotel.hotel_amenities if hotel else []
 
     @classmethod
     async def add_amenities_to_hotel(
@@ -54,10 +55,22 @@ class HotelAmenityDAO(BaseDAO):
             .where(Hotel.id == hotel_id)
             .options(selectinload(Hotel.hotel_amenities))
         )
+        # Get existing amenity IDs
+        existing_amenity_ids = {amenity.id for amenity in db_hotel.hotel_amenities}
+
+        # Filter out amenities that already exist
+        new_amenity_ids = [aid for aid in amenities if aid not in existing_amenity_ids]
+
+        if not new_amenity_ids:
+            return db_hotel.hotel_amenities
         try:
-            db_hotel.hotel_amenities.extend(amenities)
+            amenity_objects = await session.execute(
+                select(HotelAmenity).where(HotelAmenity.id.in_(new_amenity_ids))
+            )
+            amenity_objects = amenity_objects.scalars().all()
+            db_hotel.hotel_amenities.extend(amenity_objects)
             await session.commit()
-            return db_hotel
+            return db_hotel.hotel_amenities
         except IntegrityError as e:
             await session.rollback()
             if "uq_product_extra_product" in str(e):
@@ -74,17 +87,27 @@ class HotelAmenityDAO(BaseDAO):
         session: AsyncSession,
         hotel_id: int,
     ):
-        hotel = await session.scalar(
-            select(Hotel)
-            .where(Hotel.id == hotel_id)
-            .options(selectinload(Hotel.hotel_amenities))
-        )
-
         await session.execute(
             delete(HotelAmenityAssociation).where(
                 HotelAmenityAssociation.hotel_id == hotel_id
             )
         )
+        await session.commit()
+
+    @classmethod
+    async def remove_amenity_from_hotel(
+        cls,
+        session: AsyncSession,
+        hotel_id: int,
+        amenity_id: int,
+    ):
+        query = select(HotelAmenityAssociation).where(
+            HotelAmenityAssociation.hotel_id == hotel_id,
+            HotelAmenityAssociation.hotel_amenity_id == amenity_id,
+        )
+        result = await session.execute(query)
+        amenity_association = result.scalar()
+        await session.delete(amenity_association)
         await session.commit()
 
 

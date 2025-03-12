@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
+
 from app.api.dependencies.hotel import validate_hotel_id
-from app.core import SessionDep, TransactionSessionDep
+from app.core import SessionDep
 from app.dao.hotel import HotelAmenityDAO
 from app.schemas.hotel.info import HotelNameBase
-from app.schemas.hotel.amenities import HotelAmenityCreate
 
 router = APIRouter(
     prefix="/amenities",
@@ -47,3 +47,18 @@ async def remove_amenities_from_hotel(
         session=session,
         hotel_id=hotel_id,
     )
+
+
+@router.delete("/{hotel_id}/amenities/{amenity_id}")
+async def remove_amenity_from_hotel_by_id(
+    hotel_id: int,
+    amenity_id: int,
+    hotel: HotelNameBase = Depends(validate_hotel_id),
+    session=SessionDep,
+):
+    await HotelAmenityDAO.remove_amenity_from_hotel(
+        session=session,
+        hotel_id=hotel_id,
+        amenity_id=amenity_id,
+    )
+    return {"message": "Amenity removed from hotel"}
