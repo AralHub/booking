@@ -1,9 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.dependencies.user import get_current_superadmin_user
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.room.types import RoomTypeDAO
-from app.schemas.room import (
-    RoomTypeCreate,
+from app.schemas.room.types import (
+    RoomTypeFilter,
+    RoomTypeUpdate,
 )
 
 router = APIRouter(
@@ -22,12 +24,17 @@ async def get_room_types(
     )
 
 
-@router.post("/")
-async def create_room_type(
-    room_type_create_data: RoomTypeCreate,
+@router.put(
+    "/{room_type_id}",
+    dependencies=[Depends(get_current_superadmin_user)],
+)
+async def update_room_type(
+    room_type_id: int,
+    room_type_update_data: RoomTypeUpdate,
     session=TransactionSessionDep,
 ):
-    return await RoomTypeDAO.create(
+    return await RoomTypeDAO.update(
         session=session,
-        values=room_type_create_data,
+        filters=RoomTypeFilter(id=room_type_id),
+        values=room_type_update_data,
     )

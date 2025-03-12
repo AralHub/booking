@@ -29,10 +29,7 @@ async def get_all_hotel_amenities(
     )
 
 
-@router.get(
-    "/categories/{category_id}/amenities",
-    dependencies=[Depends(get_current_superadmin_user)],
-)
+@router.get("/categories/{category_id}/amenities")
 async def get_hotel_amenities_by_category(
     category_id: int,
     session=SessionDep,

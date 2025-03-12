@@ -1,8 +1,8 @@
-import logging
+from fastapi import APIRouter, Depends
 
-from fastapi import APIRouter
-
+from app.api.dependencies.user import get_current_superadmin_user
 from app.core import SessionDep, TransactionSessionDep
+from app.core.logger import logging
 from app.dao.hotel.categoty import HotelCategoryDAO
 from app.schemas.hotel.category import (
     HotelCategoryFilter,
@@ -26,7 +26,10 @@ async def get_hotel_categories(
     )
 
 
-@router.put("/{category_id}")
+@router.put(
+    "/{category_id}",
+    dependencies=[Depends(get_current_superadmin_user)],
+)
 async def update_hotel_category(
     category_update_data: HotelCategoryUpdate,
     category_id: int,
