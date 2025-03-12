@@ -6,7 +6,7 @@ from app.dao import BaseDAO
 from app.models.booking import Booking
 
 
-from app.models.room import Room
+from app.models.room import Room, RoomPrice
 from app.models.room.bed import BedType, RoomBedConfiguration
 from app.models.room.types import RoomType
 
@@ -36,46 +36,39 @@ class RoomDAO(BaseDAO):
 
     @classmethod
     async def get_available_rooms(
-        cls,
-        session: AsyncSession,
-        check_in: date,
-        check_out: date,
-        room_id: int,
+        db: AsyncSession,
+        hotel_id: int,
+        check_in_date: date,
+        check_out_date: date,
+        guests: int,
     ):
-        booked_rooms = (
-            select(Booking)
+        # Подзапрос для поиска занятых комнат на указанные даты
+        booked_rooms_subquery = (
+            select(Booking.room_id)
             .where(
                 and_(
-                    Booking.room_id == room_id,
-                    or_(
-                        and_(
-                            Booking.check_in_date >= check_in,
-                            Booking.check_out_date <= check_out,
-                        ),
-                        and_(
-                            Booking.check_in_date <= check_in,
-                            Booking.check_out_date > check_in,
-                        ),
-                    ),
+                    Booking.check_in_date <= check_out_date,
+                    Booking.check_out_date>=check_in_date,
                 )
             )
-            .cte("booked_rooms")
+            .scalar_subquery()
         )
-        get_available_rooms_query = (
-            select(
-                Room,
-                (Room.quantity - func.count(booked_rooms.c.room_id)).label(
-                    "rooms_left"
-                ),
+
+        # Основной запрос для поиска свободных комнат
+        query = (
+            select(Room)
+            .join(Room.room_prices)
+            .where(
+                and_(
+                    Room.hotel_id == hotel_id,
+                    Room.id.notin_(booked_rooms_subquery),
+                    Room.max_guests >= guests,
+                    RoomPrice.guest_quantity == guests,
+                    Room.quantity > 0,  # Если нужно учитывать количество номеров
+                )
             )
-            .select_from(Room)
-            .join(booked_rooms, booked_rooms.c.room_id == Room.id, isouter=True)
-            .where(Room.id == room_id)
-            .group_by(Room)
+            .distinct()
         )
 
-        # Execute the query
-        result = await session.execute(get_available_rooms_query)
-
-        room_with_availability = result.scalar()
-        return room_with_availability
+        result = await db.execute(query)
+        return result.scalars().all()

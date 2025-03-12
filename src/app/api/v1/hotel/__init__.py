@@ -19,6 +19,7 @@ from .images import router as images_router
 from .info import router as info_router
 from .location import router as location_router
 from .rules import router as rules_router
+from ..room import router as room_router
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
@@ -79,3 +80,4 @@ router.include_router(location_router)
 router.include_router(info_router)
 router.include_router(images_router)
 router.include_router(rules_router)
+router.include_router(room_router)

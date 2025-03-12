@@ -7,23 +7,40 @@ from app.core.exceptions.http_exceptions import (
 )
 from app.dao.room import RoomDAO
 from app.dao.room.types import RoomTypeDAO
-from app.schemas.hotel import HotelNameBase
+from app.schemas.hotel.info import HotelNameBase
 from app.schemas.room import (
     RoomCreate,
     RoomCreateInternal,
     RoomFilter,
-    RoomTypeFilter,
     RoomUpdate,
     RoomUpdateInternal,
 )
+from app.schemas.room.bed import BedFilter
+from app.schemas.room.types import RoomTypeCreate, RoomTypeFilter
 
 router = APIRouter(
     tags=["Rooms"],
 )
 
 
-@router.get("/hotels/{hotel_id}/rooms")
-async def get_all_rooms(
+@router.get("/rooms/available")
+async def get_available_rooms(
+    hotel_id: int,
+    check_in_date: str,
+    check_out_date: str,
+    guests_count: int,
+    session=SessionDep,
+):
+    return await RoomDAO.get_available_rooms(
+        hotel_id=hotel_id,
+        check_in_date=check_in_date,
+        check_out_date=check_out_date,
+        guests=guests_count,
+    )
+
+
+@router.get("/{hotel_id}/rooms")
+async def get_hotel_rooms(
     hotel_id: int,
     session=SessionDep,
 ):
@@ -35,8 +52,8 @@ async def get_all_rooms(
     )
 
 
-@router.get("/hotels/{hotel_id}/rooms/types")
-async def get_room_categories(
+@router.get("/{hotel_id}/rooms/types")
+async def get_hotel_room_types(
     hotel_id: int,
     session=SessionDep,
 ):
@@ -46,7 +63,7 @@ async def get_room_categories(
     )
 
 
-@router.get("/hotels/{hotel_id}/rooms/{room_id}")
+@router.get("/{hotel_id}/rooms/{room_id}")
 async def get_room(
     hotel_id: int,
     room_id: int,
@@ -61,8 +78,8 @@ async def get_room(
     )
 
 
-@router.post("/hotels/{hotel_id}/rooms")
-async def add_room(
+@router.post("/{hotel_id}/rooms")
+async def add_hotel_room(
     hotel_id: int,
     hotel_room_data: RoomCreate,
     session=TransactionSessionDep,
@@ -85,8 +102,8 @@ async def add_room(
     )
 
 
-@router.put("/hotels/{hotel_id}/rooms/{room_id}")
-async def update_room(
+@router.put("/{hotel_id}/rooms/{room_id}")
+async def update_hotel_room(
     hotel_id: int,
     room_id: int,
     room_update_data: RoomUpdate,
