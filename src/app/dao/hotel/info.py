@@ -5,6 +5,7 @@ from app.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.models.hotel.info import HotelInfo
 from app.models.hotel import Hotel
+from app.schemas.hotel.info import HotelInfoNameRead
 
 # from app.schemas.hotel.info import HotelInfoFilter
 
@@ -20,15 +21,22 @@ class HotelInfoDAO(BaseDAO):
     ):
         query = (
             select(
-                cls.model.id,
-                cls.model.first_phone_number,
-                cls.model.second_phone_number,
-                cls.model.email,
-                cls.model.site_url,
+                cls.model.id.label("id"),
+                cls.model.first_phone_number.label("first_phone_number"),
+                cls.model.second_phone_number.label("second_phone_number"),
+                cls.model.email.label("email"),
+                cls.model.site_url.label("site_url"),
+                Hotel.name.label("hotel_name"),
+                Hotel.description.label("hotel_description"),
+                Hotel.slug.label("hotel_slug"),
+                Hotel.id.label("hotel_id"),
+                Hotel.hotel_category_id.label("hotel_category_id"),
             )
             .join(Hotel)
-            .where(Hotel.id == hotel_id)
+            .where(cls.model.hotel_id == hotel_id)
         )
 
         result = await session.execute(query)
-        data = result.scalar_one_or_none()
+        hotel_info = result.mappings().one_or_none()
+
+        return HotelInfoNameRead(**hotel_info) or None

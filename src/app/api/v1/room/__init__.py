@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel_id
+from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
@@ -49,6 +49,7 @@ async def get_available_rooms(
 @router.get("/{hotel_id}/rooms")
 async def get_hotel_rooms(
     hotel_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
     return await RoomDAO.get_all(
@@ -62,6 +63,7 @@ async def get_hotel_rooms(
 @router.get("/{hotel_id}/rooms/types")
 async def get_hotel_room_types(
     hotel_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
     return await RoomDAO.get_hotel_room_types(
@@ -74,6 +76,7 @@ async def get_hotel_room_types(
 async def get_room(
     hotel_id: int,
     room_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
     return await RoomDAO.get_one_or_none(
@@ -89,6 +92,7 @@ async def get_room(
 async def add_hotel_room(
     hotel_id: int,
     hotel_room_data: RoomCreate,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     db_room_type = await RoomTypeDAO.get_one_or_none(
@@ -114,7 +118,7 @@ async def update_hotel_room(
     hotel_id: int,
     room_id: int,
     room_update_data: RoomUpdate,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     updated_row_count = await RoomDAO.update(
@@ -136,6 +140,5 @@ async def update_hotel_room(
     }
 
 
-router.include_router(amenities_router)
 router.include_router(amenities_router)
 router.include_router(images_router)

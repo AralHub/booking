@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_id
 from app.api.dependencies.partner import get_current_active_auth_partner
@@ -13,6 +13,7 @@ from app.schemas.hotel import (
     HotelFullUpdate,
     HotelSearch,
 )
+from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
 
 from .amenities import router as amenities_router
@@ -44,7 +45,19 @@ async def search_hotels(
     )
 
 
-@router.post("/")
+@router.get("/{hotel_id}")
+async def get_full_hotel(
+    hotel_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
+    session=SessionDep,
+):
+    return await HotelDAO.get_full_hotel_by_id(
+        session=session,
+        hotel_id=hotel_id,
+    )
+
+
+@router.post("")
 async def create_hotel(
     hotel_create_data: HotelFullCreate,
     partner: PartnerRead = Depends(get_current_active_auth_partner),
@@ -73,6 +86,6 @@ async def update_hotel(
 
 router.include_router(location_router)
 router.include_router(info_router)
-router.include_router(images_router)
 router.include_router(rules_router)
 router.include_router(amenities_router)
+router.include_router(images_router)

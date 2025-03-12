@@ -72,6 +72,13 @@ class HotelInfoRead(HotelInfoBase):
     hotel_id: int
 
 
+class HotelInfoNameRead(HotelInfoRead):
+    hotel_name: str
+    hotel_description: str
+    hotel_slug: str
+    hotel_category_id: int
+
+
 class HotelInfoCreate(HotelInfoBase):
     second_phone_number: PHONE_NUMBER_FIELD_UPDATE
     site_url: SITE_URL_FIELD_UPDATE

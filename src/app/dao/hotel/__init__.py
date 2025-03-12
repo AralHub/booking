@@ -31,6 +31,7 @@ from app.dao.hotel.categoty import HotelCategoryDAO
 from app.dao.hotel.info import HotelInfoDAO
 from app.models.hotel import Hotel
 from app.models.hotel.category import HotelCategory
+from app.models.hotel.location import HotelLocation
 from app.schemas.hotel.category import HotelCategoryFilter
 from app.schemas.hotel.info import HotelInfoFilter, HotelInfoUpdate
 from app.schemas.hotel.info import (
@@ -47,6 +48,24 @@ from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
 
 class HotelDAO(BaseDAO):
     model = Hotel
+
+    @classmethod
+    async def get_full_hotel_by_id(cls, hotel_id: int, session: AsyncSession):
+        query = (
+            select(cls.model)
+            .options(
+                selectinload(cls.model.hotel_amenities),
+                selectinload(cls.model.hotel_info),
+                selectinload(cls.model.location).selectinload(HotelLocation.city),
+                selectinload(cls.model.rule),
+                selectinload(cls.model.reviews),
+                selectinload(cls.model.hotel_category),
+            )
+            .where(cls.model.id == hotel_id)
+        )
+        result = await session.execute(query)
+        hotel = result.scalar_one_or_none()
+        return hotel or None
 
     @classmethod
     async def delete_hotel_all_amenities(

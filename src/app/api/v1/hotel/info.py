@@ -9,7 +9,6 @@ from app.schemas.hotel.info import (
     HotelInfoCreate,
     HotelInfoCreateInternal,
     HotelInfoFilter,
-    HotelInfoRead,
     HotelInfoUpdate,
     HotelInfoUpdateInternal,
     HotelNameRead,
@@ -21,10 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "/{hotel_id}/info",
-    response_model=HotelInfoRead,
-)
+@router.get("/{hotel_id}/info")
 async def get_hotel_info(
     hotel_id: int,
     hotel: HotelNameRead = Depends(validate_hotel_id),
