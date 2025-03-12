@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_id
 from app.core import SessionDep, TransactionSessionDep
+from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
 )
@@ -20,6 +21,7 @@ from app.schemas.room.types import RoomTypeCreate, RoomTypeFilter
 
 router = APIRouter(
     tags=["Rooms"],
+    prefix="/hotels",
 )
 
 
