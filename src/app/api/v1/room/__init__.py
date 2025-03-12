@@ -19,6 +19,10 @@ from app.schemas.room import (
 from app.schemas.room.bed import BedFilter
 from app.schemas.room.types import RoomTypeCreate, RoomTypeFilter
 
+from .amenities import router as amenities_router
+
+# from .types import router as types_router
+
 router = APIRouter(
     tags=["Hotel Rooms"],
     prefix="/hotels",

@@ -8,6 +8,11 @@ class RoomBase(BaseModel):
     room_area: float
 
 
+class RoomRead(RoomBase):
+    id: int
+    hotel_id: int
+
+
 class RoomCreate(RoomBase):
     room_type_id: int
 

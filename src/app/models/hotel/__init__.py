@@ -82,6 +82,7 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         back_populates="hotel",
     )
     hotel_info: Mapped["HotelInfo"] = relationship(back_populates="hotel")
+
     # languages: Mapped[list["Language"]] = relationship(
     #     secondary="hotel_language_associations",
     #     back_populates="hotels",

@@ -8,7 +8,8 @@ from app.core.exceptions.http_exceptions import (
     UnauthorizedException,
 )
 from app.models.hotel import Hotel
-from app.schemas.hotel.info import HotelNameBase
+from app.models.room import Room
+from app.schemas.hotel.info import HotelNameRead
 from app.schemas.user import UserRead
 
 
@@ -40,17 +41,22 @@ async def validate_hotel_id(
 
 async def validate_hotel_room_id(
     room_id: int,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
-    pass
+    query = select(Room).filter_by(id=room_id, hotel_id=hotel.id)
+    result = await session.execute(query)
+    db_room = result.unique().scalar_one_or_none()
+    if not db_room:
+        raise NotFoundException("Room not found")
+    return db_room
 
 
 async def valid_hotel_admin(
-    hotel: HotelNameBase = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     current_user: UserRead = Depends(get_current_auth_user),
 ):
-    if hotel.admin_id != current_user.id:
+    if hotel.hotel_admin_id != current_user.id:
         raise UnauthorizedException("Permission denied")
 
     return hotel

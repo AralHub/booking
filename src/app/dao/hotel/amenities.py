@@ -14,19 +14,21 @@ from app.models.hotel.amenities import (
 )
 
 
-class HotelAmenityDAO(BaseDAO):
-    model = HotelAmenity
+class HotelAmenityCategoryDAO(BaseDAO):
+    model = HotelAmenityCategory
 
     @classmethod
     async def get_all_amenities(
         cls,
         session: AsyncSession,
     ):
-        query = select(HotelAmenityCategory).options(
-            selectinload(HotelAmenityCategory.hotel_amenities)
-        )
+        query = select(cls.model).options(selectinload(cls.model.hotel_amenities))
         result = await session.execute(query)
         return result.scalars().all()
+
+
+class HotelAmenityDAO(BaseDAO):
+    model = HotelAmenity
 
     @classmethod
     async def get_hotel_amenities(
@@ -109,7 +111,3 @@ class HotelAmenityDAO(BaseDAO):
         amenity_association = result.scalar()
         await session.delete(amenity_association)
         await session.commit()
-
-
-class HotelAmenityCategoryDAO(BaseDAO):
-    model = HotelAmenityCategory

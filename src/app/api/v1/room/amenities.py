@@ -1,16 +1,26 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.dependencies.hotel import validate_hotel_room_id
 from app.core import SessionDep
+from app.dao.room.amenities import (
+    RoomAmenityDAO,
+)
+from app.schemas.room import RoomRead
 
 router = APIRouter(
-    tags=["Room Amenities"],
+    tags=["Hotel Room Amenities"],
 )
 
 
 @router.get("/{hotel_id}/rooms/{room_id}/amenities")
 async def get_room_amenities(
-    hotel_id: int,
-    room_id: int,
+    room: RoomRead = Depends(validate_hotel_room_id),
     session=SessionDep,
 ):
-    return {"message": "Amenities retrieved successfully"}
+    """
+    Все удобства комнат
+    """
+    return await RoomAmenityDAO.get_room__amenities(
+        session=session,
+        room_id=room.id,
+    )

@@ -5,7 +5,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core import Base
+from app.models import Base
 from app.models.mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
@@ -15,6 +15,6 @@ if TYPE_CHECKING:
 
 class UserFavorite(IntIdPkMixin, Base):
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    hotel: Mapped["Hotel"] = relationship("Hotel", back_populates="favorites")
+    hotel: Mapped["Hotel"] = relationship("Hotel")
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="favorites")

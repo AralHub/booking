@@ -1,4 +1,5 @@
 from .base import Base
+from .favorites import UserFavorite
 from .hotel import Hotel
 from .hotel.amenities import HotelAmenity, HotelAmenityAssociation
 from .hotel.images import HotelImage
