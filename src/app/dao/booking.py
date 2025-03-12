@@ -1,8 +1,9 @@
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 from app.dao import BaseDAO
 from app.dao.room import RoomDAO
+from app.dao.user import UserDAO
 from app.models.booking import Booking, BookingStatus
 from app.models.room import Room
 from app.models.user import User
@@ -21,14 +22,6 @@ class BookingDAO(BaseDAO):
         booking_data: BookingCreate,
         user_id: int,
     ):
-        """
-        Создание и добавление Букинга в Бд
-
-        В функции проверяется наличие номера на период, указанный пользователем.
-        Проверяется путем подсчета кол-ва букингов, пересекающихся с этим периодом,
-        и сравнения с количеством доступных номеров.
-        """
-
         # Проверка корректности дат
         if booking_data.check_in_date >= booking_data.check_out_date:
             raise BadRequestException("Check-out date must be after check-in date")
@@ -40,7 +33,12 @@ class BookingDAO(BaseDAO):
         )
         if not db_user:
             raise NotFoundException("User not found")
-
+        db_room = await RoomDAO.get_one_or_none_by_id(
+            session=session,
+            data_id=booking_data.room_id,
+        )
+        if not db_room:
+            raise NotFoundException("Room not found")
         # Подсчет пересекающихся активных бронирований для номера
         overlapping_bookings = await session.execute(
             select(func.count(Booking.id)).where(

@@ -1,15 +1,17 @@
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, Depends, UploadFile
 
+from app.api.dependencies.hotel import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
 from app.dao.room.images import RoomImageDAO
+from app.schemas.hotel.info import HotelNameRead
 from app.schemas.room.images import RoomImageFilter
 
 router = APIRouter(
-    tags=["Room Images"],
+    tags=["Hotel Room Images"],
 )
 
 
@@ -36,6 +38,7 @@ async def add_room_image(
     hotel_id: int,
     room_id: int,
     photo: UploadFile,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     file_path = await file_utils.save_photo(
@@ -57,6 +60,7 @@ async def delete_room_image(
     hotel_id: int,
     room_id: int,
     image_id: int,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     image = await RoomImageDAO.get_one_or_none_by_id(

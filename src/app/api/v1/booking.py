@@ -1,15 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from app.api.user.dependencies import get_current_active_auth_user
-from app.api.user.schemas import UserRead
+from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-
-from .dao import BookingDAO
-from .schemas import (
-    BookingCreate,
-    BookingFilter,
-)
+from app.dao.booking import BookingDAO
+from app.schemas.booking import BookingCreate, BookingFilter
+from app.schemas.user import UserRead
 
 router = APIRouter(
     tags=["Bookings"],

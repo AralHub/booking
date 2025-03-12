@@ -11,6 +11,7 @@ class RoomBase(BaseModel):
 class RoomRead(RoomBase):
     id: int
     hotel_id: int
+    room_type_id: int
 
 
 class RoomCreate(RoomBase):

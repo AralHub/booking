@@ -1,14 +1,14 @@
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, Depends, UploadFile
 
+from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
 from app.dao.hotel.images import HotelImageDAO
-from app.dao.room.images import RoomImageDAO
 from app.schemas.hotel.images import HotelImageFilter
-from app.schemas.room.images import RoomImageFilter
+from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(
     tags=["Hotel Images"],
@@ -18,6 +18,7 @@ router = APIRouter(
 @router.get("/{hotel_id}/images")
 async def get_hotel_images(
     hotel_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
     db_hotel_images = await HotelImageDAO.get_all(
@@ -35,6 +36,7 @@ async def get_hotel_images(
 async def add_hotel_image(
     hotel_id: int,
     photo: UploadFile,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     file_path = await file_utils.save_png(
@@ -55,6 +57,7 @@ async def add_hotel_image(
 async def delete_hotel_image(
     hotel_id: int,
     image_id: int,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     image = await HotelImageDAO.get_one(

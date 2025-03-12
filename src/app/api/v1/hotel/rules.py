@@ -1,9 +1,10 @@
-import logging
+from fastapi import APIRouter, Depends
 
-from fastapi import APIRouter
-
+from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
 from app.core import SessionDep, TransactionSessionDep
+from app.core.logger import logging
 from app.dao.hotel.rules import RuleDAO
+from app.schemas.hotel.info import HotelNameRead
 from app.schemas.hotel.rules import (
     RuleCreate,
     RuleCreateInternal,
@@ -21,6 +22,7 @@ router = APIRouter(
 @router.get("/{hotel_id}/rules")
 async def get_hotel_rule(
     hotel_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
     return await RuleDAO.get_one_or_none(
@@ -33,6 +35,7 @@ async def get_hotel_rule(
 async def add_hotel_rule(
     hotel_id: int,
     rule_create_data: RuleCreate,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     return await RuleDAO.create(

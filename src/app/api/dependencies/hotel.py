@@ -58,5 +58,4 @@ async def valid_hotel_admin(
 ):
     if hotel.hotel_admin_id != current_user.id:
         raise UnauthorizedException("Permission denied")
-
     return hotel

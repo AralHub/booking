@@ -11,6 +11,7 @@ from app.dao.hotel import HotelDAO
 from app.schemas.hotel import (
     HotelFullCreate,
     HotelFullUpdate,
+    HotelSearch,
 )
 from app.schemas.partner import PartnerRead
 
@@ -27,24 +28,19 @@ router = APIRouter(
 )
 
 
-@router.get("/search")
+@router.post("/search")
 async def search_hotels(
-    city_id: int = Query(..., description="ID города"),
-    check_in: str = Query(..., description="Дата заезда"),
-    check_out: str = Query(..., description="Дата выезда"),
-    guests: str = Query(
-        ..., description="Количество гостей по комнатам, например: 3-1 для 2 комнат"
-    ),
+    search_data: HotelSearch,
     session=SessionDep,
 ):
-    parsed_check_in = parse_date(check_in)
-    parsed_check_out = parse_date(check_out)
-    return await HotelDAO.find_hotels(
+    parsed_check_in = parse_date(search_data.check_in)
+    parsed_check_out = parse_date(search_data.check_out)
+    return await HotelDAO.find_hotels_for_booking(
         session=session,
-        city_id=city_id,
+        city_id=search_data.city_id,
         check_in_date=parsed_check_in,
         check_out_date=parsed_check_out,
-        guests=guests,
+        guests=search_data.guests,
     )
 
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated
 
 from pydantic import BaseModel, EmailStr, Field
@@ -9,8 +9,15 @@ NAME_MAX_LENGTH = 255
 NAME_MIN_LENGTH = 3
 URL_PATTERN = r"^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$"
 TIME_PATTERN = r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
-
-
+# DATE_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
+# DATE_FIELD = Annotated[
+#     str,
+#     Field(
+#         pattern=DATE_PATTERN,
+#         examples=["2025-03-12"],
+#         description="Date in YYYY-MM-DD format",
+#     ),
+# ]
 NAME_FIELD = Annotated[
     str,
     Field(
@@ -128,3 +135,10 @@ class HotelFullUpdate(BaseModel):
 
 class HotelFullUpdateInternal(HotelFullUpdate):
     hotel_id: int
+
+
+class HotelSearch(BaseModel):
+    city_id: int
+    check_in: date
+    check_out: date
+    guests: list[int]

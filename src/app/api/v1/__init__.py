@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.core.config import settings
 
+from .booking import router as booking_router
 from .hotel import router as hotel_router
 from .partner import router as partner_router
 from .room import router as room_router
@@ -22,14 +23,15 @@ router.include_router(
 router.include_router(
     partner_router,
 )
-
+router.include_router(
+    booking_router,
+)
 router.include_router(
     hotel_router,
 )
 router.include_router(
     room_router,
 )
-
 router.include_router(
     superuser_router,
 )

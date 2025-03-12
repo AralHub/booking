@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.hotel.dependencies import validate_hotel_id
-from app.api.hotel.schemas import HotelNameBase
+from app.api.hotel.schemas import HotelNameRead
 from app.api.review.dao import ReviewCategoryRatingDAO, ReviewDAO
 from app.api.review.schemas import (
     ReviewCategoryCreateInternal,
@@ -14,9 +14,8 @@ from app.api.user.dependencies import (
 )
 from app.api.user.schemas import UserRead
 from app.core import SessionDep, TransactionSessionDep
-
-from .dao import ReviewCategoryDAO
-from .schemas import ReviewCategoryCreate, ReviewCategoryFilter
+from app.dao.review import ReviewCategoryDAO
+from app.schemas.review import ReviewCategoryCreate, ReviewCategoryFilter
 
 router = APIRouter(
     tags=["Reviews"],
@@ -27,7 +26,7 @@ router = APIRouter(
 @router.get("/hotels/{hotel_id}/reviews")
 async def get_hotel_reviews(
     hotel_id: int,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
     return await ReviewDAO.get_all_hotel_reviews(
@@ -40,7 +39,7 @@ async def get_hotel_reviews(
 async def create_hotel_reviews(
     hotel_id: int,
     review_create_data: ReviewCreate,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):

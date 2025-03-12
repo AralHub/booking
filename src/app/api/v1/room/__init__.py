@@ -8,7 +8,7 @@ from app.core.exceptions.http_exceptions import (
 )
 from app.dao.room import RoomDAO
 from app.dao.room.types import RoomTypeDAO
-from app.schemas.hotel.info import HotelNameBase
+from app.schemas.hotel.info import HotelNameRead
 from app.schemas.room import (
     RoomCreate,
     RoomCreateInternal,
@@ -20,6 +20,7 @@ from app.schemas.room.bed import BedFilter
 from app.schemas.room.types import RoomTypeCreate, RoomTypeFilter
 
 from .amenities import router as amenities_router
+from .images import router as images_router
 
 # from .types import router as types_router
 
@@ -113,7 +114,7 @@ async def update_hotel_room(
     hotel_id: int,
     room_id: int,
     room_update_data: RoomUpdate,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
     updated_row_count = await RoomDAO.update(
@@ -133,3 +134,8 @@ async def update_hotel_room(
     return {
         "message": "Room updated successfully",
     }
+
+
+router.include_router(amenities_router)
+router.include_router(amenities_router)
+router.include_router(images_router)

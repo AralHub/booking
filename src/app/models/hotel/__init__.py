@@ -7,10 +7,7 @@ from app.models import Base
 from app.models.mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
-    from app.models.hotel.amenities import (
-        HotelAmenity,
-        HotelAmenityAssociation,
-    )
+    from app.models.hotel.amenities import HotelAmenity, HotelAmenityAssociation
     from app.models.hotel.category import HotelCategory
     from app.models.hotel.images import HotelImage
     from app.models.hotel.info import HotelInfo

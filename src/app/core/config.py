@@ -93,7 +93,9 @@ class CryptSettings(BaseSettings):
     PRIVATE_KEY: Path = SOURCE_DIR / "certs" / "jwt-private.pem"
     PUBLIC_KEY: Path = SOURCE_DIR / "certs" / "jwt-public.pem"
     ALGORITHM: str = config("ALGORITHM", default="RS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = config("ACCESS_TOKEN_EXPIRE_MINUTES", default=15)
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = config(
+        "ACCESS_TOKEN_EXPIRE_MINUTES", default=150
+    )
     REFRESH_TOKEN_EXPIRE_DAYS: int = config("REFRESH_TOKEN_EXPIRE_DAYS", default=30)
     TOKEN_TYPE_FIELD: str = config("TOKEN_TYPE_FIELD", default="type")
     ACCESS_TOKEN_TYPE: str = config("ACCESS_TOKEN_TYPE", default="access")

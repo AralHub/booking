@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel_id
+from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
 from app.core import TransactionSessionDep
 from app.dao.hotel import HotelInfoDAO
 from app.schemas.hotel.info import (
@@ -12,7 +12,7 @@ from app.schemas.hotel.info import (
     HotelInfoRead,
     HotelInfoUpdate,
     HotelInfoUpdateInternal,
-    HotelNameBase,
+    HotelNameRead,
 )
 
 logger = logging.getLogger(__name__)
@@ -27,12 +27,12 @@ router = APIRouter(
 )
 async def get_hotel_info(
     hotel_id: int,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=TransactionSessionDep,
 ):
-    return await HotelInfoDAO.get_one_or_none(
+    return await HotelInfoDAO.get_hotel_info(
         session=session,
-        filters=HotelInfoFilter(hotel_id=hotel_id),
+        hotel_id=hotel_id,
     )
 
 
@@ -40,7 +40,7 @@ async def get_hotel_info(
 async def add_hotel_info(
     hotel_id: int,
     hotel_info_create_data: HotelInfoCreate,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
 
@@ -57,7 +57,7 @@ async def add_hotel_info(
 async def update_hotel_info(
     hotel_id: int,
     hotel_info_update_data: HotelInfoUpdate,
-    hotel: HotelNameBase = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     return await HotelInfoDAO.update(

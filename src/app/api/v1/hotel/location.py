@@ -1,10 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.dao.hotel import HotelDAO
 from app.dao.hotel.location import HotelLocationDAO
-from app.schemas.hotel.info import HotelNameFilter
+from app.schemas.hotel.info import HotelNameFilter, HotelNameRead
 from app.schemas.location import (
     LocationCreate,
     LocationCreateInternal,
@@ -18,9 +19,25 @@ router = APIRouter(
 )
 
 
+@router.get("/location/{city_id}")
+async def get_hotels_by_city_id(
+    city_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
+    session=SessionDep,
+):
+    db_hotels = await HotelDAO.get_all(
+        session=session,
+        filters=HotelNameFilter(
+            city_id=city_id,
+        ),
+    )
+    return db_hotels
+
+
 @router.get("/{hotel_id}/location")
 async def get_hotel_location(
     hotel_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
     db_hotel_location = await HotelLocationDAO.get_one_or_none(
@@ -38,6 +55,7 @@ async def get_hotel_location(
 async def add_hotel_location(
     hotel_id: int,
     location_create_data: LocationCreate,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     return await HotelLocationDAO.add_hotel_location(
@@ -56,6 +74,7 @@ async def add_hotel_location(
 async def update_hotel_location(
     hotel_id: int,
     location_update_data: LocationUpdate,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     return await HotelLocationDAO.update(
@@ -67,17 +86,3 @@ async def update_hotel_location(
             hotel_id=hotel_id,
         ),
     )
-
-
-@router.get("/location/{city_id}")
-async def get_hotels_by_city_id(
-    city_id: int,
-    session=SessionDep,
-):
-    db_hotels = await HotelDAO.get_all(
-        session=session,
-        filters=HotelNameFilter(
-            city_id=city_id,
-        ),
-    )
-    return db_hotels

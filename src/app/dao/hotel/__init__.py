@@ -37,7 +37,7 @@ from app.schemas.hotel.info import (
     HotelInfoCreateInternal,
     HotelInfoFilter,
     HotelInfoUpdate,
-    HotelNameBase,
+    HotelNameRead,
     HotelNameCreateInternal,
     HotelNameFilter,
     HotelNameUpdate,
@@ -201,7 +201,7 @@ class HotelDAO(BaseDAO):
         hotel_update_data: HotelFullUpdate,
         session: AsyncSession,
         hotel_id: int,
-        hotel: HotelNameBase = Depends(validate_hotel_id),
+        hotel: HotelNameRead = Depends(validate_hotel_id),
     ):
         # Validate hotel category exists
         db_hotel_category = await HotelCategoryDAO.get_one_or_none(
@@ -279,13 +279,13 @@ class HotelDAO(BaseDAO):
         return hotel
 
     @classmethod
-    async def find_hotel_for_booking(
+    async def find_hotels_for_booking(
         cls,
         session: AsyncSession,
         city_id: int,
         check_in_date: date,
         check_out_date: date,
-        guests: str,
+        guests: list[int],
     ):
         unavailable_room_query = select(Booking.room_id, Booking.guest_quantity).where(
             and_(
