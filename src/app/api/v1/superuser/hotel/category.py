@@ -12,6 +12,7 @@ from app.schemas.hotel.category import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
+    tags=["Superuser Hotel Categories"],
     prefix="/hotel-categories",
 )
 

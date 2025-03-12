@@ -20,7 +20,7 @@ from app.schemas.room.bed import BedFilter
 from app.schemas.room.types import RoomTypeCreate, RoomTypeFilter
 
 router = APIRouter(
-    tags=["Rooms"],
+    tags=["Hotel Rooms"],
     prefix="/hotels",
 )
 

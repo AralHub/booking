@@ -7,7 +7,7 @@ from app.schemas.room import (
 )
 
 router = APIRouter(
-    tags=["Room Types"],
+    tags=["Superuser Room Types"],
     prefix="/room-types",
 )
 

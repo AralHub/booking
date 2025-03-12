@@ -14,6 +14,7 @@ from app.schemas.hotel.amenities import (
 )
 
 router = APIRouter(
+    tags=["Superuser Hotel Amenities"],
     prefix="/hotel-amenities",
 )
 

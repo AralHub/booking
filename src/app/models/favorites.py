@@ -1,0 +1,20 @@
+from typing import TYPE_CHECKING
+
+from sqlalchemy import (
+    ForeignKey,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.core import Base
+from app.models.mixins import IntIdPkMixin
+
+if TYPE_CHECKING:
+    from app.models.hotel import Hotel
+    from app.models.user import User
+
+
+class UserFavorite(IntIdPkMixin, Base):
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel: Mapped["Hotel"] = relationship("Hotel", back_populates="favorites")
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship("User", back_populates="favorites")

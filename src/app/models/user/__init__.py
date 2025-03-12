@@ -11,6 +11,7 @@ from app.models.mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.booking import Booking
+    from app.models.favorites import UserFavorite
     from app.models.review import Review
 
 
@@ -81,5 +82,9 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
     )
     reviews: Mapped[list["Review"]] = relationship(
         "Review",
+        back_populates="user",
+    )
+    favorites: Mapped[list["UserFavorite"]] = relationship(
+        "UserFavorite",
         back_populates="user",
     )
