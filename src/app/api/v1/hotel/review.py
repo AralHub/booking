@@ -1,80 +1,22 @@
 from fastapi import APIRouter, Depends
-from app.core.exceptions.http_exceptions import DuplicateValueException
-from app.api.dependencies.hotel import validate_hotel_id
+
+from app.api.dependencies.hotel import validate_hotel_id, validate_review_owner_by_id
 from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
-from app.dao.review import ReviewCategoryRatingDAO, ReviewDAO
+from app.dao.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.review import (
     HotelReviewSummary,
-    ReviewCategoryCreateInternal,
     ReviewCreate,
-    ReviewCreateInternal,
-    ReviewRead,
     ReviewFilter,
+    ReviewRead,
+    ReviewUpdate,
 )
 from app.schemas.user import UserRead
 
 router = APIRouter(
     tags=["Hotel Reviews"],
 )
-
-
-@router.get("/{hotel_id}/reviews")
-async def get_hotel_reviews(
-    hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
-    session=SessionDep,
-):
-    return await ReviewDAO.get_all_hotel_reviews(
-        session=session,
-        hotel_id=hotel_id,
-    )
-
-
-@router.post("/{hotel_id}/reviews")
-async def create_hotel_reviews(
-    hotel_id: int,
-    review_create_data: ReviewCreate,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
-    current_user: UserRead = Depends(get_current_active_auth_user),
-    session=TransactionSessionDep,
-):
-    existing_review = await ReviewDAO.get_one_or_none(
-        session=session,
-        filters=ReviewFilter(
-            hotel_id=hotel_id,
-            user_id=current_user.id,
-        ),
-    )
-    if existing_review:
-        raise DuplicateValueException("User already has a review for this hotel")
-
-    craeted_review = await ReviewDAO.create(
-        session=session,
-        values=ReviewCreateInternal(
-            **review_create_data.model_dump(
-                exclude={
-                    "category_ratings",
-                }
-            ),
-            hotel_id=hotel_id,
-            user_id=current_user.id,
-        ),
-    )
-    if len(review_create_data.category_ratings) > 0:
-        for review_category_rating in review_create_data.category_ratings:
-            review_category_rating_create_data = ReviewCategoryCreateInternal(
-                review_category_id=review_category_rating.review_category_id,
-                rating=review_category_rating.rating,
-                review_id=craeted_review.id,
-            )
-
-        await ReviewCategoryRatingDAO.create(
-            session=session,
-            values=review_category_rating_create_data,
-        )
-    return ReviewRead.model_validate(craeted_review)
 
 
 @router.get("/{hotel_id}/reviews/summary")
@@ -98,4 +40,66 @@ async def get_hotel_review_summary(
         general_rating=summary_data["general_rating"],
         review_count=review_count,
         category_ratings=summary_data["category_ratings"],
+    )
+
+
+@router.get("/{hotel_id}/reviews")
+async def get_hotel_reviews(
+    hotel_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
+    session=SessionDep,
+):
+    return await ReviewDAO.get_all_hotel_reviews(
+        session=session,
+        hotel_id=hotel_id,
+    )
+
+
+@router.post("/{hotel_id}/reviews")
+async def create_hotel_reviews(
+    hotel_id: int,
+    review_create_data: ReviewCreate,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
+    current_user: UserRead = Depends(get_current_active_auth_user),
+    session=TransactionSessionDep,
+):
+    await ReviewDAO.create_hotel_review(
+        session=session,
+        review_create_data=review_create_data,
+        hotel_id=hotel_id,
+        user_id=current_user.id,
+    )
+
+
+@router.put("/{hotel_id}/reviews/{review_id}")
+async def update_hotel_review(
+    hotel_id: int,
+    review_id: int,
+    review_update_data: ReviewUpdate,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
+    current_user: UserRead = Depends(get_current_active_auth_user),
+    session=TransactionSessionDep,
+):
+    await ReviewDAO.update_hotel_review(
+        session=session,
+        hotel_id=hotel_id,
+        user_id=current_user.id,
+        review_id=review_id,
+        review_update_data=review_update_data,
+    )
+
+
+@router.delete("/{hotel_id}/reviews/{review_id}")
+async def delete_hotel_review(
+    hotel_id: int,
+    review_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_id),
+    review: ReviewRead = Depends(validate_review_owner_by_id),
+    session=TransactionSessionDep,
+):
+    await ReviewDAO.delete(
+        session=session,
+        filters=ReviewFilter(
+            id=review_id,
+        ),
     )

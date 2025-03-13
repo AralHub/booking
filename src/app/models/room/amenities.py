@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class RoomAmenityCategory(IntIdPkMixin, Base):
     __tablename__ = "room_amenity_categories"
     name: Mapped[str] = mapped_column(
-        String(255),
+        String,
         nullable=False,
         unique=True,
     )
@@ -25,7 +25,7 @@ class RoomAmenityCategory(IntIdPkMixin, Base):
 class RoomAmenity(IntIdPkMixin, Base):
     __tablename__ = "room_amenities"
     name: Mapped[str] = mapped_column(
-        String(255),
+        String,
         nullable=False,
         unique=True,
     )

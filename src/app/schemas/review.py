@@ -32,8 +32,20 @@ class ReviewCategoryRatingCreate(ReviewCategoryRatingBase):
     pass
 
 
+class ReviewCategoryRatingUpdate(BaseModel):
+    review_category_id: int
+    rating: int | None = None
+
+
 class ReviewCategoryCreateInternal(ReviewCategoryRatingCreate):
     review_id: int
+
+
+class ReviewCategoryRatingFilter(BaseModel):
+    id: int | None = None
+    review_id: int | None = None
+    review_category_id: int | None = None
+    rating: int | None = None
 
 
 # endregion
@@ -48,6 +60,7 @@ class ReviewBase(BaseModel):
 class ReviewRead(ReviewBase):
     id: int
     hotel_id: int
+    user_id: int
 
     class Config:
         from_attributes = True
@@ -65,6 +78,11 @@ class ReviewCreateInternal(ReviewCreate):
 class ReviewUpdate(BaseModel):
     rating: float | None = None
     comment: str | None = None
+    category_ratings: list[ReviewCategoryRatingUpdate] | None = None
+
+
+class ReviewUpdateInternal(ReviewUpdate):
+    pass
 
 
 class ReviewFilter(BaseModel):

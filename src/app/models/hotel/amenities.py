@@ -20,7 +20,7 @@ class PaymentType(str, Enum):
 class HotelAmenityCategory(IntIdPkMixin, Base):
     __tablename__ = "hotel_amenity_categories"
     name: Mapped[str] = mapped_column(
-        String(255),
+        String,
         nullable=False,
         unique=True,
     )
@@ -32,18 +32,18 @@ class HotelAmenityCategory(IntIdPkMixin, Base):
 class HotelAmenity(IntIdPkMixin, Base):
     __tablename__ = "hotel_amenities"
     name: Mapped[str] = mapped_column(
-        String(255),
+        String,
         nullable=False,
         unique=True,
     )
     icon: Mapped[str] = mapped_column(
-        String(255),
+        String,
         nullable=True,
         default=None,
         server_default=None,
         unique=True,
     )
-    description: Mapped[str] = mapped_column(String(255), nullable=True)
+    description: Mapped[str] = mapped_column(String, nullable=True)
     in_hotel: Mapped[bool] = mapped_column(
         Boolean,
         default=True,

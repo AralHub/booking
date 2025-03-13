@@ -13,11 +13,11 @@ if TYPE_CHECKING:
 class Country(IntIdPkMixin, Base):
     __tablename__ = "countries"
     name: Mapped[str] = mapped_column(
-        String(255),
+        String,
         unique=True,
     )
     code: Mapped[str] = mapped_column(
-        String(30),
+        String,
         unique=True,
     )
 
@@ -32,7 +32,7 @@ class Country(IntIdPkMixin, Base):
 class City(IntIdPkMixin, Base):
     __tablename__ = "cities"
     name: Mapped[str] = mapped_column(
-        String(255),
+        String,
         unique=True,
     )
     slug: Mapped[str] = mapped_column(String(255), unique=True)
@@ -44,7 +44,7 @@ class City(IntIdPkMixin, Base):
     rail_lat: Mapped[float] = mapped_column(Float)
     rail_lng: Mapped[float] = mapped_column(Float)
 
-    image: Mapped[str] = mapped_column(String(255))
+    image: Mapped[str] = mapped_column(String)
     # relationships
     country_id: Mapped[int] = mapped_column(ForeignKey("countries.id"))
     country: Mapped["Country"] = relationship(

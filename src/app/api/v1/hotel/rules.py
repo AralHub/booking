@@ -51,6 +51,7 @@ async def add_hotel_rule(
 async def update_hotel_rule(
     hotel_id: int,
     rule_update_data: RuleUpdate,
+    hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     return await RuleDAO.update(
