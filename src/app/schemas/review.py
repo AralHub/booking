@@ -47,6 +47,10 @@ class ReviewBase(BaseModel):
 
 class ReviewRead(ReviewBase):
     id: int
+    hotel_id: int
+
+    class Config:
+        from_attributes = True
 
 
 class ReviewCreate(ReviewBase):

@@ -1,15 +1,17 @@
 from fastapi import APIRouter, Depends
-
+from app.core.exceptions.http_exceptions import DuplicateValueException
 from app.api.dependencies.hotel import validate_hotel_id
 from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.review import ReviewCategoryRatingDAO, ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.review import (
+    HotelReviewSummary,
     ReviewCategoryCreateInternal,
     ReviewCreate,
     ReviewCreateInternal,
-    HotelReviewSummary,
+    ReviewRead,
+    ReviewFilter,
 )
 from app.schemas.user import UserRead
 
@@ -38,6 +40,15 @@ async def create_hotel_reviews(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
+    existing_review = await ReviewDAO.get_one_or_none(
+        session=session,
+        filters=ReviewFilter(
+            hotel_id=hotel_id,
+            user_id=current_user.id,
+        ),
+    )
+    if existing_review:
+        raise DuplicateValueException("User already has a review for this hotel")
 
     craeted_review = await ReviewDAO.create(
         session=session,
@@ -63,7 +74,7 @@ async def create_hotel_reviews(
             session=session,
             values=review_category_rating_create_data,
         )
-    return craeted_review
+    return ReviewRead.model_validate(craeted_review)
 
 
 @router.get("/{hotel_id}/reviews/summary")
