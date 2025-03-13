@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.core.config import settings
 
+from .booking import router as booking_router
 from .hotel import router as hotel_router
 from .partner import router as partner_router
 from .room import router as room_router
@@ -12,8 +13,6 @@ from .superuser.review import router as superuser_review_router
 from .superuser.room.amenities import router as room_amenities_router
 from .superuser.room.types import router as room_types_router
 from .user import router as user_router
-from .user.booking import router as booking_router
-from .user.review import router as user_reviewe_router
 
 router = APIRouter(
     prefix=settings.api_v1.prefix,
@@ -27,9 +26,6 @@ router.include_router(
 )
 router.include_router(
     booking_router,
-)
-router.include_router(
-    user_reviewe_router,
 )
 router.include_router(
     hotel_router,

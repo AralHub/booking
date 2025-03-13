@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from app.schemas.user import (
+from .field_validation import (
     NAME_FIELD,
     NAME_FIELD_UPDATE,
     PHONE_NUMBER_FIELD,

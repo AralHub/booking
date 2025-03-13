@@ -17,7 +17,7 @@ class HotelInfoDAO(BaseDAO):
     async def get_hotel_info(
         cls,
         session: AsyncSession,
-        hotel_id: int,
+        hotel_id: int,  
     ):
         query = (
             select(

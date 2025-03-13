@@ -1,23 +1,6 @@
-from typing import Annotated
-
 from pydantic import BaseModel, Field
 
-LONG_FIELD = Annotated[
-    float | None,
-    Field(
-        ge=-180,
-        le=180,
-        default=None,
-    ),
-]
-LAT_FIELD = Annotated[
-    float | None,
-    Field(
-        ge=-90,
-        le=90,
-        default=None,
-    ),
-]
+from .field_validation import LAT_FIELD, LONG_FIELD
 
 
 # region Country

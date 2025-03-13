@@ -1,81 +1,20 @@
 from datetime import datetime
-from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict
 
 from app.models.user import GENDER_TYPES
 
+from .field_validation import (
+    BIRTHDAY_FIELD,
+    GENDER_FIELD,
+    NAME_FIELD,
+    NAME_FIELD_UPDATE,
+    PASSWORD_FIELD,
+    PHONE_NUMBER_FIELD,
+    PHONE_NUMBER_FIELD_UPDATE,
+    VERIFY_CODE_FIELD,
+)
 from .mixins import TimestampSchema
-
-# Константы
-MIN_NAME_LENGTH = 2
-MAX_NAME_LENGTH = 30
-
-# Общие поля с аннотациями
-NAME_FIELD = Annotated[
-    str,
-    Field(
-        min_length=MIN_NAME_LENGTH,
-        max_length=MAX_NAME_LENGTH,
-        examples=["User Userson"],
-    ),
-]
-NAME_FIELD_UPDATE = Annotated[
-    str | None,
-    Field(
-        min_length=MIN_NAME_LENGTH,
-        max_length=MAX_NAME_LENGTH,
-        examples=["User Userberg"],
-        default=None,
-    ),
-]
-PASSWORD_FIELD = Annotated[
-    str,
-    Field(
-        pattern=r"^.{8,}|[0-9]+|[A-Z]+|[a-z]+|[^a-zA-Z0-9]+$",
-        examples=["pass123"],
-    ),
-]
-
-PHONE_NUMBER_FIELD = Annotated[
-    str, Field(pattern=r"^[1-9]\d{1,14}$", examples=["998991234567"])
-]
-
-PHONE_NUMBER_FIELD_UPDATE = Annotated[
-    str | None,
-    Field(
-        pattern=r"^[1-9]\d{1,14}$",
-        examples=["998991112233"],
-        default=None,
-    ),
-]
-
-EMAIL_FIELD = Annotated[
-    EmailStr | None,
-    Field(
-        examples=["user.userson@example.com"],
-        default=None,
-    ),
-]
-BIRTHDAY_FIELD = Annotated[
-    datetime | None,
-    Field(
-        examples=["1990-01-01"],
-        default=None,
-    ),
-]
-GENDER_FIELD = Annotated[
-    GENDER_TYPES,
-    Field(
-        examples=["male", "female"],
-        default=GENDER_TYPES.MALE.value,
-    ),
-]
-
-VERIFY_CODE_FIELD = Annotated[
-    str,
-    Field(pattern=r"^\d{5}$", examples=["12345"]),
-]
 
 
 # region Login

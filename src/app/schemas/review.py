@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 # region ReviewCategory
@@ -41,7 +41,7 @@ class ReviewCategoryCreateInternal(ReviewCategoryRatingCreate):
 
 # region Review
 class ReviewBase(BaseModel):
-    rating: float
+    rating: float = Field(ge=1, le=10)
     comment: str
 
 
@@ -70,6 +70,12 @@ class ReviewFilter(BaseModel):
     comment: str | None = None
     hotel_id: int | None = None
     user_id: int | None = None
+
+
+class HotelReviewSummary(BaseModel):
+    general_rating: float
+    review_count: int
+    category_ratings: dict[str, float]
 
 
 # endregion
