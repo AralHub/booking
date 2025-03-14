@@ -1,5 +1,4 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.logger import logging
 from app.dao.location import CityDAO
 from app.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
@@ -8,6 +7,7 @@ from app.models.hotel.location import HotelLocation
 from app.schemas.location import (
     Coordinates,
     RoutePoint,
+    RouteRequest,
 )
 from app.schemas.hotel.location import (
     LocationCreate,
@@ -16,8 +16,6 @@ from app.schemas.hotel.location import (
     LocationUpdateInternal,
     LocationFilter,
 )
-
-logger = logging.getLogger(__name__)
 
 
 class HotelLocationDAO(BaseDAO):
@@ -28,45 +26,44 @@ class HotelLocationDAO(BaseDAO):
         hotel_point: RoutePoint,
         db_city,
     ) -> tuple:
+
         # Calculate distance to airport
         airport_point = RoutePoint(
             coordinates=Coordinates(
-                longitude=float(db_city.aero_lng),
-                latitude=float(db_city.aero_lat),
+                longitude=db_city.aero_lng,
+                latitude=db_city.aero_lat,
             ),
             name="airport_coordinates",
         )
-        to_airport = await distance_calculator.calculate_distance_between_points(
-            hotel_point.coordinates, airport_point.coordinates
-        )
+        airport_request = RouteRequest(points=[hotel_point, airport_point])
+        to_airport = await distance_calculator.calculate_distance(airport_request)
 
         # Calculate distance to railway station
         railway_point = RoutePoint(
             coordinates=Coordinates(
-                longitude=float(db_city.rail_lng),
-                latitude=float(db_city.rail_lat),
+                longitude=db_city.rail_lng,
+                latitude=db_city.rail_lat,
             ),
             name="railway_coordinates",
         )
-        to_railway = await distance_calculator.calculate_distance_between_points(
-            hotel_point.coordinates, railway_point.coordinates
-        )
+        railway_request = RouteRequest(points=[hotel_point, railway_point])
+        to_railway = await distance_calculator.calculate_distance(railway_request)
 
         # Calculate distance to city center
         center_point = RoutePoint(
             coordinates=Coordinates(
-                longitude=float(db_city.geocode_lng),
-                latitude=float(db_city.geocode_lat),
+                longitude=db_city.geocode_lng,
+                latitude=db_city.geocode_lat,
             ),
             name="center_coordinates",
         )
-        to_center = await distance_calculator.calculate_distance_between_points(
-            hotel_point.coordinates, center_point.coordinates
-        )
+        center_request = RouteRequest(points=[hotel_point, center_point])
+        to_center = await distance_calculator.calculate_distance(center_request)
+
         return (
-            to_airport.distance,
-            to_railway.distance,
-            to_center.distance,
+            to_airport.total_distance,
+            to_railway.total_distance,
+            to_center.total_distance,
         )
 
     @classmethod
@@ -92,8 +89,12 @@ class HotelLocationDAO(BaseDAO):
         )
         try:
             to_airport_distance, to_railway_distance, to_center_distance = (
-                await cls.calculate_all_distances(hotel_point, db_city)
+                await cls.calculate_all_distances(
+                    hotel_point,
+                    db_city,
+                )
             )
+
             return await HotelLocationDAO.create(
                 session=session,
                 values=LocationCreateInternal(
@@ -108,7 +109,6 @@ class HotelLocationDAO(BaseDAO):
                 ),
             )
         except Exception as e:
-            logger.exception(f"Error calculating distances: {e}")
             return await HotelLocationDAO.create(
                 session=session,
                 values=LocationCreateInternal(

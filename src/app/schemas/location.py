@@ -1,7 +1,5 @@
 from pydantic import BaseModel, Field
 
-from .field_validation import LAT_FIELD_UPDATE, LONG_FIELD_UPDATE
-
 
 # region Country
 class CountryBase(BaseModel):
@@ -83,8 +81,8 @@ class CityFilter(BaseModel):
 
 
 class Coordinates(BaseModel):
-    longitude: LONG_FIELD_UPDATE
-    latitude: LAT_FIELD_UPDATE
+    longitude: float
+    latitude: float
 
     def to_string(self) -> str:
         return f"{self.longitude},{self.latitude}"

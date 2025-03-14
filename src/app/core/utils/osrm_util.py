@@ -1,5 +1,6 @@
 import aiohttp
 
+from app.core.logger import logging
 from app.schemas.location import (
     Coordinates,
     DistanceResponse,
@@ -8,6 +9,8 @@ from app.schemas.location import (
     RouteResponse,
     RouteSegment,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class OSRMDistanceCalculator:
@@ -58,6 +61,8 @@ class OSRMDistanceCalculator:
 
     async def _make_request(self, coordinates: str) -> dict:
         url = f"{self.base_url}/route/v1/driving/{coordinates}?steps=false"
+        print(f"OSRM API request URL: {url}")
+        logger.warning(f"OSRM API request URL: {url}")
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status != 200:

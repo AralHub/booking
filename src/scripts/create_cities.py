@@ -21,7 +21,6 @@ async def create_fake_db(
             fake_data = json.load(file)
         logger.info("Creating country...")
         country_create = CountryFilter(
-            id=1,
             name="Uzbekistan",
             code="UZ",
         )
@@ -34,7 +33,6 @@ async def create_fake_db(
         for city_data in fake_data:
             try:
                 city_create = CityFilter(
-                    id=city_data["id"],
                     name=city_data["name"],
                     slug=city_data["slug"],
                     properties_count=city_data["properties_count"],

@@ -1,6 +1,6 @@
 [
     {
-        "id": 2,
+          
         "name": "Ташкент",
         "slug": "tashkent",
         "properties_count": 0,
@@ -13,7 +13,7 @@
         "rail_geocode_lng": "69.22595161307265"
     },
     {
-        "id": 6,
+          
         "name": "Самарканд",
         "slug": "samarkand",
         "properties_count": 0,
@@ -26,7 +26,7 @@
         "rail_geocode_lng": "66.92902541855172"
     },
     {
-        "id": 5,
+          
         "name": "Бухара",
         "slug": "bukhara",
         "properties_count": 0,
@@ -39,7 +39,7 @@
         "rail_geocode_lng": "64.54771602560444"
     },
     {
-        "id": 42,
+          
         "name": "Бостанлыкский район",
         "slug": "bostanlykskij-rajon",
         "properties_count": 0,
@@ -52,7 +52,7 @@
         "rail_geocode_lng": "69.86846864147111"
     },
     {
-        "id": 16,
+          
         "name": "Хива",
         "slug": "khiva",
         "properties_count": 0,
@@ -65,7 +65,7 @@
         "rail_geocode_lng": "60.37666789477362"
     },
     {
-        "id": 33,
+          
         "name": "Гиждуван",
         "slug": "gizhduvan",
         "properties_count": 0,
@@ -78,7 +78,7 @@
         "rail_geocode_lng": "64.54836845397949"
     },
     {
-        "id": 8,
+          
         "name": "Ургенч",
         "slug": "urgench",
         "properties_count": 0,
@@ -91,7 +91,7 @@
         "rail_geocode_lng": "60.63229852147223"
     },
     {
-        "id": 20,
+          
         "name": "Фергана",
         "slug": "fergana",
         "properties_count": 0,
@@ -104,7 +104,7 @@
         "rail_geocode_lng": "71.7570601260361"
     },
     {
-        "id": 36,
+          
         "name": "Маргилан",
         "slug": "margilan",
         "properties_count": 0,
@@ -117,7 +117,7 @@
         "rail_geocode_lng": "71.72300527686427"
     },
     {
-        "id": 19,
+          
         "name": "Термез",
         "slug": "termez",
         "properties_count": 0,
@@ -130,7 +130,7 @@
         "rail_geocode_lng": "67.28736243810106"
     },
     {
-        "id": 18,
+          
         "name": "Шахрисабз",
         "slug": "shaxrisabz",
         "properties_count": 0,
@@ -143,7 +143,7 @@
         "rail_geocode_lng": "66.837704918644"
     },
     {
-        "id": 21,
+          
         "name": "Коканд",
         "slug": "kokand",
         "properties_count": 0,
@@ -156,7 +156,7 @@
         "rail_geocode_lng": "70.92851397979275"
     },
     {
-        "id": 22,
+          
         "name": "Наманган",
         "slug": "namangan",
         "properties_count": 0,
@@ -169,7 +169,7 @@
         "rail_geocode_lng": "71.64412131197655"
     },
     {
-        "id": 25,
+          
         "name": "Навои",
         "slug": "navoi",
         "properties_count": 0,
@@ -182,7 +182,7 @@
         "rail_geocode_lng": "65.39740090578594"
     },
     {
-        "id": 17,
+          
         "name": "Карши",
         "slug": "karshi",
         "properties_count": 0,
@@ -195,7 +195,7 @@
         "rail_geocode_lng": "65.77705662948289"
     },
     {
-        "id": 26,
+          
         "name": "Джизак",
         "slug": "jizzakh",
         "properties_count": 0,
@@ -208,7 +208,7 @@
         "rail_geocode_lng": "67.84306216104508"
     },
     {
-        "id": 23,
+          
         "name": "Андижан",
         "slug": "andijan",
         "properties_count": 0,
@@ -221,7 +221,7 @@
         "rail_geocode_lng": "72.35063552856445"
     },
     {
-        "id": 24,
+          
         "name": "Нукус",
         "slug": "nukus",
         "properties_count": 0,
@@ -234,7 +234,7 @@
         "rail_geocode_lng": "59.642738531848956"
     },
     {
-        "id": 52,
+          
         "name": "Мубарек",
         "slug": "mubarek",
         "properties_count": 0,
@@ -247,7 +247,7 @@
         "rail_geocode_lng": "65.77521906564883"
     },
     {
-        "id": 29,
+          
         "name": "Чирчик",
         "slug": "chirchik",
         "properties_count": 0,
@@ -260,7 +260,7 @@
         "rail_geocode_lng": "69.59703777073202"
     },
     {
-        "id": 30,
+          
         "name": "Зарафшан",
         "slug": "zarafshan",
         "properties_count": 0,
@@ -273,7 +273,7 @@
         "rail_geocode_lng": "65.39740562438965"
     },
     {
-        "id": 28,
+          
         "name": "Гулистан",
         "slug": "gulistan",
         "properties_count": 0,
@@ -286,7 +286,7 @@
         "rail_geocode_lng": "68.76537437247352"
     },
     {
-        "id": 34,
+          
         "name": "Денау",
         "slug": "denau",
         "properties_count": 0,
@@ -299,7 +299,7 @@
         "rail_geocode_lng": "67.9062948452512"
     },
     {
-        "id": 35,
+          
         "name": "Бекабад",
         "slug": "bekabad",
         "properties_count": 0,
@@ -312,7 +312,7 @@
         "rail_geocode_lng": "69.22801755899303"
     },
     {
-        "id": 32,
+          
         "name": "Нурата",
         "slug": "nurata",
         "properties_count": 0,
@@ -325,7 +325,7 @@
         "rail_geocode_lng": "65.39731979370117"
     },
     {
-        "id": 31,
+          
         "name": "Заамин",
         "slug": "zamin",
         "properties_count": 0,
@@ -338,7 +338,7 @@
         "rail_geocode_lng": "67.84294157910769"
     },
     {
-        "id": 37,
+          
         "name": "Чуст",
         "slug": "chust",
         "properties_count": 0,
@@ -351,7 +351,7 @@
         "rail_geocode_lng": "71.24113492191532"
     },
     {
-        "id": 38,
+          
         "name": "Кунград",
         "slug": "kungrad",
         "properties_count": 0,
@@ -364,7 +364,7 @@
         "rail_geocode_lng": "58.84032726287842"
     },
     {
-        "id": 40,
+          
         "name": "Китаб",
         "slug": "kitab",
         "properties_count": 0,
@@ -377,7 +377,7 @@
         "rail_geocode_lng": "65.7772403451536"
     },
     {
-        "id": 41,
+          
         "name": "Каттакурган",
         "slug": "kattakurgan",
         "properties_count": 0,
@@ -390,7 +390,7 @@
         "rail_geocode_lng": "66.24585022785337"
     },
     {
-        "id": 43,
+          
         "name": "Байсун",
         "slug": "bajsun",
         "properties_count": 0,
@@ -403,7 +403,7 @@
         "rail_geocode_lng": "67.19845492982519"
     },
     {
-        "id": 44,
+          
         "name": "Ахангаран",
         "slug": "ahangaran",
         "properties_count": 0,
@@ -416,7 +416,7 @@
         "rail_geocode_lng": "69.28699765937043"
     },
     {
-        "id": 45,
+          
         "name": "Ангрен",
         "slug": "angren",
         "properties_count": 0,
@@ -429,7 +429,7 @@
         "rail_geocode_lng": "70.08238562764042"
     },
     {
-        "id": 46,
+          
         "name": "Ургут",
         "slug": "urgut",
         "properties_count": 0,
@@ -442,7 +442,7 @@
         "rail_geocode_lng": "66.92899442582969"
     },
     {
-        "id": 47,
+          
         "name": "Учкудук",
         "slug": "uchkuduk",
         "properties_count": 0,
@@ -455,7 +455,7 @@
         "rail_geocode_lng": "65.39768467929747"
     },
     {
-        "id": 48,
+          
         "name": "Турткуль",
         "slug": "turtkul",
         "properties_count": 0,
@@ -468,7 +468,7 @@
         "rail_geocode_lng": "61.03259325027466"
     },
     {
-        "id": 49,
+          
         "name": "Пап",
         "slug": "pop",
         "properties_count": 0,
@@ -481,7 +481,7 @@
         "rail_geocode_lng": "71.14934921264648"
     },
     {
-        "id": 50,
+          
         "name": "Каган",
         "slug": "kagan",
         "properties_count": 0,
@@ -494,7 +494,7 @@
         "rail_geocode_lng": "64.54836845397949"
     },
     {
-        "id": 51,
+          
         "name": "Акташ",
         "slug": "aktash",
         "properties_count": 0,
@@ -507,7 +507,7 @@
         "rail_geocode_lng": "65.92809677124023"
     },
     {
-        "id": 53,
+          
         "name": "Кибрай",
         "slug": "kibraj",
         "properties_count": 0,
@@ -520,7 +520,7 @@
         "rail_geocode_lng": "69.45596873760223"
     },
     {
-        "id": 54,
+          
         "name": "Питнак",
         "slug": "pitnak",
         "properties_count": 0,
@@ -533,7 +533,7 @@
         "rail_geocode_lng": "61.30842626094818"
     },
     {
-        "id": 55,
+          
         "name": "Янгиюль",
         "slug": "jangijul",
         "properties_count": 0,
@@ -546,7 +546,7 @@
         "rail_geocode_lng": "69.10370349884033"
     },
     {
-        "id": 56,
+          
         "name": "Каракуль",
         "slug": "karakul",
         "properties_count": 0,
@@ -559,7 +559,7 @@
         "rail_geocode_lng": "63.84622525377891"
     },
     {
-        "id": 57,
+          
         "name": "Алмалык",
         "slug": "almalyk",
         "properties_count": 0,
@@ -572,7 +572,7 @@
         "rail_geocode_lng": "69.2261795828911"
     },
     {
-        "id": 58,
+          
         "name": "Муйнак",
         "slug": "mujnak",
         "properties_count": 0,
@@ -585,7 +585,7 @@
         "rail_geocode_lng": "59.64254796240213"
     },
     {
-        "id": 59,
+          
         "name": "Гузар",
         "slug": "guzar",
         "properties_count": 0,
@@ -598,7 +598,7 @@
         "rail_geocode_lng": "66.25722527503969"
     },
     {
-        "id": 60,
+          
         "name": "Кумкурган",
         "slug": "kumkurgan",
         "properties_count": 0,
