@@ -2,12 +2,19 @@ from datetime import date
 
 from pydantic import BaseModel
 
+from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
+
 
 class BookingBase(BaseModel):
     check_in_date: date
     check_out_date: date
     room_id: int
     guest_quantity: int
+
+
+class BookingRead(BookingBase):
+    id: int
+    status: BOOKING_STATUS_FIELD
 
 
 class BookingCreate(BookingBase):
@@ -20,12 +27,8 @@ class BookingCreateInternal(BookingCreate):
     user_id: int
 
 
-class BookingUpdate(BookingBase):
-    pass
-
-
-class BookingUpdateInternal(BookingUpdate):
-    pass
+class BookingUpdateInternal(BaseModel):
+    status: BOOKING_STATUS_FIELD_UPDATE
 
 
 class BookingFilter(BaseModel):

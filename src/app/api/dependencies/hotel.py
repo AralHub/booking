@@ -1,6 +1,7 @@
 from fastapi import Depends
 from sqlalchemy import select
 
+from app.api.dependencies.partner import get_current_auth_partner
 from app.api.dependencies.user import get_current_auth_user
 from app.core import SessionDep
 from app.core.exceptions.http_exceptions import (
@@ -11,6 +12,7 @@ from app.dao.review import ReviewDAO
 from app.models.hotel import Hotel
 from app.models.room import Room
 from app.schemas.hotel.info import HotelNameRead
+from app.schemas.partner import PartnerRead
 from app.schemas.user import UserRead
 
 
@@ -53,15 +55,6 @@ async def validate_hotel_room_id(
     return db_room
 
 
-async def valid_hotel_admin(
-    hotel: HotelNameRead = Depends(validate_hotel_id),
-    current_user: UserRead = Depends(get_current_auth_user),
-):
-    if hotel.hotel_admin_id != current_user.id:
-        raise UnauthorizedException("Permission denied")
-    return hotel
-
-
 async def validate_review_owner_by_id(
     review_id: int,
     hotel: HotelNameRead = Depends(validate_hotel_id),
@@ -77,3 +70,12 @@ async def validate_review_owner_by_id(
     if db_review.user_id != current_user.id:
         raise UnauthorizedException("Permission denied")
     return db_review
+
+
+async def valid_hotel_admin(
+    hotel: HotelNameRead = Depends(validate_hotel_id),
+    current_partner: PartnerRead = Depends(get_current_auth_partner),
+):
+    if hotel.hotel_admin_id != current_partner.id:
+        raise UnauthorizedException("Permission denied")
+    return hotel

@@ -1,6 +1,6 @@
 import aiohttp
 
-from app.api.locations.schemas import (
+from app.schemas.location import (
     Coordinates,
     DistanceResponse,
     RoutePoint,

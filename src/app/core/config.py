@@ -71,31 +71,16 @@ class EskizSettings(BaseSettings):
     ESKIZ_TEST_PHONE_NUMBER: str = config("ESKIZ_TEST_PHONE_NUMBER")
     ESKIZ_TEMPLATE_TEXT: str = config(
         "ESKIZ_TEMPLATE_TEXT",
-        default="Zmenu ilovasiga kirish uchun tasdiqlash kodi: ",
+        default="Booking ilovasiga kirish uchun tasdiqlash kodi: ",
     )
     ESKIZ_FROM: str = "4546"
-
-
-class PaymeSettings(BaseSettings):
-    PAYME_MERCHANT_ID: str = config("PAYME_MERCHANT_ID")
-    PAYME_CASSA_ID: str = config("PAYME_CASSA_ID")
-    PAYME_SECRET_KEY: str = config("PAYME_SECRET_KEY")
-    PAYME_ACCOUNT_FIELD: str = "restaurant_id"
-    PAYME_AMOUNT_FIELD: str = "amount"
-    PAYME_RETURN_URL: str = "https://zmenu.uz/"
-    PAYME_PROD_URL: str = "https://checkout.paycom.uz/"
-    PAYME_TEST_URL: str = "https://test.paycom.uz/"
-    PAYME_IS_TEST_MODE: bool = True
-    PAY_AMOUNT: int = 100000
 
 
 class CryptSettings(BaseSettings):
     PRIVATE_KEY: Path = SOURCE_DIR / "certs" / "jwt-private.pem"
     PUBLIC_KEY: Path = SOURCE_DIR / "certs" / "jwt-public.pem"
     ALGORITHM: str = config("ALGORITHM", default="RS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = config(
-        "ACCESS_TOKEN_EXPIRE_MINUTES", default=150
-    )
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = config("ACCESS_TOKEN_EXPIRE_MINUTES", default=15)
     REFRESH_TOKEN_EXPIRE_DAYS: int = config("REFRESH_TOKEN_EXPIRE_DAYS", default=30)
     TOKEN_TYPE_FIELD: str = config("TOKEN_TYPE_FIELD", default="type")
     ACCESS_TOKEN_TYPE: str = config("ACCESS_TOKEN_TYPE", default="access")
@@ -210,7 +195,6 @@ class Settings:
     db: DatabaseSettings = DatabaseSettings()
     postgres: PostgresSettings = PostgresSettings()
     eskiz: EskizSettings = EskizSettings()
-    payme: PaymeSettings = PaymeSettings()
     crypt: CryptSettings = CryptSettings()
     first_user: FirstUserSettings = FirstUserSettings()
     test: TestSettings = TestSettings()

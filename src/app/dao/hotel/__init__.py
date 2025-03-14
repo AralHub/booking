@@ -32,6 +32,7 @@ from app.dao.hotel.info import HotelInfoDAO
 from app.models.hotel import Hotel
 from app.models.hotel.category import HotelCategory
 from app.models.hotel.location import HotelLocation
+from app.models.booking import BookingStatus
 from app.schemas.hotel.category import HotelCategoryFilter
 from app.schemas.hotel.info import HotelInfoFilter, HotelInfoUpdate
 from app.schemas.hotel.info import (
@@ -306,18 +307,23 @@ class HotelDAO(BaseDAO):
         check_out_date: date,
         guests: list[int],
     ):
-        unavailable_room_query = select(Booking.room_id, Booking.guest_quantity).where(
+        booked_rooms_subquery = select(Booking.room_id, Booking.guest_quantity).where(
             and_(
-                # Booking.status != BookingStatus.CANCELLED,
+                # Проверяем только активные брони (не отмененные)
+                Booking.status != BookingStatus.CANCELLED,
+                # Проверяем все возможные пересечения дат через OR
                 or_(
+                    # Сценарий 1: бронь начинается до check_in и заканчивается после
                     and_(
                         Booking.check_in_date <= check_in_date,
                         Booking.check_out_date > check_in_date,
                     ),
+                    # Сценарий 2: бронь начинается до check_out и заканчивается после
                     and_(
                         Booking.check_in_date < check_out_date,
                         Booking.check_out_date >= check_out_date,
                     ),
+                    # Сценарий 3: бронь полностью внутри запрашиваемого периода
                     and_(
                         Booking.check_in_date >= check_in_date,
                         Booking.check_out_date <= check_out_date,
@@ -325,6 +331,6 @@ class HotelDAO(BaseDAO):
                 ),
             )
         )
-        unavailable_rooms = await session.execute(unavailable_room_query)
+        unavailable_rooms = await session.execute(booked_rooms_subquery)
         unavailable_rooms = unavailable_rooms.scalars().all()
         return unavailable_rooms

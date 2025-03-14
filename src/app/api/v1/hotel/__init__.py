@@ -35,13 +35,11 @@ async def search_hotels(
     search_data: HotelSearch,
     session=SessionDep,
 ):
-    parsed_check_in = parse_date(search_data.check_in)
-    parsed_check_out = parse_date(search_data.check_out)
     return await HotelDAO.find_hotels_for_booking(
         session=session,
         city_id=search_data.city_id,
-        check_in_date=parsed_check_in,
-        check_out_date=parsed_check_out,
+        check_in_date=search_data.check_in,
+        check_out_date=search_data.check_out,
         guests=search_data.guests,
     )
 

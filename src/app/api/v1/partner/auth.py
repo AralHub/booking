@@ -9,8 +9,8 @@ from app.api.dependencies.partner import get_current_auth_partner
 from app.core import SessionDep, TransactionSessionDep
 from app.core.auth.helpers import (
     REFRESH_TOKEN_TYPE,
-    create_access_token,
-    create_refresh_token,
+    create_access_token_partner,
+    create_refresh_token_partner,
 )
 from app.core.auth.validation import (
     get_partner_by_token_sub,
@@ -103,8 +103,8 @@ async def verify_phone_number(
         ),
     )
     # Создаем токены
-    access_token = await create_access_token(db_partner)
-    refresh_token = await create_refresh_token(db_partner)
+    access_token = await create_access_token_partner(db_partner)
+    refresh_token = await create_refresh_token_partner(db_partner)
     response.delete_cookie(key="refresh_token")
     response.set_cookie(
         key=REFRESH_TOKEN_KEY,
@@ -177,7 +177,7 @@ async def refresh_access_token(
         session=session,
         payload=payload,
     )
-    new_access_token = await create_access_token(partner)
+    new_access_token = await create_access_token_partner(partner)
     return TokenInfo(
         access_token=new_access_token,
         token_type="Bearer",

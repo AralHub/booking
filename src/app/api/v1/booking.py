@@ -4,7 +4,8 @@ from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.dao.booking import BookingDAO
-from app.schemas.booking import BookingCreate, BookingFilter
+from app.models.booking import BookingStatus
+from app.schemas.booking import BookingCreate, BookingFilter, BookingUpdateInternal
 from app.schemas.user import UserRead
 
 router = APIRouter(
@@ -39,16 +40,19 @@ async def create_booking(
     )
 
 
-@router.delete("/{booking_id}")
-async def delete_booking(
+@router.put("/{booking_id}")
+async def cancel_booking(
     booking_id: int,
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
-    return await BookingDAO.delete(
+    return await BookingDAO.update(
         session=session,
         filters=BookingFilter(
             id=booking_id,
             user_id=current_user.id,
+        ),
+        update_data=BookingUpdateInternal(
+            status=BookingStatus.CANCELLED,
         ),
     )

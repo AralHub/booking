@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 
 class RoomBase(BaseModel):
-    image: str
     quantity: int
     base_price: float
     room_area: float
@@ -10,6 +9,7 @@ class RoomBase(BaseModel):
 
 class RoomRead(RoomBase):
     id: int
+    image: str | None = None
     hotel_id: int
     room_type_id: int
 

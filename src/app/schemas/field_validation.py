@@ -3,6 +3,7 @@ from typing import Annotated
 
 from pydantic import EmailStr, Field
 
+from app.models.booking import BookingStatus
 from app.models.user import GENDER_TYPES
 
 # Константы
@@ -155,6 +156,20 @@ TIME_FIELD_UPDATE = Annotated[
         pattern=TIME_PATTERN,
         examples=["14:30"],
         description="Time in 24-hour format (HH:MM)",
+        default=None,
+    ),
+]
+BOOKING_STATUS_FIELD = Annotated[
+    BookingStatus,
+    Field(
+        examples=[BookingStatus.CANCELLED.value],
+        default=BookingStatus.PENDING,
+    ),
+]
+BOOKING_STATUS_FIELD_UPDATE = Annotated[
+    BookingStatus | None,
+    Field(
+        examples=[BookingStatus.CANCELLED.value],
         default=None,
     ),
 ]

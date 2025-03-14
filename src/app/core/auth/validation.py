@@ -115,6 +115,9 @@ async def get_partner_by_token_sub(session: AsyncSession, payload: dict) -> Part
     partner_id: str | None = payload.get("sub")
     # todo: check token blacklist
     jti = payload.get("jti")
+    role = payload.get("role")
+    if role != "partner":
+        raise UnauthorizedException("Invalid token (partner not found)")
     is_blacklisted = await TokenBlacklistDAO.get_token_by_jti(
         session=session,
         jti=jti,

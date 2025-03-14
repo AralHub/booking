@@ -24,7 +24,11 @@ class RoomPrice(IntIdPkMixin, Base):
 
 
 class Room(IntIdPkMixin, Base):
-    max_guests: Mapped[int] = mapped_column(nullable=True)
+    max_guests: Mapped[int] = mapped_column(
+        nullable=False,
+        default=1,
+        server_default="1",
+    )
     image: Mapped[str] = mapped_column(String, nullable=True)
     quantity: Mapped[int] = mapped_column(
         Integer,
