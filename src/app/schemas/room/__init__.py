@@ -15,6 +15,7 @@ class RoomRead(RoomBase):
 
 
 class RoomCreate(RoomBase):
+    max_guests: int
     room_type_id: int
 
 
@@ -23,7 +24,6 @@ class RoomCreateInternal(RoomCreate):
 
 
 class RoomUpdate(BaseModel):
-    description: str | None = None
     max_guests: int | None = None
     image: str | None = None
     quantity: int | None = None
