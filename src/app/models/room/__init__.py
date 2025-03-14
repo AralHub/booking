@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class RoomPrice(IntIdPkMixin, Base):
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
     guest_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    price: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
+    price: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
     room: Mapped["Room"] = relationship(back_populates="room_prices")
 
 

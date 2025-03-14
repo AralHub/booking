@@ -27,6 +27,7 @@ from app.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 
 from app.api.dependencies.hotel import validate_hotel_id
+from app.dao.review import ReviewDAO
 from app.dao.hotel.categoty import HotelCategoryDAO
 from app.dao.hotel.info import HotelInfoDAO
 from app.models.hotel import Hotel
@@ -309,6 +310,7 @@ class HotelDAO(BaseDAO):
         check_out_date: date,
         guests: list[int],
     ):
+        # guests_sample_list=[3,2,2] #3 rooms with capacity 3,2,2
         booked_rooms_subquery = (
             select(Booking.room_id)
             .where(
@@ -337,24 +339,58 @@ class HotelDAO(BaseDAO):
             )
             .scalar_subquery()
         )
-        # Основной запрос для поиска свободных комнат
+        # Получаем доступные комнаты, сгруппированные по отелям
         query = (
-            select(Room)
-            .join(Hotel, Room.hotel_id == Hotel.id)
-            .join(HotelLocation, HotelLocation.hotel_id == Hotel.id)
+            select(Hotel)
+            .join(Room, Hotel.id == Room.hotel_id)
+            .join(HotelLocation, Hotel.id == HotelLocation.hotel_id)
             .where(
                 and_(
                     HotelLocation.city_id == city_id,
                     Room.id.notin_(booked_rooms_subquery),
-                    Room.max_guests >= max(guests),
                     Room.quantity > 0,
+                )
+            )
+            .options(
+                selectinload(
+                    Hotel.rooms.and_(
+                        Room.id.notin_(booked_rooms_subquery), Room.quantity > 0
+                    )
                 )
             )
             .distinct()
         )
 
-        # Выполнение запроса
-        result = await session.execute(query)
-        available_rooms = result.scalars().all()
+        hotels = (await session.execute(query)).scalars().all()
 
-        return available_rooms
+        # Фильтруем отели, у которых есть достаточно подходящих комнат
+        suitable_hotels = []
+        for hotel in hotels:
+            available_rooms = hotel.rooms
+            # Создаем копию списка гостей для проверки
+            remaining_guests = guests.copy()
+
+            # Сортируем комнаты по вместимости (от меньшей к большей)
+            sorted_rooms = sorted(available_rooms, key=lambda r: r.max_guests)
+
+            # Проверяем, можем ли разместить все группы гостей
+            for needed_capacity in sorted(remaining_guests):
+                suitable_room = next(
+                    (
+                        room
+                        for room in sorted_rooms
+                        if room.max_guests >= needed_capacity and room.quantity > 0
+                    ),
+                    None,
+                )
+                if suitable_room:
+                    suitable_room.quantity -= 1  # Уменьшаем доступное количество
+                    remaining_guests.remove(needed_capacity)
+                else:
+                    break
+
+            # Если все группы гостей могут быть размещены
+            if not remaining_guests:
+                suitable_hotels.append(hotel)
+
+        return suitable_hotels

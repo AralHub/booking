@@ -52,44 +52,6 @@ services:
     expose:
       - "6379"
 
-  migrations:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - ./src/.env.prod
-    depends_on:
-      - db
-    command: alembic upgrade head
-    volumes:
-      - ./src/app:/code/app
-      - ./src/.env.prod:/code/.env.prod
-      - ./src/migrations:/code/migrations
-      - ./src/migrations/versions:/code/migrations/versions
-      - ./src/alembic.ini:/code/alembic.ini  
-  #-------- uncomment to run with pgadmin --------
-  # pgadmin:
-  #   container_name: pgadmin4
-  #   image: dpage/pgadmin4:latest
-  #   restart: always
-  #   ports:
-  #     - "5050:80"
-  #   volumes:
-  #     - pgadmin-data:/var/lib/pgadmin
-  #   env_file:
-  #     - ./src/.env
-  #   depends_on:
-  #     - db
-
-  #-------- uncomment to run with nginx --------
-  # nginx:
-  #   image: nginx:latest
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./default.conf:/etc/nginx/conf.d/default.conf
-  #   depends_on:
-  #     - web
 
   # -------- uncomment to create first superuser --------
   create_superuser:
