@@ -10,7 +10,6 @@ from app.schemas.hotel.location import (
     LocationCreate,
     LocationFilter,
     LocationUpdate,
-    LocationUpdateInternal,
 )
 
 router = APIRouter(
@@ -71,15 +70,8 @@ async def update_hotel_location(
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
-    return await HotelLocationDAO.update(
+    return await HotelLocationDAO.update_hotel_location(
         session=session,
-        values=LocationUpdateInternal(
-            **location_update_data.model_dump(
-                exclude_none=True,
-                exclude_unset=True,
-            ),
-        ),
-        filters=LocationFilter(
-            hotel_id=hotel_id,
-        ),
+        location_update_data=location_update_data,
+        hotel_id=hotel_id,
     )

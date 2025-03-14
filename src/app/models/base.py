@@ -6,7 +6,7 @@ from sqlalchemy import MetaData, inspect
 from sqlalchemy.orm import DeclarativeBase, declared_attr
 
 from app.core.config import settings
-from app.core.utils import convert_and_pluralize
+from app.core.utils.case_converter import convert_and_pluralize
 
 
 class Base(DeclarativeBase):
