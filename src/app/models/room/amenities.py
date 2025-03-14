@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 
 class RoomAmenityCategory(IntIdPkMixin, Base):
-    __tablename__ = "room_amenity_categories"
     name: Mapped[str] = mapped_column(
         String,
         nullable=False,
@@ -23,7 +22,6 @@ class RoomAmenityCategory(IntIdPkMixin, Base):
 
 
 class RoomAmenity(IntIdPkMixin, Base):
-    __tablename__ = "room_amenities"
     name: Mapped[str] = mapped_column(
         String,
         nullable=False,
@@ -54,7 +52,6 @@ class RoomAmenity(IntIdPkMixin, Base):
 
 
 class RoomAmenityAssociation(Base):
-    __tablename__ = "room_amenity_associations"
     room_id: Mapped[int] = mapped_column(
         ForeignKey("rooms.id"),
         primary_key=True,

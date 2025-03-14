@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
+from app.api.dependencies.hotel import (
+    valid_hotel_admin,
+    validate_hotel_id,
+    validate_hotel_room_id,
+)
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
@@ -13,6 +17,7 @@ from app.schemas.room import (
     RoomCreate,
     RoomCreateInternal,
     RoomFilter,
+    RoomRead,
     RoomUpdate,
     RoomUpdateInternal,
 )
@@ -118,14 +123,25 @@ async def update_hotel_room(
     hotel_id: int,
     room_id: int,
     room_update_data: RoomUpdate,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    room: RoomRead = Depends(validate_hotel_room_id),
     session=TransactionSessionDep,
 ):
+    # Проверяем существование room_type если он указан
+    if room_update_data.room_type_id is not None:
+        room_type = await RoomTypeDAO.get_one_or_none(
+            session=session,
+            filters=RoomTypeFilter(
+                id=room_update_data.room_type_id,
+            ),
+        )
+        if not room_type:
+            raise NotFoundException("Room type does not exist")
     updated_row_count = await RoomDAO.update(
         session=session,
         values=RoomUpdateInternal(
             **room_update_data.model_dump(
                 exclude_none=True,
+                exclude_unset=True,
             )
         ),
         filters=RoomFilter(
@@ -133,8 +149,8 @@ async def update_hotel_room(
             hotel_id=hotel_id,
         ),
     )
-    if updated_row_count == 0:
-        raise NotFoundException("Room not found")
+    if updated_row_count == 0 or updated_row_count is None:
+        raise NotFoundException("Room did not update")
     return {
         "message": "Room updated successfully",
     }

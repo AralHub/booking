@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 
 class HotelCategory(IntIdPkMixin, Base):
-    __tablename__ = "hotel_categories"
     name: Mapped[str] = mapped_column(String, unique=True)
     hotels: Mapped[list["Hotel"]] = relationship(
         "Hotel",

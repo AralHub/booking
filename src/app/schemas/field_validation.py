@@ -15,6 +15,12 @@ TIME_PATTERN = r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
 DATE_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
 
 
+def zero_to_none(num: int) -> int | None:
+    if num == 0:
+        return None
+    return num
+
+
 # Общие поля с аннотациями
 NAME_FIELD = Annotated[
     str,
@@ -73,8 +79,21 @@ VERIFY_CODE_FIELD = Annotated[
     str,
     Field(pattern=r"^\d{5}$", examples=["12345"]),
 ]
-
-LONG_FIELD = Annotated[
+LONG_FIELD= Annotated[
+    float ,
+    Field(
+        ge=-180,
+        le=180,
+    ),
+]
+LAT_FIELD = Annotated[
+    float ,
+    Field(
+        ge=-90,
+        le=90,
+    ),
+]
+LONG_FIELD_UPDATE = Annotated[
     float | None,
     Field(
         ge=-180,
@@ -82,7 +101,7 @@ LONG_FIELD = Annotated[
         default=None,
     ),
 ]
-LAT_FIELD = Annotated[
+LAT_FIELD_UPDATE = Annotated[
     float | None,
     Field(
         ge=-90,

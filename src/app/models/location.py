@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 
 class Country(IntIdPkMixin, Base):
-    __tablename__ = "countries"
     name: Mapped[str] = mapped_column(
         String,
         unique=True,
@@ -30,7 +29,6 @@ class Country(IntIdPkMixin, Base):
 
 
 class City(IntIdPkMixin, Base):
-    __tablename__ = "cities"
     name: Mapped[str] = mapped_column(
         String,
         unique=True,

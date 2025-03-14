@@ -6,9 +6,8 @@ from app.core.exceptions.http_exceptions import NotFoundException
 from app.dao.hotel import HotelDAO
 from app.dao.hotel.location import HotelLocationDAO
 from app.schemas.hotel.info import HotelNameFilter, HotelNameRead
-from app.schemas.location import (
+from app.schemas.hotel.location import (
     LocationCreate,
-    LocationCreateInternal,
     LocationFilter,
     LocationUpdate,
     LocationUpdateInternal,
@@ -60,13 +59,8 @@ async def add_hotel_location(
 ):
     return await HotelLocationDAO.add_hotel_location(
         session=session,
-        values=LocationCreateInternal(
-            **location_create_data.model_dump(
-                exclude_none=True,
-                excluce_unset=True,
-            ),
-            hotel_id=hotel_id,
-        ),
+        location_create_data=location_create_data,
+        hotel_id=hotel_id,
     )
 
 
@@ -80,7 +74,10 @@ async def update_hotel_location(
     return await HotelLocationDAO.update(
         session=session,
         values=LocationUpdateInternal(
-            **location_update_data.model_dump(),
+            **location_update_data.model_dump(
+                exclude_none=True,
+                exclude_unset=True,
+            ),
         ),
         filters=LocationFilter(
             hotel_id=hotel_id,

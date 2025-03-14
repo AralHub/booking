@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from .field_validation import LAT_FIELD, LONG_FIELD
+from .field_validation import LAT_FIELD_UPDATE, LONG_FIELD_UPDATE
 
 
 # region Country
@@ -79,48 +79,12 @@ class CityFilter(BaseModel):
 # endregion
 
 
-# region Location
-class LocationCreate(BaseModel):
-    address: str
-    city_id: int
-    longitude: LONG_FIELD
-    latitude: LAT_FIELD
-
-
-class LocationCreateInternal(LocationCreate):
-    to_airport: float | None = None
-    to_railway: float | None = None
-    to_city_center: float | None = None
-    hotel_id: int
-
-
-class LocationUpdate(BaseModel):
-    address: str
-    latitude: float | None = None
-    longitude: float | None = None
-    city_id: int | None = None
-
-
-class LocationUpdateInternal(LocationUpdate):
-    to_airport: float | None = None
-    to_railway: float | None = None
-    to_city_center: float | None = None
-
-
-class LocationFilter(BaseModel):
-    id: int | None = None
-    hotel_id: int | None = None
-    latitude: float | None = None
-    longitude: float | None = None
-    city_id: int | None = None
-
-
-# endregion
+# region Coordinates
 
 
 class Coordinates(BaseModel):
-    longitude: LONG_FIELD
-    latitude: LAT_FIELD
+    longitude: LONG_FIELD_UPDATE
+    latitude: LAT_FIELD_UPDATE
 
     def to_string(self) -> str:
         return f"{self.longitude},{self.latitude}"
@@ -152,3 +116,6 @@ class RouteResponse(BaseModel):
     segments: list[RouteSegment]
     total_distance: float
     total_duration: float
+
+
+# endregion

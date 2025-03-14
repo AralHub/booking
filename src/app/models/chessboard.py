@@ -20,7 +20,6 @@
 
 
 # class RoomAvailability(IntIdPkMixin, Base):
-#     __tablename__ = "room_availabilities"
 
 #     room_type_variant_id: Mapped[int] = mapped_column(
 #         ForeignKey("room_type_variants.id")

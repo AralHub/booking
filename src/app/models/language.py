@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 
 # class HotelLanguageAssociation(Base):
-#     __tablename__ = "hotel_language_associations"
 #     hotel_id: Mapped[int] = mapped_column(
 #         ForeignKey("hotels.id"),
 #         primary_key=True,

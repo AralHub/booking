@@ -11,12 +11,12 @@ from app.dao.hotel.location import HotelLocationDAO
 from app.dao.location import CityDAO
 from app.models.hotel.amenities import HotelAmenityAssociation
 from app.models.booking import Booking
-from app.schemas.location import (
-    CityFilter,
+from app.schemas.hotel.location import (
     LocationCreateInternal,
     LocationFilter,
     LocationUpdate,
 )
+from app.schemas.location import CityFilter
 from app.dao.hotel.rules import RuleDAO
 from app.schemas.hotel.rules import (
     RuleCreateInternal,

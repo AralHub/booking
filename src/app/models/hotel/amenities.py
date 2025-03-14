@@ -18,7 +18,6 @@ class PaymentType(str, Enum):
 
 
 class HotelAmenityCategory(IntIdPkMixin, Base):
-    __tablename__ = "hotel_amenity_categories"
     name: Mapped[str] = mapped_column(
         String,
         nullable=False,
@@ -30,7 +29,6 @@ class HotelAmenityCategory(IntIdPkMixin, Base):
 
 
 class HotelAmenity(IntIdPkMixin, Base):
-    __tablename__ = "hotel_amenities"
     name: Mapped[str] = mapped_column(
         String,
         nullable=False,
@@ -76,7 +74,6 @@ class HotelAmenity(IntIdPkMixin, Base):
 
 
 class HotelAmenityAssociation(Base):
-    __tablename__ = "hotel_amenity_associations"
     hotel_id: Mapped[int] = mapped_column(
         ForeignKey("hotels.id"),
         primary_key=True,

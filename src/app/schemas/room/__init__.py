@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+
+from ..field_validation import zero_to_none
 
 
 class RoomBase(BaseModel):
@@ -30,6 +32,10 @@ class RoomUpdate(BaseModel):
     base_price: float | None = None
     room_area: float | None = None
     room_type_id: int | None = None
+
+    @field_validator("room_type_id")
+    def validate_and_sanitize_path(cls, v: int | None) -> int | None:
+        return zero_to_none(v)
 
 
 class RoomUpdateInternal(RoomUpdate):

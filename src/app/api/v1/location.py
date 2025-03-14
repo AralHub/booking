@@ -1,9 +1,8 @@
 from fastapi import APIRouter
 
 from app.core import SessionDep, TransactionSessionDep
-
-from .dao import CityDAO, CountryDAO
-from .schemas import (
+from app.dao.location import CityDAO, CountryDAO
+from app.schemas.location import (
     CityCreate,
     CityCreateInternal,
     CityFilter,

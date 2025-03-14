@@ -6,7 +6,7 @@ from sqlalchemy import MetaData, inspect
 from sqlalchemy.orm import DeclarativeBase, declared_attr
 
 from app.core.config import settings
-from app.core.utils import camel_case_to_snake_case
+from app.core.utils import convert_and_pluralize
 
 
 class Base(DeclarativeBase):
@@ -18,7 +18,7 @@ class Base(DeclarativeBase):
 
     @declared_attr.directive
     def __tablename__(cls) -> str:
-        return f"{camel_case_to_snake_case(cls.__name__)}s"
+        return f"{convert_and_pluralize(cls.__name__)}"
 
     def to_dict(self, exclude_none: bool = False):
         """
