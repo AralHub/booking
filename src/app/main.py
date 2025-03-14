@@ -6,8 +6,8 @@ from fastapi.responses import JSONResponse
 from app.api.v1 import router as api_v1_router
 from app.core.config import settings
 from app.core.logger import logging
+from app.core.middlewares.error_handle_middleware import ErrorHandleMiddleware
 from app.create_fastapi_app import create_app
-from app.middleware.error_handle_middleware import ErrorHandleMiddleware
 
 logger = logging.getLogger(__name__)
 

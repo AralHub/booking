@@ -13,6 +13,8 @@ HOTEL_NAME_MAX_LENGTH = 255
 URL_PATTERN = r"^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$"
 TIME_PATTERN = r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
 DATE_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
+
+
 # Общие поля с аннотациями
 NAME_FIELD = Annotated[
     str,
@@ -52,13 +54,6 @@ PHONE_NUMBER_FIELD_UPDATE = Annotated[
     ),
 ]
 
-EMAIL_FIELD = Annotated[
-    EmailStr | None,
-    Field(
-        examples=["user.userson@example.com"],
-        default=None,
-    ),
-]
 BIRTHDAY_FIELD = Annotated[
     datetime | None,
     Field(

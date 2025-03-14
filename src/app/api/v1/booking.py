@@ -40,7 +40,7 @@ async def create_booking(
     )
 
 
-@router.put("/{booking_id}")
+@router.put("/{booking_id}/cancel")
 async def cancel_booking(
     booking_id: int,
     current_user: UserRead = Depends(get_current_active_auth_user),

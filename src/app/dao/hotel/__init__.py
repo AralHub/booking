@@ -45,6 +45,8 @@ from app.schemas.hotel.info import (
     HotelNameUpdate,
 )
 from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
+from app.models.room import Room
+from app.models.hotel.location import HotelLocation
 
 
 class HotelDAO(BaseDAO):
@@ -307,30 +309,52 @@ class HotelDAO(BaseDAO):
         check_out_date: date,
         guests: list[int],
     ):
-        booked_rooms_subquery = select(Booking.room_id, Booking.guest_quantity).where(
-            and_(
-                # Проверяем только активные брони (не отмененные)
-                Booking.status != BookingStatus.CANCELLED,
-                # Проверяем все возможные пересечения дат через OR
-                or_(
-                    # Сценарий 1: бронь начинается до check_in и заканчивается после
-                    and_(
-                        Booking.check_in_date <= check_in_date,
-                        Booking.check_out_date > check_in_date,
+        booked_rooms_subquery = (
+            select(Booking.room_id)
+            .where(
+                and_(
+                    # Проверяем только активные брони (не отмененные)
+                    Booking.status != BookingStatus.CANCELLED,
+                    # Проверяем все возможные пересечения дат через OR
+                    or_(
+                        # Сценарий 1: бронь начинается до check_in и заканчивается после
+                        and_(
+                            Booking.check_in_date <= check_in_date,
+                            Booking.check_out_date > check_in_date,
+                        ),
+                        # Сценарий 2: бронь начинается до check_out и заканчивается после
+                        and_(
+                            Booking.check_in_date < check_out_date,
+                            Booking.check_out_date >= check_out_date,
+                        ),
+                        # Сценарий 3: бронь полностью внутри запрашиваемого периода
+                        and_(
+                            Booking.check_in_date >= check_in_date,
+                            Booking.check_out_date <= check_out_date,
+                        ),
                     ),
-                    # Сценарий 2: бронь начинается до check_out и заканчивается после
-                    and_(
-                        Booking.check_in_date < check_out_date,
-                        Booking.check_out_date >= check_out_date,
-                    ),
-                    # Сценарий 3: бронь полностью внутри запрашиваемого периода
-                    and_(
-                        Booking.check_in_date >= check_in_date,
-                        Booking.check_out_date <= check_out_date,
-                    ),
-                ),
+                )
             )
+            .scalar_subquery()
         )
-        unavailable_rooms = await session.execute(booked_rooms_subquery)
-        unavailable_rooms = unavailable_rooms.scalars().all()
-        return unavailable_rooms
+        # Основной запрос для поиска свободных комнат
+        query = (
+            select(Room)
+            .join(Hotel, Room.hotel_id == Hotel.id)
+            .join(HotelLocation, HotelLocation.hotel_id == Hotel.id)
+            .where(
+                and_(
+                    HotelLocation.city_id == city_id,
+                    Room.id.notin_(booked_rooms_subquery),
+                    Room.max_guests >= max(guests),
+                    Room.quantity > 0,
+                )
+            )
+            .distinct()
+        )
+
+        # Выполнение запроса
+        result = await session.execute(query)
+        available_rooms = result.scalars().all()
+
+        return available_rooms
