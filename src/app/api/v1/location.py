@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.location import validate_country_id
+from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import BadRequestException
 from app.dao.location import CityDAO, CountryDAO
@@ -32,7 +33,10 @@ async def get_countries(
     )
 
 
-@router.post("/locations/countries")
+@router.post(
+    "/locations/countries",
+    dependencies=[Depends(get_current_superuser)],
+)
 async def add_country(
     country_create_data: CountryCreate,
     session=TransactionSessionDep,
@@ -51,7 +55,10 @@ async def add_country(
     )
 
 
-@router.put("/locations/countries/{country_id}")
+@router.put(
+    "/locations/countries/{country_id}",
+    dependencies=[Depends(get_current_superuser)],
+)
 async def update_country(
     country_id: int,
     country_update_data: CountryUpdate,
@@ -75,7 +82,10 @@ async def update_country(
     )
 
 
-@router.delete("/locations/countries/{country_id}")
+@router.delete(
+    "/locations/countries/{country_id}",
+    dependencies=[Depends(get_current_superuser)],
+)
 async def delete_country(
     country_id: int,
     country: CountryBase = Depends(validate_country_id),
@@ -105,6 +115,7 @@ async def get_all_cities_by_country_id(
 @router.post(
     "/locations/countries/{country_id}/cities",
     response_model=CityRead,
+    dependencies=[Depends(get_current_superuser)],
 )
 async def add_city(
     country_id: int,
@@ -121,7 +132,10 @@ async def add_city(
     )
 
 
-@router.put("/locations/cities/{city_id}")
+@router.put(
+    "/locations/cities/{city_id}",
+    dependencies=[Depends(get_current_superuser)],
+)
 async def update_city(
     city_id: int,
     city_update_data: CityUpdate,
@@ -134,7 +148,10 @@ async def update_city(
     )
 
 
-@router.delete("/locations/cities/{city_id}")
+@router.delete(
+    "/locations/cities/{city_id}",
+    dependencies=[Depends(get_current_superuser)],
+)
 async def delete_city(
     city_id: int,
     session=TransactionSessionDep,

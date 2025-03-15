@@ -48,7 +48,7 @@ async def get_current_active_auth_user(
     raise UnauthorizedException("Inactive user")
 
 
-async def get_current_superadmin_user(
+async def get_current_superuser(
     user: UserBase = Depends(get_current_auth_user),
 ):
     if user.is_superuser:

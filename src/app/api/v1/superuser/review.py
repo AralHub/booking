@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.user import (
-    get_current_superadmin_user,
-)
+from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.review import ReviewCategoryDAO
 from app.schemas.review import (
@@ -30,7 +28,7 @@ async def get_review_categories(
 
 @router.post(
     "/categories",
-    dependencies=[Depends(get_current_superadmin_user)],
+    dependencies=[Depends(get_current_superuser)],
 )
 async def create_review_categories(
     review_category_create_data: ReviewCategoryCreate,
@@ -44,7 +42,7 @@ async def create_review_categories(
 
 @router.put(
     "/categories/{review_category_id}",
-    dependencies=[Depends(get_current_superadmin_user)],
+    dependencies=[Depends(get_current_superuser)],
 )
 async def update_review_categories(
     review_category_id: int,
@@ -62,7 +60,7 @@ async def update_review_categories(
 
 @router.delete(
     "/categories/{review_category_id}",
-    dependencies=[Depends(get_current_superadmin_user)],
+    dependencies=[Depends(get_current_superuser)],
 )
 async def delete_review_categories(
     review_category_id: int,

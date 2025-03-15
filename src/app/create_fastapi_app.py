@@ -12,7 +12,7 @@ from fastapi.openapi.docs import (
 from fastapi.responses import JSONResponse
 from redis.asyncio import ConnectionPool, Redis
 
-from app.api.dependencies.user import get_current_superadmin_user
+from app.api.dependencies.user import get_current_superuser
 from app.core import db_helper
 
 # from app.core.utils import queue, rate_limit, cache,redis_client
@@ -121,7 +121,7 @@ def register_static_docs_routes(app: FastAPI):
     @app.get("/docs", include_in_schema=False)
     async def custom_swagger_ui_html(
         current_user: Any = Depends(
-            get_current_superadmin_user
+            get_current_superuser
             if settings.environment.ENVIRONMENT == EnvironmentOption.STAGING
             else lambda: None
         ),
@@ -141,7 +141,7 @@ def register_static_docs_routes(app: FastAPI):
     @app.get("/redoc", include_in_schema=False)
     async def redoc_html(
         current_user: Any = Depends(
-            get_current_superadmin_user
+            get_current_superuser
             if settings.environment.ENVIRONMENT == EnvironmentOption.STAGING
             else lambda: None
         ),

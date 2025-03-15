@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.user import get_current_superadmin_user
+from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.room.amenities import (
     RoomAmenityCategoryDAO,
@@ -45,7 +45,7 @@ async def get_room_amenities_by_category(
 
 @router.put(
     "/categories/{category_id}/amenities/{amenity_id}",
-    dependencies=[Depends(get_current_superadmin_user)],
+    dependencies=[Depends(get_current_superuser)],
 )
 async def update_room_amenity(
     category_id: int,
