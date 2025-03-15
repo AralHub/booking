@@ -35,6 +35,7 @@ from app.dao.user import TokenBlacklistDAO
 from app.schemas.partner import (
     PartnerFilter,
     PartnerUpdateInternal,
+    PartnerCreateInternal,
 )
 from app.schemas.user import (
     PhoneNumber,
@@ -88,20 +89,15 @@ async def verify_phone_number(
         phone_number=verify_data.phone_number,
     )
     if not db_partner:
-        raise NotFoundException("User not found")
-
-    await PartnerDAO.update(
-        session=session,
-        filters=PartnerFilter(
-            id=db_partner.id,
-        ),
-        values=PartnerUpdateInternal(
-            phone_number=verify_data.phone_number,
-            is_active=True,
-            is_verified=True,
-            is_fully_registered=True,
-        ),
-    )
+        await PartnerDAO.create(
+            session=session,
+            values=PartnerCreateInternal(
+                phone_number=verify_data.phone_number,
+                is_active=True,
+                is_verified=True,
+                is_fully_registered=True,
+            ),
+        )
     # Создаем токены
     access_token = await create_access_token_partner(db_partner)
     refresh_token = await create_refresh_token_partner(db_partner)
