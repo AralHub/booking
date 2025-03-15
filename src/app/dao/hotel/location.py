@@ -154,21 +154,32 @@ class HotelLocationDAO(BaseDAO):
             ),
             name="hotel_coordinates",
         )
-        to_airport_distance, to_railway_distance, to_center_distance = (
-            await cls.calculate_all_distances(hotel_point, db_city)
-        )
-        return await cls.update(
-            session=session,
-            values=LocationUpdateInternal(
-                **location_update_data.model_dump(
-                    exclude_none=True,
-                    exclude_unset=True,
+        try:
+            to_airport_distance, to_railway_distance, to_center_distance = (
+                await cls.calculate_all_distances(hotel_point, db_city)
+            )
+            return await cls.update(
+                session=session,
+                values=LocationUpdateInternal(
+                    **location_update_data.model_dump(
+                        exclude_none=True,
+                        exclude_unset=True,
+                    ),
+                    to_airport=to_airport_distance,
+                    to_railway=to_railway_distance,
+                    to_city_center=to_center_distance,
                 ),
-                to_airport=to_airport_distance,
-                to_railway=to_railway_distance,
-                to_city_center=to_center_distance,
-            ),
-            filters=LocationFilter(
-                hotel_id=hotel_id,
-            ),
-        )
+                filters=LocationFilter(
+                    hotel_id=hotel_id,
+                ),
+            )
+        except Exception as e:
+            return await cls.update(
+                session=session,
+                values=LocationUpdateInternal(
+                    **location_update_data.model_dump(),
+                    to_airport=None,
+                    to_railway=None,
+                    to_city_center=None,
+                ),
+            )

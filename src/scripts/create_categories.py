@@ -3,11 +3,11 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.hotel.dao import HotelCategoryDAO
-from app.api.hotel.schemas import HotelCategoryCreateInternal
 from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
+from app.dao.hotel import HotelCategoryDAO
+from app.schemas.hotel.category import HotelCategoryCreateInternal
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,6 @@ async def create_fake_db(
             try:
                 hotel_category_create = HotelCategoryCreateInternal(
                     name=hotel_category["name"],
-                    description=hotel_category.get("description"),
                 )
                 await HotelCategoryDAO.create(
                     session=session,

@@ -52,8 +52,7 @@ services:
     expose:
       - "6379"
 
-
-  # -------- uncomment to create first superuser --------
+  # -------- create first superuser --------
   create_superuser:
     build:
       context: .
@@ -68,6 +67,52 @@ services:
       - ./src:/code/src
       - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
+  create_cities:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_cities
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env.prod
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
+  create_categories:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_categories
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env.prod
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
+
+  create_amenities:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_amenities
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env.prod
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
 
   #-------- uncomment to create first tier --------
   # create_tier:

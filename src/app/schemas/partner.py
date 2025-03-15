@@ -10,8 +10,8 @@ from .field_validation import (
 
 class PartnerBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
-    first_name: NAME_FIELD
-    last_name: NAME_FIELD
+    first_name: NAME_FIELD_UPDATE
+    last_name: NAME_FIELD_UPDATE
 
 
 class PartnerRead(PartnerBase):

@@ -20,7 +20,6 @@ from app.core.auth.validation import (
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
-    NotFoundException,
     TooManyRequestsException,
     UnauthorizedException,
 )
@@ -33,8 +32,6 @@ from app.core.utils.send_sms import send_verification_sms
 from app.dao.partner import PartnerDAO
 from app.dao.user import TokenBlacklistDAO
 from app.schemas.partner import (
-    PartnerFilter,
-    PartnerUpdateInternal,
     PartnerCreateInternal,
 )
 from app.schemas.user import (
@@ -89,7 +86,7 @@ async def verify_phone_number(
         phone_number=verify_data.phone_number,
     )
     if not db_partner:
-        await PartnerDAO.create(
+        db_partner = await PartnerDAO.create(
             session=session,
             values=PartnerCreateInternal(
                 phone_number=verify_data.phone_number,
