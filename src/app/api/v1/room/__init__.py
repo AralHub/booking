@@ -6,7 +6,8 @@ from app.api.dependencies.hotel import (
     validate_hotel_room_id,
 )
 from app.core import SessionDep, TransactionSessionDep
-from app.core.config import settings
+
+# from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
 )
@@ -21,11 +22,11 @@ from app.schemas.room import (
     RoomUpdate,
     RoomUpdateInternal,
 )
-from app.schemas.room.bed import BedFilter
-from app.schemas.room.types import RoomTypeCreate, RoomTypeFilter
+from app.schemas.room.types import RoomTypeFilter
 
 from .amenities import router as amenities_router
 from .images import router as images_router
+from .price import router as price_router
 
 # from .types import router as types_router
 
@@ -158,3 +159,4 @@ async def update_hotel_room(
 
 router.include_router(amenities_router)
 router.include_router(images_router)
+router.include_router(price_router)

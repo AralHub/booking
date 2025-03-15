@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 from app.dao import BaseDAO
 from app.dao.room import RoomDAO
+from app.dao.room.price import RoomPriceDAO
 from app.dao.user import UserDAO
 from app.models.booking import Booking, BookingStatus
 from app.models.room import Room

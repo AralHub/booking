@@ -13,14 +13,8 @@ if TYPE_CHECKING:
     from app.models.room.amenities import RoomAmenity, RoomAmenityAssociation
     from app.models.room.bed import RoomBedConfiguration
     from app.models.room.images import RoomImage
+    from app.models.room.price import RoomPrice
     from app.models.room.types import RoomType
-
-
-class RoomPrice(IntIdPkMixin, Base):
-    room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
-    guest_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    price: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
-    room: Mapped["Room"] = relationship(back_populates="room_prices")
 
 
 class Room(IntIdPkMixin, Base):

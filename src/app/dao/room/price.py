@@ -1,6 +1,6 @@
 from app.dao import BaseDAO
 
-from app.models.room import RoomPrice
+from app.models.room.price import RoomPrice
 
 
 class RoomPriceDAO(BaseDAO):
