@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.api.dependencies.hotel import validate_hotel_id, validate_review_owner_by_id
 from app.api.dependencies.user import get_current_active_auth_user
@@ -46,13 +46,22 @@ async def get_hotel_review_summary(
 @router.get("/{hotel_id}/reviews")
 async def get_hotel_reviews(
     hotel_id: int,
+    page: int = Query(default=1, ge=1, description="Номер страницы"),
+    page_size: int = Query(default=10, ge=1, le=100, description="Размер страницы"),
     hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
-    return await ReviewDAO.get_all_hotel_reviews(
+    results = await ReviewDAO.paginate(
         session=session,
-        hotel_id=hotel_id,
+        filters=ReviewFilter(
+            hotel_id=hotel_id,
+        ),
+        page=page,
+        page_size=page_size,
+        order_by="created_at",
+        order_direction="desc",
     )
+    return [ReviewRead.model_validate(item) for item in results]
 
 
 @router.post("/{hotel_id}/reviews")

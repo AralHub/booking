@@ -19,16 +19,9 @@ class RoomDAO(BaseDAO):
     model = Room
 
     @classmethod
-    async def get_room_price(cls, session: AsyncSession, room_id: int):
-        room = await cls.get_one_or_none_by_id(
-            session=session,
-            data_id=room_id,
-        )
-        return room.base_price if room else None
-
-    @classmethod
     async def get_available_rooms(
-        db: AsyncSession,
+        cls,
+        session: AsyncSession,
         hotel_id: int,
         check_in_date: date,
         check_out_date: date,
@@ -62,7 +55,7 @@ class RoomDAO(BaseDAO):
             .distinct()
         )
 
-        result = await db.execute(query)
+        result = await session.execute(query)
         return result.scalars().all()
 
     @classmethod

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from app.core.utils.parse_date import parse_date
 
 from app.api.dependencies.hotel import (
     valid_hotel_admin,
@@ -44,7 +45,10 @@ async def get_available_rooms(
     guests_count: int,
     session=SessionDep,
 ):
+    check_in_date = parse_date(check_in_date)
+    check_out_date = parse_date(check_out_date)
     return await RoomDAO.get_available_rooms(
+        session=session,
         hotel_id=hotel_id,
         check_in_date=check_in_date,
         check_out_date=check_out_date,

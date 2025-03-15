@@ -63,7 +63,7 @@ class BookingDAO(BaseDAO):
 
         # Вычисление количества дней и общей стоимости
         total_days = (booking_data.check_out_date - booking_data.check_in_date).days
-        room_price = await RoomDAO.get_room_price(
+        room_price = await RoomPriceDAO.get_room_price(
             session=session,
             room_id=booking_data.room_id,
         )
