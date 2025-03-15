@@ -52,21 +52,21 @@ services:
     expose:
       - "6379"
 
-  migrations:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - ./src/.env.prod
-    depends_on:
-      - db
-    command: alembic upgrade head
-    volumes:
-      - ./src/app:/code/app
-      - ./src/.env.prod:/code/.env.prod
-      - ./src/migrations:/code/migrations
-      - ./src/migrations/versions:/code/migrations/versions
-      - ./src/alembic.ini:/code/alembic.ini  
+  # migrations:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./src/.env.prod
+  #   depends_on:
+  #     - db
+  #   command: alembic upgrade head
+  #   volumes:
+  #     - ./src/app:/code/app
+  #     - ./src/.env.prod:/code/.env.prod
+  #     - ./src/migrations:/code/migrations
+  #     - ./src/migrations/versions:/code/migrations/versions
+  #     - ./src/alembic.ini:/code/alembic.ini  
   #-------- uncomment to run with pgadmin --------
   # pgadmin:
   #   container_name: pgadmin4
@@ -92,6 +92,7 @@ services:
   #     - web
 
   # -------- uncomment to create first superuser --------
+  
   create_superuser:
     build:
       context: .
