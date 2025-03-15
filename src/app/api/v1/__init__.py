@@ -4,6 +4,7 @@ from app.core.config import settings
 
 from .booking import router as booking_router
 from .hotel import router as hotel_router
+from .location import router as superuser_location_router
 from .partner import router as partner_router
 from .room import router as room_router
 from .superuser import router as superuser_router
@@ -50,4 +51,7 @@ router.include_router(
 )
 router.include_router(
     superuser_review_router,
+)
+router.include_router(
+    superuser_location_router,
 )

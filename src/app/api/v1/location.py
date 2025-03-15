@@ -1,19 +1,23 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.dependencies.location import validate_country_id
 from app.core import SessionDep, TransactionSessionDep
+from app.core.exceptions.http_exceptions import BadRequestException
 from app.dao.location import CityDAO, CountryDAO
 from app.schemas.location import (
     CityCreate,
     CityCreateInternal,
     CityFilter,
     CityRead,
+    CityUpdate,
+    CountryBase,
     CountryCreate,
     CountryFilter,
     CountryUpdate,
 )
 
 router = APIRouter(
-    tags=["Locations"],
+    tags=["Superuser Locations"],
 )
 
 
@@ -28,38 +32,58 @@ async def get_countries(
     )
 
 
-@router.get("/locations/countries/{country_id}")
-async def get_country(
-    country_id: int,
-    session=SessionDep,
-):
-    return await CountryDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=country_id,
-    )
-
-
 @router.post("/locations/countries")
 async def add_country(
     country_create_data: CountryCreate,
     session=TransactionSessionDep,
 ):
+    db_country = await CountryDAO.get_one_or_none(
+        session=session,
+        filters=CountryFilter(
+            name=country_create_data.name,
+        ),
+    )
+    if db_country:
+        raise BadRequestException("Country already exists")
     return await CountryDAO.create(
         session=session,
         values=country_create_data,
     )
 
 
-@router.patch("/locations/countries/{country_id}")
+@router.put("/locations/countries/{country_id}")
 async def update_country(
     country_id: int,
     country_update_data: CountryUpdate,
+    country: CountryBase = Depends(validate_country_id),
     session=TransactionSessionDep,
 ):
-    return await CountryDAO.create(
+    db_country = await CountryDAO.get_one_or_none(
+        session=session,
+        filters=CountryFilter(
+            name=country_update_data.name,
+        ),
+    )
+    if db_country and db_country.id != country_id:
+        raise BadRequestException(
+            f"Country with name {country_update_data.name} already exists"
+        )
+    return await CountryDAO.update(
         session=session,
         filters=CountryFilter(id=country_id),
         values=country_update_data,
+    )
+
+
+@router.delete("/locations/countries/{country_id}")
+async def delete_country(
+    country_id: int,
+    country: CountryBase = Depends(validate_country_id),
+    session=TransactionSessionDep,
+):
+    return await CountryDAO.delete(
+        session=session,
+        filters=CountryFilter(id=country_id),
     )
 
 
@@ -94,6 +118,32 @@ async def add_city(
     return await CityDAO.create(
         session=session,
         values=create_city_data,
+    )
+
+
+@router.put("/locations/cities/{city_id}")
+async def update_city(
+    city_id: int,
+    city_update_data: CityUpdate,
+    session=TransactionSessionDep,
+):
+    return await CityDAO.update(
+        session=session,
+        filters=CityFilter(id=city_id),
+        values=city_update_data,
+    )
+
+
+@router.delete("/locations/cities/{city_id}")
+async def delete_city(
+    city_id: int,
+    session=TransactionSessionDep,
+):
+    return await CityDAO.delete(
+        session=session,
+        filters=CityFilter(
+            id=city_id,
+        ),
     )
 
 
