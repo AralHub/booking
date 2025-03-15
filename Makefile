@@ -15,3 +15,7 @@ log:
 
 remove:
 	docker-compose down -v --rmi local
+
+restart:
+	docker-compose down
+	docker-compose up -d --build

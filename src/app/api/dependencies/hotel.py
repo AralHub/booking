@@ -14,7 +14,7 @@ from app.models.room import Room
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
 from app.schemas.user import UserRead
-
+from app.core.i18n.translations import ErrorCode
 
 async def validate_active_hotel(
     hotel_id: int,
@@ -24,9 +24,9 @@ async def validate_active_hotel(
     result = await session.execute(query)
     db_hotel = result.unique().scalar_one_or_none()
     if not db_hotel:
-        raise NotFoundException("Hotel not found")
+        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
     if not db_hotel.is_active:
-        raise NotFoundException("Hotel is inactive")
+        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
     return db_hotel
 
 
@@ -38,7 +38,7 @@ async def validate_hotel_id(
     result = await session.execute(query)
     db_hotel = result.unique().scalar_one_or_none()
     if not db_hotel:
-        raise NotFoundException("Hotel not found")
+        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
     return db_hotel
 
 
@@ -51,7 +51,7 @@ async def validate_hotel_room_id(
     result = await session.execute(query)
     db_room = result.unique().scalar_one_or_none()
     if not db_room:
-        raise NotFoundException("Room not found")
+        raise NotFoundException(error_code=ErrorCode.ROOM_NOT_FOUND)
     return db_room
 
 

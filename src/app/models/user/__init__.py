@@ -54,7 +54,10 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         SqlEnum(GENDER_TYPES, name="gender_types"),
         nullable=True,
     )
-
+    language: Mapped[str] = mapped_column(
+        String,
+        nullable=True,
+    )
     is_verified: Mapped[bool] = mapped_column(
         default=False,
         server_default="false",

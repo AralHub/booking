@@ -14,7 +14,7 @@ from redis.asyncio import ConnectionPool, Redis
 
 from app.api.dependencies.user import get_current_superadmin_user
 from app.core import db_helper
-
+from app.core.middlewares.language_middleware import LanguageMiddleware
 # from app.core.utils import queue, rate_limit, cache,redis_client
 # from arq import create_pool
 # from arq.connections import RedisSettings
@@ -179,5 +179,6 @@ def create_app() -> FastAPI:
         "email": settings.app_settings.CONTACT_EMAIL,
     }
     app.license_info = {"name": settings.app_settings.LICENSE_NAME}
+    app.add_middleware(LanguageMiddleware)
     logger.info("Application setup completed successfully")
     return app
