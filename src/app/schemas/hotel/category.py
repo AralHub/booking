@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class HotelCategoryBase(BaseModel):
     name: str
+    description: str | None = None
 
 
 class HotelCategoryRead(HotelCategoryBase):

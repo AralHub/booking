@@ -16,3 +16,5 @@ from .room.images import RoomImage
 from .room.types import RoomType
 from .user import User
 from .user.token_blacklist import TokenBlacklist
+from .hotel.rules import Rule
+from .review import Review

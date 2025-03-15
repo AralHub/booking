@@ -3,8 +3,8 @@ import json
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.hotel.dao import HotelCategoryDAO
-from app.api.hotel.schemas import HotelCategoryCreateInternal
+from app.dao.hotel import HotelCategoryDAO
+from app.schemas.hotel.category import HotelCategoryCreateInternal
 from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging

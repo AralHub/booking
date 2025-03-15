@@ -26,11 +26,11 @@ class Partner(IntIdPkMixin, Base):
     )
     first_name: Mapped[str] = mapped_column(
         String(30),
-        nullable=False,
+        nullable=True,
     )
     last_name: Mapped[str] = mapped_column(
         String(30),
-        nullable=False,
+        nullable=True,
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean,

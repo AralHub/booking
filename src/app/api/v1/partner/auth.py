@@ -24,7 +24,6 @@ from app.core.exceptions.http_exceptions import (
     TooManyRequestsException,
     UnauthorizedException,
 )
-
 # from app.api.user.functions.dependencies import get_current_active_auth_user
 # from app.api.user.schemas import UserRead
 # from app.core.utils.eskiz_client import code_generator
@@ -33,6 +32,7 @@ from app.core.utils.send_sms import send_verification_sms
 from app.dao.partner import PartnerDAO
 from app.dao.user import TokenBlacklistDAO
 from app.schemas.partner import (
+    PartnerCreateInternal,
     PartnerFilter,
     PartnerUpdateInternal,
 )
@@ -88,20 +88,16 @@ async def verify_phone_number(
         phone_number=verify_data.phone_number,
     )
     if not db_partner:
-        raise NotFoundException("User not found")
 
-    await PartnerDAO.update(
-        session=session,
-        filters=PartnerFilter(
-            id=db_partner.id,
-        ),
-        values=PartnerUpdateInternal(
-            phone_number=verify_data.phone_number,
-            is_active=True,
-            is_verified=True,
-            is_fully_registered=True,
-        ),
-    )
+        db_partner = await PartnerDAO.create(
+            session=session,
+            values=PartnerCreateInternal(
+                phone_number=verify_data.phone_number,
+                is_active=True,
+                is_verified=True,
+                is_fully_registered=True,
+            ),
+        )
     # Создаем токены
     access_token = await create_access_token_partner(db_partner)
     refresh_token = await create_refresh_token_partner(db_partner)

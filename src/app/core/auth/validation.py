@@ -133,7 +133,7 @@ async def get_partner_by_token_sub(session: AsyncSession, payload: dict) -> Part
     )
     if partner:
         return partner
-    raise UnauthorizedException("Invalid token (user not found)")
+    raise UnauthorizedException("Invalid token (partner not found)")
 
 
 async def authenticate_user(
