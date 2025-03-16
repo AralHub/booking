@@ -9,7 +9,6 @@ from app.schemas.room.price import (
     RoomPriceCreate,
     RoomPriceCreateInternal,
     RoomPriceFilter,
-    RoomPriceUpdate,
 )
 
 router = APIRouter(

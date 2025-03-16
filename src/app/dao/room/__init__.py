@@ -27,13 +27,30 @@ class RoomDAO(BaseDAO):
         check_out_date: date,
         guests: int,
     ):
-        # Подзапрос для поиска занятых комнат на указанные даты
         booked_rooms_subquery = (
             select(Booking.room_id)
             .where(
                 and_(
-                    Booking.check_in_date <= check_out_date,
-                    Booking.check_out_date >= check_in_date,
+                    # Проверяем только активные брони (не отмененные)
+                    Booking.status != BookingStatus.CANCELLED,
+                    # Проверяем все возможные пересечения дат через OR
+                    or_(
+                        # Сценарий 1: бронь начинается до check_in и заканчивается после
+                        and_(
+                            Booking.check_in_date <= check_in_date,
+                            Booking.check_out_date > check_in_date,
+                        ),
+                        # Сценарий 2: бронь начинается до check_out и заканчивается после
+                        and_(
+                            Booking.check_in_date < check_out_date,
+                            Booking.check_out_date >= check_out_date,
+                        ),
+                        # Сценарий 3: бронь полностью внутри запрашиваемого периода
+                        and_(
+                            Booking.check_in_date >= check_in_date,
+                            Booking.check_out_date <= check_out_date,
+                        ),
+                    ),
                 )
             )
             .scalar_subquery()
@@ -42,14 +59,17 @@ class RoomDAO(BaseDAO):
         # Основной запрос для поиска свободных комнат
         query = (
             select(Room)
-            .join(Room.room_prices)
+            .outerjoin(Room.room_prices)  # Change to LEFT JOIN
             .where(
                 and_(
                     Room.hotel_id == hotel_id,
                     Room.id.notin_(booked_rooms_subquery),
                     Room.max_guests >= guests,
-                    RoomPrice.guest_quantity == guests,
-                    Room.quantity > 0,  # Если нужно учитывать количество номеров
+                    or_(  # Make price check optional
+                        RoomPrice.guest_quantity == guests,
+                        RoomPrice.guest_quantity.is_(None),
+                    ),
+                    Room.quantity > 0,
                 )
             )
             .distinct()
