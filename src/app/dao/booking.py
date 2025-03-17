@@ -67,6 +67,7 @@ class BookingDAO(BaseDAO):
             room_price = await RoomPriceDAO.get_room_price(
                 session=session,
                 room_id=booking_data.room_id,
+                guest_quantity=booking_data.guest_quantity,
             )
             total_price = total_days * room_price
         else:

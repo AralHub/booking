@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_room_id
 from app.core import SessionDep, TransactionSessionDep
+from app.core.exceptions.http_exceptions import BadRequestException
 from app.dao.room.price import RoomPriceDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.room import RoomRead
@@ -40,6 +41,10 @@ async def create_room_price(
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
+    if room_price_data.guest_quantity > hotel_room.max_guests:
+        raise BadRequestException(
+            "Guest quantity cannot be greater than the room's maximum guests",
+        )
     room_price_create_data = RoomPriceCreateInternal(
         room_id=room_id,
         **room_price_data.model_dump(

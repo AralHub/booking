@@ -1,10 +1,8 @@
 from datetime import date
-
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import and_, func, or_, select, case, text, literal_column, table
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.dao import BaseDAO
 from app.models.booking import Booking, BookingStatus
-
 
 from app.models.room import Room
 from app.models.room.price import RoomPrice
@@ -56,9 +54,13 @@ class RoomDAO(BaseDAO):
             .scalar_subquery()
         )
 
-        # Основной запрос для поиска свободных комнат
-        query = (
+        # Calculate stay duration for price calculation
+        stay_duration = (check_out_date - check_in_date).days
+
+        # First, get available rooms
+        available_rooms = (
             select(Room)
+            .join(RoomType, Room.room_type_id == RoomType.id)
             .where(
                 and_(
                     Room.hotel_id == hotel_id,
@@ -67,8 +69,51 @@ class RoomDAO(BaseDAO):
                     Room.quantity > 0,
                 )
             )
-            .distinct()
         )
 
-        result = await session.execute(query)
-        return result.scalars().all()
+        result = await session.execute(available_rooms)
+        rooms = result.scalars().all()
+
+        # Format the results with different occupancy options
+        formatted_rooms = []
+        for room in rooms:
+            room_type_query = select(RoomType).where(RoomType.id == room.room_type_id)
+            room_type_result = await session.execute(room_type_query)
+            room_type = room_type_result.scalar_one()
+
+            pricing_options = []
+            for occupancy in range(1, room.max_guests + 1):
+                price_query = select(RoomPrice).where(
+                    and_(
+                        RoomPrice.room_id == room.id,
+                        RoomPrice.guest_quantity == occupancy,
+                    )
+                )
+                price_result = await session.execute(price_query)
+                price_record = price_result.scalar()
+
+                daily_price = price_record.price if price_record else room.base_price
+                total_price = daily_price * stay_duration
+
+                pricing_options.append(
+                    {
+                        "occupancy": occupancy,
+                        "daily_price": daily_price,
+                        "total_price": total_price,
+                    }
+                )
+
+            formatted_rooms.append(
+                {
+                    "id": room.id,
+                    "hotel_id": room.hotel_id,
+                    "room_type_id": room.room_type_id,
+                    "room_type_name": room_type.name,
+                    "quantity": room.quantity,
+                    "max_guests": room.max_guests,
+                    "base_price": room.base_price,
+                    "pricing_options": pricing_options,
+                }
+            )
+
+        return formatted_rooms
