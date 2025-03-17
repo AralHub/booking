@@ -1,8 +1,19 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, ForeignKey, Integer, Numeric, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import (
+    Boolean,
+    Float,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+)
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_column,
+    relationship,
+)
 
 from app.models import Base
 from app.models.mixins import IntIdPkMixin
@@ -31,7 +42,12 @@ class Room(IntIdPkMixin, Base):
     )
     base_price: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
     room_area: Mapped[float] = mapped_column(Float, nullable=True)
-
+    use_dinamic_price: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=True,
+        default=False,
+        server_default="false",
+    )
     # relationships
     room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
     room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
