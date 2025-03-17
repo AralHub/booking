@@ -35,7 +35,7 @@ async def internal_exception_handler(
     )
 
 
-main_app.add_middleware(ErrorHandleMiddleware)
+# main_app.add_middleware(ErrorHandleMiddleware)
 main_app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # В продакшене замените на конкретные домены

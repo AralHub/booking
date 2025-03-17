@@ -4,7 +4,7 @@ from sqlalchemy import Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin, TimestampMixin
+from app.models.mixins import IntIdPkMixin, TimestampMixin, MultilingualNameMixin, MultilingualDescriptionMixin
 
 if TYPE_CHECKING:
     from app.models.hotel.amenities import HotelAmenity, HotelAmenityAssociation
@@ -18,16 +18,11 @@ if TYPE_CHECKING:
     from app.models.room import Room
 
 
-class Hotel(IntIdPkMixin, TimestampMixin, Base):
-    name: Mapped[str] = mapped_column(String(255))
+class Hotel(IntIdPkMixin, TimestampMixin, MultilingualNameMixin, MultilingualDescriptionMixin, Base):
     slug: Mapped[str] = mapped_column(
         String(255),
         unique=True,
         nullable=False,
-    )
-    description: Mapped[str] = mapped_column(
-        Text,
-        nullable=True,
     )
     image: Mapped[str] = mapped_column(String, nullable=True)
     is_active: Mapped[bool] = mapped_column(

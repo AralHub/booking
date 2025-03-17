@@ -25,8 +25,8 @@ class HotelNameRead(HotelNameBase):
 
 
 class HotelNameCreate(BaseModel):
-    name: HOTEL_NAME_FIELD
-    description: str | None = None
+    name: dict[str, str]
+    description: dict[str, str]
     hotel_category_id: int
 
 

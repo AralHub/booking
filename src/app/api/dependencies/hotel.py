@@ -1,12 +1,14 @@
 from fastapi import Depends
 from sqlalchemy import select
-
+import logging
 from app.api.dependencies.partner import get_current_auth_partner
 from app.api.dependencies.user import get_current_auth_user
 from app.core import SessionDep
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
     UnauthorizedException,
+    hotel_not_found,
+    room_not_found,
 )
 from app.dao.review import ReviewDAO
 from app.models.hotel import Hotel
@@ -16,6 +18,9 @@ from app.schemas.partner import PartnerRead
 from app.schemas.user import UserRead
 from app.core.i18n.translations import ErrorCode
 
+logger = logging.getLogger(__name__)
+
+
 async def validate_active_hotel(
     hotel_id: int,
     session=SessionDep,
@@ -24,9 +29,13 @@ async def validate_active_hotel(
     result = await session.execute(query)
     db_hotel = result.unique().scalar_one_or_none()
     if not db_hotel:
-        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
+        raise NotFoundException(
+            detail="Hotel not found", error_code=ErrorCode.HOTEL_NOT_FOUND
+        )
     if not db_hotel.is_active:
-        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
+        raise NotFoundException(
+            detail="Hotel not found", error_code=ErrorCode.HOTEL_NOT_FOUND
+        )
     return db_hotel
 
 
@@ -38,7 +47,9 @@ async def validate_hotel_id(
     result = await session.execute(query)
     db_hotel = result.unique().scalar_one_or_none()
     if not db_hotel:
-        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
+        logger.error(f"Hotel not found: {hotel_id}")
+        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND
+        )
     return db_hotel
 
 
@@ -51,7 +62,7 @@ async def validate_hotel_room_id(
     result = await session.execute(query)
     db_room = result.unique().scalar_one_or_none()
     if not db_room:
-        raise NotFoundException(error_code=ErrorCode.ROOM_NOT_FOUND)
+        raise room_not_found()
     return db_room
 
 

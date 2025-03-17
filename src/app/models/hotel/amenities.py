@@ -6,7 +6,7 @@ from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin
+from app.models.mixins import IntIdPkMixin, MultilingualNameMixin, MultilingualDescriptionMixin
 
 if TYPE_CHECKING:
     from app.models.hotel import Hotel
@@ -17,25 +17,17 @@ class PaymentType(str, Enum):
     PAID = "paid"
 
 
-class HotelAmenityCategory(IntIdPkMixin, Base):
+class HotelAmenityCategory(IntIdPkMixin, MultilingualNameMixin, Base):
     __tablename__ = "hotel_amenity_categories"
-    name: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-        unique=True,
-    )
+
     hotel_amenities: Mapped[list["HotelAmenity"]] = relationship(
         back_populates="hotel_amenity_category",
     )
 
 
-class HotelAmenity(IntIdPkMixin, Base):
+class HotelAmenity(IntIdPkMixin, MultilingualNameMixin, MultilingualDescriptionMixin, Base):
     __tablename__ = "hotel_amenities"
-    name: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-        unique=True,
-    )
+
     icon: Mapped[str] = mapped_column(
         String,
         nullable=True,
@@ -43,7 +35,6 @@ class HotelAmenity(IntIdPkMixin, Base):
         server_default=None,
         unique=True,
     )
-    description: Mapped[str] = mapped_column(String, nullable=True)
     in_hotel: Mapped[bool] = mapped_column(
         Boolean,
         default=True,

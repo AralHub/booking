@@ -40,24 +40,23 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     # -------- replace with comment to run migrations with docker --------
-    expose:
-      - "5432"
-    # ports:
-    #  - 5432:5432
+    # expose:
+    #   - "5432"
+    ports:
+     - 5432:5432
 
   redis:
     image: redis:alpine
     volumes:
       - redis-data:/data
-    expose:
-      - "6379"
+    # expose:
+    #   - "6379"
+    ports:
+      - 6379:6379
 
   # migrations:
   #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env.prod
+  #     context:
   #   depends_on:
   #     - db
   #   command: alembic upgrade head
@@ -108,6 +107,7 @@ services:
       - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
+
   create_cities:
     build:
       context: .
@@ -156,18 +156,21 @@ services:
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
   #-------- uncomment to create first tier --------
-  # create_tier:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env.prod
-  #   depends_on:
-  #     - db
-  #     - web
-  #   command: python -m src.scripts.create_first_tier
-  #   volumes:
-  #     - ./src:/code/src
+  create_tier:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_first_tier
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env.prod
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
 
   #-------- uncomment to run tests --------
   # pytest:

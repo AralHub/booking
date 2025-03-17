@@ -73,3 +73,4 @@ def get_error_message(error_code: ErrorCode, language: str = "en") -> str:
     return ERROR_MESSAGES[language].get(
         error_code, ERROR_MESSAGES["en"][ErrorCode.INTERNAL_SERVER_ERROR]
     )
+    

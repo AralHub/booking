@@ -1,7 +1,10 @@
 from datetime import date, datetime
 
 from pydantic import BaseModel
-
+from ..mixins import (
+    MultilingualNameBase,
+    MultilingualDescriptionBase,
+)
 from ..field_validation import (
     EMAIL_FIELD,
     EMAIL_FIELD_UPDATE,
@@ -28,10 +31,8 @@ class GuestInformation(BaseModel):
     site_url: SITE_URL_FIELD_UPDATE
 
 
-class HotelFullCreate(BaseModel):
-    name: HOTEL_NAME_FIELD
+class HotelFullCreate(MultilingualNameBase, MultilingualDescriptionBase, BaseModel):
     hotel_category_id: int = 1
-    description: str | None = None
     address: str
     city_id: int
     latitude: float
@@ -60,10 +61,8 @@ class GuestInformationUpdate(BaseModel):
     site_url: SITE_URL_FIELD_UPDATE
 
 
-class HotelFullUpdate(BaseModel):
-    name: HOTEL_NAME_FIELD_UPDATE
+class HotelFullUpdate(MultilingualNameBase, MultilingualDescriptionBase, BaseModel):
     hotel_category_id: int | None = None
-    description: str | None = None
     address: str | None = None
     city_id: int | None = None
     latitude: float | None = None
