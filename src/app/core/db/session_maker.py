@@ -33,7 +33,7 @@ class DatabaseSessionManager:
                 yield session
             except Exception as e:
                 logger.error(f"Ошибка при создании сессии базы данных: {e}")
-                raise
+                raise e
             finally:
                 await session.close()
 

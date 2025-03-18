@@ -4,7 +4,12 @@ from sqlalchemy import Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin, TimestampMixin
+from app.models.mixins import (
+    IntIdPkMixin,
+    MultilingualDescriptionMixin,
+    MultilingualNameMixin,
+    TimestampMixin,
+)
 
 if TYPE_CHECKING:
     from app.models.hotel.amenities import HotelAmenity, HotelAmenityAssociation
@@ -12,22 +17,23 @@ if TYPE_CHECKING:
     from app.models.hotel.images import HotelImage
     from app.models.hotel.info import HotelInfo
     from app.models.hotel.location import HotelLocation
-    from app.models.hotel.rules import Rule
+    from app.models.hotel.rules import HotelRule
     from app.models.partner import Partner
     from app.models.review import Review
     from app.models.room import Room
 
 
-class Hotel(IntIdPkMixin, TimestampMixin, Base):
-    name: Mapped[str] = mapped_column(String(255))
+class Hotel(
+    IntIdPkMixin,
+    TimestampMixin,
+    MultilingualNameMixin,
+    MultilingualDescriptionMixin,
+    Base,
+):
     slug: Mapped[str] = mapped_column(
         String(255),
         unique=True,
         nullable=False,
-    )
-    description: Mapped[str] = mapped_column(
-        Text,
-        nullable=True,
     )
     image: Mapped[str] = mapped_column(String, nullable=True)
     is_active: Mapped[bool] = mapped_column(
@@ -69,8 +75,8 @@ class Hotel(IntIdPkMixin, TimestampMixin, Base):
         "HotelImage",
         back_populates="hotel",
     )
-    rule: Mapped["Rule"] = relationship(
-        "Rule",
+    rule: Mapped["HotelRule"] = relationship(
+        "HotelRule",
         back_populates="hotel",
     )
     hotel_admin_id: Mapped[int] = mapped_column(ForeignKey("partners.id"))

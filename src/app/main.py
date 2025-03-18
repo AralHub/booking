@@ -7,6 +7,7 @@ from app.api.v1 import router as api_v1_router
 from app.core.config import settings
 from app.core.logger import logging
 from app.core.middlewares.error_handle_middleware import ErrorHandleMiddleware
+from app.core.middlewares.language_middleware import LanguageMiddleware
 from app.create_fastapi_app import create_app
 
 logger = logging.getLogger(__name__)
@@ -36,6 +37,7 @@ async def internal_exception_handler(
 
 
 main_app.add_middleware(ErrorHandleMiddleware)
+main_app.add_middleware(LanguageMiddleware)
 main_app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # В продакшене замените на конкретные домены

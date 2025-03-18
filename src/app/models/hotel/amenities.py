@@ -6,7 +6,11 @@ from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin
+from app.models.mixins import (
+    IntIdPkMixin,
+    MultilingualDescriptionMixin,
+    MultilingualNameMixin,
+)
 
 if TYPE_CHECKING:
     from app.models.hotel import Hotel
@@ -17,23 +21,26 @@ class PaymentType(str, Enum):
     PAID = "paid"
 
 
-class HotelAmenityCategory(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-        unique=True,
-    )
+class HotelAmenityCategory(
+    IntIdPkMixin,
+    MultilingualNameMixin,
+    Base,
+):
+    __tablename__ = "hotel_amenity_categories"
+
     hotel_amenities: Mapped[list["HotelAmenity"]] = relationship(
         back_populates="hotel_amenity_category",
     )
 
 
-class HotelAmenity(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-        unique=True,
-    )
+class HotelAmenity(
+    IntIdPkMixin,
+    MultilingualNameMixin,
+    MultilingualDescriptionMixin,
+    Base,
+):
+    __tablename__ = "hotel_amenities"
+
     icon: Mapped[str] = mapped_column(
         String,
         nullable=True,
@@ -41,7 +48,6 @@ class HotelAmenity(IntIdPkMixin, Base):
         server_default=None,
         unique=True,
     )
-    description: Mapped[str] = mapped_column(String, nullable=True)
     in_hotel: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
@@ -74,6 +80,7 @@ class HotelAmenity(IntIdPkMixin, Base):
 
 
 class HotelAmenityAssociation(Base):
+    __tablename__ = "hotel_amenity_associations"
     hotel_id: Mapped[int] = mapped_column(
         ForeignKey("hotels.id"),
         primary_key=True,
@@ -82,7 +89,7 @@ class HotelAmenityAssociation(Base):
         ForeignKey("hotel_amenities.id"),
         primary_key=True,
     )
-    # association between Assocation -> Hotel
+    # association between Assocation -> Hotelw
     hotel: Mapped["Hotel"] = relationship(
         "Hotel",
         back_populates="hotel_amenity_association",

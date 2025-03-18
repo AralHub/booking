@@ -7,13 +7,18 @@ from app.core import SessionDep
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
     UnauthorizedException,
+    room_not_found,
 )
+from app.core.i18n.translations import ErrorCode
+from app.core.logger import logging
 from app.dao.review import ReviewDAO
 from app.models.hotel import Hotel
 from app.models.room import Room
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
 from app.schemas.user import UserRead
+
+logger = logging.getLogger(__name__)
 
 
 async def validate_active_hotel(
@@ -24,9 +29,13 @@ async def validate_active_hotel(
     result = await session.execute(query)
     db_hotel = result.unique().scalar_one_or_none()
     if not db_hotel:
-        raise NotFoundException("Hotel not found")
+        raise NotFoundException(
+            detail="Hotel not found", error_code=ErrorCode.HOTEL_NOT_FOUND
+        )
     if not db_hotel.is_active:
-        raise NotFoundException("Hotel is inactive")
+        raise NotFoundException(
+            detail="Hotel not found", error_code=ErrorCode.HOTEL_NOT_FOUND
+        )
     return db_hotel
 
 
@@ -38,7 +47,8 @@ async def validate_hotel_id(
     result = await session.execute(query)
     db_hotel = result.unique().scalar_one_or_none()
     if not db_hotel:
-        raise NotFoundException("Hotel not found")
+        logger.error(f"Hotel not found: {hotel_id}")
+        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
     return db_hotel
 
 
@@ -51,7 +61,7 @@ async def validate_hotel_room_id(
     result = await session.execute(query)
     db_room = result.unique().scalar_one_or_none()
     if not db_room:
-        raise NotFoundException("Room not found")
+        raise room_not_found()
     return db_room
 
 

@@ -1,64 +1,108 @@
-from http import HTTPStatus
-from typing import Union
+from typing import Optional
 
-from fastapi import HTTPException, status
+from fastapi import status
+
+from app.core.i18n.translations import ErrorCode, get_error_message
 
 
-class CustomException(HTTPException):
+class CustomException(Exception):
     def __init__(
         self,
-        status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
-        detail: Union[str, None] = None,
+        status_code: int,
+        detail: Optional[str] = None,
+        error_code: Optional[str] = None,
     ):
-        if not detail:  # pragma: no cover
-            detail = HTTPStatus(status_code).description
-        super().__init__(status_code=status_code, detail=detail)
+        self.status_code = status_code
+        self.error_code = error_code
+        self.detail = detail or (
+            get_error_message(error_code, "en") if error_code else "Ошибка"
+        )
+
+    @classmethod
+    def from_error_code(cls, error_code: ErrorCode, status_code: Optional[int] = None):
+        """Создает исключение из кода ошибки, используя стандартный статус код для класса"""
+        instance = cls.__new__(cls)
+        instance.error_code = error_code
+        instance.detail = get_error_message(error_code, "en")
+        instance.status_code = status_code or cls._default_status_code
+        return instance
 
 
 class BadRequestException(CustomException):
-    def __init__(self, detail: Union[str, None] = None):
+    _default_status_code = status.HTTP_400_BAD_REQUEST
+
+    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=detail
-        )  # pragma: no cover
+            status_code=self._default_status_code, detail=detail, error_code=error_code
+        )
 
 
 class NotFoundException(CustomException):
-    def __init__(self, detail: Union[str, None] = None):
+    _default_status_code = status.HTTP_404_NOT_FOUND
+
+    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
-            status_code=status.HTTP_404_NOT_FOUND, detail=detail
-        )  # pragma: no cover
+            status_code=self._default_status_code, detail=detail, error_code=error_code
+        )
 
 
 class ForbiddenException(CustomException):
-    def __init__(self, detail: Union[str, None] = None):
+    _default_status_code = status.HTTP_403_FORBIDDEN
+
+    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
-            status_code=status.HTTP_403_FORBIDDEN, detail=detail
-        )  # pragma: no cover
+            status_code=self._default_status_code, detail=detail, error_code=error_code
+        )
 
 
 class UnauthorizedException(CustomException):
-    def __init__(self, detail: Union[str, None] = None):
+    _default_status_code = status.HTTP_401_UNAUTHORIZED
+
+    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail=detail
-        )  # pragma: no cover
+            status_code=self._default_status_code, detail=detail, error_code=error_code
+        )
 
 
 class UnprocessableEntityException(CustomException):
-    def __init__(self, detail: Union[str, None] = None):
+    _default_status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail
-        )  # pragma: no cover
+            status_code=self._default_status_code, detail=detail, error_code=error_code
+        )
 
 
 class DuplicateValueException(CustomException):
-    def __init__(self, detail: Union[str, None] = None):
+    _default_status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail
+            status_code=self._default_status_code, detail=detail, error_code=error_code
         )
 
 
 class TooManyRequestsException(CustomException):
-    def __init__(self, detail: Union[str, None] = None):
+    _default_status_code = status.HTTP_429_TOO_MANY_REQUESTS
+
+    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=detail
-        )  # pragma: no cover
+            status_code=self._default_status_code, detail=detail, error_code=error_code
+        )
+
+
+# Полезные фабричные функции для часто используемых исключений
+def hotel_not_found():
+    return NotFoundException.from_error_code(ErrorCode.HOTEL_NOT_FOUND)
+
+
+def room_not_found():
+    return NotFoundException.from_error_code(ErrorCode.ROOM_NOT_FOUND)
+
+
+def invalid_credentials():
+    return UnauthorizedException.from_error_code(ErrorCode.INVALID_CREDENTIALS)
+
+
+def hotel_access_denied():
+    return ForbiddenException.from_error_code(ErrorCode.HOTEL_ACCESS_DENIED)

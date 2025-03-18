@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from sqlalchemy import TIMESTAMP, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.types import JSON
 
 
 class IntIdPkMixin:
@@ -49,4 +50,18 @@ class SoftDeleteMixin:
     is_deleted: Mapped[bool] = mapped_column(
         default=False,
         server_default="false",
+    )
+
+
+class MultilingualNameMixin:
+    name: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=False,
+    )
+
+
+class MultilingualDescriptionMixin:
+    description: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=False,
     )
