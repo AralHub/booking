@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel, field_validator
 
 from ..field_validation import zero_to_none
@@ -55,4 +57,7 @@ class RoomFilter(BaseModel):
 
 
 class RoomSearch(BaseModel):
-    guest_count: int
+    hotel_id: int
+    check_in: date
+    check_out: date
+    guests: list[int]

@@ -20,6 +20,7 @@ from app.schemas.room import (
     RoomCreateInternal,
     RoomFilter,
     RoomRead,
+    RoomSearch,
     RoomUpdate,
     RoomUpdateInternal,
 )
@@ -37,22 +38,17 @@ router = APIRouter(
 )
 
 
-@router.get("/rooms/available")
+@router.post("/rooms/available")
 async def get_available_rooms(
-    hotel_id: int,
-    check_in_date: str,
-    check_out_date: str,
-    guests_count: int,
+    room_search_data: RoomSearch,
     session=SessionDep,
 ):
-    check_in_date = parse_date(check_in_date)
-    check_out_date = parse_date(check_out_date)
     return await RoomDAO.get_available_rooms(
         session=session,
-        hotel_id=hotel_id,
-        check_in_date=check_in_date,
-        check_out_date=check_out_date,
-        guests=guests_count,
+        hotel_id=room_search_data.hotel_id,
+        check_in_date=room_search_data.check_in,
+        check_out_date=room_search_data.check_out,
+        guests=room_search_data.guests,
     )
 
 

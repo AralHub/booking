@@ -23,7 +23,7 @@ class RoomDAO(BaseDAO):
         hotel_id: int,
         check_in_date: date,
         check_out_date: date,
-        guests: int,
+        guests: list[int],
     ):
         booked_rooms_subquery = (
             select(Booking.room_id)
@@ -65,7 +65,7 @@ class RoomDAO(BaseDAO):
                 and_(
                     Room.hotel_id == hotel_id,
                     Room.id.notin_(booked_rooms_subquery),
-                    Room.max_guests >= guests,
+                    Room.max_guests >= max(guests),
                     Room.quantity > 0,
                 )
             )
@@ -105,7 +105,7 @@ class RoomDAO(BaseDAO):
 
             formatted_rooms.append(
                 {
-                    "id": room.id,
+                    "room_id": room.id,
                     "hotel_id": room.hotel_id,
                     "room_type_id": room.room_type_id,
                     "room_type_name": room_type.name,
