@@ -1,6 +1,6 @@
 from app.dao import BaseDAO
-from app.models.hotel.rules import Rule
+from app.models.hotel.rules import HotelRule
 
 
-class RuleDAO(BaseDAO):
-    model = Rule
+class HotelRuleDAO(BaseDAO):
+    model = HotelRule

@@ -17,7 +17,7 @@ from app.schemas.hotel.location import (
     LocationUpdate,
 )
 from app.schemas.location import CityFilter
-from app.dao.hotel.rules import RuleDAO
+from app.dao.hotel.rules import HotelRuleDAO
 from app.schemas.hotel.rules import (
     RuleCreateInternal,
     RuleFilter,
@@ -154,10 +154,10 @@ class HotelDAO(BaseDAO):
         )
         if not db_city:
             raise NotFoundException("City not found")
-        generated_slug = slugify_func(hotel_create_data.name)
+        generated_slug = slugify_func(hotel_create_data.name_en)
         hotel_create_internal = HotelNameCreateInternal(
-            name=hotel_create_data.name,
-            description=hotel_create_data.description,
+            name=hotel_create_data.to_dict_name(),
+            description=hotel_create_data.to_dict_description(),
             slug=generated_slug,
             hotel_category_id=hotel_create_data.hotel_category_id,
             hotel_admin_id=hotel_admin_id,
@@ -192,7 +192,7 @@ class HotelDAO(BaseDAO):
             ),
         )
         # Create hotel rules
-        await RuleDAO.create(
+        await HotelRuleDAO.create(
             session=session,
             values=RuleCreateInternal(
                 hotel_id=db_hotel.id,
@@ -275,7 +275,7 @@ class HotelDAO(BaseDAO):
             ),
         )
         # Create hotel rules
-        await RuleDAO.update(
+        await HotelRuleDAO.update(
             session=session,
             values=RuleUpdate(
                 check_in_from=(

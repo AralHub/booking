@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from app.models.hotel import Hotel
 
 
-class Rule(IntIdPkMixin, Base):
+class HotelRule(IntIdPkMixin, Base):
     # Check-in time range
     check_in_from: Mapped[str] = mapped_column(
         String,

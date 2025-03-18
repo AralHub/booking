@@ -17,11 +17,18 @@ class BookingRead(BookingBase):
     status: BOOKING_STATUS_FIELD
 
 
-class BookingCreate(BookingBase):
-    pass
+class RoomBookingData(BaseModel):
+    room_id: int
+    guest_quantity: int
 
 
-class BookingCreateInternal(BookingCreate):
+class BookingCreateMultipleRooms(BaseModel):
+    check_in_date: date
+    check_out_date: date
+    rooms: list[RoomBookingData]
+
+
+class BookingCreateMultipleRoomsInternal(BookingCreateMultipleRooms):
     total_price: int
     total_days: int
     user_id: int

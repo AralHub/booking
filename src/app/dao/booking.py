@@ -10,7 +10,10 @@ from app.models.room import Room
 from app.models.user import User
 
 from app.models.booking import Booking, BookingStatus
-from app.schemas.booking import BookingCreate, BookingCreateInternal
+from app.schemas.booking import (
+    BookingCreateMultipleRooms,
+    BookingCreateMultipleRoomsInternal,
+)
 
 
 class BookingDAO(BaseDAO):
@@ -20,7 +23,7 @@ class BookingDAO(BaseDAO):
     async def create_booking(
         cls,
         session: AsyncSession,
-        booking_data: BookingCreate,
+        booking_data: BookingCreateMultipleRooms,
         user_id: int,
     ):
         # Проверка корректности дат

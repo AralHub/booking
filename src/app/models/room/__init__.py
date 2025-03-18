@@ -51,10 +51,10 @@ class Room(IntIdPkMixin, Base):
     # relationships
     room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
     room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
-    bookings: Mapped[list["Booking"]] = relationship(
-        "Booking",
-        back_populates="room",
-    )
+    # bookings: Mapped[list["Booking"]] = relationship(
+    #     "Booking",
+    #     back_populates="room",
+    # )
     hotel_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("hotels.id"),

@@ -7,7 +7,7 @@ from .hotel.category import HotelCategory
 from .hotel.images import HotelImage
 from .hotel.info import HotelInfo
 from .hotel.location import HotelLocation
-from .hotel.rules import Rule
+from .hotel.rules import HotelRule
 from .location import City, Country
 from .partner import Partner
 from .review import Review, ReviewCategory, ReviewCategoryRating

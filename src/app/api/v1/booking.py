@@ -5,7 +5,11 @@ from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.dao.booking import BookingDAO
 from app.models.booking import BookingStatus
-from app.schemas.booking import BookingCreate, BookingFilter, BookingUpdateInternal
+from app.schemas.booking import (
+    BookingCreateMultipleRooms,
+    BookingFilter,
+    BookingUpdateInternal,
+)
 from app.schemas.user import UserRead
 
 router = APIRouter(
@@ -29,7 +33,7 @@ async def get_bookings(
 
 @router.post("")
 async def create_booking(
-    booking_create_data: BookingCreate,
+    booking_create_data: BookingCreateMultipleRooms,
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):

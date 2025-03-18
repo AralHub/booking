@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
 from app.core import SessionDep, TransactionSessionDep
 from app.core.logger import logging
-from app.dao.hotel.rules import RuleDAO
+from app.dao.hotel.rules import HotelRuleDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.hotel.rules import (
     RuleCreate,
@@ -25,7 +25,7 @@ async def get_hotel_rule(
     hotel: HotelNameRead = Depends(validate_hotel_id),
     session=SessionDep,
 ):
-    return await RuleDAO.get_one_or_none(
+    return await HotelRuleDAO.get_one_or_none(
         session=session,
         filters=RuleFilter(hotel_id=hotel_id),
     )
@@ -38,7 +38,7 @@ async def add_hotel_rule(
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
-    return await RuleDAO.create(
+    return await HotelRuleDAO.create(
         session=session,
         values=RuleCreateInternal(
             **rule_create_data.model_dump(),
@@ -54,7 +54,7 @@ async def update_hotel_rule(
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
-    return await RuleDAO.update(
+    return await HotelRuleDAO.update(
         session=session,
         values=RuleUpdateInternal(
             **rule_update_data.model_dump(),

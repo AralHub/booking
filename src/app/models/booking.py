@@ -15,6 +15,7 @@ from sqlalchemy import (
     Enum as SqlEnum,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.types import JSON
 
 from app.models import Base
 from app.models.mixins import IntIdPkMixin
@@ -50,9 +51,10 @@ class Booking(IntIdPkMixin, Base):
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     total_days: Mapped[int] = mapped_column(Integer, nullable=False)
     guest_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    rooms_info: Mapped[dict] = mapped_column(JSON, nullable=False)
     # relationships
-    room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
-    room: Mapped["Room"] = relationship("Room", back_populates="bookings")
+    # room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
+    # room: Mapped["Room"] = relationship("Room", back_populates="bookings")
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="bookings")
