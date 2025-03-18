@@ -25,8 +25,8 @@ class HotelNameRead(HotelNameBase):
 
 
 class HotelNameCreate(BaseModel):
-    name: HOTEL_NAME_FIELD
-    description: str | None = None
+    name: dict[str, str]
+    description: dict[str, str] | None = None
     hotel_category_id: int
 
 
@@ -38,14 +38,14 @@ class HotelNameCreateInternal(HotelNameCreate):
 
 
 class HotelNameUpdate(BaseModel):
-    name: HOTEL_NAME_FIELD_UPDATE = None
-    description: str | None = None
-    slug: str | None = None
+    name: dict[str, str] | None = None
+    description: dict[str, str] | None = None
     hotel_category_id: int | None = None
 
 
 class HotelNameUpdateInternal(HotelNameUpdate):
     id: int
+    slug: str | None = None
 
 
 class HotelNameFilter(BaseModel):
