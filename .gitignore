@@ -168,3 +168,8 @@ src/.env.prod
 src/.env.dev
 .ruff_cache/
 src/storage/
+
+# Docker
+src/.env
+src/.env.prod
+src/.env.dev
