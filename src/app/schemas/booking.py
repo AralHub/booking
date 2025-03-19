@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
 
@@ -8,34 +8,41 @@ from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
 class BookingBase(BaseModel):
     check_in_date: date
     check_out_date: date
-    room_id: int
-    guest_quantity: int
-
-
-class BookingRead(BookingBase):
-    id: int
-    status: BOOKING_STATUS_FIELD
 
 
 class RoomBookingData(BaseModel):
     room_id: int
-    guest_quantity: int
+    guest_quantity: int = Field(ge=1)
+    guest_name: str = Field(
+        min_length=3,
+        max_length=50,
+    )
 
 
 class BookingCreateMultipleRooms(BaseModel):
     check_in_date: date
     check_out_date: date
-    rooms: list[RoomBookingData]
+    rooms_info: list[RoomBookingData]
 
 
 class BookingCreateMultipleRoomsInternal(BookingCreateMultipleRooms):
     total_price: int
     total_days: int
     user_id: int
+    special_requests: str | None = None
+    status: BOOKING_STATUS_FIELD_UPDATE
 
 
 class BookingUpdateInternal(BaseModel):
     status: BOOKING_STATUS_FIELD_UPDATE
+
+
+class BookingRead(BookingBase):
+    id: int
+    total_price: int
+    total_days: int
+    status: BOOKING_STATUS_FIELD
+    rooms_info: list[RoomBookingData]
 
 
 class BookingFilter(BaseModel):

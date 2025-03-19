@@ -9,11 +9,10 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     Numeric,
+    Text,
     text,
 )
-from sqlalchemy import (
-    Enum as SqlEnum,
-)
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
 
@@ -21,7 +20,6 @@ from app.models import Base
 from app.models.mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from app.models.room import Room
     from app.models.user import User
 
 
@@ -52,6 +50,7 @@ class Booking(IntIdPkMixin, Base):
     total_days: Mapped[int] = mapped_column(Integer, nullable=False)
     guest_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     rooms_info: Mapped[dict] = mapped_column(JSON, nullable=False)
+    special_requests: Mapped[str] = mapped_column(Text, nullable=True)
     # relationships
     # room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
     # room: Mapped["Room"] = relationship("Room", back_populates="bookings")
