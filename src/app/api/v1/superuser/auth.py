@@ -39,7 +39,7 @@ async def superuser_login(
         httponly=True,
         secure=True,
         samesite="Lax",
-        max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS,
+        max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
     )
 
     return TokenInfo(
