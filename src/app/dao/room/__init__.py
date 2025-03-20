@@ -25,37 +25,42 @@ class RoomDAO(BaseDAO):
         check_out_date: date,
         guests: list[int],
     ):
-        booked_rooms_subquery = (
-            select(Booking.room_id)
-            .where(
-                and_(
-                    # Проверяем только активные брони (не отмененные)
-                    Booking.status != BookingStatus.CANCELLED,
-                    # Проверяем все возможные пересечения дат через OR
-                    or_(
-                        # Сценарий 1: бронь начинается до check_in и заканчивается после
-                        and_(
-                            Booking.check_in_date <= check_in_date,
-                            Booking.check_out_date > check_in_date,
-                        ),
-                        # Сценарий 2: бронь начинается до check_out и заканчивается после
-                        and_(
-                            Booking.check_in_date < check_out_date,
-                            Booking.check_out_date >= check_out_date,
-                        ),
-                        # Сценарий 3: бронь полностью внутри запрашиваемого периода
-                        and_(
-                            Booking.check_in_date >= check_in_date,
-                            Booking.check_out_date <= check_out_date,
-                        ),
+        overlapping_bookings_query = select(Booking).where(
+            and_(
+                # Check only active bookings (not cancelled)
+                Booking.status != BookingStatus.CANCELLED,
+                # Check all possible date overlaps
+                or_(
+                    # Scenario 1: booking starts before check-in and ends after
+                    and_(
+                        Booking.check_in_date <= check_in_date,
+                        Booking.check_out_date > check_in_date,
                     ),
-                )
+                    # Scenario 2: booking starts before check-out and ends after
+                    and_(
+                        Booking.check_in_date < check_out_date,
+                        Booking.check_out_date >= check_out_date,
+                    ),
+                    # Scenario 3: booking completely within requested period
+                    and_(
+                        Booking.check_in_date >= check_in_date,
+                        Booking.check_out_date <= check_out_date,
+                    ),
+                ),
             )
-            .scalar_subquery()
         )
 
-        # Calculate stay duration for price calculation
-        stay_duration = (check_out_date - check_in_date).days
+        # Execute the query to get all bookings that overlap with our date range
+        overlapping_bookings = (
+            (await session.execute(overlapping_bookings_query)).scalars().all()
+        )
+        # Extract all booked room IDs from the overlapping bookings
+
+        booked_room_ids = []
+        for booking in overlapping_bookings:
+            for room_info in booking.rooms_info:
+                booked_room_ids.append(room_info["room_id"])
+        total_days = (check_out_date - check_in_date).days
 
         # First, get available rooms
         available_rooms = (
@@ -64,7 +69,6 @@ class RoomDAO(BaseDAO):
             .where(
                 and_(
                     Room.hotel_id == hotel_id,
-                    Room.id.notin_(booked_rooms_subquery),
                     Room.max_guests >= max(guests),
                     Room.quantity > 0,
                 )
@@ -73,7 +77,6 @@ class RoomDAO(BaseDAO):
 
         result = await session.execute(available_rooms)
         rooms = result.scalars().all()
-
         # Format the results with different occupancy options
         formatted_rooms = []
         for room in rooms:
@@ -93,7 +96,7 @@ class RoomDAO(BaseDAO):
                 price_record = price_result.scalar()
 
                 daily_price = price_record.price if price_record else room.base_price
-                total_price = daily_price * stay_duration
+                total_price = daily_price * total_days
 
                 pricing_options.append(
                     {
