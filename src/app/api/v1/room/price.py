@@ -10,7 +10,6 @@ from app.schemas.room import RoomFilter, RoomRead, RoomUpdateInternal
 from app.schemas.room.price import (
     RoomPriceCreate,
     RoomPriceCreateInternal,
-    RoomPriceFilter,
 )
 
 router = APIRouter(

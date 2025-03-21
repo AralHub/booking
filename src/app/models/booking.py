@@ -51,6 +51,7 @@ class Booking(IntIdPkMixin, Base):
     guest_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     rooms_info: Mapped[dict] = mapped_column(JSON, nullable=False)
     special_requests: Mapped[str] = mapped_column(Text, nullable=True)
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     # relationships
     # room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
     # room: Mapped["Room"] = relationship("Room", back_populates="bookings")

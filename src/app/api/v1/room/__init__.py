@@ -113,7 +113,7 @@ async def add_hotel_room(
         **hotel_room_data.model_dump(),
         hotel_id=hotel_id,
     )
-    await RoomDAO.create(
+    return await RoomDAO.create(
         session=session,
         values=hotel_room_create_data,
     )

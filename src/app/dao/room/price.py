@@ -10,6 +10,25 @@ class RoomPriceDAO(BaseDAO):
     model = RoomPrice
 
     @classmethod
+    async def get_room_prices(
+        cls,
+        session: AsyncSession,
+        room_id: int,
+    ):
+        room_prices = await cls.get_all(
+            session=session,
+            filters=RoomPriceFilter(
+                room_id=room_id,
+            ),
+        )
+        if not room_prices:
+            raise NotFoundException(
+                detail="Room prices not found",
+                error_code=ErrorCode.ROOM_PRICE_NOT_FOUND,
+            )
+        return room_prices
+
+    @classmethod
     async def get_room_price(
         cls,
         session: AsyncSession,
@@ -35,16 +54,11 @@ class RoomPriceDAO(BaseDAO):
         room_id: int,
         guest_quantity: int,
     ):
-        room_price = await cls.get_one_or_none(
+        room_price_data = await cls.get_one_or_none(
             session=session,
             filters=RoomPriceFilter(
                 room_id=room_id,
                 guest_quantity=guest_quantity,
             ),
         )
-        if not room_price:
-            raise NotFoundException(
-                detail="Room price not found",
-                error_code=ErrorCode.ROOM_PRICE_NOT_FOUND,
-            )
-        return room_price
+        return room_price_data.price if room_price_data else None

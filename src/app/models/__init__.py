@@ -15,6 +15,7 @@ from .room import Room
 from .room.amenities import RoomAmenity, RoomAmenityAssociation
 from .room.bed import BedType, RoomBedConfiguration
 from .room.images import RoomImage
+from .room.price import RoomPrice
 from .room.types import RoomType
 from .user import User
 from .user.token_blacklist import TokenBlacklist
