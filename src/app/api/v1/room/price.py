@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_room_id
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import BadRequestException
+from app.dao.room import RoomDAO
 from app.dao.room.price import RoomPriceDAO
 from app.schemas.hotel.info import HotelNameRead
-from app.schemas.room import RoomRead
+from app.schemas.room import RoomFilter, RoomRead, RoomUpdateInternal
 from app.schemas.room.price import (
     RoomPriceCreate,
     RoomPriceCreateInternal,
@@ -24,11 +25,9 @@ async def get_room_price(
     hotel_room: RoomRead = Depends(validate_hotel_room_id),
     session=SessionDep,
 ):
-    return await RoomPriceDAO.get_one_or_none(
+    return await RoomPriceDAO.get_room_price(
         session=session,
-        filters=RoomPriceFilter(
-            room_id=room_id,
-        ),
+        room_id=room_id,
     )
 
 
@@ -54,5 +53,12 @@ async def create_room_price(
     created_room_price = await RoomPriceDAO.create(
         session=session,
         values=room_price_create_data,
+    )
+    await RoomDAO.update(
+        session=session,
+        filters=RoomFilter(id=room_id),
+        values=RoomUpdateInternal(
+            use_dinamic_price=True,
+        ),
     )
     return created_room_price

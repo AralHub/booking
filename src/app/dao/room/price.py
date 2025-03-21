@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.dao import BaseDAO
+from app.core.exceptions.http_exceptions import NotFoundException
 from app.schemas.room.price import RoomPriceFilter
 from app.models.room.price import RoomPrice
+from app.core.i18n.translations import ErrorCode
 
 
 class RoomPriceDAO(BaseDAO):
@@ -13,10 +15,36 @@ class RoomPriceDAO(BaseDAO):
         session: AsyncSession,
         room_id: int,
     ):
-        room = await cls.get_one_or_none(
+        room_price = await cls.get_one_or_none(
             session=session,
             filters=RoomPriceFilter(
                 room_id=room_id,
             ),
         )
-        return room.base_price if room else None
+        if not room_price:
+            raise NotFoundException(
+                detail="Room price not found",
+                error_code=ErrorCode.ROOM_PRICE_NOT_FOUND,
+            )
+        return room_price
+
+    @classmethod
+    async def get_room_price_by_guest_quantity(
+        cls,
+        session: AsyncSession,
+        room_id: int,
+        guest_quantity: int,
+    ):
+        room_price = await cls.get_one_or_none(
+            session=session,
+            filters=RoomPriceFilter(
+                room_id=room_id,
+                guest_quantity=guest_quantity,
+            ),
+        )
+        if not room_price:
+            raise NotFoundException(
+                detail="Room price not found",
+                error_code=ErrorCode.ROOM_PRICE_NOT_FOUND,
+            )
+        return room_price

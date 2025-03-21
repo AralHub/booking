@@ -44,7 +44,6 @@ class LanguageMiddleware(BaseHTTPMiddleware):
                     return await self._create_localized_response(
                         response, content, language
                     )
-
             return response
 
         except CustomException as e:

@@ -25,6 +25,7 @@ class ErrorCode(str, Enum):
 
     # Специфичные ошибки для номера
     ROOM_NOT_FOUND = "room_not_found"
+    ROOM_PRICE_NOT_FOUND = "room_price_not_found"
 
 
 # Словарь переводов по языкам
@@ -44,6 +45,7 @@ ERROR_MESSAGES = {
         ErrorCode.USER_NOT_FOUND: "User not found",
         ErrorCode.INVALID_CREDENTIALS: "Invalid username or password",
         ErrorCode.ROOM_NOT_FOUND: "Room not found",
+        ErrorCode.ROOM_PRICE_NOT_FOUND: "Room price not found",
     },
     "ru": {
         ErrorCode.INTERNAL_SERVER_ERROR: "Внутренняя ошибка сервера",
@@ -60,6 +62,7 @@ ERROR_MESSAGES = {
         ErrorCode.USER_NOT_FOUND: "Пользователь не найден",
         ErrorCode.INVALID_CREDENTIALS: "Неверное имя пользователя или пароль",
         ErrorCode.ROOM_NOT_FOUND: "Номер не найден",
+        ErrorCode.ROOM_PRICE_NOT_FOUND: "Цена номера не найдена",
     },
     # Можно добавить другие языки
 }
