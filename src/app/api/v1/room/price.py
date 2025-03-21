@@ -19,13 +19,13 @@ router = APIRouter(
 
 
 @router.get("/{hotel_id}/rooms/{room_id}/prices")
-async def get_room_price(
+async def get_room_prices(
     hotel_id: int,
     room_id: int,
     hotel_room: RoomRead = Depends(validate_hotel_room_id),
     session=SessionDep,
 ):
-    return await RoomPriceDAO.get_room_price(
+    return await RoomPriceDAO.get_room_prices(
         session=session,
         room_id=room_id,
     )
