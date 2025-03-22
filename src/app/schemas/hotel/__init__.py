@@ -5,13 +5,15 @@ from pydantic import BaseModel
 from ..field_validation import (
     EMAIL_FIELD,
     EMAIL_FIELD_UPDATE,
-    HOTEL_NAME_FIELD,
-    HOTEL_NAME_FIELD_UPDATE,
     PHONE_NUMBER_FIELD,
     PHONE_NUMBER_FIELD_UPDATE,
     SITE_URL_FIELD_UPDATE,
     TIME_FIELD,
     TIME_FIELD_UPDATE,
+)
+from ..mixins import (
+    MultilingualDescriptionBase,
+    MultilingualNameBase,
 )
 
 
@@ -28,10 +30,8 @@ class GuestInformation(BaseModel):
     site_url: SITE_URL_FIELD_UPDATE
 
 
-class HotelFullCreate(BaseModel):
-    name: HOTEL_NAME_FIELD
+class HotelFullCreate(MultilingualNameBase, MultilingualDescriptionBase, BaseModel):
     hotel_category_id: int = 1
-    description: str | None = None
     address: str
     city_id: int
     latitude: float
@@ -60,10 +60,8 @@ class GuestInformationUpdate(BaseModel):
     site_url: SITE_URL_FIELD_UPDATE
 
 
-class HotelFullUpdate(BaseModel):
-    name: HOTEL_NAME_FIELD_UPDATE
+class HotelFullUpdate(MultilingualNameBase, MultilingualDescriptionBase, BaseModel):
     hotel_category_id: int | None = None
-    description: str | None = None
     address: str | None = None
     city_id: int | None = None
     latitude: float | None = None

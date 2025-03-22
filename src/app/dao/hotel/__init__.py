@@ -48,6 +48,7 @@ from app.schemas.hotel.info import (
 from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
 from app.models.room import Room
 from app.models.hotel.location import HotelLocation
+from app.dao.room import RoomDAO
 
 
 class HotelDAO(BaseDAO):
@@ -310,87 +311,149 @@ class HotelDAO(BaseDAO):
         check_out_date: date,
         guests: list[int],
     ):
-        # guests_sample_list=[3,2,2] #3 rooms with capacity 3,2,2
-        booked_rooms_subquery = (
-            select(Booking.room_id)
-            .where(
-                and_(
-                    # Проверяем только активные брони (не отмененные)
-                    Booking.status != BookingStatus.CANCELLED,
-                    # Проверяем все возможные пересечения дат через OR
-                    or_(
-                        # Сценарий 1: бронь начинается до check_in и заканчивается после
-                        and_(
-                            Booking.check_in_date <= check_in_date,
-                            Booking.check_out_date > check_in_date,
-                        ),
-                        # Сценарий 2: бронь начинается до check_out и заканчивается после
-                        and_(
-                            Booking.check_in_date < check_out_date,
-                            Booking.check_out_date >= check_out_date,
-                        ),
-                        # Сценарий 3: бронь полностью внутри запрашиваемого периода
-                        and_(
-                            Booking.check_in_date >= check_in_date,
-                            Booking.check_out_date <= check_out_date,
-                        ),
-                    ),
-                )
-            )
-            .scalar_subquery()
+        # Получить перекрывающиеся бронирования
+        overlapping_bookings = await RoomDAO.get_overlapping_bookings(
+            session=session,
+            check_in_date=check_in_date,
+            check_out_date=check_out_date,
+            hotel_id=None,
         )
-        # Получаем доступные комнаты, сгруппированные по отелям
-        query = (
-            select(Hotel)
-            .join(Room, Hotel.id == Room.hotel_id)
+
+        # Извлекаем идентификаторы забронированных комнат
+        booked_room_ids = []
+        for booking in overlapping_bookings:
+            for room_info in booking.rooms_info:
+                booked_room_ids.append(room_info["room_id"])
+
+        print(f"Забронированные номера: {booked_room_ids}")
+        print(f"Требуемое размещение гостей: {guests}")
+
+        # Получаем все доступные комнаты в городе
+        rooms_query = (
+            select(Room)
+            .join(Hotel, Room.hotel_id == Hotel.id)
             .join(HotelLocation, Hotel.id == HotelLocation.hotel_id)
             .where(
                 and_(
                     HotelLocation.city_id == city_id,
-                    Room.id.notin_(booked_rooms_subquery),
-                    Room.quantity > 0,
+                    Room.id.not_in(booked_room_ids) if booked_room_ids else True,
                 )
             )
             .options(
-                selectinload(
-                    Hotel.rooms.and_(
-                        Room.id.notin_(booked_rooms_subquery), Room.quantity > 0
-                    )
-                )
+                selectinload(Room.hotel),
+                selectinload(Room.room_type),
+                selectinload(Room.bed_configurations),
             )
-            .distinct()
         )
 
-        hotels = (await session.execute(query)).scalars().all()
+        available_rooms = await session.execute(rooms_query)
+        available_rooms = available_rooms.scalars().all()
 
-        # Фильтруем отели, у которых есть достаточно подходящих комнат
-        suitable_hotels = []
-        for hotel in hotels:
-            available_rooms = hotel.rooms
-            # Создаем копию списка гостей для проверки
+        print(f"Всего доступных номеров: {len(available_rooms)}")
+
+        # Если нет доступных номеров, возвращаем пустой список
+        if not available_rooms:
+            return []
+
+        # Группируем комнаты по отелям
+        hotels_with_rooms = {}
+        for room in available_rooms:
+            if room.hotel_id not in hotels_with_rooms:
+                hotels_with_rooms[room.hotel_id] = []
+            hotels_with_rooms[room.hotel_id].append(room)
+
+        # Список для хранения результатов
+        suitable_hotels_data = []
+
+        for hotel_id, rooms in hotels_with_rooms.items():
+            # Сортируем комнаты по вместимости в порядке убывания
+            sorted_rooms = sorted(rooms, key=lambda r: r.max_guests, reverse=True)
+
+            # Копия списка гостей для манипуляций
             remaining_guests = guests.copy()
+            remaining_guests.sort(reverse=True)  # Сортируем по убыванию
 
-            # Сортируем комнаты по вместимости (от меньшей к большей)
-            sorted_rooms = sorted(available_rooms, key=lambda r: r.max_guests)
+            used_rooms = []
+            all_guests_accommodated = True
 
-            # Проверяем, можем ли разместить все группы гостей
-            for needed_capacity in sorted(remaining_guests):
-                suitable_room = next(
-                    (
-                        room
-                        for room in sorted_rooms
-                        if room.max_guests >= needed_capacity and room.quantity > 0
-                    ),
-                    None,
-                )
-                if suitable_room:
-                    suitable_room.quantity -= 1  # Уменьшаем доступное количество
-                    remaining_guests.remove(needed_capacity)
-                else:
+            # Проверяем размещение всех гостей
+            for group_size in remaining_guests:
+                room_found = False
+
+                # Ищем идеальное совпадение
+                for i, room in enumerate(sorted_rooms):
+                    if i in used_rooms:
+                        continue
+
+                    if room.max_guests == group_size:
+                        used_rooms.append(i)
+                        room_found = True
+                        break
+
+                # Если идеального совпадения нет, ищем комнату большей вместимости
+                if not room_found:
+                    for i, room in enumerate(sorted_rooms):
+                        if i in used_rooms:
+                            continue
+
+                        if room.max_guests >= group_size:
+                            used_rooms.append(i)
+                            room_found = True
+                            break
+
+                if not room_found:
+                    all_guests_accommodated = False
                     break
 
-            # Если все группы гостей могут быть размещены
-            if not remaining_guests:
-                suitable_hotels.append(hotel)
+            if all_guests_accommodated:
+                # Загружаем отель с необходимыми данными
+                hotel = await cls.get_full_hotel_by_id(hotel_id, session)
+                if hotel:
+                    # Создаем структуру данных вместо прямой модификации объекта
+                    hotel_data = {
+                        "id": hotel.id,
+                        "name": hotel.name,
+                        "description": hotel.description,
+                        "slug": hotel.slug,
+                        "category": (
+                            {
+                                "id": hotel.hotel_category.id,
+                                "name": hotel.hotel_category.name,
+                            }
+                            if hotel.hotel_category
+                            else None
+                        ),
+                        "location": (
+                            {
+                                "address": hotel.location.address,
+                                "city": (
+                                    hotel.location.city.name
+                                    if hotel.location and hotel.location.city
+                                    else None
+                                ),
+                            }
+                            if hotel.location
+                            else None
+                        ),
+                        "reviews_count": len(hotel.reviews) if hotel.reviews else 0,
+                        "available_rooms": [
+                            {
+                                "id": sorted_rooms[i].id,
+                                "max_guests": sorted_rooms[i].max_guests,
+                                "type": (
+                                    sorted_rooms[i].room_type.name
+                                    if sorted_rooms[i].room_type
+                                    else None
+                                ),
+                            }
+                            for i in used_rooms
+                        ],
+                    }
+                    suitable_hotels_data.append(hotel_data)
 
-        return suitable_hotels
+        # Сортируем отели по рейтингу и количеству отзывов
+        suitable_hotels_data.sort(
+            key=lambda h: (h["average_rating"], h["reviews_count"]), reverse=True
+        )
+
+        return suitable_hotels_data

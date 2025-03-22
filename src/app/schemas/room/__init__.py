@@ -41,7 +41,7 @@ class RoomUpdate(BaseModel):
 
 
 class RoomUpdateInternal(RoomUpdate):
-    pass
+    use_dinamic_price: bool | None = None
 
 
 class RoomFilter(BaseModel):
@@ -52,6 +52,7 @@ class RoomFilter(BaseModel):
     quantity: int | None = None
     base_price: float | None = None
     room_area: float | None = None
+    use_dinamic_price: bool | None = None
     room_type_id: int | None = None
     hotel_id: int | None = None
 

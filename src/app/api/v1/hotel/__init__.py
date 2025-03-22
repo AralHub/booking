@@ -6,7 +6,8 @@ from app.api.dependencies.hotel import validate_hotel_id
 from app.api.dependencies.partner import get_current_active_auth_partner
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-from app.core.utils.parse_date import parse_date
+from app.core.exceptions.http_exceptions import NotFoundException
+from app.core.i18n.translations import ErrorCode
 from app.dao.hotel import HotelDAO
 from app.schemas.hotel import (
     HotelFullCreate,
@@ -35,13 +36,16 @@ async def search_hotels(
     search_data: HotelSearch,
     session=SessionDep,
 ):
-    return await HotelDAO.find_hotels_for_booking(
+    hotels = await HotelDAO.find_hotels_for_booking(
         session=session,
         city_id=search_data.city_id,
         check_in_date=search_data.check_in,
         check_out_date=search_data.check_out,
         guests=search_data.guests,
     )
+    if not hotels:
+        return []
+    return hotels
 
 
 @router.get("/{hotel_id}")
