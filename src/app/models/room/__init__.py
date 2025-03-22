@@ -8,6 +8,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -80,4 +81,7 @@ class Room(IntIdPkMixin, Base):
     room_prices: Mapped[list["RoomPrice"]] = relationship(
         "RoomPrice",
         back_populates="room",
+    )
+    __table_args__ = (
+        UniqueConstraint("room_type_id", "hotel_id", name="unique_room_type_hotel"),
     )

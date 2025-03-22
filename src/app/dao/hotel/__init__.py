@@ -431,6 +431,14 @@ class HotelDAO(BaseDAO):
                                     if hotel.location and hotel.location.city
                                     else None
                                 ),
+                                "coordinates": (
+                                    {
+                                        "latitude": hotel.location.latitude,
+                                        "longitude": hotel.location.longitude,
+                                    }
+                                    if hotel.location
+                                    else None
+                                ),
                             }
                             if hotel.location
                             else None
@@ -438,7 +446,7 @@ class HotelDAO(BaseDAO):
                         "reviews_count": len(hotel.reviews) if hotel.reviews else 0,
                         "available_rooms": [
                             {
-                                "id": sorted_rooms[i].id,
+                                "room_id": sorted_rooms[i].id,
                                 "max_guests": sorted_rooms[i].max_guests,
                                 "type": (
                                     sorted_rooms[i].room_type.name
@@ -450,10 +458,5 @@ class HotelDAO(BaseDAO):
                         ],
                     }
                     suitable_hotels_data.append(hotel_data)
-
-        # Сортируем отели по рейтингу и количеству отзывов
-        suitable_hotels_data.sort(
-            key=lambda h: (h["average_rating"], h["reviews_count"]), reverse=True
-        )
 
         return suitable_hotels_data
