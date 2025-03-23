@@ -18,6 +18,10 @@ from .mixins import TimestampSchema
 
 
 # region Login
+class PhoneNumber(BaseModel):
+    phone_number: PHONE_NUMBER_FIELD
+
+
 class LoginUser(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     password: PASSWORD_FIELD
@@ -25,25 +29,23 @@ class LoginUser(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class PhoneNumber(BaseModel):
-    phone_number: PHONE_NUMBER_FIELD
+class UserCreate(PhoneNumber):
+    password: PASSWORD_FIELD
+    first_name: NAME_FIELD
+    last_name: NAME_FIELD
+    model_config = ConfigDict(extra="forbid")
+
+
+class UserCreateInternal(PhoneNumber):
+    is_active: bool = False
+    is_verified: bool = True
+    is_fully_registered: bool = False
+    model_config = ConfigDict(extra="forbid")
 
 
 class VerifyPhoneNumber(PhoneNumber):
     code: VERIFY_CODE_FIELD
 
-    model_config = ConfigDict(extra="forbid")
-
-
-class SuperAdminLogin(BaseModel):
-    phone_number: PHONE_NUMBER_FIELD
-    password: PASSWORD_FIELD
-
-
-class UserCreateViaPhoneNumberInternal(PhoneNumber):
-    is_active: bool = False
-    is_verified: bool = True
-    is_fully_registered: bool = False
     model_config = ConfigDict(extra="forbid")
 
 
@@ -65,18 +67,6 @@ class UserRead(UserBase, TimestampSchema):
     is_active: bool
     is_verified: bool
     is_fully_registered: bool
-
-
-# class UserCreate(UserBase):
-#     model_config = ConfigDict(extra="forbid")
-
-
-# class UserCreateInternal(UserCreate):
-#     is_active: bool
-#     is_verified: bool
-#     is_fully_registered: bool
-#     role: USER_ROLES = USER_ROLES.USER
-#     model_config = ConfigDict(extra="forbid")
 
 
 class UserUpdate(BaseModel):
