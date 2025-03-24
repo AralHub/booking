@@ -22,6 +22,7 @@ from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
     DuplicateValueException,
+    NotFoundException,
     TooManyRequestsException,
     UnauthorizedException,
 )
@@ -33,6 +34,8 @@ from app.dao.user import TokenBlacklistDAO
 from app.schemas.partner import (
     PartnerCreate,
     PartnerCreateInternal,
+    PartnerFilter,
+    PartnerUpdateInternal,
 )
 from app.schemas.user import (
     RefreshToken,
@@ -56,29 +59,49 @@ async def register_partner(
     partner_data: PartnerCreate,
     session=TransactionSessionDep,
 ):
-    success, message = await send_verification_sms(partner_data.phone_number)
-    if not success:
-        raise TooManyRequestsException(message)
+    # Проверяем, существует ли партнер, до отправки SMS
     db_partner = await PartnerDAO.get_partner_by_phone(
         session=session,
         phone_number=partner_data.phone_number,
     )
-    if db_partner and db_partner.is_verified and not db_partner.is_active:
+
+    # Если партнер уже существует и верифицирован/активен, возвращаем ошибку
+    if db_partner and (db_partner.is_verified or db_partner.is_active):
         raise DuplicateValueException(
             detail="Partner already exists",
             error_code=ErrorCode.USER_ALREADY_EXISTS,
         )
-    hashed_password = hash_password(db_partner.password).decode("utf-8")
+
+    # Отправляем SMS только если нужно регистрировать партнера
+    success, message = await send_verification_sms(partner_data.phone_number)
+    if not success:
+        raise TooManyRequestsException(message)
+
+    # Хешируем пароль один раз
+    hashed_password = hash_password(partner_data.password).decode("utf-8")
+
+    # Подготавливаем общие данные для создания партнера
+    partner_create_data = PartnerCreateInternal(
+        **partner_data.model_dump(exclude={"password"}),
+        password=hashed_password,
+        is_active=False,
+        is_verified=False,
+        is_fully_registered=False,
+    )
+
+    # Если партнер существует, но не верифицирован и не активен - удаляем его
+    if db_partner:
+        await PartnerDAO.delete(
+            session=session,
+            filters=PartnerFilter(id=db_partner.id),
+        )
+
+    # Создаем нового партнера
     await PartnerDAO.create(
         session=session,
-        values=PartnerCreateInternal(
-            **db_partner.model_dump(exclude={"password"}),
-            password=hashed_password,
-            is_active=False,
-            is_verified=False,
-            is_fully_registered=False,
-        ),
+        values=partner_create_data,
     )
+
     return {
         "message": "Verification code sent successfully",
         "phone_number": partner_data.phone_number,
@@ -106,15 +129,18 @@ async def verify_phone_number(
         phone_number=verify_data.phone_number,
     )
     if not db_partner:
-        db_partner = await PartnerDAO.create(
-            session=session,
-            values=PartnerCreateInternal(
-                phone_number=verify_data.phone_number,
-                is_active=True,
-                is_verified=True,
-                is_fully_registered=True,
-            ),
+        raise NotFoundException(
+            ErrorCode.USER_NOT_FOUND,
         )
+    db_partner = await PartnerDAO.update(
+        session=session,
+        filters=PartnerFilter(id=db_partner.id),
+        values=PartnerUpdateInternal(
+            is_active=True,
+            is_verified=True,
+            is_fully_registered=True,
+        ),
+    )
     # Создаем токены
     access_token = await create_access_token_partner(db_partner)
     refresh_token = await create_refresh_token_partner(db_partner)

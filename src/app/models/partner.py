@@ -17,6 +17,10 @@ class Partner(IntIdPkMixin, Base):
         nullable=False,
         index=True,
     )
+    password: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+    )
     email: Mapped[str] = mapped_column(
         String(255),
         unique=True,

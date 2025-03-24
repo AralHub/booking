@@ -50,29 +50,49 @@ async def register_user(
     user_data: UserCreate,
     session=TransactionSessionDep,
 ):
-    success, message = await send_verification_sms(user_data.phone_number)
-    if not success:
-        raise TooManyRequestsException(message)
-    db_user = await UserDAO.get_user_by_phone(
+    # Проверяем, существует ли партнер, до отправки SMS
+    db_user = await UserDAO.get_partner_by_phone(
         session=session,
         phone_number=user_data.phone_number,
     )
-    if db_user and db_user.is_verified and not db_user.is_deleted:
+
+    # Если партнер уже существует и верифицирован/активен, возвращаем ошибку
+    if db_user and (db_user.is_verified or db_user.is_active):
         raise DuplicateValueException(
-            detail="User already exists",
+            detail="Partner already exists",
             error_code=ErrorCode.USER_ALREADY_EXISTS,
         )
+
+    # Отправляем SMS только если нужно регистрировать партнера
+    success, message = await send_verification_sms(user_data.phone_number)
+    if not success:
+        raise TooManyRequestsException(message)
+
+    # Хешируем пароль один раз
     hashed_password = hash_password(user_data.password).decode("utf-8")
+
+    # Подготавливаем общие данные для создания партнера
+    user_create_data = UserCreateInternal(
+        **user_data.model_dump(exclude={"password"}),
+        password=hashed_password,
+        is_active=False,
+        is_verified=False,
+        is_fully_registered=False,
+    )
+
+    # Если партнер существует, но не верифицирован и не активен - удаляем его
+    if db_user:
+        await UserDAO.delete(
+            session=session,
+            filters=UserFilter(id=db_user.id),
+        )
+
+    # Создаем нового партнера
     await UserDAO.create(
         session=session,
-        values=UserCreateInternal(
-            **user_data.model_dump(exclude={"password"}),
-            password=hashed_password,
-            is_active=False,
-            is_verified=False,
-            is_fully_registered=False,
-        ),
+        values=user_create_data,
     )
+
     return {
         "message": "Verification code sent successfully",
         "phone_number": user_data.phone_number,
