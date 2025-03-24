@@ -20,8 +20,6 @@ if TYPE_CHECKING:
 
 
 class ChessBoard(IntIdPkMixin, Base):
-    room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
-    room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
     check_date: Mapped[date] = mapped_column(Date, nullable=False)
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=True)
     available_rooms_count: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -31,10 +29,12 @@ class ChessBoard(IntIdPkMixin, Base):
         default=False,
         server_default="false",
     )
+    room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
+    room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
     __table_args__ = (
         UniqueConstraint(
-            "room_id",
+            "room_type_id",
             "date",
-            name="unique_room_date_availability",
+            name="unique_room_type_date_availability",
         ),
     )

@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+
 from pydantic import BaseModel, ConfigDict
 
 from app.models.user import GENDER_TYPES
@@ -16,8 +17,9 @@ from .field_validation import (
 )
 from .mixins import TimestampSchema
 
-
 # region Login
+
+
 class PhoneNumber(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
 
@@ -29,21 +31,8 @@ class LoginUser(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class UserCreate(PhoneNumber):
-    password: PASSWORD_FIELD
-    first_name: NAME_FIELD
-    last_name: NAME_FIELD
-    model_config = ConfigDict(extra="forbid")
-
-
-class UserCreateInternal(UserCreate):
-    is_active: bool = False
-    is_verified: bool = False
-    is_fully_registered: bool = False
-    model_config = ConfigDict(extra="forbid")
-
-
-class VerifyPhoneNumber(PhoneNumber):
+class VerifyPhoneNumber(BaseModel):
+    phone_number: PHONE_NUMBER_FIELD
     code: VERIFY_CODE_FIELD
 
     model_config = ConfigDict(extra="forbid")
@@ -57,16 +46,28 @@ class UserBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     first_name: NAME_FIELD
     last_name: NAME_FIELD
-    birthday: Optional[BIRTHDAY_FIELD] = None
-    gender: Optional[GENDER_FIELD] = None
-    country_id: Optional[int] = None
 
 
 class UserRead(UserBase, TimestampSchema):
     id: int
+    birthday: Optional[BIRTHDAY_FIELD] = None
+    gender: Optional[GENDER_FIELD] = None
+    country_id: Optional[int] = None
     is_active: bool
     is_verified: bool
     is_fully_registered: bool
+
+
+class UserCreate(UserBase):
+    password: PASSWORD_FIELD
+    model_config = ConfigDict(extra="forbid")
+
+
+class UserCreateInternal(UserCreate):
+    is_active: bool = False
+    is_verified: bool = False
+    is_fully_registered: bool = False
+    model_config = ConfigDict(extra="forbid")
 
 
 class UserUpdate(BaseModel):

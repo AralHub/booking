@@ -10,7 +10,7 @@ from app.dao.user import UserDAO
 from app.models.booking import Booking, BookingStatus
 from app.models.room import Room
 from app.models.user import User
-
+from app.schemas.room.price import RoomPriceFilter
 from app.models.booking import Booking, BookingStatus
 from app.schemas.booking import (
     BookingCreateMultipleRooms,
@@ -69,13 +69,27 @@ class BookingDAO(BaseDAO):
                 check_out_date=booking_data.check_out_date,
                 hotel_id=db_room.hotel_id,
             )
+            # Извлекаем идентификаторы забронированных комнат
+            booked_room_ids = []
+            for booking in overlapping_bookings:
+                for room_info in booking.rooms_info:
+                    booked_room_ids.append(room_info["room_id"])
             # Calculate price for this room
             if db_room.use_dinamic_price:
-                room_price = await RoomPriceDAO.get_room_price_by_guest_quantity(
+                db_room_prices = await RoomPriceDAO.get_all(
                     session=session,
-                    room_id=room_info.room_id,
-                    guest_quantity=room_info.guest_quantity,
+                    filters=RoomPriceFilter(
+                        room_id=db_room.id,
+                    ),
                 )
+                if not db_room_prices:
+                    room_price = db_room.base_price
+                else:
+                    room_price = await RoomPriceDAO.get_room_price_by_guest_quantity(
+                        session=session,
+                        room_id=room_info.room_id,
+                        guest_quantity=room_info.guest_quantity,
+                    )
             else:
                 room_price = db_room.base_price
 
@@ -103,5 +117,6 @@ class BookingDAO(BaseDAO):
                     if hasattr(booking_data, "special_requests")
                     else None
                 ),
+                hotel_id=db_room.hotel_id,
             ),
         )

@@ -33,10 +33,8 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         index=True,
     )
     password: Mapped[str] = mapped_column(
-        String,
-        nullable=True,
-        default=None,
-        server_default=None,
+        String(255),
+        nullable=False,
     )
     first_name: Mapped[str] = mapped_column(
         String(255),

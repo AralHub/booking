@@ -1,7 +1,9 @@
 from pydantic import BaseModel, ConfigDict
 
 from .field_validation import (
+    NAME_FIELD,
     NAME_FIELD_UPDATE,
+    PASSWORD_FIELD,
     PHONE_NUMBER_FIELD,
     PHONE_NUMBER_FIELD_UPDATE,
 )
@@ -9,8 +11,8 @@ from .field_validation import (
 
 class PartnerBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
-    first_name: NAME_FIELD_UPDATE
-    last_name: NAME_FIELD_UPDATE
+    first_name: NAME_FIELD
+    last_name: NAME_FIELD
 
 
 class PartnerRead(PartnerBase):
@@ -18,6 +20,7 @@ class PartnerRead(PartnerBase):
 
 
 class PartnerCreate(PartnerBase):
+    password: PASSWORD_FIELD
     model_config = ConfigDict(extra="forbid")
 
 

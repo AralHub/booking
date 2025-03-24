@@ -23,6 +23,7 @@ class BookingCreateMultipleRooms(BaseModel):
     check_in_date: date
     check_out_date: date
     rooms_info: list[RoomBookingData]
+    special_requests: str | None = None
 
 
 class BookingCreateMultipleRoomsInternal(BookingCreateMultipleRooms):
@@ -31,6 +32,7 @@ class BookingCreateMultipleRoomsInternal(BookingCreateMultipleRooms):
     user_id: int
     special_requests: str | None = None
     status: BOOKING_STATUS_FIELD_UPDATE
+    hotel_id: int
 
 
 class BookingUpdateInternal(BaseModel):
@@ -39,10 +41,12 @@ class BookingUpdateInternal(BaseModel):
 
 class BookingRead(BookingBase):
     id: int
+    hotel_id: int
     total_price: int
     total_days: int
     status: BOOKING_STATUS_FIELD
     rooms_info: list[RoomBookingData]
+    special_requests: str | None = None
 
 
 class BookingFilter(BaseModel):
@@ -50,5 +54,5 @@ class BookingFilter(BaseModel):
     check_in_date: date | None = None
     check_out_date: date | None = None
     total_price: int | None = None
-    room_id: int | None = None
     user_id: int | None = None
+    hotel_id: int | None = None

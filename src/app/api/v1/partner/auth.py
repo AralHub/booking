@@ -12,6 +12,7 @@ from app.core.auth.helpers import (
     create_access_token_partner,
     create_refresh_token_partner,
 )
+from app.core.auth.utils import hash_password
 from app.core.auth.validation import (
     get_partner_by_token_sub,
     get_refresh_token_payload,
@@ -20,22 +21,20 @@ from app.core.auth.validation import (
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
+    DuplicateValueException,
     TooManyRequestsException,
     UnauthorizedException,
 )
-
-# from app.api.user.functions.dependencies import get_current_active_auth_user
-# from app.api.user.schemas import UserRead
-# from app.core.utils.eskiz_client import code_generator
+from app.core.i18n.translations import ErrorCode
 from app.core.utils import redis_sms
 from app.core.utils.send_sms import send_verification_sms
 from app.dao.partner import PartnerDAO
 from app.dao.user import TokenBlacklistDAO
 from app.schemas.partner import (
+    PartnerCreate,
     PartnerCreateInternal,
 )
 from app.schemas.user import (
-    PhoneNumber,
     RefreshToken,
     TokenInfo,
     VerifyPhoneNumber,
@@ -54,11 +53,32 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
 )
 async def register_partner(
-    partner_data: PhoneNumber,
+    partner_data: PartnerCreate,
+    session=TransactionSessionDep,
 ):
     success, message = await send_verification_sms(partner_data.phone_number)
     if not success:
         raise TooManyRequestsException(message)
+    db_partner = await PartnerDAO.get_partner_by_phone(
+        session=session,
+        phone_number=partner_data.phone_number,
+    )
+    if db_partner and db_partner.is_verified and not db_partner.is_active:
+        raise DuplicateValueException(
+            detail="Partner already exists",
+            error_code=ErrorCode.USER_ALREADY_EXISTS,
+        )
+    hashed_password = hash_password(db_partner.password).decode("utf-8")
+    await PartnerDAO.create(
+        session=session,
+        values=PartnerCreateInternal(
+            **db_partner.model_dump(exclude={"password"}),
+            password=hashed_password,
+            is_active=False,
+            is_verified=False,
+            is_fully_registered=False,
+        ),
+    )
     return {
         "message": "Verification code sent successfully",
         "phone_number": partner_data.phone_number,

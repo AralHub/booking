@@ -1,9 +1,5 @@
-from datetime import date
 
 from fastapi import APIRouter
-from sqlalchemy.future import select
-
-from app.core import SessionDep
 
 # from app.models.chessboard import
 

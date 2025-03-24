@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
@@ -12,5 +12,11 @@ if TYPE_CHECKING:
 
 class RoomImage(IntIdPkMixin, Base):
     image: Mapped[str] = mapped_column(String, nullable=False)
+    position: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=1,
+        server_default="1",
+    )
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
     room: Mapped["Room"] = relationship(back_populates="room_images")
