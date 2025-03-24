@@ -132,7 +132,7 @@ async def verify_phone_number(
         raise NotFoundException(
             ErrorCode.USER_NOT_FOUND,
         )
-    db_partner = await PartnerDAO.update(
+    await PartnerDAO.update(
         session=session,
         filters=PartnerFilter(id=db_partner.id),
         values=PartnerUpdateInternal(

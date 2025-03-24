@@ -59,7 +59,6 @@ async def register_user(
     # Если партнер уже существует и верифицирован/активен, возвращаем ошибку
     if db_user and (db_user.is_verified or db_user.is_active):
         raise DuplicateValueException(
-            detail="Partner already exists",
             error_code=ErrorCode.USER_ALREADY_EXISTS,
         )
 
@@ -120,7 +119,9 @@ async def verify_phone_number(
         phone_number=verify_data.phone_number,
     )
     if not db_user:
-        raise NotFoundException("User not found")
+        raise NotFoundException(
+            ErrorCode.USER_NOT_FOUND,
+        )
     await UserDAO.update(
         session=session,
         filters=UserFilter(id=db_user.id),
