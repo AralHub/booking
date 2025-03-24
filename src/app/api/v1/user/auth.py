@@ -51,7 +51,7 @@ async def register_user(
     session=TransactionSessionDep,
 ):
     # Проверяем, существует ли партнер, до отправки SMS
-    db_user = await UserDAO.get_partner_by_phone(
+    db_user = await UserDAO.get_user_by_phone(
         session=session,
         phone_number=user_data.phone_number,
     )
