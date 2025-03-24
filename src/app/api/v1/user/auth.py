@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Depends, Response, status
 from jwt import InvalidTokenError
 
 from app.api.dependencies.user import get_current_auth_user
@@ -8,6 +8,7 @@ from app.core.auth.helpers import (
     create_access_token,
     create_refresh_token,
 )
+from app.core.auth.utils import hash_password
 from app.core.auth.validation import (
     authenticate_user,
     get_refresh_token_payload,
@@ -22,14 +23,16 @@ from app.core.exceptions.http_exceptions import (
     TooManyRequestsException,
     UnauthorizedException,
 )
+from app.core.i18n.translations import ErrorCode
 from app.core.utils import redis_sms
 from app.core.utils.send_sms import send_verification_sms
 from app.dao.user import TokenBlacklistDAO, UserDAO
 from app.schemas.user import (
     LoginUser,
-    PhoneNumber,
     RefreshToken,
     TokenInfo,
+    UserCreate,
+    UserCreateInternal,
     UserFilter,
     UserUpdateInternal,
     VerifyPhoneNumber,
@@ -44,7 +47,7 @@ router = APIRouter(prefix=settings.api.auth)
     status_code=status.HTTP_201_CREATED,
 )
 async def register_user(
-    user_data: PhoneNumber,
+    user_data: UserCreate,
     session=TransactionSessionDep,
 ):
     success, message = await send_verification_sms(user_data.phone_number)
@@ -55,7 +58,21 @@ async def register_user(
         phone_number=user_data.phone_number,
     )
     if db_user and db_user.is_verified and not db_user.is_deleted:
-        raise DuplicateValueException("User already exists")
+        raise DuplicateValueException(
+            detail="User already exists",
+            error_code=ErrorCode.USER_ALREADY_EXISTS,
+        )
+    hashed_password = hash_password(user_data.password).decode("utf-8")
+    await UserDAO.create(
+        session=session,
+        values=UserCreateInternal(
+            **user_data.model_dump(exclude={"password"}),
+            password=hashed_password,
+            is_active=False,
+            is_verified=False,
+            is_fully_registered=False,
+        ),
+    )
     return {
         "message": "Verification code sent successfully",
         "phone_number": user_data.phone_number,

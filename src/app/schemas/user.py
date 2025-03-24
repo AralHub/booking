@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from app.models.user import GENDER_TYPES
@@ -36,9 +36,9 @@ class UserCreate(PhoneNumber):
     model_config = ConfigDict(extra="forbid")
 
 
-class UserCreateInternal(PhoneNumber):
+class UserCreateInternal(UserCreate):
     is_active: bool = False
-    is_verified: bool = True
+    is_verified: bool = False
     is_fully_registered: bool = False
     model_config = ConfigDict(extra="forbid")
 
@@ -57,9 +57,9 @@ class UserBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     first_name: NAME_FIELD
     last_name: NAME_FIELD
-    birthday: BIRTHDAY_FIELD
-    gender: GENDER_FIELD
-    country_id: int = 1
+    birthday: Optional[BIRTHDAY_FIELD] = None
+    gender: Optional[GENDER_FIELD] = None
+    country_id: Optional[int] = None
 
 
 class UserRead(UserBase, TimestampSchema):

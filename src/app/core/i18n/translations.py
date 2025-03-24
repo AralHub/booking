@@ -22,6 +22,7 @@ class ErrorCode(str, Enum):
     # Специфичные ошибки для пользователя
     USER_NOT_FOUND = "user_not_found"
     INVALID_CREDENTIALS = "invalid_credentials"
+    USER_ALREADY_EXISTS = "user_already_exists"
 
     # Специфичные ошибки для номера
     ROOM_NOT_FOUND = "room_not_found"
@@ -46,6 +47,7 @@ ERROR_MESSAGES = {
         ErrorCode.INVALID_CREDENTIALS: "Invalid username or password",
         ErrorCode.ROOM_NOT_FOUND: "Room not found",
         ErrorCode.ROOM_PRICE_NOT_FOUND: "Room price not found",
+        ErrorCode.USER_ALREADY_EXISTS: "User already exists",
     },
     "ru": {
         ErrorCode.INTERNAL_SERVER_ERROR: "Внутренняя ошибка сервера",
@@ -63,6 +65,7 @@ ERROR_MESSAGES = {
         ErrorCode.INVALID_CREDENTIALS: "Неверное имя пользователя или пароль",
         ErrorCode.ROOM_NOT_FOUND: "Номер не найден",
         ErrorCode.ROOM_PRICE_NOT_FOUND: "Цена номера не найдена",
+        ErrorCode.USER_ALREADY_EXISTS: "Пользователь уже существует",
     },
     # Можно добавить другие языки
 }

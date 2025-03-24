@@ -74,7 +74,7 @@ class UnprocessableEntityException(CustomException):
 
 
 class DuplicateValueException(CustomException):
-    _default_status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+    _default_status_code = status.HTTP_409_CONFLICT
 
     def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
