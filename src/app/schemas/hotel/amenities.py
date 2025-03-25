@@ -1,40 +1,33 @@
 from pydantic import BaseModel
 
 from app.models.hotel.amenities import PaymentType
-
+from app.schemas.mixins import (
+    MultilingualNameBase,
+    MultilingualNameBaseUpdate,
+)
 
 # region HotelAmenity
-class HotelAmenityBase(BaseModel):
-    name: str
-    description: str
 
 
-class HotelAmenityCreate(HotelAmenityBase):
+class HotelAmenityCreate(MultilingualNameBase):
     is_popular: bool
     payment_type: PaymentType
-    amenity_category_id: int
 
 
-class HotelAmenityCreateInternal(HotelAmenityCreate):
-    hotel_id: int | None = None
+class HotelAmenityCreateInternal(BaseModel):
+    name: dict[str, str]
+    hotel_amenity_category_id: int
 
 
-class HotelAmenityUpdate(HotelAmenityBase):
+class HotelAmenityUpdate(MultilingualNameBaseUpdate):
     is_popular: bool | None = None
     payment_type: PaymentType | None = None
     amenity_category_id: int | None = None
 
 
-class HotelAmenityUpdateInternal(HotelAmenityUpdate):
-    pass
-
-
 class HotelAmenityFilter(BaseModel):
     id: int | None = None
-    name: str | None = None
-    description: str | None = None
     is_popular: bool | None = None
-    payment_type: PaymentType | None = None
     hotel_amenity_category_id: int | None = None
 
 
@@ -42,29 +35,26 @@ class HotelAmenityFilter(BaseModel):
 
 
 # region HotelAmenityCategory
-class HotelAmenityCategoryBase(BaseModel):
-    name: str
 
 
-class HotelAmenityCategoryCreate(HotelAmenityCategoryBase):
+class HotelAmenityCategoryCreate(MultilingualNameBase):
     pass
 
 
-class HotelAmenityCategoryCreateInternal(HotelAmenityCategoryCreate):
+class HotelAmenityCategoryCreate(MultilingualNameBase):
     pass
 
 
-class HotelAmenityCategoryUpdate(HotelAmenityCategoryBase):
-    pass
+class HotelAmenityCategoryCreateInternal(BaseModel):
+    name: dict[str, str]
 
 
-class HotelAmenityCategoryUpdateInternal(HotelAmenityCategoryUpdate):
+class HotelAmenityCategoryUpdate(MultilingualNameBaseUpdate):
     pass
 
 
 class HotelAmenityCategoryFilter(BaseModel):
     id: int | None = None
-    name: str | None = None
 
 
 # endregion

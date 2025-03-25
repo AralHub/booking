@@ -7,8 +7,14 @@ from app.dao.hotel.amenities import (
     HotelAmenityDAO,
 )
 from app.schemas.hotel.amenities import (
+    HotelAmenityCategoryCreate,
+    HotelAmenityCreateInternal,
+    HotelAmenityCategoryUpdate,
+    HotelAmenityCategoryFilter,
+    HotelAmenityCreate,
     HotelAmenityFilter,
     HotelAmenityUpdate,
+    HotelAmenityCategoryCreateInternal,
 )
 
 router = APIRouter(
@@ -29,17 +35,21 @@ async def get_all_hotel_amenities(
     )
 
 
-@router.get("/categories/{category_id}/amenities")
-async def get_hotel_amenities_by_category(
-    category_id: int,
-    session=SessionDep,
+@router.post("/categories/{category_id}/amenities")
+async def create_hotel_amenity(
+    hotel_amenity_category_id: int,
+    hotel_amenity_data: HotelAmenityCreate,
+    session=TransactionSessionDep,
 ):
     """
     Удобства по категории-удобств отеля
     """
-    return await HotelAmenityDAO.get_all(
+    return await HotelAmenityDAO.create(
         session=session,
-        filters=HotelAmenityFilter(hotel_amenity_category_id=category_id),
+        values=HotelAmenityCreateInternal(
+            name=hotel_amenity_data.to_dict_name(),
+            hotel_amenity_category_id=hotel_amenity_category_id,
+        ),
     )
 
 
@@ -63,4 +73,20 @@ async def update_hotel_amenity(
             hotel_amenity_category_id=category_id,
         ),
         values=amenity_update_data,
+    )
+
+
+@router.post("/categories")
+async def create_hotel_amenities_category(
+    hotel_amenity_category_data: HotelAmenityCategoryCreate,
+    session=TransactionSessionDep,
+):
+    """
+    Создать категорию удобств отеля
+    """
+    return await HotelAmenityCategoryDAO.create(
+        session=session,
+        values=HotelAmenityCategoryCreateInternal(
+            name=hotel_amenity_category_data.to_dict_name(),
+        ),
     )

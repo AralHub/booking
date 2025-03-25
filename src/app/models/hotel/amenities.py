@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Boolean, ForeignKey, String, UniqueConstraint, text
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -36,11 +36,8 @@ class HotelAmenityCategory(
 class HotelAmenity(
     IntIdPkMixin,
     MultilingualNameMixin,
-    MultilingualDescriptionMixin,
     Base,
 ):
-    __tablename__ = "hotel_amenities"
-
     icon: Mapped[str] = mapped_column(
         String,
         nullable=True,
@@ -50,6 +47,7 @@ class HotelAmenity(
     )
     in_hotel: Mapped[bool] = mapped_column(
         Boolean,
+        nullable=True,
         default=True,
         server_default="true",
     )
@@ -61,6 +59,7 @@ class HotelAmenity(
     payment_type: Mapped[PaymentType] = mapped_column(
         SqlEnum(PaymentType),
         default=PaymentType.FREE,
+        server_default=text("'FREE'"),
     )
     hotel_amenity_category_id: Mapped[int] = mapped_column(
         ForeignKey("hotel_amenity_categories.id"),
@@ -80,7 +79,6 @@ class HotelAmenity(
 
 
 class HotelAmenityAssociation(Base):
-    __tablename__ = "hotel_amenity_associations"
     hotel_id: Mapped[int] = mapped_column(
         ForeignKey("hotels.id"),
         primary_key=True,

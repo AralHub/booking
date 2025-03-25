@@ -7,7 +7,7 @@ from pydantic import (
     field_serializer,
 )
 
-from .field_validation import HOTEL_NAME_FIELD
+from .field_validation import HOTEL_NAME_FIELD, HOTEL_NAME_FIELD_UPDATE
 
 
 class UUIDSchema(BaseModel):
@@ -43,6 +43,23 @@ class MultilingualNameBase(BaseModel):
     name_en: HOTEL_NAME_FIELD
     name_uz: HOTEL_NAME_FIELD
     name_kr: HOTEL_NAME_FIELD
+
+    def to_dict_name(self):
+        return {
+            "ru": self.name_ru,
+            "en": self.name_en,
+            "uz": self.name_uz,
+            "kr": self.name_kr,
+        }
+
+
+class MultilingualNameBaseUpdate(BaseModel):
+    """Базовый класс для многоязычных имен с отдельными полями"""
+
+    name_ru: HOTEL_NAME_FIELD_UPDATE | None = None
+    name_en: HOTEL_NAME_FIELD_UPDATE | None = None
+    name_uz: HOTEL_NAME_FIELD_UPDATE | None = None
+    name_kr: HOTEL_NAME_FIELD_UPDATE | None = None
 
     def to_dict_name(self):
         return {
