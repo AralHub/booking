@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from app.api.dependencies.amenities import validate_hotel_amenities_category
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.hotel.amenities import (
@@ -8,13 +9,13 @@ from app.dao.hotel.amenities import (
 )
 from app.schemas.hotel.amenities import (
     HotelAmenityCategoryCreate,
-    HotelAmenityCreateInternal,
-    HotelAmenityCategoryUpdate,
+    HotelAmenityCategoryCreateInternal,
     HotelAmenityCategoryFilter,
+    HotelAmenityCategoryUpdate,
     HotelAmenityCreate,
+    HotelAmenityCreateInternal,
     HotelAmenityFilter,
     HotelAmenityUpdate,
-    HotelAmenityCategoryCreateInternal,
 )
 
 router = APIRouter(
@@ -54,7 +55,7 @@ async def create_hotel_amenity(
 
 
 @router.put(
-    "/categories/{category_id}/amenities/{amenity_id}",
+    "/amenities/{amenity_id}",
     dependencies=[Depends(get_current_superuser)],
 )
 async def update_hotel_amenity(
@@ -76,9 +77,23 @@ async def update_hotel_amenity(
     )
 
 
+@router.delete("/amenities/{amenity_id}")
+async def delete_hotel_amenity(
+    amenity_id: int,
+    session=TransactionSessionDep,
+):
+    return await HotelAmenityDAO.delete(
+        session=session,
+        filters=HotelAmenityFilter(
+            id=amenity_id,
+        ),
+    )
+
+
 @router.post("/categories")
 async def create_hotel_amenities_category(
     hotel_amenity_category_data: HotelAmenityCategoryCreate,
+    hotel_amenities_category=Depends(validate_hotel_amenities_category),
     session=TransactionSessionDep,
 ):
     """
@@ -88,5 +103,45 @@ async def create_hotel_amenities_category(
         session=session,
         values=HotelAmenityCategoryCreateInternal(
             name=hotel_amenity_category_data.to_dict_name(),
+        ),
+    )
+
+
+@router.put(
+    "/categories/{category_id}",
+    dependencies=[Depends(get_current_superuser)],
+)
+async def update_hotel_amenities_category(
+    category_id: int,
+    amenity_update_data: HotelAmenityCategoryUpdate,
+    hotel_amenities_category=Depends(validate_hotel_amenities_category),
+    session=TransactionSessionDep,
+):
+    """
+    Обновить удобство в категории
+    """
+    return await HotelAmenityDAO.update(
+        session=session,
+        filters=HotelAmenityCategoryFilter(
+            id=category_id,
+        ),
+        values=amenity_update_data,
+    )
+
+
+@router.delete("/categories/{category_id}")
+async def delete_hotel_amenities_category(
+    category_id: int,
+    hotel_amenities_category=Depends(validate_hotel_amenities_category),
+    session=TransactionSessionDep,
+):
+    """
+    Удалить категорию удобств отеля
+    """
+
+    return await HotelAmenityCategoryDAO.delete(
+        session=session,
+        filters=HotelAmenityCategoryFilter(
+            id=hotel_amenities_category.id,
         ),
     )
