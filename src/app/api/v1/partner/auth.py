@@ -14,6 +14,7 @@ from app.core.auth.helpers import (
 )
 from app.core.auth.utils import hash_password
 from app.core.auth.validation import (
+    authenticate_partner,
     get_partner_by_token_sub,
     get_refresh_token_payload,
     validate_token_type,
@@ -38,6 +39,7 @@ from app.schemas.partner import (
     PartnerUpdateInternal,
 )
 from app.schemas.user import (
+    LoginUser,
     RefreshToken,
     TokenInfo,
     VerifyPhoneNumber,
@@ -161,6 +163,37 @@ async def verify_phone_number(
         ),
         "is_fully_registered": db_partner.is_fully_registered,
     }
+
+
+@router.post("/login", response_model=TokenInfo)
+async def partner_login(
+    login_data: LoginUser,
+    response: Response,
+    session=SessionDep,
+):
+    db_partner = await authenticate_partner(
+        phone_number=login_data.phone_number,
+        password=login_data.password,
+        session=session,
+    )
+    if not db_partner:
+        raise UnauthorizedException("Wrong phone number or password.")
+    access_token = await create_access_token_partner(db_partner)
+    refresh_token = await create_refresh_token_partner(db_partner)
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=settings.crypt.REFRESH_TOKEN_HTTPONLY,
+        secure=settings.crypt.REFRESH_TOKEN_COOKIE_SECURE,
+        samesite=settings.crypt.REFRESH_TOKEN_COOKIE_SAMESITE,
+        max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
+    )
+
+    return TokenInfo(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="Bearer",
+    )
 
 
 @router.post(

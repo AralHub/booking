@@ -159,3 +159,24 @@ async def authenticate_user(
         return None
 
     return db_user
+
+
+async def authenticate_partner(
+    phone_number: str,
+    password: str,
+    session: AsyncSession,
+) -> PartnerBase | None:
+    db_partner = await PartnerDAO.get_partner_by_phone(
+        session=session,
+        phone_number=phone_number,
+    )
+    if not db_partner:
+        return None
+
+    elif not await verify_password(
+        password=password,
+        hashed_password=db_partner.password,
+    ):
+        return None
+
+    return db_partner
