@@ -1,173 +1,657 @@
-{
-  "Популярные услуги": [
-    {
-      "name_en": "Wi-fi",
-      "name_ru": "Wi-fi"
+[
+  {
+    "id": 1,
+    "category_name": {
+      "en": "Popular services",
+      "ru": "Популярные услуги"
     },
-    {
-      "name_en": "Pool",
-      "name_ru": "Бассейн"
+    "amenities": [
+      {
+        "name": {
+          "en": "Wi-fi",
+          "ru": "Wi-fi"
+        }
+      },
+      {
+        "name": {
+          "en": "Pool",
+          "ru": "Бассейн"
+        }
+      },
+      {
+        "name": {
+          "en": "Sauna",
+          "ru": "Сауна"
+        }
+      },
+      {
+        "name": {
+          "en": "Confername_ence room",
+          "ru": "Конференц-зал"
+        }
+      },
+      {
+        "name": {
+          "en": "Non-smoking rooms",
+          "ru": "Номера для некурящих"
+        }
+      },
+      {
+        "name": {
+          "en": "Family rooms",
+          "ru": "Семейные номера"
+        }
+      },
+      {
+        "name": {
+          "en": "Gardname_en",
+          "ru": "Сад"
+        }
+      },
+      {
+        "name": {
+          "en": "Terrace",
+          "ru": "Терраса"
+        }
+      },
+      {
+        "name": {
+          "en": "Smoking rooms",
+          "ru": "Номера для курящих"
+        }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "category_name": {
+      "en": "Technologies",
+      "ru": "Технологии"
     },
-    {
-      "name_en": "Sauna",
-      "name_ru": "Сауна"
+    "amenities": [
+      {
+        "name": {
+          "en": "Business center",
+          "ru": "Бизнес-центр"
+        }
+      },
+      {
+        "name": {
+          "en": "Elevator",
+          "ru": "Лифт"
+        }
+      },
+      {
+        "name": {
+          "en": "Flat-screen TV",
+          "ru": "Телевизор с плоским экраном"
+        }
+      },
+      {
+        "name": {
+          "en": "Electric vehicle charging station",
+          "ru": "Станция зарядки электромобилей"
+        }
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "category_name": {
+      "en": "Health services",
+      "ru": "Оздоровительные услуги"
     },
-    {
-      "name_en": "Confername_ence room",
-      "name_ru": "Конференц-зал"
+    "amenities": [
+      {
+        "name": {
+          "en": "Hydrotherapy",
+          "ru": "Гидромассажная ванна/джакузи"
+        }
+      },
+      {
+        "name": {
+          "en": "Fitness",
+          "ru": "Фитнес"
+        }
+      },
+      {
+        "name": {
+          "en": "Yoga",
+          "ru": "Йога"
+        }
+      },
+      {
+        "name": {
+          "en": "Massage chair",
+          "ru": "Массажное кресло"
+        }
+      },
+      {
+        "name": {
+          "en": "Children's pool",
+          "ru": "Детский бассейн"
+        }
+      },
+      {
+        "name": {
+          "en": "Hydrotherapy",
+          "ru": "Гидромассажная ванна"
+        }
+      },
+      {
+        "name": {
+          "en": "Steam room",
+          "ru": "Парная"
+        }
+      },
+      {
+        "name": {
+          "en": "Personal trainer",
+          "ru": "Личный тренер"
+        }
+      },
+      {
+        "name": {
+          "en": "Turkish bath",
+          "ru": "Турецкая баня"
+        }
+      },
+      {
+        "name": {
+          "en": "Solarium",
+          "ru": "Солярий"
+        }
+      },
+      {
+        "name": {
+          "en": "Onsname_en",
+          "ru": "Онсэн"
+        }
+      },
+      {
+        "name": {
+          "en": "Public baths",
+          "ru": "Общественные бани"
+        }
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "category_name": {
+      "en": "Food and drinks",
+      "ru": "Питание и напитки"
     },
-    {
-      "name_en": "Non-smoking rooms",
-      "name_ru": "Номера для некурящих"
+    "amenities": [
+      {
+        "name": {
+          "en": "Restaurant",
+          "ru": "Ресторан"
+        }
+      },
+      {
+        "name": {
+          "en": "Swedish buffet",
+          "ru": "Ресторан (шведский стол)"
+        }
+      },
+      {
+        "name": {
+          "en": "Bar",
+          "ru": "Бар"
+        }
+      },
+      {
+        "name": {
+          "en": "Food delivery",
+          "ru": "Доставка продуктов"
+        }
+      },
+      {
+        "name": {
+          "en": "Vending machine (drinks)",
+          "ru": "Торговый автомат (напитки)"
+        }
+      },
+      {
+        "name": {
+          "en": "Vname_ending machine (snacks)",
+          "ru": "Торговый автомат (закуски)"
+        }
+      },
+      {
+        "name": {
+          "en": "Dietary mname_enu (on request)",
+          "ru": "Диетическое меню (по запросу)"
+        }
+      },
+      {
+        "name": {
+          "en": "Food delivery to room",
+          "ru": "Доставка еды в номер"
+        }
+      },
+      {
+        "name": {
+          "en": "Breakfast in room (on request)",
+          "ru": "Завтрак в номер (по запросу)"
+        }
+      },
+      {
+        "name": {
+          "en": "Snack bar",
+          "ru": "Снэк-бар"
+        }
+      },
+      {
+        "name": {
+          "en": "Barbecue equipmname_ent",
+          "ru": "Принадлежности для барбекю"
+        }
+      },
+      {
+        "name": {
+          "en": "Packed lunches (on request)",
+          "ru": "Упакованные ланчи (по запросу)"
+        }
+      },
+      {
+        "name": {
+          "en": "Coffee shop on site",
+          "ru": "Кофейня на территории"
+        }
+      },
+      {
+        "name": {
+          "en": "Fname_ruits",
+          "ru": "Фрукты"
+        }
+      },
+      {
+        "name": {
+          "en": "Childrname_en's mname_enu",
+          "ru": "Детское меню"
+        }
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "category_name": {
+      "en": "Entertainment and family services",
+      "ru": "Развлечения и семейные услуги"
     },
-    {
-      "name_en": "Family rooms",
-      "name_ru": "Семейные номера"
+    "amenities": [
+      {
+        "name": {
+          "en": "Night club/DJ",
+          "ru": "Ночной клуб/диджей"
+        }
+      },
+      {
+        "name": {
+          "en": "New Year's shows",
+          "ru": "Новогодние представления"
+        }
+      },
+      {
+        "name": {
+          "en": "Childrname_en's playground",
+          "ru": "Детская площадка"
+        }
+      },
+      {
+        "name": {
+          "en": "Childrname_en's TV channels",
+          "ru": "Детские телеканалы"
+        }
+      },
+      {
+        "name": {
+          "en": "Indoor game zone",
+          "ru": "Игровая зона в помещении"
+        }
+      },
+      {
+        "name": {
+          "en": "Board games and/or puzzles",
+          "ru": "Настольные игры и/или пазлы"
+        }
+      },
+      {
+        "name": {
+          "en": "Childcare services",
+          "ru": "Услуги по уходу за детьми"
+        }
+      },
+      {
+        "name": {
+          "en": "Stroller",
+          "ru": "Детская коляска"
+        }
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "category_name": {
+      "en": "Sport and recreation",
+      "ru": "Спорт и отдых"
     },
-    {
-      "name_en": "Gardname_en",
-      "name_ru": "Сад"
+    "amenities": [
+      {
+        "name": {
+          "en": "Basketball court",
+          "ru": "Баскетбольная площадка"
+        }
+      },
+      {
+        "name": {
+          "en": "Bowling",
+          "ru": "Боулинг"
+        }
+      },
+      {
+        "name": {
+          "en": "Table tennis",
+          "ru": "Настольный теннис"
+        }
+      },
+      {
+        "name": {
+          "en": "Horse riding",
+          "ru": "Верховая езда"
+        }
+      },
+      {
+        "name": {
+          "en": "Badminton equipmname_ent",
+          "ru": "Снаряжение для бадминтона"
+        }
+      },
+      {
+        "name": {
+          "en": "Beach",
+          "ru": "Пляж"
+        }
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "category_name": {
+      "en": "Transport",
+      "ru": "Транспорт"
     },
-    {
-      "name_en": "Terrace",
-      "name_ru": "Терраса"
+    "amenities": [
+      {
+        "name": {
+          "en": "Covered parking",
+          "ru": "Крытая парковка"
+        }
+      },
+      {
+        "name": {
+          "en": "Bike rname_ental",
+          "ru": "Прокат велосипедов"
+        }
+      },
+      "name_en:Transfer, name_ru:Трансфер",
+      {
+        "name": {
+          "en": "Guarded parking",
+          "ru": "Охраняемая парковка"
+        }
+      },
+      {
+        "name": {
+          "en": "Street parking",
+          "ru": "Уличная парковка"
+        }
+      },
+      {
+        "name": {
+          "en": "Taxi service",
+          "ru": "Заказ такси"
+        }
+      },
+      {
+        "name": {
+          "en": "Transfer (paid)",
+          "ru": "Трансфер (платно)"
+        }
+      },
+      {
+        "name": {
+          "en": "Transfer to ski slope",
+          "ru": "Трансфер до горнолыжного склона"
+        }
+      },
+      {
+        "name": {
+          "en": "Bike",
+          "ru": "Велосипед"
+        }
+      },
+      {
+        "name": {
+          "en": "Car rname_ental",
+          "ru": "Прокат автомобилей"
+        }
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "category_name": {
+      "en": "Services at the registration desk",
+      "ru": "Услуги на стойке регистрации"
     },
-    {
-      "name_en": "Smoking rooms",
-      "name_ru": "Номера для курящих"
-    }
-  ],
-  "Технологии": [
-    {
-      "name_en": "Business cname_enter",
-      "name_ru": "Бизнес-центр"
+    "amenities": [
+      {
+        "name": {
+          "en": "Ticket sales services",
+          "ru": "Услуги по продаже билетов"
+        }
+      },
+      {
+        "name": {
+          "en": "ATM on site",
+          "ru": "Банкомат на территории отеля"
+        }
+      },
+      {
+        "name": {
+          "en": "Guided tours (paid)",
+          "ru": "Услуги гида (платно)"
+        }
+      },
+      {
+        "name": {
+          "en": "Parking for guests' cars",
+          "ru": "Парковка автомобиля персоналом"
+        }
+      },
+      {
+        "name": {
+          "en": "Tourist office (paid)",
+          "ru": "Экскурсионное бюро (платно)"
+        }
+      },
+      {
+        "name": {
+          "en": "Currname_ency exchange",
+          "ru": "Обмен валюты"
+        }
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "category_name": {
+      "en": "Cleaning and laundry services",
+      "ru": "Уборка и прачечные услуги"
     },
-    {
-      "name_en": "Elevator",
-      "name_ru": "Лифт"
+    "amenities": [
+      {
+        "name": {
+          "en": "Laundry",
+          "ru": "Химчистка"
+        }
+      },
+      {
+        "name": {
+          "en": "Laundry",
+          "ru": "Химчистка"
+        }
+      },
+      {
+        "name": {
+          "en": "Dry cleaning",
+          "ru": "Прачечная"
+        }
+      },
+      {
+        "name": {
+          "en": "Dry cleaning",
+          "ru": "Прачечная"
+        }
+      },
+      {
+        "name": {
+          "en": "Shoe cleaning",
+          "ru": "Чистка обуви"
+        }
+      },
+      {
+        "name": {
+          "en": "Daily cleaning",
+          "ru": "Ежедневная уборка"
+        }
+      },
+      {
+        "name": {
+          "en": "Pressing service",
+          "ru": "Пресс для брюк"
+        }
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "category_name": {
+      "en": "Shops",
+      "ru": "Магазины"
     },
-    {
-      "name_en": "Flat-screname_en TV",
-      "name_ru": "Телевизор с плоским экраном"
+    "amenities": [
+      {
+        "name": {
+          "en": "Shops on site",
+          "ru": "Магазины на территории"
+        }
+      },
+      {
+        "name": {
+          "en": "Mini-market on site",
+          "ru": "Мини-маркет на территории"
+        }
+      },
+      {
+        "name": {
+          "en": "Souvname_enir shop",
+          "ru": "Сувенирный магазин"
+        }
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "category_name": {
+      "en": "Public areas",
+      "ru": "Зоны общественного пользования"
     },
-    {
-      "name_en": "Electric vehicle charging station",
-      "name_ru": "Станция зарядки электромобилей"
-    }
-  ],
-  "Оздоровительные услуги": [
-    "name_en:Hydrotherapy, name_ru:Гидромассажная ванна/джакузи",
-    "name_en:Fitness, name_ru:Фитнес",
-    "name_en:Massage, name_ru:Массаж",
-    "name_en:Cosmetology, name_ru:Косметология",
-    "name_en:Spa, name_ru:Спа",
-    "name_en:Yoga, name_ru:Йога",
-    "name_en:Massage chair, name_ru:Массажное кресло",
-    "name_en:Childrname_en's pool, name_ru:Детский бассейн",
-    "name_en:Hydrotherapy, name_ru:Гидромассажная ванна",
-    "name_en:Sun loungers/beach chairs, name_ru:Шезлонги/пляжные кресла",
-    "name_en:Sun umbrellas, name_ru:Зонты от солнца",
-    "name_en:Steam room, name_ru:Парная",
-    "name_en:Personal trainer, name_ru:Личный тренер",
-    "name_en:Turkish bath, name_ru:Турецкая баня",
-    "name_en:Solarium, name_ru:Солярий",
-    "name_en:Onsname_en, name_ru:Онсэн",
-    "name_en:Public baths, name_ru:Общественные бани"
-  ],
-  "Питание и напитки": [
-    "name_en:Restaurant, name_ru:Ресторан",
-    "name_en:Swedish buffet, name_ru:Ресторан (шведский стол)",
-    "name_en:Bar, name_ru:Бар",
-    "name_en:Food delivery (paid), name_ru:Доставка продуктов (платно)",
-    "name_en:Vname_ending machine (drinks), name_ru:Торговый автомат (напитки)",
-    "name_en:Vname_ending machine (snacks), name_ru:Торговый автомат (закуски)",
-    "name_en:Dietary mname_enu (on request), name_ru:Диетическое меню (по запросу)",
-    "name_en:Food delivery to room, name_ru:Доставка еды в номер",
-    "name_en:Breakfast in room (on request), name_ru:Завтрак в номер (по запросу)",
-    "name_en:Snack bar, name_ru:Снэк-бар",
-    "name_en:Barbecue equipmname_ent, name_ru:Принадлежности для барбекю",
-    "name_en:Packed lunches (on request), name_ru:Упакованные ланчи (по запросу)",
-    "name_en:Coffee shop on site, name_ru:Кофейня на территории",
-    "name_en:Fname_ruits, name_ru:Фрукты",
-    "name_en:Childrname_en's mname_enu, name_ru:Детское меню",
-    "name_en:National sweets, name_ru:Национальные сладости"
-  ],
-  "Развлечения и семейные услуги": [
-    "name_en:Night club/DJ, name_ru:Ночной клуб/диджей",
-    "name_en:New Year's shows, name_ru:Новогодние представления",
-    "name_en:Karaoke, name_ru:Караоке",
-    "name_en:Childrname_en's club, name_ru:Детский клуб",
-    "name_en:Childrname_en's playground, name_ru:Детская площадка",
-    "name_en:Childrname_en's TV channels, name_ru:Детские телеканалы",
-    "name_en:Indoor game zone, name_ru:Игровая зона в помещении",
-    "name_en:Board games and/or puzzles, name_ru:Настольные игры и/или пазлы",
-    "name_en:Childcare services, name_ru:Услуги по уходу за детьми",
-    "name_en:Stroller, name_ru:Детская коляска",
-    "name_en:Evname_ening program, name_ru:Вечерняя программа"
-  ],
-  "Спорт и отдых": [
-    "name_en:Basketball court, name_ru:Баскетбольная площадка",
-    "name_en:Bowling, name_ru:Боулинг",
-    "name_en:Tname_ennis court, name_ru:Теннисный корт",
-    "name_en:Billiard, name_ru:Бильярд",
-    "name_en:Table tname_ennis, name_ru:Настольный теннис",
-    "name_en:Horse riding, name_ru:Верховая езда",
-    "name_en:Badminton equipmname_ent, name_ru:Снаряжение для бадминтона",
-    "name_en:Beach, name_ru:Пляж"
-  ],
-  "Транспорт": [
-    "name_en:Covered parking, name_ru:Крытая парковка",
-    "name_en:Bike rname_ental, name_ru:Прокат велосипедов",
-    "name_en:Transfer, name_ru:Трансфер",
-    "name_en:Guarded parking, name_ru:Охраняемая парковка",
-    "name_en:Street parking, name_ru:Уличная парковка",
-    "name_en:Taxi service, name_ru:Заказ такси",
-    "name_en:Transfer (paid), name_ru:Трансфер (платно)",
-    "name_en:Transfer to ski slope, name_ru:Трансфер до горнолыжного склона",
-    "name_en:Bike, name_ru:Велосипед",
-    "name_en:Car rname_ental, name_ru:Прокат автомобилей"
-  ],
-  "Услуги на стойке регистрации": [
-    "name_en:Ticket sales services, name_ru:Услуги по продаже билетов",
-    "name_en:ATM on site, name_ru:Банкомат на территории отеля",
-    "name_en:Guided tours (paid), name_ru:Услуги гида (платно)",
-    "name_en:Parking for guests' cars, name_ru:Парковка автомобиля персоналом",
-    "name_en:Baggage storage, name_ru:Хранение багажа",
-    "name_en:Tourist office (paid), name_ru:Экскурсионное бюро (платно)",
-    "name_en:Currname_ency exchange, name_ru:Обмен валюты"
-  ],
-  "Уборка и прачечные услуги": [
-    "name_en:Laundry (paid), name_ru:Химчистка (платно)",
-    "name_en:Laundry, name_ru:Химчистка",
-    "name_en:Ironing services (paid), name_ru:Услуги глажки (платно)",
-    "name_en:Ironing services, name_ru:Услуги глажки",
-    "name_en:Dry cleaning (paid), name_ru:Прачечная (платно)",
-    "name_en:Dry cleaning, name_ru:Прачечная",
-    "name_en:Shoe cleaning, name_ru:Чистка обуви",
-    "name_en:Daily cleaning, name_ru:Ежедневная уборка",
-    "name_en:Pressing service, name_ru:Пресс для брюк"
-  ],
-  "Магазины": [
-    "name_en:Shops on site, name_ru:Магазины на территории",
-    "name_en:Mini-market on site, name_ru:Мини-маркет на территории",
-    "name_en:Souvname_enir shop, name_ru:Сувенирный магазин"
-  ],
-  "Зоны общественного пользования": [
-    "name_en:Common lounge/lobby with TV, name_ru:Общий лаунж/гостиная с телевизором",
-    "name_en:Terrace for sunbathing, name_ru:Терраса для загара"
-  ],
-  "Разное": [
-    "name_en:Smoking prohibited on site, name_ru:Курение на территории запрещено",
-    "name_en:Luxury for newlyweds, name_ru:Люкс для новобрачных",
-    "name_en:V.I.P. services, name_ru:V.I.P. услуги",
-    "name_en:Emergname_ency medical assistance, name_ru:Вызов скорой медицинской помощи",
-    "name_en:First aid kit, name_ru:Аптечка",
-    "name_en:Pet accommodation (paid), name_ru:Размещение животных (платно)",
-    "name_en:Pet basket, name_ru:Корзина для домашних животных",
-    "name_en:24-hour security, name_ru:Круглосуточная охрана",
-    "name_en:Smoke detectors, name_ru:Датчики дыма",
-    "name_en:Video surveillance outside the building, name_ru:Видеонаблюдение снаружи здания",
-    "name_en:Fire extinguishers, name_ru:Огнетушители",
-    "name_en:Hypoallergname_enic room, name_ru:Гипоаллергенный номер"
-  ]
-}
+    "amenities": [
+      {
+        "name": {
+          "en": "Common lounge/lobby with TV",
+          "ru": "Общий лаунж/гостиная с телевизором"
+        }
+      },
+      {
+        "name": {
+          "en": "Terrace for sunbathing",
+          "ru": "Терраса для загара"
+        }
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "category_name": {
+      "en": "Miscellaneous",
+      "ru": "Разное"
+    },
+    "amenities": [
+      {
+        "name": {
+          "en": "Smoking prohibited on site",
+          "ru": "Курение на территории запрещено"
+        }
+      },
+      {
+        "name": {
+          "en": "Luxury for newlyweds",
+          "ru": "Люкс для новобрачных"
+        }
+      },
+      {
+        "name": {
+          "en": "V.I.P. services",
+          "ru": "V.I.P. услуги"
+        }
+      },
+      {
+        "name": {
+          "en": "Emergname_ency medical assistance",
+          "ru": "Вызов скорой медицинской помощи"
+        }
+      },
+      {
+        "name": {
+          "en": "First aid kit",
+          "ru": "Аптечка"
+        }
+      },
+      {
+        "name": {
+          "en": "Pet basket",
+          "ru": "Корзина для домашних животных"
+        }
+      },
+      {
+        "name": {
+          "en": "24-hour security",
+          "ru": "Круглосуточная охрана"
+        }
+      },
+      {
+        "name": {
+          "en": "Smoke detectors",
+          "ru": "Датчики дыма"
+        }
+      },
+      {
+        "name": {
+          "en": "Fire extinguishers",
+          "ru": "Огнетушители"
+        }
+      },
+      {
+        "name": {
+          "en": "Hypoallergname_enic room",
+          "ru": "Гипоаллергенный номер"
+        }
+      }
+    ]
+  }
+]

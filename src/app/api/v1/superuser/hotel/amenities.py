@@ -93,7 +93,6 @@ async def delete_hotel_amenity(
 @router.post("/categories")
 async def create_hotel_amenities_category(
     hotel_amenity_category_data: HotelAmenityCategoryCreate,
-    hotel_amenities_category=Depends(validate_hotel_amenities_category),
     session=TransactionSessionDep,
 ):
     """

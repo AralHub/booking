@@ -8,7 +8,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models import Base
 from app.models.mixins import (
     IntIdPkMixin,
-    MultilingualDescriptionMixin,
     MultilingualNameMixin,
 )
 
@@ -30,6 +29,7 @@ class HotelAmenityCategory(
 
     hotel_amenities: Mapped[list["HotelAmenity"]] = relationship(
         back_populates="hotel_amenity_category",
+        cascade="all, delete-orphan",
     )
 
 
@@ -62,7 +62,10 @@ class HotelAmenity(
         server_default=text("'FREE'"),
     )
     hotel_amenity_category_id: Mapped[int] = mapped_column(
-        ForeignKey("hotel_amenity_categories.id"),
+        ForeignKey(
+            "hotel_amenity_categories.id",
+            ondelete="CASCADE",
+        ),
     )
     hotel_amenity_category: Mapped[HotelAmenityCategory] = relationship(
         back_populates="hotel_amenities",

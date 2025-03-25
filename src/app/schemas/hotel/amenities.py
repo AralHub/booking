@@ -41,10 +41,6 @@ class HotelAmenityCategoryCreate(MultilingualNameBase):
     pass
 
 
-class HotelAmenityCategoryCreate(MultilingualNameBase):
-    pass
-
-
 class HotelAmenityCategoryCreateInternal(BaseModel):
     name: dict[str, str]
 
