@@ -7,7 +7,7 @@ services:
       - ./src/.env.prod
     # -------- replace with comment if you are using nginx --------
     ports:
-      - "8011:8000"
+      - "8012:8000"
     # expose:
     #   - "8000"
     depends_on:
