@@ -15,7 +15,7 @@ services:
       - redis
     volumes:
       - ./src/app:/code/app
-      - ./src/.env.prod:/code/.env
+      - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
       - ./src/app/logs/app.log:/code/app/logs/app.log
 
@@ -30,7 +30,7 @@ services:
       - db
       - redis
     volumes:
-      - ./src/.env.prod:/code/.env
+      - ./src/.env.prod:/code/.env.prod
       - ./src/app:/code/app
 
   db:
@@ -63,7 +63,7 @@ services:
     command: python -m src.scripts.create_first_superuser
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env
+      - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
   create_cities:
     build:
@@ -77,7 +77,7 @@ services:
     command: python -m src.scripts.create_cities
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env
+      - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
   create_categories:
@@ -92,7 +92,7 @@ services:
     command: python -m src.scripts.create_categories
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env
+      - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
@@ -108,7 +108,7 @@ services:
     command: python -m src.scripts.create_amenities
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env
+      - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
