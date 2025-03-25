@@ -9,10 +9,9 @@ from starlette.config import Config
 
 SOURCE_DIR = Path(__file__).parent.parent.parent
 LOG_DEFAULT_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-env_path = os.path.join(SOURCE_DIR, ".env.template")
-# env_path = os.path.join(SOURCE_DIR, ".env.prod")
+env_path = os.path.join(SOURCE_DIR, ".env")
+# env_path = os.path.join(SOURCE_DIR, ".env.template")
 config = Config(env_file=env_path)
-
 
 class LoggingConfig(BaseSettings):
     LOG_DIR: Path | None = None
