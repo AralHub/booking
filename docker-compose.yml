@@ -40,17 +40,20 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     # -------- replace with comment to run migrations with docker --------
-    expose:
-      - "5432"
-    # ports:
-    #  - 5432:5432
+    # expose:
+    #   - "5432"
+    ports:
+      - 5432:5432
 
   redis:
     image: redis:alpine
     volumes:
       - redis-data:/data
-    expose:
-      - "6379"
+    ports:
+      - 6379:6379
+    # expose:
+    #   - "6379"
+
 
   # -------- create first superuser --------
   create_superuser:
@@ -72,7 +75,7 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - ./src/.env.prod
+      - ./src/.env.dev
     depends_on:
       - db
       - web
