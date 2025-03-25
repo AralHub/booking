@@ -173,3 +173,4 @@ src/storage/
 src/.env
 src/.env.prod
 src/.env.dev
+src/migrations/versions/
