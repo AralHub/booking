@@ -7,12 +7,12 @@ from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
 from app.dao.room import RoomTypeDAO
-from app.schemas.room import RoomTypeCreateInternal
+from app.schemas.room.types import RoomTypeCreateInternal
 
 logger = logging.getLogger(__name__)
 
 
-async def create_fake_db(
+async def create_room_types(
     session: AsyncSession,
 ):
     try:
@@ -47,7 +47,7 @@ async def create_fake_db(
 
 async def main():
     async with db_helper.session_factory() as session:
-        await create_fake_db(session)
+        await create_room_types(session)
         logger.info("Database population completed")
 
 

@@ -85,7 +85,7 @@ services:
       - ./src/.env.dev:/code/.env
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
-  create_categories:
+  create_hotel_categories:
     build:
       context: .
       dockerfile: Dockerfile
@@ -100,7 +100,21 @@ services:
       - ./src/.env.dev:/code/.env
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
-
+  create_room_types:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.dev
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_rooms
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.dev:/code/.env
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
   create_amenities:
     build:
       context: .
