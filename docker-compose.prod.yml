@@ -110,7 +110,7 @@ services:
     command: python -m src.scripts.create_amenities
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env.prod
+      - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
@@ -119,14 +119,14 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - ./src/.env.dev
+      - ./src/.env.prod
     depends_on:
       - db
       - web
     command: python -m src.scripts.create_rooms
     volumes:
       - ./src:/code/src
-      - ./src/.env.dev:/code/.env
+      - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
