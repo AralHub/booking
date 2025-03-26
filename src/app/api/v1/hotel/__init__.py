@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel_id
+from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import get_current_active_auth_partner
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
@@ -51,7 +51,7 @@ async def search_hotels(
 @router.get("/{hotel_id}")
 async def get_full_hotel(
     hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     return await HotelDAO.get_full_hotel_by_id(

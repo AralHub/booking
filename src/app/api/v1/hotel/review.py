@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 
-from app.api.dependencies.hotel import validate_hotel_id, validate_review_owner_by_id
+from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.review import validate_review_owner
 from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.review import ReviewDAO
@@ -22,7 +23,7 @@ router = APIRouter(
 @router.get("/{hotel_id}/reviews/summary")
 async def get_hotel_review_summary(
     hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     summary_data = await ReviewDAO.get_hotel_review_summary(
@@ -48,7 +49,7 @@ async def get_hotel_reviews(
     hotel_id: int,
     page: int = Query(default=1, ge=1, description="Номер страницы"),
     page_size: int = Query(default=10, ge=1, le=100, description="Размер страницы"),
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     results = await ReviewDAO.paginate(
@@ -68,7 +69,7 @@ async def get_hotel_reviews(
 async def create_hotel_reviews(
     hotel_id: int,
     review_create_data: ReviewCreate,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
@@ -85,7 +86,7 @@ async def update_hotel_review(
     hotel_id: int,
     review_id: int,
     review_update_data: ReviewUpdate,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
@@ -102,8 +103,8 @@ async def update_hotel_review(
 async def delete_hotel_review(
     hotel_id: int,
     review_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
-    review: ReviewRead = Depends(validate_review_owner_by_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
+    review: ReviewRead = Depends(validate_review_owner),
     session=TransactionSessionDep,
 ):
     await ReviewDAO.delete(

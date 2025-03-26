@@ -26,7 +26,7 @@ from app.schemas.hotel.rules import (
 from app.dao import BaseDAO
 from app.core.exceptions.http_exceptions import NotFoundException
 
-from app.api.dependencies.hotel import validate_hotel_id
+from app.api.dependencies.hotel import validate_hotel
 from app.dao.review import ReviewDAO
 from app.dao.hotel.category import HotelCategoryDAO
 from app.dao.hotel.info import HotelInfoDAO
@@ -225,7 +225,7 @@ class HotelDAO(BaseDAO):
         hotel_update_data: HotelFullUpdate,
         session: AsyncSession,
         hotel_id: int,
-        hotel: HotelNameRead = Depends(validate_hotel_id),
+        hotel: HotelNameRead = Depends(validate_hotel),
     ):
         # Validate hotel category exists
         db_hotel_category = await HotelCategoryDAO.get_one_or_none(

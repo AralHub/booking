@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel_id
+from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import valid_hotel_admin
-from app.api.dependencies.room import validate_hotel_room_id
+from app.api.dependencies.room import validate_hotel_room
 from app.core import SessionDep, TransactionSessionDep
 
 # from app.core.config import settings
@@ -53,7 +53,7 @@ async def get_available_rooms(
 @router.get("/{hotel_id}/rooms")
 async def get_hotel_rooms(
     hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     return await RoomDAO.get_all(
@@ -67,7 +67,7 @@ async def get_hotel_rooms(
 @router.get("/{hotel_id}/rooms/types")
 async def get_hotel_room_types(
     hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     return await RoomDAO.get_hotel_room_types(
@@ -80,7 +80,7 @@ async def get_hotel_room_types(
 async def get_room(
     hotel_id: int,
     room_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     return await RoomDAO.get_one_or_none(
@@ -122,7 +122,7 @@ async def update_hotel_room(
     hotel_id: int,
     room_id: int,
     room_update_data: RoomUpdate,
-    room: RoomRead = Depends(validate_hotel_room_id),
+    room: RoomRead = Depends(validate_hotel),
     session=TransactionSessionDep,
 ):
     # Проверяем существование room_type если он указан

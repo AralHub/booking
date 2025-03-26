@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from app.schemas.field_validation import (
     EMAIL_FIELD,
     EMAIL_FIELD_UPDATE,
-    HOTEL_NAME_FIELD,
     HOTEL_NAME_FIELD_UPDATE,
     SITE_URL_FIELD_UPDATE,
 )
@@ -14,8 +13,8 @@ from app.schemas.user import PHONE_NUMBER_FIELD, PHONE_NUMBER_FIELD_UPDATE
 
 # region Hotel Name
 class HotelNameBase(BaseModel):
-    name: HOTEL_NAME_FIELD
-    description: str
+    name: dict[str, str]
+    description: dict[str, str]
     slug: str
 
 
