@@ -8,6 +8,10 @@ class RoomAmenityBase(MultilingualNameBase):
     name: str
 
 
+class RoomAmenityRead(RoomAmenityBase):
+    id: int
+
+
 class RoomAmenityCreate(RoomAmenityBase):
     is_popular: bool
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.amenities import validate_hotel_amenities_category_by_id
+from app.api.dependencies.amenities import validate_hotel_amenities_category
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.hotel.amenities import (
@@ -113,7 +113,7 @@ async def create_hotel_amenities_category(
 async def update_hotel_amenities_category(
     category_id: int,
     amenity_update_data: HotelAmenityCategoryUpdate,
-    hotel_amenities_category=Depends(validate_hotel_amenities_category_by_id),
+    hotel_amenities_category=Depends(validate_hotel_amenities_category),
     session=TransactionSessionDep,
 ):
     """
@@ -131,7 +131,7 @@ async def update_hotel_amenities_category(
 @router.delete("/categories/{category_id}")
 async def delete_hotel_amenities_category(
     category_id: int,
-    hotel_amenities_category=Depends(validate_hotel_amenities_category_by_id),
+    hotel_amenities_category=Depends(validate_hotel_amenities_category),
     session=TransactionSessionDep,
 ):
     """

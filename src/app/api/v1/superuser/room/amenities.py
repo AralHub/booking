@@ -1,13 +1,15 @@
 from fastapi import APIRouter, Depends
 
+from app.api.dependencies.amenities import validate_room_amenity
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.room.amenities import (
-    RoomAmenityCategoryDAO,
     RoomAmenityDAO,
 )
 from app.schemas.room.amenities import (
+    RoomAmenityCreate,
     RoomAmenityFilter,
+    RoomAmenityRead,
     RoomAmenityUpdate,
 )
 
@@ -15,18 +17,6 @@ router = APIRouter(
     tags=["Superuser Room Amenities"],
     prefix="/room-amenities",
 )
-
-
-@router.get("")
-async def get_room_amenities(
-    session=SessionDep,
-):
-    """
-    Все удобства комнат разделенные по категориям
-    """
-    return await RoomAmenityCategoryDAO.get_all_amenities(
-        session=session,
-    )
 
 
 @router.get("/categories/{category_id}/amenities")
@@ -43,14 +33,30 @@ async def get_room_amenities_by_category(
     )
 
 
+@router.post(
+    "/categories/{category_id}/amenities",
+    dependencies=[Depends(get_current_superuser)],
+)
+async def create_room_amenity(
+    category_id: int,
+    amenity_create_data: RoomAmenityCreate,
+    session=TransactionSessionDep,
+):
+    return await RoomAmenityDAO.create(
+        session=session,
+        values=amenity_create_data,
+    )
+
+
 @router.put(
-    "/categories/{category_id}/amenities/{amenity_id}",
+    "/amenities/{amenity_id}",
     dependencies=[Depends(get_current_superuser)],
 )
 async def update_room_amenity(
     category_id: int,
     amenity_id: int,
     amenity_update_data: RoomAmenityUpdate,
+    room_amenity: RoomAmenityRead = Depends(validate_room_amenity),
     session=TransactionSessionDep,
 ):
     """
@@ -64,3 +70,15 @@ async def update_room_amenity(
         ),
         values=amenity_update_data,
     )
+
+
+@router.delete(
+    "/amenities/{amenity_id}",
+    dependencies=[Depends(get_current_superuser)],
+)
+async def delete_room_amenity(
+    amenity_id: int,
+    room_amenity: RoomAmenityRead = Depends(validate_room_amenity),
+    session=TransactionSessionDep,
+):
+    return await RoomAmenityDAO.delete(session=session, filters=amenity_id)

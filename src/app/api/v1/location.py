@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.location import validate_country_id
+from app.api.dependencies.location import validate_country
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import BadRequestException
@@ -62,7 +62,7 @@ async def add_country(
 async def update_country(
     country_id: int,
     country_update_data: CountryUpdate,
-    country: CountryBase = Depends(validate_country_id),
+    country: CountryBase = Depends(validate_country),
     session=TransactionSessionDep,
 ):
     db_country = await CountryDAO.get_one_or_none(
@@ -88,7 +88,7 @@ async def update_country(
 )
 async def delete_country(
     country_id: int,
-    country: CountryBase = Depends(validate_country_id),
+    country: CountryBase = Depends(validate_country),
     session=TransactionSessionDep,
 ):
     return await CountryDAO.delete(

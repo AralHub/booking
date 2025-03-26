@@ -30,7 +30,11 @@ class GuestInformation(BaseModel):
     site_url: SITE_URL_FIELD_UPDATE
 
 
-class HotelFullCreate(MultilingualNameBase, MultilingualDescriptionBase, BaseModel):
+class HotelFullCreate(
+    MultilingualNameBase,
+    MultilingualDescriptionBase,
+    BaseModel,
+):
     hotel_category_id: int = 1
     address: str
     city_id: int
@@ -60,7 +64,11 @@ class GuestInformationUpdate(BaseModel):
     site_url: SITE_URL_FIELD_UPDATE
 
 
-class HotelFullUpdate(MultilingualNameBase, MultilingualDescriptionBase, BaseModel):
+class HotelFullUpdate(
+    MultilingualNameBase,
+    MultilingualDescriptionBase,
+    BaseModel,
+):
     hotel_category_id: int | None = None
     address: str | None = None
     city_id: int | None = None

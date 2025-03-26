@@ -42,7 +42,7 @@ class MultilingualNameBase(BaseModel):
     name_ru: HOTEL_NAME_FIELD
     name_en: HOTEL_NAME_FIELD
     name_uz: HOTEL_NAME_FIELD
-    name_kr: HOTEL_NAME_FIELD
+    name_kk: HOTEL_NAME_FIELD
 
     def to_dict_name(self):
         return {
@@ -59,7 +59,7 @@ class MultilingualNameBaseUpdate(BaseModel):
     name_ru: HOTEL_NAME_FIELD_UPDATE | None = None
     name_en: HOTEL_NAME_FIELD_UPDATE | None = None
     name_uz: HOTEL_NAME_FIELD_UPDATE | None = None
-    name_kr: HOTEL_NAME_FIELD_UPDATE | None = None
+    name_kk: HOTEL_NAME_FIELD_UPDATE | None = None
 
     def to_dict_name(self):
         return {
@@ -76,7 +76,7 @@ class MultilingualDescriptionBase(BaseModel):
     description_ru: str
     description_en: str
     description_uz: str
-    description_kr: str
+    description_kk: str
 
     def to_dict_description(self):
         return {
@@ -93,7 +93,7 @@ class MultilingualDescriptionBaseUpdate(BaseModel):
     description_ru: str | None = None
     description_en: str | None = None
     description_uz: str | None = None
-    description_kr: str | None = None
+    description_kk: str | None = None
 
     def to_dict_description(self):
         return {
