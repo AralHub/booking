@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, UploadFile
 
-from app.api.dependencies.hotel import valid_hotel_admin
+from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils

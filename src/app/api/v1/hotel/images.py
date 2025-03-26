@@ -2,7 +2,8 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, UploadFile
 
-from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
+from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
@@ -18,7 +19,7 @@ router = APIRouter(
 @router.get("/{hotel_id}/images")
 async def get_hotel_images(
     hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     db_hotel_images = await HotelImageDAO.get_all(

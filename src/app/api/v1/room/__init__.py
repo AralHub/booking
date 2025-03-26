@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import (
-    valid_hotel_admin,
-    validate_hotel_id,
-)
+from app.api.dependencies.hotel import validate_hotel_id
+from app.api.dependencies.partner import valid_hotel_admin
 from app.api.dependencies.room import validate_hotel_room_id
 from app.core import SessionDep, TransactionSessionDep
 

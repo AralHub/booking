@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
+from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.dao.hotel import HotelDAO
@@ -20,7 +21,7 @@ router = APIRouter(
 @router.get("/location/{city_id}")
 async def get_hotels_by_city_id(
     city_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     db_hotels = await HotelDAO.get_all(
@@ -35,7 +36,7 @@ async def get_hotels_by_city_id(
 @router.get("/{hotel_id}/location")
 async def get_hotel_location(
     hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     db_hotel_location = await HotelLocationDAO.get_one_or_none(

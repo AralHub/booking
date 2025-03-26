@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import valid_hotel_admin, validate_hotel_id
+from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
@@ -23,7 +24,7 @@ router = APIRouter(
 async def get_room_beds(
     hotel_id: int,
     room_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     return await RoomBedConfDAO.get_all(

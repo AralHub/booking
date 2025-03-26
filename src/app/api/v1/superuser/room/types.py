@@ -4,6 +4,7 @@ from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.room.types import RoomTypeDAO
 from app.schemas.room.types import (
+    RoomTypeCreate,
     RoomTypeFilter,
     RoomTypeUpdate,
 )
@@ -24,6 +25,17 @@ async def get_room_types(
     )
 
 
+@router.post("/")
+async def create_room_type(
+    room_type_create: RoomTypeCreate,
+    session=SessionDep,
+):
+    return await RoomTypeDAO.create(
+        session=session,
+        values=room_type_create,
+    )
+
+
 @router.put(
     "/{room_type_id}",
     dependencies=[Depends(get_current_superuser)],
@@ -37,4 +49,14 @@ async def update_room_type(
         session=session,
         filters=RoomTypeFilter(id=room_type_id),
         values=room_type_update_data,
+    )
+
+
+@router.delete("/{room_type_id}")
+async def delete_room_type(
+    room_type_id: int,
+    session=TransactionSessionDep,
+):
+    return await RoomTypeDAO.delete(
+        session=session, filters=RoomTypeFilter(id=room_type_id)
     )

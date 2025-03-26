@@ -5,7 +5,7 @@ from app.core.exceptions.http_exceptions import (
 from app.dao.location import CityDAO, CountryDAO
 
 
-async def validate_city_id(
+async def validate_city(
     city_id: int,
     session=SessionDep,
 ):
@@ -18,7 +18,7 @@ async def validate_city_id(
     return db_city
 
 
-async def validate_country_id(
+async def validate_country(
     country_id: int,
     session=SessionDep,
 ):

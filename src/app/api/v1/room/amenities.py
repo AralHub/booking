@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import (
-    valid_hotel_admin,
-    validate_hotel_id,
-)
-from app.api.dependencies.room import validate_hotel_room_id
+from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.partner import valid_hotel_admin
+from app.api.dependencies.room import validate_hotel_room
 from app.core import SessionDep
 from app.dao.room.amenities import RoomAmenityDAO
 from app.schemas.hotel.info import HotelNameRead
@@ -17,8 +15,8 @@ router = APIRouter(
 
 @router.get("/{hotel_id}/rooms/{room_id}/amenities")
 async def get_room_amenities(
-    room: RoomRead = Depends(validate_hotel_room_id),
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    room: RoomRead = Depends(validate_hotel_room),
+    hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
     """

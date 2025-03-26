@@ -33,7 +33,7 @@ class UserGetterFromToken:
         validate_token_type(payload, self.token_type)
         user = await get_user_by_token_sub(session, payload)
         if not user:
-            raise UnauthorizedException("Inactive user")
+            raise UnauthorizedException(detail="Inactive user")
         return user
 
 
@@ -45,7 +45,7 @@ async def get_current_active_auth_user(
 ):
     if user.is_active:
         return user
-    raise UnauthorizedException("Inactive user")
+    raise UnauthorizedException(detail="Inactive user")
 
 
 async def get_current_superuser(

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import valid_hotel_admin
-from app.api.dependencies.room import validate_hotel_room_id
+from app.api.dependencies.partner import valid_hotel_admin
+from app.api.dependencies.room import validate_hotel_room
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import BadRequestException
 from app.dao.room import RoomDAO
@@ -22,7 +22,7 @@ router = APIRouter(
 async def get_room_prices(
     hotel_id: int,
     room_id: int,
-    hotel_room: RoomRead = Depends(validate_hotel_room_id),
+    hotel_room: RoomRead = Depends(validate_hotel_room),
     session=SessionDep,
 ):
     return await RoomPriceDAO.get_room_prices(
@@ -36,7 +36,7 @@ async def create_room_price(
     hotel_id: int,
     room_id: int,
     room_price_data: RoomPriceCreate,
-    hotel_room: RoomRead = Depends(validate_hotel_room_id),
+    hotel_room: RoomRead = Depends(validate_hotel_room),
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):

@@ -14,7 +14,10 @@ from app.core.exceptions.http_exceptions import (
     UnauthorizedException,
 )
 from app.core.logger import logging
-from app.schemas.partner import PartnerBase
+from app.schemas.hotel.info import HotelNameRead
+from app.schemas.partner import PartnerBase, PartnerRead
+
+from .hotel import validate_hotel
 
 logger = logging.getLogger(__name__)
 
@@ -44,3 +47,12 @@ async def get_current_active_auth_partner(
     if partner.is_active:
         return partner
     raise UnauthorizedException("Inactive partner")
+
+
+async def valid_hotel_admin(
+    hotel: HotelNameRead = Depends(validate_hotel),
+    current_partner: PartnerRead = Depends(get_current_auth_partner),
+):
+    if hotel.hotel_admin_id != current_partner.id:
+        raise UnauthorizedException("Permission denied")
+    return hotel

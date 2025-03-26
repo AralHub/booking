@@ -5,20 +5,21 @@ from app.core.exceptions.http_exceptions import (
     NotFoundException,
     UnauthorizedException,
 )
+from app.core.i18n.translations import ErrorCode
 from app.core.logger import logging
 from app.dao.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.user import UserRead
 
-from .hotel import validate_hotel_id
+from .hotel import validate_hotel
 from .user import get_current_auth_user
 
 logger = logging.getLogger(__name__)
 
 
-async def validate_review_owner_by_id(
+async def validate_review_owner(
     review_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_id),
+    hotel: HotelNameRead = Depends(validate_hotel),
     current_user: UserRead = Depends(get_current_auth_user),
     session=SessionDep,
 ):
@@ -27,7 +28,7 @@ async def validate_review_owner_by_id(
         data_id=review_id,
     )
     if not db_review:
-        raise NotFoundException("Review not found")
+        raise NotFoundException(ErrorCode.NOT_FOUND)
     if db_review.user_id != current_user.id:
-        raise UnauthorizedException("Permission denied")
+        raise UnauthorizedException(ErrorCode.UNAUTHORIZED)
     return db_review
