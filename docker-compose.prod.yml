@@ -5,11 +5,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./src/.env.prod
-    # -------- replace with comment if you are using nginx --------
     ports:
       - "8022:8000"
-    # expose:
-    #   - "8000"
     depends_on:
       - db
       - redis
@@ -43,7 +40,6 @@ services:
       - ./src/.env.prod
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    # -------- replace with comment to run migrations with docker --------
     expose:
       - "5432"
 
@@ -69,6 +65,7 @@ services:
       - ./src:/code/src
       - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
+
   create_cities:
     build:
       context: .
@@ -84,6 +81,7 @@ services:
       - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
+
   create_categories:
     build:
       context: .
@@ -116,33 +114,24 @@ services:
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
-  #-------- uncomment to create first tier --------
-  # create_tier:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env.prod
-  #   depends_on:
-  #     - db
-  #     - web
-  #   command: python -m src.scripts.create_first_tier
-  #   volumes:
-  #     - ./src:/code/src
+  create_room_types:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.dev
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_rooms
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.dev:/code/.env
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
 
-  #-------- uncomment to run tests --------
-  # pytest:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env
-  #   depends_on:
-  #     - db
-  #     - redis
-  #   command: python -m pytest ./tests
-  #   volumes:
-  #     - .:/code
+
+
 volumes:
   postgres-data:
   redis-data:
