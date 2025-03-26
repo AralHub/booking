@@ -15,7 +15,7 @@ services:
       - ./src/alembic.ini:/code/alembic.ini
       - ./src/storage:/code/storage
       - ./src/app:/code/app
-      - ./src/.env.prod:/code/.env.prod
+      - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
       - ./src/app/logs/app.log:/code/app/logs/app.log
       - /etc/localtime:/etc/localtime:ro
@@ -31,7 +31,7 @@ services:
       - db
       - redis
     volumes:
-      - ./src/.env.prod:/code/.env.prod
+      - ./src/.env.prod:/code/.env
       - ./src/app:/code/app
 
   db:
@@ -63,7 +63,7 @@ services:
     command: python -m src.scripts.create_first_superuser
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env.prod
+      - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
 
   create_cities:
@@ -78,7 +78,7 @@ services:
     command: python -m src.scripts.create_cities
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env.prod
+      - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
@@ -94,7 +94,7 @@ services:
     command: python -m src.scripts.create_categories
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env.prod
+      - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
@@ -126,7 +126,7 @@ services:
     command: python -m src.scripts.create_rooms
     volumes:
       - ./src:/code/src
-      - ./src/.env.prod:/code/.env.prod
+      - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
