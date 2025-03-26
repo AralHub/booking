@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import (
     valid_hotel_admin,
     validate_hotel_id,
-    validate_hotel_room_id,
 )
+from app.api.dependencies.room import validate_hotel_room_id
 from app.core import SessionDep
 from app.dao.room.amenities import RoomAmenityDAO
 from app.schemas.hotel.info import HotelNameRead

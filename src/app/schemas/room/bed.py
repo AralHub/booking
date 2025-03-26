@@ -1,30 +1,32 @@
 from pydantic import BaseModel, Field
 
+from ..mixins import MultilingualNameBase, MultilingualNameBaseUpdate
+
 
 # region Bed
-class BedBase(BaseModel):
-    name: str
+class BedBase(MultilingualNameBase):
+    pass
 
 
 class BedTypeCreate(BedBase):
     pass
 
 
-class BeTypeCreateInternal(BedTypeCreate):
-    pass
+class BedTypeCreateInternal(BedTypeCreate):
+    id: int | None = None
+    name: dict[str, str]
 
 
-class BedTypeUpdate(BedBase):
+class BedTypeUpdate(MultilingualNameBaseUpdate):
     pass
 
 
 class BedTypeUpdateInternal(BedTypeUpdate):
-    pass
+    name: dict[str, str]
 
 
 class BedFilter(BaseModel):
     id: int | None = None
-    name: str | None = None
     bed_type_id: int | None = None
 
 

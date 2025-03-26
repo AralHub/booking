@@ -1,42 +1,49 @@
 {
     "review_categories": [
         {
+            "id": 1,
             "name": {
                 "en": "Location",
                 "ru": "Расположение"
             }
         },
         {
+            "id": 2,
             "name": {
                 "en": "Cleanliness",
                 "ru": "Чистота"
             }
         },
         {
+            "id": 3,
             "name": {
                 "en": "Price/quality ratio",
                 "ru": "Соотношение цена/качество"
             }
         },
         {
+            "id": 4,
             "name": {
                 "en": "Comfort",
                 "ru": "Комфорт"
             }
         },
         {
+                "id": 5,
             "name": {
                 "en": "Staff",
                 "ru": "Персонал"
             }
         },
         {
+            "id": 6,
             "name": {
                 "en": "Free Wi-Fi",
                 "ru": "Бесплатный Wi-Fi"
             }
         },
         {
+            "id": 7,
             "name": {
                 "en": "Amenities",
                 "ru": "Удобства"

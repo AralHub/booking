@@ -7,12 +7,12 @@ from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
 from app.dao.room import BedTypeDAO
-from app.schemas.room import BedFilter
+from app.schemas.room.bed import BedTypeCreateInternal
 
 logger = logging.getLogger(__name__)
 
 
-async def create_fake_db(
+async def create_bed_types(
     session: AsyncSession,
 ):
     try:
@@ -24,7 +24,7 @@ async def create_fake_db(
         # Create hotel categories
         for bed_type in bed_types_data["bed_types"]:
             try:
-                bed_type_create = BedFilter(
+                bed_type_create = BedTypeCreateInternal(
                     id=bed_type["id"],
                     name=bed_type["name"],
                 )
@@ -47,7 +47,7 @@ async def create_fake_db(
 
 async def main():
     async with db_helper.session_factory() as session:
-        await create_fake_db(session)
+        await create_bed_types(session)
         logger.info("Database population completed")
 
 

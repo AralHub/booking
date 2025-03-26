@@ -28,11 +28,10 @@ class BookingDAO(BaseDAO):
         booking_data: BookingCreateMultipleRooms,
         user_id: int,
     ):
-        # Validate dates
+        # проверка на корректность дат
         if booking_data.check_in_date >= booking_data.check_out_date:
             raise BadRequestException("Check-out date must be after check-in date")
 
-        # Check if user exists
         db_user = await UserDAO.get_one_or_none_by_id(
             session=session,
             data_id=user_id,
@@ -40,7 +39,7 @@ class BookingDAO(BaseDAO):
         if not db_user:
             raise NotFoundException("User not found")
 
-        # Calculate total days for the booking
+        # общее количество дней
         total_days = (booking_data.check_out_date - booking_data.check_in_date).days
 
         # Verify each room and calculate total price
@@ -48,7 +47,6 @@ class BookingDAO(BaseDAO):
         validated_rooms_info = []
 
         for room_info in booking_data.rooms_info:
-            # Check if room exists
             db_room = await RoomDAO.get_one_or_none_by_id(
                 session=session,
                 data_id=room_info.room_id,

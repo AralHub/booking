@@ -13,7 +13,7 @@ from app.schemas.hotel.amenities import (
     HotelAmenityCreateInternal,
 )
 from app.schemas.room.amenities import (
-    RoomAmenityCategoryCreateInternal,
+    RoomAmenityCategoryCreate,
     RoomAmenityCreateInternal,
 )
 
@@ -99,7 +99,7 @@ async def create_amenities(
                         f"Категория с названием '{category_item['category_name']['ru']}' уже существует, пропускаем"
                     )
                     continue
-                room_amenity_category_create = RoomAmenityCategoryCreateInternal(
+                room_amenity_category_create = RoomAmenityCategoryCreate(
                     name=category_item["category_name"],
                 )
                 created_room_amenity_category = await RoomAmenityCategoryDAO.create(

@@ -28,7 +28,7 @@ from app.core.exceptions.http_exceptions import NotFoundException
 
 from app.api.dependencies.hotel import validate_hotel_id
 from app.dao.review import ReviewDAO
-from app.dao.hotel.categoty import HotelCategoryDAO
+from app.dao.hotel.category import HotelCategoryDAO
 from app.dao.hotel.info import HotelInfoDAO
 from app.models.hotel import Hotel
 from app.models.hotel.category import HotelCategory
@@ -309,14 +309,22 @@ class HotelDAO(BaseDAO):
         city_id: int,
         check_in_date: date,
         check_out_date: date,
-        guests: list[int],
+        guests: list[
+            int
+        ],  # Список размеров групп гостей (например, [2, 1] = 2 комнаты)
     ):
+        hotels_in_city = await session.execute(
+            select(Hotel.id)
+            .join(HotelLocation, Hotel.id == HotelLocation.hotel_id)
+            .where(HotelLocation.city_id == city_id)
+        )
+        hotel_ids = hotels_in_city.scalars().all()
         # Получить перекрывающиеся бронирования
         overlapping_bookings = await RoomDAO.get_overlapping_bookings(
             session=session,
             check_in_date=check_in_date,
             check_out_date=check_out_date,
-            hotel_id=None,
+            hotel_id=hotel_ids,
         )
 
         # Извлекаем идентификаторы забронированных комнат
@@ -334,10 +342,7 @@ class HotelDAO(BaseDAO):
             .join(Hotel, Room.hotel_id == Hotel.id)
             .join(HotelLocation, Hotel.id == HotelLocation.hotel_id)
             .where(
-                and_(
-                    HotelLocation.city_id == city_id,
-                    Room.id.not_in(booked_room_ids) if booked_room_ids else True,
-                )
+                Room.id.not_in(booked_room_ids) if booked_room_ids else True,
             )
             .options(
                 selectinload(Room.hotel),

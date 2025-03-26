@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel_category_by_id
+from app.api.dependencies.hotel_category import validate_hotel_category_by_id
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.core.logger import logging
-from app.dao.hotel.categoty import HotelCategoryDAO
+from app.dao.hotel.category import HotelCategoryDAO
 from app.schemas.hotel.category import (
     HotelCategoryBase,
     HotelCategoryCreate,
