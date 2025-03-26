@@ -9,18 +9,18 @@ from app.core.logger import logging
 from app.dao.hotel.amenities import HotelAmenityCategoryDAO, HotelAmenityDAO
 from app.dao.room.amenities import RoomAmenityCategoryDAO, RoomAmenityDAO
 from app.schemas.hotel.amenities import (
-    HotelAmenityCategoryFilter,
-    HotelAmenityFilter,
+    HotelAmenityCategoryCreateInternal,
+    HotelAmenityCreateInternal,
 )
 from app.schemas.room.amenities import (
-    RoomAmenityCategoryFilter,
-    RoomAmenityFilter,
+    RoomAmenityCategoryCreateInternal,
+    RoomAmenityCreateInternal,
 )
 
 logger = logging.getLogger(__name__)
 
 
-async def create_fake_db(
+async def create_amenities(
     session: AsyncSession,
 ):
     try:
@@ -36,23 +36,20 @@ async def create_fake_db(
             room_amenities_data = json.load(file)
 
         # Create hotel amenities
-        for (
-            hotel_amenity_category_name,
-            hotel_amenities,
-        ) in hotel_amenities_data.items():
+        for category_item in hotel_amenities_data:
             try:
-                hotel_amenity_category_create = HotelAmenityCategoryFilter(
-                    name=hotel_amenity_category_name,
+                hotel_amenity_category_create = HotelAmenityCategoryCreateInternal(
+                    name=category_item["category_name"],
                 )
                 created_hotel_amenity_category = await HotelAmenityCategoryDAO.create(
                     session=session,
                     values=hotel_amenity_category_create,
                 )
 
-                for hotel_amenity_name in hotel_amenities:
+                for hotel_amenity_name in category_item["amenities"]:
                     try:
-                        hotel_amenity_create = HotelAmenityFilter(
-                            name=hotel_amenity_name,
+                        hotel_amenity_create = HotelAmenityCreateInternal(
+                            name=hotel_amenity_name["name"],
                             hotel_amenity_category_id=created_hotel_amenity_category.id,
                         )
                         await HotelAmenityDAO.create(
@@ -66,27 +63,24 @@ async def create_fake_db(
                         continue
             except Exception as e:
                 logger.error(
-                    f"Failed to add category {hotel_amenity_category_name}: {e}"
+                    f"Failed to add category {category_item['category_name']['ru']}: {e}"
                 )
                 continue
         # Create room amenities
-        for (
-            room_amenity_category_name,
-            room_amenities,
-        ) in room_amenities_data.items():
+        for category_item in room_amenities_data:
             try:
-                room_amenity_category_create = RoomAmenityCategoryFilter(
-                    name=room_amenity_category_name,
+                room_amenity_category_create = RoomAmenityCategoryCreateInternal(
+                    name=category_item["category_name"],
                 )
                 created_room_amenity_category = await RoomAmenityCategoryDAO.create(
                     session=session,
                     values=room_amenity_category_create,
                 )
 
-                for room_amenity_name in room_amenities:
+                for room_amenity_name in category_item["amenities"]:
                     try:
-                        room_amenity_create = RoomAmenityFilter(
-                            name=room_amenity_name,
+                        room_amenity_create = RoomAmenityCreateInternal(
+                            name=room_amenity_name["name"],
                             room_amenity_category_id=created_room_amenity_category.id,
                         )
                         await RoomAmenityDAO.create(
@@ -100,7 +94,7 @@ async def create_fake_db(
                         continue
             except Exception as e:
                 logger.error(
-                    f"Failed to add category {hotel_amenity_category_name}: {e}"
+                    f"Failed to add category {category_item['category_name']['ru']}: {e}"
                 )
                 continue
         await session.commit()
@@ -114,7 +108,7 @@ async def create_fake_db(
 
 async def main():
     async with db_helper.session_factory() as session:
-        await create_fake_db(session)
+        await create_amenities(session)
         logger.info("Database population completed")
 
 
