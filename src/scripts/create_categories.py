@@ -12,7 +12,7 @@ from app.schemas.hotel.category import HotelCategoryCreateInternal
 logger = logging.getLogger(__name__)
 
 
-async def create_fake_db(
+async def create_hotel_categories(
     session: AsyncSession,
 ):
     try:
@@ -24,10 +24,22 @@ async def create_fake_db(
             hotel_categories_data = json.load(file)
 
         # Create hotel categories
-        for hotel_category in hotel_categories_data["hotel_categories"]:
+        for hotel_category_item in hotel_categories_data["hotel_categories"]:
             try:
+                existing_category = await HotelCategoryDAO.get_one_or_none_by_id(
+                    session=session,
+                    data_id=hotel_category_item["id"],
+                )
+
+                if existing_category:
+                    logger.info(
+                        f"Категория с названием '{hotel_category_item['name']['ru']}' уже существует, пропускаем"
+                    )
+                    continue
                 hotel_category_create = HotelCategoryCreateInternal(
-                    name=hotel_category["name"],
+                    id=hotel_category_item["id"],
+                    name=hotel_category_item["name"],
+                    description=hotel_category_item["description"],
                 )
                 await HotelCategoryDAO.create(
                     session=session,
@@ -35,7 +47,7 @@ async def create_fake_db(
                 )
             except Exception as e:
                 logger.error(
-                    f"Failed to add category {hotel_category.get('name')}: {e}"
+                    f"Failed to add category {hotel_category_item.get('name')["ru"]}: {e}"
                 )
                 continue
 
@@ -50,7 +62,7 @@ async def create_fake_db(
 
 async def main():
     async with db_helper.session_factory() as session:
-        await create_fake_db(session)
+        await create_hotel_categories(session)
         logger.info("Database population completed")
 
 

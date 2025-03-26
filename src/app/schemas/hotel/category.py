@@ -1,30 +1,45 @@
 from pydantic import BaseModel
 
+from ..mixins import (
+    MultilingualDescriptionBase,
+    MultilingualDescriptionBaseUpdate,
+    MultilingualNameBase,
+    MultilingualNameBaseUpdate,
+)
 
-class HotelCategoryBase(BaseModel):
-    name: str
+
+class HotelCategoryBase(MultilingualNameBase):
+    pass
 
 
 class HotelCategoryRead(HotelCategoryBase):
     id: int
 
 
-class HotelCategoryCreate(HotelCategoryBase):
+class HotelCategoryCreate(
+    HotelCategoryBase,
+    MultilingualDescriptionBase,
+):
     pass
 
 
-class HotelCategoryCreateInternal(HotelCategoryCreate):
+class HotelCategoryCreateInternal(BaseModel):
+    id: int | None = None
+    name: dict[str, str]
+    description: dict[str, str]
+
+
+class HotelCategoryUpdate(
+    MultilingualNameBaseUpdate,
+    MultilingualDescriptionBaseUpdate,
+):
     pass
 
 
-class HotelCategoryUpdate(BaseModel):
-    name: str | None = None
-
-
-class HotelCategoryUpdateInternal(HotelCategoryUpdate):
-    pass
+class HotelCategoryUpdateInternal(BaseModel):
+    name: dict[str, str]
+    description: dict[str, str]
 
 
 class HotelCategoryFilter(BaseModel):
     id: int | None = None
-    name: str | None = None

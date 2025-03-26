@@ -7,54 +7,63 @@
     },
     "amenities": [
       {
+        "id": 1,
         "name": {
           "en": "Wi-fi",
           "ru": "Wi-fi"
         }
       },
       {
+        "id": 2,
         "name": {
           "en": "Pool",
           "ru": "Бассейн"
         }
       },
       {
+        "id": 3,
         "name": {
           "en": "Sauna",
           "ru": "Сауна"
         }
       },
       {
+        "id": 4,
         "name": {
           "en": "Confername_ence room",
           "ru": "Конференц-зал"
         }
       },
       {
+        "id": 5,
         "name": {
           "en": "Non-smoking rooms",
           "ru": "Номера для некурящих"
         }
       },
       {
+        "id": 6,
         "name": {
           "en": "Family rooms",
           "ru": "Семейные номера"
         }
       },
       {
+        "id": 7,
         "name": {
           "en": "Gardname_en",
           "ru": "Сад"
         }
       },
       {
+        "id": 8,
         "name": {
           "en": "Terrace",
           "ru": "Терраса"
         }
       },
       {
+        "id": 9,
         "name": {
           "en": "Smoking rooms",
           "ru": "Номера для курящих"
@@ -70,24 +79,28 @@
     },
     "amenities": [
       {
+        "id": 10,
         "name": {
           "en": "Business center",
           "ru": "Бизнес-центр"
         }
       },
       {
+        "id": 11,
         "name": {
           "en": "Elevator",
           "ru": "Лифт"
         }
       },
       {
+        "id": 12,
         "name": {
           "en": "Flat-screen TV",
           "ru": "Телевизор с плоским экраном"
         }
       },
       {
+        "id": 13,
         "name": {
           "en": "Electric vehicle charging station",
           "ru": "Станция зарядки электромобилей"
@@ -103,72 +116,84 @@
     },
     "amenities": [
       {
+        "id": 14,
         "name": {
           "en": "Hydrotherapy",
           "ru": "Гидромассажная ванна/джакузи"
         }
       },
       {
+        "id": 15,
         "name": {
           "en": "Fitness",
           "ru": "Фитнес"
         }
       },
       {
+        "id": 16,
         "name": {
           "en": "Yoga",
           "ru": "Йога"
         }
       },
       {
+        "id": 17,
         "name": {
           "en": "Massage chair",
           "ru": "Массажное кресло"
         }
       },
       {
+        "id": 18,
         "name": {
           "en": "Children's pool",
           "ru": "Детский бассейн"
         }
       },
       {
+        "id": 19,
         "name": {
           "en": "Hydrotherapy",
           "ru": "Гидромассажная ванна"
         }
       },
       {
+        "id": 20,
         "name": {
           "en": "Steam room",
           "ru": "Парная"
         }
       },
       {
+        "id": 21,
         "name": {
           "en": "Personal trainer",
           "ru": "Личный тренер"
         }
       },
       {
+        "id": 22,
         "name": {
           "en": "Turkish bath",
           "ru": "Турецкая баня"
         }
       },
       {
+        "id": 23,
         "name": {
           "en": "Solarium",
           "ru": "Солярий"
         }
       },
       {
+        "id": 24,
         "name": {
           "en": "Onsname_en",
           "ru": "Онсэн"
         }
       },
       {
+        "id": 25,
         "name": {
           "en": "Public baths",
           "ru": "Общественные бани"
@@ -184,90 +209,105 @@
     },
     "amenities": [
       {
+        "id": 26,
         "name": {
           "en": "Restaurant",
           "ru": "Ресторан"
         }
       },
       {
+        "id": 27,
         "name": {
           "en": "Swedish buffet",
           "ru": "Ресторан (шведский стол)"
         }
       },
-      {
+      { 
+        "id": 28,
         "name": {
           "en": "Bar",
           "ru": "Бар"
         }
       },
       {
+        "id": 29,
         "name": {
           "en": "Food delivery",
           "ru": "Доставка продуктов"
         }
       },
       {
+        "id": 30,
         "name": {
           "en": "Vending machine (drinks)",
           "ru": "Торговый автомат (напитки)"
         }
       },
       {
+        "id": 31,
         "name": {
           "en": "Vname_ending machine (snacks)",
           "ru": "Торговый автомат (закуски)"
         }
       },
       {
+        "id": 32,
         "name": {
           "en": "Dietary mname_enu (on request)",
           "ru": "Диетическое меню (по запросу)"
         }
       },
       {
+        "id": 33,
         "name": {
           "en": "Food delivery to room",
           "ru": "Доставка еды в номер"
         }
       },
       {
+        "id": 34,
         "name": {
           "en": "Breakfast in room (on request)",
           "ru": "Завтрак в номер (по запросу)"
         }
       },
       {
+        "id": 35,
         "name": {
           "en": "Snack bar",
           "ru": "Снэк-бар"
         }
       },
       {
+        "id": 36,
         "name": {
           "en": "Barbecue equipmname_ent",
           "ru": "Принадлежности для барбекю"
         }
       },
       {
+        "id": 37,
         "name": {
           "en": "Packed lunches (on request)",
           "ru": "Упакованные ланчи (по запросу)"
         }
       },
       {
+        "id": 38,
         "name": {
           "en": "Coffee shop on site",
           "ru": "Кофейня на территории"
         }
       },
       {
+        "id": 39,
         "name": {
           "en": "Fname_ruits",
           "ru": "Фрукты"
         }
       },
       {
+        "id": 40,
         "name": {
           "en": "Childrname_en's mname_enu",
           "ru": "Детское меню"
@@ -283,48 +323,56 @@
     },
     "amenities": [
       {
+        "id": 41,
         "name": {
           "en": "Night club/DJ",
           "ru": "Ночной клуб/диджей"
         }
       },
       {
+        "id": 42,
         "name": {
           "en": "New Year's shows",
           "ru": "Новогодние представления"
         }
       },
-      {
+      { 
+        "id": 43,
         "name": {
           "en": "Childrname_en's playground",
           "ru": "Детская площадка"
         }
       },
       {
+        "id": 44,
         "name": {
           "en": "Childrname_en's TV channels",
           "ru": "Детские телеканалы"
         }
       },
       {
+        "id": 45,
         "name": {
           "en": "Indoor game zone",
           "ru": "Игровая зона в помещении"
         }
       },
       {
+        "id": 46,
         "name": {
           "en": "Board games and/or puzzles",
           "ru": "Настольные игры и/или пазлы"
         }
       },
       {
+        "id": 47,
         "name": {
           "en": "Childcare services",
           "ru": "Услуги по уходу за детьми"
         }
       },
       {
+        "id": 48,
         "name": {
           "en": "Stroller",
           "ru": "Детская коляска"
@@ -340,36 +388,42 @@
     },
     "amenities": [
       {
+        "id": 49,
         "name": {
           "en": "Basketball court",
           "ru": "Баскетбольная площадка"
         }
       },
       {
+        "id": 50,
         "name": {
           "en": "Bowling",
           "ru": "Боулинг"
         }
       },
       {
+        "id": 51,
         "name": {
           "en": "Table tennis",
           "ru": "Настольный теннис"
         }
       },
       {
+        "id": 52,
         "name": {
           "en": "Horse riding",
           "ru": "Верховая езда"
         }
       },
       {
+        "id": 53,
         "name": {
           "en": "Badminton equipmname_ent",
           "ru": "Снаряжение для бадминтона"
         }
       },
       {
+        "id": 54,
         "name": {
           "en": "Beach",
           "ru": "Пляж"
@@ -385,55 +439,63 @@
     },
     "amenities": [
       {
+        "id": 55,
         "name": {
           "en": "Covered parking",
           "ru": "Крытая парковка"
         }
       },
       {
+        "id": 56,
         "name": {
           "en": "Bike rname_ental",
           "ru": "Прокат велосипедов"
         }
       },
-      "name_en:Transfer, name_ru:Трансфер",
       {
+        "id": 57,
         "name": {
           "en": "Guarded parking",
           "ru": "Охраняемая парковка"
         }
       },
       {
+        "id": 58,
         "name": {
           "en": "Street parking",
           "ru": "Уличная парковка"
         }
       },
       {
+        "id": 59,
         "name": {
           "en": "Taxi service",
           "ru": "Заказ такси"
         }
       },
       {
+        "id": 60,
         "name": {
           "en": "Transfer (paid)",
           "ru": "Трансфер (платно)"
         }
       },
       {
+        "id": 61,
         "name": {
           "en": "Transfer to ski slope",
           "ru": "Трансфер до горнолыжного склона"
         }
       },
       {
+        "id": 62,
         "name": {
           "en": "Bike",
           "ru": "Велосипед"
         }
       },
       {
+        "id": 63,
         "name": {
           "en": "Car rname_ental",
           "ru": "Прокат автомобилей"
@@ -449,36 +511,42 @@
     },
     "amenities": [
       {
+        "id": 64,
         "name": {
           "en": "Ticket sales services",
           "ru": "Услуги по продаже билетов"
         }
       },
       {
+        "id": 65,
         "name": {
           "en": "ATM on site",
           "ru": "Банкомат на территории отеля"
         }
       },
       {
+        "id": 66,
         "name": {
           "en": "Guided tours (paid)",
           "ru": "Услуги гида (платно)"
         }
       },
       {
+        "id": 67,
         "name": {
           "en": "Parking for guests' cars",
           "ru": "Парковка автомобиля персоналом"
         }
       },
       {
+        "id": 68,
         "name": {
           "en": "Tourist office (paid)",
           "ru": "Экскурсионное бюро (платно)"
         }
       },
       {
+        "id": 69,
         "name": {
           "en": "Currname_ency exchange",
           "ru": "Обмен валюты"
@@ -494,42 +562,49 @@
     },
     "amenities": [
       {
+        "id": 70,
         "name": {
           "en": "Laundry",
           "ru": "Химчистка"
         }
       },
       {
+        "id": 71,
         "name": {
           "en": "Laundry",
           "ru": "Химчистка"
         }
       },
       {
+        "id": 72,
         "name": {
           "en": "Dry cleaning",
           "ru": "Прачечная"
         }
       },
       {
+        "id": 73,
         "name": {
           "en": "Dry cleaning",
           "ru": "Прачечная"
         }
       },
       {
+        "id": 74,
         "name": {
           "en": "Shoe cleaning",
           "ru": "Чистка обуви"
         }
       },
       {
+        "id": 75,
         "name": {
           "en": "Daily cleaning",
           "ru": "Ежедневная уборка"
         }
       },
       {
+        "id": 76,
         "name": {
           "en": "Pressing service",
           "ru": "Пресс для брюк"
@@ -545,20 +620,23 @@
     },
     "amenities": [
       {
+        "id": 77,
         "name": {
           "en": "Shops on site",
           "ru": "Магазины на территории"
         }
       },
       {
+        "id": 78,
         "name": {
           "en": "Mini-market on site",
           "ru": "Мини-маркет на территории"
         }
       },
       {
+        "id": 79,
         "name": {
-          "en": "Souvname_enir shop",
+          "en": "Souvenir shop",
           "ru": "Сувенирный магазин"
         }
       }
@@ -572,12 +650,14 @@
     },
     "amenities": [
       {
+        "id": 80,
         "name": {
           "en": "Common lounge/lobby with TV",
           "ru": "Общий лаунж/гостиная с телевизором"
         }
       },
       {
+        "id": 81,
         "name": {
           "en": "Terrace for sunbathing",
           "ru": "Терраса для загара"
@@ -593,60 +673,70 @@
     },
     "amenities": [
       {
+        "id": 82,
         "name": {
           "en": "Smoking prohibited on site",
           "ru": "Курение на территории запрещено"
         }
       },
-      {
+      { 
+        "id": 83,
         "name": {
           "en": "Luxury for newlyweds",
           "ru": "Люкс для новобрачных"
         }
       },
       {
+        "id": 84,
         "name": {
           "en": "V.I.P. services",
           "ru": "V.I.P. услуги"
         }
       },
       {
+        "id": 85,
         "name": {
-          "en": "Emergname_ency medical assistance",
+          "en": "Emergency medical assistance",
           "ru": "Вызов скорой медицинской помощи"
         }
       },
       {
+        "id": 86,
         "name": {
           "en": "First aid kit",
           "ru": "Аптечка"
         }
       },
       {
+        "id": 87,
         "name": {
           "en": "Pet basket",
           "ru": "Корзина для домашних животных"
         }
       },
       {
+        "id": 88,
         "name": {
           "en": "24-hour security",
           "ru": "Круглосуточная охрана"
         }
       },
       {
+        "id": 89,
         "name": {
           "en": "Smoke detectors",
           "ru": "Датчики дыма"
         }
       },
       {
+        "id": 90,
         "name": {
           "en": "Fire extinguishers",
           "ru": "Огнетушители"
         }
       },
       {
+        "id": 91,
         "name": {
           "en": "Hypoallergname_enic room",
           "ru": "Гипоаллергенный номер"
