@@ -3,14 +3,6 @@ import logging
 from datetime import UTC, datetime
 
 from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    MetaData,
-    String,
-    Table,
     insert,
     select,
 )
@@ -39,48 +31,19 @@ async def create_first_user(session: AsyncSession) -> None:
         user = result.scalar_one_or_none()
 
         if user is None:
-            metadata = MetaData()
-            user_table = Table(
-                "users",
-                metadata,
-                Column(
-                    "id", Integer, primary_key=True, autoincrement=True, nullable=False
-                ),
-                Column("name", String(30), nullable=False),
-                Column(
-                    "phone_number", String(15), nullable=False, unique=True, index=True
-                ),
-                Column("hashed_password", String, nullable=False),
-                Column(
-                    "is_fully_registered",
-                    Boolean,
-                    default=False,
-                    server_default="false",
-                ),
-                Column("is_verified", Boolean, default=False, server_default="false"),
-                Column("is_active", Boolean, default=False, server_default="false"),
-                Column(
-                    "created_at",
-                    DateTime(timezone=True),
-                    default=lambda: datetime.now(UTC),
-                    nullable=False,
-                ),
-                Column("updated_at", DateTime),
-                Column("is_superuser", Boolean, default=False, server_default="false"),
-                Column("tier_id", Integer, ForeignKey("tiers.id"), index=True),
-            )
-
             data = {
-                "name": name,
+                "first_name": name,
+                "last_name": "",
                 "phone_number": phone_number,
-                "hashed_password": hashed_password,
+                "password": hashed_password,
                 "is_superuser": True,
                 "is_fully_registered": True,
                 "is_active": True,
                 "is_verified": True,
+                "created_at": datetime.now(UTC),
             }
 
-            stmt = insert(user_table).values(data)
+            stmt = insert(User).values(data)
             async with db_helper.engine.connect() as conn:
                 await conn.execute(stmt)
                 await conn.commit()
