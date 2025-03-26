@@ -49,7 +49,7 @@ class MultilingualNameBase(BaseModel):
             "ru": self.name_ru,
             "en": self.name_en,
             "uz": self.name_uz,
-            "kr": self.name_kr,
+            "kk": self.name_kk,
         }
 
 
@@ -66,7 +66,7 @@ class MultilingualNameBaseUpdate(BaseModel):
             "ru": self.name_ru,
             "en": self.name_en,
             "uz": self.name_uz,
-            "kr": self.name_kr,
+            "kk": self.name_kk,
         }
 
 
@@ -83,5 +83,22 @@ class MultilingualDescriptionBase(BaseModel):
             "ru": self.description_ru,
             "en": self.description_en,
             "uz": self.description_uz,
-            "kr": self.description_kr,
+            "kk ": self.description_kk,
+        }
+
+
+class MultilingualDescriptionBaseUpdate(BaseModel):
+    """Миксин для многоязычных описаний"""
+
+    description_ru: str | None = None
+    description_en: str | None = None
+    description_uz: str | None = None
+    description_kr: str | None = None
+
+    def to_dict_description(self):
+        return {
+            "ru": self.description_ru,
+            "en": self.description_en,
+            "uz": self.description_uz,
+            "kk": self.description_kk,
         }

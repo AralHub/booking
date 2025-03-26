@@ -38,6 +38,16 @@ async def create_amenities(
         # Create hotel amenities
         for category_item in hotel_amenities_data:
             try:
+                existing_category = await HotelAmenityCategoryDAO.get_one_or_none_by_id(
+                    session=session,
+                    data_id=category_item["id"],
+                )
+
+                if existing_category:
+                    logger.info(
+                        f"Категория с названием '{category_item['category_name']['ru']}' уже существует, пропускаем"
+                    )
+                    continue
                 hotel_amenity_category_create = HotelAmenityCategoryCreateInternal(
                     name=category_item["category_name"],
                 )
@@ -48,6 +58,16 @@ async def create_amenities(
 
                 for hotel_amenity_name in category_item["amenities"]:
                     try:
+                        existing_amenity = await HotelAmenityDAO.get_one_or_none_by_id(
+                            session=session,
+                            data_id=hotel_amenity_name["id"],
+                        )
+
+                        if existing_amenity:
+                            logger.info(
+                                f"Удобство с названием '{hotel_amenity_name['name']['ru']}' уже существует, пропускаем"
+                            )
+                            continue
                         hotel_amenity_create = HotelAmenityCreateInternal(
                             name=hotel_amenity_name["name"],
                             hotel_amenity_category_id=created_hotel_amenity_category.id,
@@ -69,6 +89,16 @@ async def create_amenities(
         # Create room amenities
         for category_item in room_amenities_data:
             try:
+                existing_category = await RoomAmenityCategoryDAO.get_one_or_none_by_id(
+                    session=session,
+                    data_id=category_item["id"],
+                )
+
+                if existing_category:
+                    logger.info(
+                        f"Категория с названием '{category_item['category_name']['ru']}' уже существует, пропускаем"
+                    )
+                    continue
                 room_amenity_category_create = RoomAmenityCategoryCreateInternal(
                     name=category_item["category_name"],
                 )
@@ -79,6 +109,16 @@ async def create_amenities(
 
                 for room_amenity_name in category_item["amenities"]:
                     try:
+                        existing_amenity = await RoomAmenityDAO.get_one_or_none_by_id(
+                            session=session,
+                            data_id=room_amenity_name["id"],
+                        )
+
+                        if existing_amenity:
+                            logger.info(
+                                f"Удобство комнат с названием '{room_amenity_name['name']['ru']}' уже существует, пропускаем"
+                            )
+                            continue
                         room_amenity_create = RoomAmenityCreateInternal(
                             name=room_amenity_name["name"],
                             room_amenity_category_id=created_room_amenity_category.id,

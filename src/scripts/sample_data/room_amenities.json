@@ -7,42 +7,49 @@
     },
     "amenities": [
       {
+        "id": 1,
         "name": {
           "en": "Shower",
           "ru": "Душ"
         }
       },
       {
+        "id": 2,
         "name": {
           "en": "Bath",
           "ru": "Ванна"
         }
       },
       {
+        "id": 3,
         "name": {
           "en": "Hydromassage bath",
           "ru": "Гидромассажная ванна"
         }
       },
       {
+        "id": 4,
         "name": {
           "en": "Public bathroom",
           "ru": "Общая ванная комната"
         }
       },
       {
+        "id": 5,
         "name": {
           "en": "Bidet",
           "ru": "Биде"
         }
       },
       {
+        "id": 6,
         "name": {
           "en": "Toilet paper",
           "ru": "Туалетная бумага"
         }
       },
       {
+        "id": 7,
         "name": {
           "en": "Hand dryer",
           "ru": "Фен для рук"
@@ -58,48 +65,56 @@
     },
     "amenities": [
       {
+        "id": 8,
         "name": {
           "en": "Refrigerator",
           "ru": "Холодильник"
         }
       },
       {
+        "id": 3,
         "name": {
           "en": "Dining area",
           "ru": "Столовая зона"
         }
       },
       {
+        "id": 9,
         "name": {
           "en": "Barbecue set",
           "ru": "Принадлежности для барбекю"
         }
       },
       {
+        "id": 10,
         "name": {
           "en": "Oven",
           "ru": "Плита"
         }
       },
       {
+        "id": 11,
         "name": {
           "en": "Toaster",
           "ru": "Тостер"
         }
       },
       {
+        "id": 12,
         "name": {
           "en": "Electric kettle",
           "ru": "Электрический чайник"
         }
       },
       {
+        "id": 13,
         "name": {
           "en": "Microwave",
           "ru": "Микроволновка"
         }
       },
       {
+        "id": 14,
         "name": {
           "en": "Coffee machine",
           "ru": "Кофемашина (внутри номера)"
@@ -115,90 +130,105 @@
     },
     "amenities": [
       {
+        "id": 15,
         "name": {
           "en": "Parquet/Wooden floor",
           "ru": "Паркет/Деревянный пол"
         }
       },
       {
+        "id": 16,
         "name": {
           "en": "Carpet",
           "ru": "Ковровое покрытие"
         }
       },
       {
+        "id": 17,
         "name": {
           "en": "Fireplace",
           "ru": "Камин"
         }
       },
       {
+        "id": 3,
         "name": {
           "en": "Heating",
           "ru": "Отопление"
         }
       },
       {
+        "id": 18,
         "name": {
           "en": "Living room",
           "ru": "Гостиная"
         }
       },
       {
+        "id": 19,
         "name": {
           "en": "Toilet with handrails",
           "ru": "Туалет с поручнями"
         }
       },
       {
+        "id": 20,
         "name": {
           "en": "Adjoining room",
           "ru": "Смежный номер"
         }
       },
       {
+        "id": 21,
         "name": {
           "en": "Iron",
           "ru": "Утюг"
         }
       },
       {
+        "id": 22,
         "name": {
           "en": "Ironing board",
           "ru": "Гладильная доска"
         }
       },
       {
+        "id": 23,
         "name": {
           "en": "Mosquito net",
           "ru": "Москитная сетка"
         }
       },
       {
+        "id": 3,
         "name": {
           "en": "Sofa bed",
           "ru": "Диван-кровать"
         }
       },
       {
+        "id": 24,
         "name": {
           "en": "Trash bins",
           "ru": "Мусорные баки"
         }
       },
       {
+        "id": 25,
         "name": {
           "en": "Private pool",
           "ru": "Личный бассейн"
         }
       },
       {
+        "id": 26,
         "name": {
           "en": "Tile/Marble floor",
           "ru": "Плиточный/Мраморный пол"
         }
       },
       {
+        "id": 27,
         "name": {
           "en": "Socket near bed",
           "ru": "Розетка около кровати"
@@ -214,72 +244,84 @@
     },
     "amenities": [
       {
+        "id": 28,
         "name": {
           "en": "Air conditioning",
           "ru": "Кондиционер"
         }
       },
       {
+        "id": 29,
         "name": {
           "en": "Computer",
           "ru": "Компьютер"
         }
       },
       {
+        "id": 30,
         "name": {
           "en": "Cooler",
           "ru": "Охладитель"
         }
       },
       {
+        "id": 31,
         "name": {
           "en": "Game console",
           "ru": "Игровая приставка"
         }
       },
       {
+        "id": 32,
         "name": {
           "en": "Safe",
           "ru": "Сейф"
         }
       },
       {
+        "id": 33,
         "name": {
           "en": "Soundproofing",
           "ru": "Звукоизоляция"
         }
       },
       {
+        "id": 34,
         "name": {
           "en": "Wi-Fi",
           "ru": "Wi-Fi"
         }
       },
       {
+        "id": 35,
         "name": {
           "en": "Phone",
           "ru": "Телефон"
         }
       },
       {
+        "id": 36,
         "name": {
           "en": "Flat-screen TV",
           "ru": "Телевизор с плоским экраном"
         }
       },
       {
+        "id": 37,
         "name": {
           "en": "Satellite channels",
           "ru": "Спутниковые каналы"
         }
       },
       {
+        "id": 38,
         "name": {
           "en": "Cable channels",
           "ru": "Кабельные каналы"
         }
       },
       {
+        "id": 39,
         "name": {
           "en": "Smart TV",
           "ru": "Смарт-ТВ"
@@ -295,78 +337,91 @@
     },
     "amenities": [
       {
+        "id": 40,
         "name": {
           "en": "Alarm clock",
           "ru": "Будильник"
         }
       },
       {
+        "id": 41,
         "name": {
           "en": "Wake-up service",
           "ru": "Услуга «Звонок-будильник»"
         }
       },
       {
+        "id": 42,
         "name": {
           "en": "Bed linen",
           "ru": "Постельное белье"
         }
       },
       {
+        "id": 43,
         "name": {
           "en": "Laundry",
           "ru": "Прачечная"
         }
       },
       {
+        "id": 44,
         "name": {
           "en": "Laundry (additional charge)",
           "ru": "Прачечная (за дополнительную плату)"
         }
       },
       {
+        "id": 45,
         "name": {
           "en": "Cleaning products",
           "ru": "Чистящие средства"
         }
       },
       {
+        "id": 46,
         "name": {
           "en": "Wake-up service",
           "ru": "Услуга «Звонок-будильник»"
         }
       },
       {
+        "id": 47,
         "name": {
           "en": "Bed linen",
           "ru": "Постельное белье"
         }
       },
       {
+        "id": 48,
         "name": {
           "en": "Laundry",
           "ru": "Прачечная"
         }
       },
       {
+        "id": 49,
         "name": {
           "en": "Laundry (additional charge)",
           "ru": "Прачечная (за дополнительную плату)"
         }
       },
       {
+        "id": 50,
         "name": {
           "en": "Cleaning products",
           "ru": "Чистящие средства"
         }
       },
       {
+        "id": 51,
         "name": {
           "en": "Balcony",
           "ru": "Балкон"
         }
       },
       {
+        "id": 52,
         "name": {
           "en": "Ground floor room",
           "ru": "Номер на первом этаже"

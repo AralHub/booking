@@ -6,7 +6,7 @@ from app.core.i18n.translations import ErrorCode
 from app.dao.hotel.amenities import HotelAmenityCategoryDAO, HotelAmenityDAO
 
 
-async def validate_hotel_amenities_category(
+async def validate_hotel_amenities_category_by_id(
     category_id: int,
     session=SessionDep,
 ):
@@ -19,7 +19,7 @@ async def validate_hotel_amenities_category(
     return hotel_amenities_category
 
 
-async def validate_hotel_amenity(
+async def validate_hotel_amenity_by_id(
     amenity_id: int,
     session=SessionDep,
 ):

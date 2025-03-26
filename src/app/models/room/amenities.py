@@ -4,29 +4,27 @@ from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin
+from app.models.mixins import IntIdPkMixin, MultilingualNameMixin
 
 if TYPE_CHECKING:
     from app.models.room import Room
 
 
-class RoomAmenityCategory(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-        unique=True,
-    )
+class RoomAmenityCategory(
+    IntIdPkMixin,
+    MultilingualNameMixin,
+    Base,
+):
     room_amenities: Mapped[list["RoomAmenity"]] = relationship(
         back_populates="room_amenity_category",
     )
 
 
-class RoomAmenity(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(
-        String,
-        nullable=False,
-        unique=True,
-    )
+class RoomAmenity(
+    IntIdPkMixin,
+    MultilingualNameMixin,
+    Base,
+):
     icon: Mapped[str] = mapped_column(
         String(255),
         nullable=True,
