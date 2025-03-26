@@ -7,17 +7,21 @@ services:
       - ./src/.env.prod
     # -------- replace with comment if you are using nginx --------
     ports:
-      - "8012:8000"
+      - "8022:8000"
     # expose:
     #   - "8000"
     depends_on:
       - db
       - redis
     volumes:
+      - ./src/migrations:/code/migrations
+      - ./src/alembic.ini:/code/alembic.ini
+      - ./src/storage:/code/storage
       - ./src/app:/code/app
       - ./src/.env.prod:/code/.env.prod
       - ./src/certs:/code/certs:ro
       - ./src/app/logs/app.log:/code/app/logs/app.log
+      - /etc/localtime:/etc/localtime:ro
 
   worker:
     build:
