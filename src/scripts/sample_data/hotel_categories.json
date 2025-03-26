@@ -1,41 +1,84 @@
 {
-    "hotel_categories": [
-      {
-        "name": "Отель",
-        "description": "Средство размещения, состоящее из определённого количества номеров."
+  "hotel_categories": [
+    {
+      "name": {
+        "ru": "Отель",
+        "en": "Hotel"
       },
-      {
-        "name": "Бутик отель",
-        "description": "Представляет собой небольшой отель, обычно от 10 до 100 номеров в уникальном оформлении каждого из номеров."
-      },
-      {
-        "name": "Хостел",
-        "description": "Европейская система размещения, предоставляющая своим постояльцам жильё."
-      },
-      {
-        "name": "Гостевой дом",
-        "description": "Условия проживания приближён к домашним, дом разделен на небольшие номера, но количество их небольшое."
-      },
-      {
-        "name": "Апартаменты",
-        "description": "Средство размещения, состоящее из номеров квартирного типа, по условиям схожих с условиями меблированных комнат."
-      },
-      {
-        "name": "Курортный отель",
-        "description": "Средства размещения, расположенные на курорте и оказывающие на собственной базе услуги оздоровительного характера."
-      },
-      {
-        "name": "Дача",
-        "description": "Средство размещения, загородный дом для городских жителей, как правило, не используемый его владельцами для постоянного проживания."
-      },
-      {
-        "name": "Курортная зона",
-        "description": "Территория, подлежащая специальной охране, характеризующаяся особо благоприятными природными условиями и лечебными факторами."
-      },
-      {
-        "name": "Санаторий",
-        "description": "Санаторий — лечебно-профилактическое учреждение, в котором для лечения и профилактики заболеваний используют главным образом природные факторы."
+      "description": {
+        "ru": "Средство размещения, состоящее из определённого количества номеров.",
+        "en": "A place to stay, consisting of a certain number of rooms."
       }
-    ]
-  }
-  
+    },
+    {
+      "name": {
+        "ru": "Бутик отель",
+        "en": "Boutique hotel"
+      },
+      "description": {
+        "ru": "Представляет собой небольшой отель, обычно от 10 до 100 номеров в уникальном оформлении каждого из номеров.",
+        "en": "A small hotel, usually from 10 to 100 rooms, in unique design of each room."
+      }
+    },
+    {
+      "name": {
+        "ru": "Хостел",
+        "en": "Hostel"
+      },
+      "description": {
+        "ru": "Европейская система размещения, предоставляющая своим постояльцам жильё.",
+        "en": "European system of accommodation, providing accommodation to its guests."
+      }
+    },
+    {
+      "name": {
+        "ru": "Гостевой дом",
+        "en": "Guest house"
+      },
+      "description": {
+        "ru": "Условия проживания приближён к домашним, дом разделен на небольшие номера, но количество их небольшое.",
+        "en": "Conditions of accommodation are similar to home, the house is divided into small rooms, but the number of them is small."
+      }
+    },
+    {
+      "name": {
+        "ru": "Апартаменты",
+        "en": "Apartments"
+      },
+      "description": {
+        "ru": "Средство размещения, состоящее из номеров квартирного типа, по условиям схожих с условиями меблированных комнат.",
+        "en": "A place to stay, consisting of rooms of apartment type, similar to the conditions of furnished rooms."
+      }
+    },
+    {
+      "name": {
+        "ru": "Курортный отель",
+        "en": "Resort hotel"
+      },
+      "description": {
+        "ru": "Средства размещения, расположенные на курорте и оказывающие на собственной базе услуги оздоровительного характера.",
+        "en": "Places to stay, located on a resort and providing services of a health-improving nature on its own basis."
+      }
+    },
+    {
+      "name": {
+        "ru": "Дача",
+        "en": "Dacha"
+      },
+      "description": {
+        "ru": "Средство размещения, загородный дом для городских жителей, как правило, не используемый его владельцами для постоянного проживания.",
+        "en": "A place to stay, a country house for city dwellers, usually not used by its owners for permanent residence."
+      }
+    },
+    {
+      "name": {
+        "ru": "Курортная зона",
+        "en": "Resort zone"
+      },
+      "description": {
+        "ru": "Территория, подлежащая специальной охране, характеризующаяся особо благоприятными природными условиями и лечебными факторами.",
+        "en": "A territory subject to special protection, characterized by particularly favorable natural conditions and healing factors."
+      }
+    }
+  ]
+}
