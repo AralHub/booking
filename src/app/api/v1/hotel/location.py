@@ -18,20 +18,6 @@ router = APIRouter(
 )
 
 
-@router.get("/location/{city_id}")
-async def get_hotels_by_city_id(
-    city_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
-    session=SessionDep,
-):
-    db_hotels = await HotelDAO.get_all(
-        session=session,
-        filters=HotelNameFilter(
-            city_id=city_id,
-        ),
-    )
-    return db_hotels
-
 
 @router.get("/{hotel_id}/location")
 async def get_hotel_location(
