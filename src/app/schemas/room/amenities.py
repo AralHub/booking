@@ -18,7 +18,7 @@ class RoomAmenityCreate(RoomAmenityBase):
 
 class RoomAmenityCreateInternal(BaseModel):
     name: dict[str, str]
-    is_popular: bool
+    is_popular: bool = False
     room_id: int | None = None
     room_amenity_category_id: int
 
