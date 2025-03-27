@@ -1,23 +1,23 @@
 from pydantic import BaseModel
 
 
-class FavoriteBase(BaseModel):
+class UserFavoriteBase(BaseModel):
     hotel_id: int
 
 
-class FavoriteRead(FavoriteBase):
+class UserFavoriteRead(UserFavoriteBase):
     id: int
 
 
-class FavoriteCreate(FavoriteBase):
+class UserFavoriteCreate(UserFavoriteBase):
     pass
 
 
-class FavoriteCreateInternal(FavoriteCreate):
+class UserFavoriteCreateInternal(UserFavoriteCreate):
     user_id: int
 
 
-class FavoriteFilter(BaseModel):
+class UserFavoriteFilter(BaseModel):
     id: int | None = None
     hotel_id: int | None = None
     user_id: int | None = None

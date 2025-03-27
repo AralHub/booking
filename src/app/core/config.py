@@ -13,6 +13,7 @@ env_path = os.path.join(SOURCE_DIR, ".env")
 # env_path = os.path.join(SOURCE_DIR, ".env.template")
 config = Config(env_file=env_path)
 
+
 class LoggingConfig(BaseSettings):
     LOG_DIR: Path | None = None
     LOG_LEVEL: Literal[
@@ -29,6 +30,7 @@ class LoggingConfig(BaseSettings):
 class ApiV1Prefix(BaseSettings):
     prefix: str = "/v1"
     user_prefix: str = "/users"
+    favorites_prefix: str = "/favorites"
     superuser_prefix: str = "/superuser"
     hotel_prefix: str = "/hotels"
     room_prefix: str = "/rooms"

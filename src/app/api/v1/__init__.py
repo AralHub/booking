@@ -14,6 +14,7 @@ from .superuser.review import router as superuser_review_router
 from .superuser.room.amenities import router as room_amenities_router
 from .superuser.room.types import router as room_types_router
 from .user import router as user_router
+from .user.favorites import router as favorites_router
 
 router = APIRouter(
     prefix=settings.api_v1.prefix,
@@ -24,6 +25,9 @@ router.include_router(
 )
 router.include_router(
     partner_router,
+)
+router.include_router(
+    favorites_router,
 )
 router.include_router(
     booking_router,
