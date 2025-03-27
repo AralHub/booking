@@ -15,7 +15,7 @@ from app.schemas.user import UserRead
 # from app.core.utils.eskiz_client import code_generator
 
 router = APIRouter(
-    tags=["User Favorites"],
+    tags=["Favorites"],
     prefix=settings.api_v1.favorites_prefix,
 )
 
