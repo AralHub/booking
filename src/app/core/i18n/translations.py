@@ -13,7 +13,7 @@ class ErrorCode(str, Enum):
     UNPROCESSABLE_ENTITY = "unprocessable_entity"
     DUPLICATE_VALUE = "duplicate_value"
     TOO_MANY_REQUESTS = "too_many_requests"
-
+    INVALID_DATE_FORMAT = "invalid_date_format"
     # Специфичные ошибки для отеля
     HOTEL_NOT_FOUND = "hotel_not_found"
     AMENITY_NOT_FOUND = "amenity_not_found"
@@ -48,6 +48,7 @@ ERROR_MESSAGES = {
         ErrorCode.ROOM_NOT_FOUND: "Room not found",
         ErrorCode.ROOM_PRICE_NOT_FOUND: "Room price not found",
         ErrorCode.USER_ALREADY_EXISTS: "User already exists",
+        ErrorCode.INVALID_DATE_FORMAT: "Invalid date format",
     },
     "ru": {
         ErrorCode.INTERNAL_SERVER_ERROR: "Внутренняя ошибка сервера",
@@ -66,6 +67,7 @@ ERROR_MESSAGES = {
         ErrorCode.ROOM_NOT_FOUND: "Номер не найден",
         ErrorCode.ROOM_PRICE_NOT_FOUND: "Цена номера не найдена",
         ErrorCode.USER_ALREADY_EXISTS: "Пользователь уже существует",
+        ErrorCode.INVALID_DATE_FORMAT: "Неверный формат даты",
     },
     # Можно добавить другие языки
 }
