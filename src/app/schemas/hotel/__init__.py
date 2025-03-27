@@ -117,7 +117,11 @@ class HotelFullUpdateInternal(HotelFullUpdate):
 
 
 class HotelSearch(BaseModel):
-    city_id: int
+    city: str
     check_in: date
     check_out: date
     guests: list[int]
+    price_min: int | None = None
+    price_max: int | None = None
+    max_distance_to_center: int = None
+    amenities: list[int] = []

@@ -1,18 +1,17 @@
 from datetime import UTC, date, datetime
 
 from fastapi import Depends
-from slugify import slugify as slugify_func
-from sqlalchemy import and_, delete, or_, select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-
+from app.core.utils.slug_utils import generate_slug_for_hotel
 from app.dao.hotel.amenities import HotelAmenityDAO
 from app.dao.hotel.location import HotelLocationDAO
 from app.dao.location import CityDAO
 from app.models.hotel.amenities import HotelAmenityAssociation
 from app.models.booking import Booking
 from app.schemas.hotel.location import (
-    LocationCreateInternal,
+    LocationCreate,
     LocationFilter,
     LocationUpdate,
 )
@@ -155,7 +154,10 @@ class HotelDAO(BaseDAO):
         )
         if not db_city:
             raise NotFoundException("City not found")
-        generated_slug = slugify_func(hotel_create_data.name_en)
+        generated_slug = await generate_slug_for_hotel(
+            session=session,
+            name=hotel_create_data.name_en,
+        )
         hotel_create_internal = HotelNameCreateInternal(
             name=hotel_create_data.to_dict_name(),
             description=hotel_create_data.to_dict_description(),
@@ -182,15 +184,15 @@ class HotelDAO(BaseDAO):
             ),
         )
         # Create location record
-        await HotelLocationDAO.create(
+        await HotelLocationDAO.add_hotel_location(
             session=session,
-            values=LocationCreateInternal(
-                hotel_id=db_hotel.id,
+            location_create_data=LocationCreate(
                 address=hotel_create_data.address,
-                latitude=hotel_create_data.latitude,
-                longitude=hotel_create_data.longitude,
                 city_id=hotel_create_data.city_id,
+                longitude=hotel_create_data.longitude,
+                latitude=hotel_create_data.latitude,
             ),
+            hotel_id=db_hotel.id,
         )
         # Create hotel rules
         await HotelRuleDAO.create(
@@ -263,17 +265,15 @@ class HotelDAO(BaseDAO):
             ),
         )
         # Create location record
-        await HotelLocationDAO.update(
+        await HotelLocationDAO.update_hotel_location(
             session=session,
-            values=LocationUpdate(
+            location_update_data=LocationUpdate(
                 address=hotel_update_data.address,
                 latitude=hotel_update_data.latitude,
                 longitude=hotel_update_data.longitude,
                 city_id=hotel_update_data.city_id,
             ),
-            filters=LocationFilter(
-                hotel_id=hotel_id,
-            ),
+            hotel_id=hotel_id,
         )
         # Create hotel rules
         await HotelRuleDAO.update(
@@ -306,17 +306,28 @@ class HotelDAO(BaseDAO):
     async def find_hotels_for_booking(
         cls,
         session: AsyncSession,
-        city_id: int,
+        city: str,
         check_in_date: date,
         check_out_date: date,
         guests: list[
             int
         ],  # Список размеров групп гостей (например, [2, 1] = 2 комнаты)
+        price_min: float = None,
+        price_max: float = None,
+        max_distance_to_center: float = None,
+        amenities: list[int] = None,
     ):
+        db_city = await CityDAO.get_one_or_none(
+            session=session,
+            filters=CityFilter(slug=city),
+        )
+        if not db_city:
+            raise NotFoundException("City not found")
+
         hotels_in_city = await session.execute(
             select(Hotel.id)
             .join(HotelLocation, Hotel.id == HotelLocation.hotel_id)
-            .where(HotelLocation.city_id == city_id)
+            .where(HotelLocation.city_id == db_city.id)
         )
         hotel_ids = hotels_in_city.scalars().all()
         # Получить перекрывающиеся бронирования
@@ -372,7 +383,12 @@ class HotelDAO(BaseDAO):
 
         for hotel_id, rooms in hotels_with_rooms.items():
             # Сортируем комнаты по вместимости в порядке убывания
-            sorted_rooms = sorted(rooms, key=lambda r: r.max_guests, reverse=True)
+            sorted_rooms = [
+                room
+                for _, room in sorted(
+                    [(room.max_guests, room) for room in rooms], reverse=True
+                )
+            ]
 
             # Копия списка гостей для манипуляций
             remaining_guests = guests.copy()
@@ -420,30 +436,20 @@ class HotelDAO(BaseDAO):
                         "name": hotel.name,
                         "description": hotel.description,
                         "slug": hotel.slug,
-                        "category": (
-                            {
-                                "id": hotel.hotel_category.id,
-                                "name": hotel.hotel_category.name,
-                            }
-                            if hotel.hotel_category
-                            else None
+                        "category_name": (
+                            hotel.hotel_category.name if hotel.hotel_category else None
                         ),
                         "location": (
                             {
                                 "address": hotel.location.address,
-                                "city": (
-                                    hotel.location.city.name
-                                    if hotel.location and hotel.location.city
-                                    else None
-                                ),
+                                "city": (hotel.location.city.name),
                                 "coordinates": (
                                     {
                                         "latitude": hotel.location.latitude,
                                         "longitude": hotel.location.longitude,
                                     }
-                                    if hotel.location
-                                    else None
                                 ),
+                                "distance_to_center": (hotel.location.to_city_center),
                             }
                             if hotel.location
                             else None

@@ -38,7 +38,7 @@ async def search_hotels(
 ):
     hotels = await HotelDAO.find_hotels_for_booking(
         session=session,
-        city_id=search_data.city_id,
+        city=search_data.city,
         check_in_date=search_data.check_in,
         check_out_date=search_data.check_out,
         guests=search_data.guests,
