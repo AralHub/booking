@@ -26,18 +26,7 @@ async def create_hotel_categories(
         # Create hotel categories
         for hotel_category_item in hotel_categories_data["hotel_categories"]:
             try:
-                existing_category = await HotelCategoryDAO.get_one_or_none_by_id(
-                    session=session,
-                    data_id=hotel_category_item["id"],
-                )
-
-                if existing_category:
-                    logger.info(
-                        f"Категория с названием '{hotel_category_item['name']['ru']}' уже существует, пропускаем"
-                    )
-                    continue
                 hotel_category_create = HotelCategoryCreateInternal(
-                    id=hotel_category_item["id"],
                     name=hotel_category_item["name"],
                     description=hotel_category_item["description"],
                 )

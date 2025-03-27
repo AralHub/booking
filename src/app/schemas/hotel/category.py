@@ -24,7 +24,6 @@ class HotelCategoryCreate(
 
 
 class HotelCategoryCreateInternal(BaseModel):
-    id: int | None = None
     name: dict[str, str]
     description: dict[str, str]
 
