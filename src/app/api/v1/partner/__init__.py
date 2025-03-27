@@ -26,7 +26,7 @@ async def get_my_profile(
     return partner
 
 
-@router.put("/")
+@router.put("")
 async def update_partner_profile(
     partner_update: PartnerUpdate,
     session=TransactionSessionDep,
