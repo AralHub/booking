@@ -55,10 +55,3 @@ class RoomFilter(BaseModel):
     use_dinamic_price: bool | None = None
     room_type_id: int | None = None
     hotel_id: int | None = None
-
-
-class RoomSearch(BaseModel):
-    hotel_id: int
-    check_in: date
-    check_out: date
-    guests: list[int]

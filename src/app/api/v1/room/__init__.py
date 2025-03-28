@@ -18,7 +18,6 @@ from app.schemas.room import (
     RoomCreateInternal,
     RoomFilter,
     RoomRead,
-    RoomSearch,
     RoomUpdate,
     RoomUpdateInternal,
 )
@@ -28,26 +27,10 @@ from .amenities import router as amenities_router
 from .images import router as images_router
 from .price import router as price_router
 
-# from .types import router as types_router
-
 router = APIRouter(
     tags=["Hotel Rooms"],
     prefix="/hotels",
 )
-
-
-@router.post("/rooms/available")
-async def get_available_rooms(
-    room_search_data: RoomSearch,
-    session=SessionDep,
-):
-    return await RoomDAO.get_available_rooms(
-        session=session,
-        hotel_id=room_search_data.hotel_id,
-        check_in_date=room_search_data.check_in,
-        check_out_date=room_search_data.check_out,
-        guests=room_search_data.guests,
-    )
 
 
 @router.get("/{hotel_id}/rooms")
