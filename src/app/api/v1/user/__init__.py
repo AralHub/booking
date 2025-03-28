@@ -69,7 +69,7 @@ async def update_profile(
     return updated_rows_count
 
 
-@router.patch("/phone-number")
+@router.patch("/me/phone-number")
 async def change_phone_number(
     user_update: PhoneNumber,
     current_user: UserRead = Depends(get_current_active_auth_user),
@@ -99,7 +99,7 @@ async def change_phone_number(
     }
 
 
-@router.post("/phone-number/verify")
+@router.post("/me/phone-number/verify")
 async def verify_phone_number(
     verify_data: VerifyPhoneNumber,
     current_user: UserRead = Depends(get_current_active_auth_user),
