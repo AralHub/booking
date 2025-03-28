@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("")
 async def get_favorites(
     current_user: UserRead = Depends(get_current_auth_user),
     session=SessionDep,
