@@ -53,83 +53,89 @@ services:
       - 6379:6379
     # expose:
     #   - "6379"
-
-
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      - ADMINER_DEFAULT_SERVER=db
+      - ADMINER_DESIGN=dracula
+    ports:
+      - "8023:8080"
   # -------- create first superuser --------
-  create_superuser:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - ./src/.env.dev
-    depends_on:
-      - db
-      - web
-    command: python -m src.scripts.create_first_superuser
-    volumes:
-      - ./src:/code/src
-      - ./src/.env.dev:/code/.env
-      - ./src/certs:/code/certs:ro
-  create_cities:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - ./src/.env.dev
-    depends_on:
-      - db
-      - web
-    command: python -m src.scripts.create_cities
-    volumes:
-      - ./src:/code/src
-      - ./src/.env.dev:/code/.env
-      - ./src/certs:/code/certs:ro
-      - ./src/scripts/sample_data:/code/scripts/sample_data
-  create_hotel_categories:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - ./src/.env.dev
-    depends_on:
-      - db
-      - web
-    command: python -m src.scripts.create_categories
-    volumes:
-      - ./src:/code/src
-      - ./src/.env.dev:/code/.env
-      - ./src/certs:/code/certs:ro
-      - ./src/scripts/sample_data:/code/scripts/sample_data
-  create_room_types:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - ./src/.env.dev
-    depends_on:
-      - db
-      - web
-    command: python -m src.scripts.create_rooms
-    volumes:
-      - ./src:/code/src
-      - ./src/.env.dev:/code/.env
-      - ./src/certs:/code/certs:ro
-      - ./src/scripts/sample_data:/code/scripts/sample_data
-  create_amenities:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - ./src/.env.dev
-    depends_on:
-      - db
-      - web
-    command: python -m src.scripts.create_amenities
-    volumes:
-      - ./src:/code/src
-      - ./src/.env.dev:/code/.env
-      - ./src/certs:/code/certs:ro
-      - ./src/scripts/sample_data:/code/scripts/sample_data
+  # create_superuser:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./src/.env.dev
+  #   depends_on:
+  #     - db
+  #     - web
+  #   command: python -m src.scripts.create_first_superuser
+  #   volumes:
+  #     - ./src:/code/src
+  #     - ./src/.env.dev:/code/.env
+  #     - ./src/certs:/code/certs:ro
+  # create_cities:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./src/.env.dev
+  #   depends_on:
+  #     - db
+  #     - web
+  #   command: python -m src.scripts.create_cities
+  #   volumes:
+  #     - ./src:/code/src
+  #     - ./src/.env.dev:/code/.env
+  #     - ./src/certs:/code/certs:ro
+  #     - ./src/scripts/sample_data:/code/scripts/sample_data
+  # create_hotel_categories:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./src/.env.dev
+  #   depends_on:
+  #     - db
+  #     - web
+  #   command: python -m src.scripts.create_categories
+  #   volumes:
+  #     - ./src:/code/src
+  #     - ./src/.env.dev:/code/.env
+  #     - ./src/certs:/code/certs:ro
+  #     - ./src/scripts/sample_data:/code/scripts/sample_data
+  # create_room_types:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./src/.env.dev
+  #   depends_on:
+  #     - db
+  #     - web
+  #   command: python -m src.scripts.create_rooms
+  #   volumes:
+  #     - ./src:/code/src
+  #     - ./src/.env.dev:/code/.env
+  #     - ./src/certs:/code/certs:ro
+  #     - ./src/scripts/sample_data:/code/scripts/sample_data
+  # create_amenities:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./src/.env.dev
+  #   depends_on:
+  #     - db
+  #     - web
+  #   command: python -m src.scripts.create_amenities
+  #   volumes:
+  #     - ./src:/code/src
+  #     - ./src/.env.dev:/code/.env
+  #     - ./src/certs:/code/certs:ro
+  #     - ./src/scripts/sample_data:/code/scripts/sample_data
 
   #-------- uncomment to create first tier --------
   # create_tier:
@@ -160,5 +166,4 @@ services:
   #     - .:/code
 volumes:
   postgres-data:
-  redis-data:
-  #pgadmin-data:
+  redis-data: #pgadmin-data:

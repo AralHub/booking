@@ -50,6 +50,15 @@ services:
     expose:
       - "6379"
 
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   environment:
+  #     - ADMINER_DEFAULT_SERVER=db
+  #     - ADMINER_DESIGN=dracula
+  #   ports:
+  #     - "8023:8080"
+
   # -------- create first superuser --------
   create_superuser:
     build:
@@ -65,7 +74,6 @@ services:
       - ./src:/code/src
       - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
-
   # create_cities:
   #   build:
   #     context: .
@@ -134,5 +142,4 @@ services:
 
 volumes:
   postgres-data:
-  redis-data:
-  #pgadmin-data:
+  redis-data: #pgadmin-data:
