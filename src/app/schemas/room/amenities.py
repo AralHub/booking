@@ -5,11 +5,14 @@ from ..mixins import MultilingualNameBase, MultilingualNameBaseUpdate
 
 # region RoomAmenity
 class RoomAmenityBase(MultilingualNameBase):
-    name: str
+    pass
 
 
-class RoomAmenityRead(RoomAmenityBase):
+class RoomAmenityRead(BaseModel):
     id: int
+    name: dict[str, str]
+    is_popular: bool
+    room_amenity_category_id: int
 
 
 class RoomAmenityCreate(RoomAmenityBase):
