@@ -16,6 +16,11 @@ from app.schemas.booking import (
     BookingCreateMultipleRooms,
     BookingCreateMultipleRoomsInternal,
 )
+from app.models.booking import BookingRoom
+
+
+class BookingRoomDAO(BaseDAO):
+    model = BookingRoom
 
 
 class BookingDAO(BaseDAO):

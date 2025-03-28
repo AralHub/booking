@@ -5,24 +5,41 @@ from pydantic import BaseModel, Field
 from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
 
 
+# region Booking Room
+class BookingRoomBase(BaseModel):
+    room_id: int
+    guest_quantity: int = Field(ge=1)
+    guest_name: str = Field(
+        min_length=2,
+        max_length=50,
+    )
+
+
+class RoomBookingCreate(BookingRoomBase):
+    pass
+
+
+class BookinRoomgRead(BookingRoomBase):
+    id: int
+    price: float
+
+    class Config:
+        from_attributes = True
+
+
+# endregion
+
+
+# region Base
 class BookingBase(BaseModel):
     check_in_date: date
     check_out_date: date
 
 
-class RoomBookingData(BaseModel):
-    room_id: int
-    guest_quantity: int = Field(ge=1)
-    guest_name: str = Field(
-        min_length=3,
-        max_length=50,
-    )
-
-
 class BookingCreateMultipleRooms(BaseModel):
     check_in_date: date
     check_out_date: date
-    rooms_info: list[RoomBookingData]
+    rooms_info: list[RoomBookingCreate]
     special_requests: str | None = None
 
 
@@ -45,7 +62,7 @@ class BookingRead(BookingBase):
     total_price: int
     total_days: int
     status: BOOKING_STATUS_FIELD
-    rooms_info: list[RoomBookingData]
+    rooms_info: list[BookinRoomgRead]
     special_requests: str | None = None
 
 
@@ -56,3 +73,6 @@ class BookingFilter(BaseModel):
     total_price: int | None = None
     user_id: int | None = None
     hotel_id: int | None = None
+
+
+# endregion
