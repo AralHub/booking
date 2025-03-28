@@ -45,7 +45,7 @@ async def get_my_profile(
     return user
 
 
-@router.put("", status_code=status.HTTP_200_OK)
+@router.put("/me", status_code=status.HTTP_200_OK)
 async def update_profile(
     user_update: UserUpdate,
     current_user: UserRead = Depends(get_current_auth_user),
@@ -128,7 +128,7 @@ async def verify_phone_number(
 
 
 @router.delete(
-    "",
+    "/me",
     status_code=status.HTTP_200_OK,
 )
 async def user_delete(
