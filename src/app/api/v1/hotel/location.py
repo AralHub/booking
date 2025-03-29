@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
+from app.core.config import settings
 from app.core.exceptions.http_exceptions import NotFoundException
-from app.dao.hotel import HotelDAO
 from app.dao.hotel.location import HotelLocationDAO
-from app.schemas.hotel.info import HotelNameFilter, HotelNameRead
+from app.schemas.hotel.info import HotelNameRead
 from app.schemas.hotel.location import (
     LocationCreate,
     LocationFilter,
@@ -15,8 +15,8 @@ from app.schemas.hotel.location import (
 
 router = APIRouter(
     tags=["Hotel Location"],
+    prefix=settings.api_v1.hotel_prefix,
 )
-
 
 
 @router.get("/{hotel_id}/location")

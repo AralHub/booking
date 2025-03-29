@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
+from app.core.config import settings
 from app.core.logger import logging
 from app.dao.hotel.rules import HotelRuleDAO
 from app.schemas.hotel.info import HotelNameRead
@@ -16,7 +17,8 @@ from app.schemas.hotel.rules import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
-    tags=["Hotels Rules"],
+    tags=["Hotel Rules"],
+    prefix=settings.api_v1.hotel_prefix,
 )
 
 

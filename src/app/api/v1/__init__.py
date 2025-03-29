@@ -4,6 +4,12 @@ from app.core.config import settings
 
 from .booking import router as booking_router
 from .hotel import router as hotel_router
+from .hotel.amenities import router as amenities_router
+from .hotel.images import router as images_router
+from .hotel.info import router as info_router
+from .hotel.location import router as location_router
+from .hotel.review import router as review_router
+from .hotel.rules import router as rules_router
 from .location import router as superuser_location_router
 from .partner import router as partner_router
 from .room import router as room_router
@@ -34,6 +40,24 @@ router.include_router(
 )
 router.include_router(
     hotel_router,
+)
+router.include_router(
+    location_router,
+)
+router.include_router(
+    info_router,
+)
+router.include_router(
+    rules_router,
+)
+router.include_router(
+    amenities_router,
+)
+router.include_router(
+    images_router,
+)
+router.include_router(
+    review_router,
 )
 router.include_router(
     room_router,

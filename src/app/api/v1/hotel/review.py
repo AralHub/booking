@@ -4,6 +4,7 @@ from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.review import validate_review_owner
 from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
+from app.core.config import settings
 from app.dao.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.review import (
@@ -17,6 +18,7 @@ from app.schemas.user import UserRead
 
 router = APIRouter(
     tags=["Hotel Reviews"],
+    prefix=settings.api_v1.hotel_prefix,
 )
 
 
@@ -38,7 +40,7 @@ async def get_hotel_review_summary(
     )
 
     return HotelReviewSummary(
-        general_rating=summary_data["general_rating"],
+        average_rating=summary_data["average_rating"],
         review_count=review_count,
         category_ratings=summary_data["category_ratings"],
     )
