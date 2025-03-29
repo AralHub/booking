@@ -38,5 +38,5 @@ async def update_partner_profile(
         values=PartnerUpdateInternal(
             **partner_update.model_dump(),
         ),
-        filters=PartnerFilter(id=partner.id),   
+        filters=PartnerFilter(id=partner.id),
     )

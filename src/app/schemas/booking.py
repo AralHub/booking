@@ -19,6 +19,10 @@ class BookedRoomCreate(BookedRoomBase):
     pass
 
 
+class BookedRoomCreateInternal(BookedRoomCreate):
+    booking_id: int
+
+
 class BookedRoomgRead(BookedRoomBase):
     id: int
     price: float
@@ -43,7 +47,10 @@ class BookingCreateMultipleRooms(BaseModel):
     special_requests: str | None = None
 
 
-class BookingCreateMultipleRoomsInternal(BookingCreateMultipleRooms):
+class BookingCreateMultipleRoomsInternal(BaseModel):
+    check_in_date: date
+    check_out_date: date
+    special_requests: str | None = None
     total_price: int
     total_days: int
     user_id: int
