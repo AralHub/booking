@@ -31,64 +31,29 @@ class HotelAmenityDAO(BaseDAO):
     model = HotelAmenity
 
     @classmethod
-    async def get_hotel_amenities(
-        cls,
-        session: AsyncSession,
-        hotel_id: int,
-    ):
+    async def get_hotel_amenities(cls, hotel_id: int, session: AsyncSession):
         query = (
             select(Hotel)
-            .where(Hotel.id == hotel_id)
             .options(selectinload(Hotel.hotel_amenities))
+            .where(Hotel.id == hotel_id)
         )
         result = await session.execute(query)
-        hotel = result.scalar()
-        return hotel.hotel_amenities if hotel else []
+        db_hotel = result.scalar_one_or_none()
+
+        return db_hotel.hotel_amenities if db_hotel else []
 
     @classmethod
-    async def add_amenities_to_hotel(
+    async def delete_hotel_all_amenities(
         cls,
-        session: AsyncSession,
         hotel_id: int,
-        amenities: list[int],
+        session: AsyncSession,
     ):
         db_hotel = await session.scalar(
-            select(Hotel)
-            .where(Hotel.id == hotel_id)
-            .options(selectinload(Hotel.hotel_amenities))
+            select(cls.model)
+            .where(cls.model.id == hotel_id)
+            .options(selectinload(cls.model.hotel_amenities))
         )
-        # Get existing amenity IDs
-        existing_amenity_ids = {amenity.id for amenity in db_hotel.hotel_amenities}
 
-        # Filter out amenities that already exist
-        new_amenity_ids = [aid for aid in amenities if aid not in existing_amenity_ids]
-
-        if not new_amenity_ids:
-            return db_hotel.hotel_amenities
-        try:
-            amenity_objects = await session.execute(
-                select(HotelAmenity).where(HotelAmenity.id.in_(new_amenity_ids))
-            )
-            amenity_objects = amenity_objects.scalars().all()
-            db_hotel.hotel_amenities.extend(amenity_objects)
-            await session.commit()
-            return db_hotel.hotel_amenities
-        except IntegrityError as e:
-            await session.rollback()
-            if "uq_product_extra_product" in str(e):
-                raise BadRequestException(
-                    "This amenity is already added to the hotel",
-                )
-            raise BadRequestException(
-                "Unable to add amenity to hotel due to database constraint",
-            )
-
-    @classmethod
-    async def remove_all_amenities_from_hotel(
-        cls,
-        session: AsyncSession,
-        hotel_id: int,
-    ):
         await session.execute(
             delete(HotelAmenityAssociation).where(
                 HotelAmenityAssociation.hotel_id == hotel_id
@@ -97,7 +62,7 @@ class HotelAmenityDAO(BaseDAO):
         await session.commit()
 
     @classmethod
-    async def remove_amenity_from_hotel(
+    async def delete_amenity_from_hotel(
         cls,
         session: AsyncSession,
         hotel_id: int,
@@ -110,4 +75,27 @@ class HotelAmenityDAO(BaseDAO):
         result = await session.execute(query)
         amenity_association = result.scalar()
         await session.delete(amenity_association)
+        await session.commit()
+
+    @classmethod
+    async def add_hotel_amenities(
+        cls,
+        hotel_id: int,
+        hotel_amenities_data: list[int],
+        session: AsyncSession,
+    ):
+        query = (
+            select(cls.model)
+            .options(selectinload(cls.model.hotel_amenities))
+            .where(cls.model.id == hotel_id)
+        )
+        result = await session.execute(query)
+        db_hotel = result.scalar_one_or_none()
+        for hotel_amenity_id in hotel_amenities_data:
+            hotel_amenity = await HotelAmenityDAO.get_one_or_none_by_id(
+                session=session,
+                data_id=hotel_amenity_id,
+            )
+            if hotel_amenity:
+                db_hotel.hotel_amenities.append(hotel_amenity)
         await session.commit()

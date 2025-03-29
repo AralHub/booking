@@ -72,67 +72,6 @@ class HotelDAO(BaseDAO):
         return hotel or None
 
     @classmethod
-    async def delete_hotel_all_amenities(
-        cls,
-        hotel_id: int,
-        session: AsyncSession,
-    ):
-        db_hotel = await session.scalar(
-            select(cls.model)
-            .where(cls.model.id == hotel_id)
-            .options(selectinload(cls.model.hotel_amenities))
-        )
-
-        if not db_hotel:
-            raise NotFoundException("Hotel not found")
-
-        await session.execute(
-            delete(HotelAmenityAssociation).where(
-                HotelAmenityAssociation.hotel_id == hotel_id
-            )
-        )
-        await session.commit()
-
-    @classmethod
-    async def add_hotel_amenities(
-        cls,
-        hotel_id: int,
-        hotel_amenities_data: list[int],
-        session: AsyncSession,
-    ):
-        query = (
-            select(cls.model)
-            .options(selectinload(cls.model.hotel_amenities))
-            .where(cls.model.id == hotel_id)
-        )
-        result = await session.execute(query)
-        db_hotel = result.scalar_one_or_none()
-        if not db_hotel:
-            raise NotFoundException("Hotel not found")
-        for hotel_amenity_id in hotel_amenities_data:
-            hotel_amenity = await HotelAmenityDAO.get_one_or_none_by_id(
-                session=session,
-                data_id=hotel_amenity_id,
-            )
-            if hotel_amenity:
-                db_hotel.hotel_amenities.append(hotel_amenity)
-        await session.commit()
-
-    @classmethod
-    async def get_hotel_amenities(cls, hotel_id: int, session: AsyncSession):
-        query = (
-            select(cls.model)
-            .options(selectinload(cls.model.hotel_amenities))
-            .where(cls.model.id == hotel_id)
-        )
-        result = await session.execute(query)
-        db_hotel = result.scalar_one_or_none()
-
-        if not db_hotel:
-            raise NotFoundException("Hotel not found")
-        return db_hotel.hotel_amenities
-
-    @classmethod
     async def create_new_hotel(
         cls,
         hotel_create_data: HotelFullCreate,
@@ -213,7 +152,7 @@ class HotelDAO(BaseDAO):
         )
         # Add hotel amenities
         if hotel_create_data.facilities:
-            await HotelDAO.add_hotel_amenities(
+            await HotelAmenityDAO.add_hotel_amenities(
                 session=session,
                 hotel_id=db_hotel.id,
                 hotel_amenities_data=hotel_create_data.facilities,
@@ -236,7 +175,9 @@ class HotelDAO(BaseDAO):
         )
         if not db_hotel_category:
             raise NotFoundException("Hotel category not found")
-        generated_slug = slugify_func(hotel_update_data.name)
+        generated_slug = await generate_slug_for_hotel(
+            name=hotel_update_data.name,
+        )
         hotel_update = HotelNameUpdate(
             name=hotel_update_data.name,
             description=hotel_update_data.description,
@@ -294,7 +235,7 @@ class HotelDAO(BaseDAO):
         )
         # Add hotel amenities
         if hotel_update_data.facilities:
-            await HotelDAO.add_hotel_amenities(
+            await HotelAmenityDAO.add_hotel_amenities(
                 session=session,
                 hotel_id=hotel_id,
                 hotel_amenities_data=hotel_update_data.facilities,
