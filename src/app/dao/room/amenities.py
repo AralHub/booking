@@ -42,35 +42,20 @@ class RoomAmenityDAO(BaseDAO):
         cls,
         session: AsyncSession,
         room_id: int,
-        room_amenities: list[int],
+        amenities: list[int],
     ):
-        db_room = await session.scalar(
+        query = (
             select(Room)
-            .where(Room.id == room_id)
             .options(selectinload(Room.room_amenities))
+            .where(Room.id == room_id)
         )
-        # Get existing amenity IDs
-        existing_amenity_ids = {amenity.id for amenity in db_room.hotel_amenities}
-
-        # Filter out amenities that already exist
-        new_amenity_ids = [
-            aid for aid in room_amenities if aid not in existing_amenity_ids
-        ]
-
-        if not new_amenity_ids:
-            return db_room.hotel_amenities
-        try:
-            amenity_objects = await session.execute(RoomAmenity)
-            amenity_objects = amenity_objects.scalars().all()
-            db_room.room_amenities.extend(amenity_objects)
-            await session.commit()
-            return db_room.room_amenities
-        except IntegrityError as e:
-            await session.rollback()
-            if "uq_product_extra_product" in str(e):
-                raise BadRequestException(
-                    detail="This amenity is already added to the hotel",
-                )
-            raise BadRequestException(
-                detail="Unable to add amenity to hotel due to database constraint",
+        result = await session.execute(query)
+        db_room = result.scalar_one_or_none()
+        for room_amenity_id in amenities:
+            room_amenity = await cls.get_one_or_none_by_id(
+                session=session,
+                data_id=room_amenity_id,
             )
+            if room_amenity:
+                db_room.room_amenities.append(room_amenity)
+        await session.commit()

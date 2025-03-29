@@ -13,7 +13,7 @@ from app.dao.room import RoomDAO
 from app.dao.room.amenities import RoomAmenityDAO
 from app.dao.hotel.amenities import HotelAmenityDAO
 from app.schemas.hotel import HotelFullCreateInternal
-from app.schemas.room import RoomCreateInternal
+from app.schemas.room import RoomCreateInternal, RoomCreate
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ async def create_hotels(session: AsyncSession):
                     created_room = await RoomDAO.add_room_to_hotel(
                         session=session,
                         hotel_id=created_hotel.id,
-                        room_data=RoomCreateInternal(
+                        room_data=RoomCreate(
                             quantity=hotel_room["quantity"],
                             base_price=hotel_room["base_price"],
                             room_area=hotel_room["room_area"],
@@ -73,7 +73,7 @@ async def create_hotels(session: AsyncSession):
                     )
                     await RoomAmenityDAO.add_amenities_to_room(
                         session=session,
-                        room_amenities=hotel_room["room_amenities"],
+                        amenities=hotel_room["room_amenities"],
                         room_id=created_room.id,
                     ),
 

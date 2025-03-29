@@ -19,8 +19,8 @@ from app.schemas.room import (
     RoomUpdate,
     RoomUpdateInternal,
     RoomFilter,
-    RoomTypeFilter,
 )
+from app.schemas.room.types import RoomTypeFilter
 import logging
 
 logger = logging.getLogger(__name__)
