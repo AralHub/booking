@@ -20,7 +20,7 @@ from app.models import Base
 from app.models.mixins import IntIdPkMixin
 
 if TYPE_CHECKING:
-    from app.models.booking import Booking
+    from app.models.booking import BookedRoom
     from app.models.hotel import Hotel
     from app.models.room.amenities import RoomAmenity, RoomAmenityAssociation
     from app.models.room.bed import RoomBedConfiguration
@@ -81,6 +81,11 @@ class Room(IntIdPkMixin, Base):
     room_prices: Mapped[list["RoomPrice"]] = relationship(
         "RoomPrice",
         back_populates="room",
+    )
+    booking_rooms: Mapped[list["BookedRoom"]] = relationship(
+        "BookedRoom",
+        back_populates="room",
+        cascade="all, delete-orphan",
     )
     __table_args__ = (
         UniqueConstraint("room_type_id", "hotel_id", name="unique_room_type_hotel"),

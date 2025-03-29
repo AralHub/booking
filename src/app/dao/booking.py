@@ -41,80 +41,111 @@ class BookingDAO(BaseDAO):
 
         # общее количество дней
         total_days = (booking_data.check_out_date - booking_data.check_in_date).days
-        pass
-        # Verify each room and calculate total price
-        # total_price = 0
-        # validated_rooms_info = []
 
-        # for room_info in booking_data.rooms_info:
-        #     db_room = await RoomDAO.get_one_or_none_by_id(
-        #         session=session,
-        #         data_id=room_info.room_id,
-        #     )
-        #     if not db_room:
-        #         raise NotFoundException(f"Room with ID {room_info.room_id} not found")
+        # Инициализация переменных
+        total_price = 0
+        validated_rooms_info = []
 
-        #     # Check if guest count is valid for this room
-        #     if room_info.guest_quantity > db_room.max_guests:
-        #         raise BadRequestException(
-        #             f"Room {room_info.room_id} can only accommodate {db_room.max_guests} guests"
-        #         )
+        # Получаем первую комнату для определения отеля
+        first_room = await RoomDAO.get_one_or_none_by_id(
+            session=session,
+            data_id=booking_data.rooms_info[0].room_id,
+        )
+        if not first_room:
+            raise NotFoundException("First room not found")
 
-        #     # Check room availability for the requested dates
-        #     overlapping_bookings = await RoomDAO.get_overlapping_bookings(
-        #         session=session,
-        #         check_in_date=booking_data.check_in_date,
-        #         check_out_date=booking_data.check_out_date,
-        #         hotel_id=db_room.hotel_id,
-        #     )
-        #     # Извлекаем идентификаторы забронированных комнат
-        #     booked_room_ids = []
-        #     for booking in overlapping_bookings:
-        #         for room_info in booking.rooms_info:
-        #             booked_room_ids.append(room_info["room_id"])
-        #     # Calculate price for this room
-        #     if db_room.use_dinamic_price:
-        #         db_room_prices = await RoomPriceDAO.get_all(
-        #             session=session,
-        #             filters=RoomPriceFilter(
-        #                 room_id=db_room.id,
-        #             ),
-        #         )
-        #         if not db_room_prices:
-        #             room_price = db_room.base_price
-        #         else:
-        #             room_price = await RoomPriceDAO.get_room_price_by_guest_quantity(
-        #                 session=session,
-        #                 room_id=room_info.room_id,
-        #                 guest_quantity=room_info.guest_quantity,
-        #             )
-        #     else:
-        #         room_price = db_room.base_price
+        hotel_id = first_room.hotel_id
 
-        #     room_total_price = total_days * room_price
-        #     total_price += room_total_price
+        # Получаем все пересекающиеся бронирования для отеля
+        booked_room_ids = await RoomDAO.get_booked_rooms_by_hotel_id(
+            session=session,
+            check_in_date=booking_data.check_in_date,
+            check_out_date=booking_data.check_out_date,
+            hotel_id=hotel_id,
+        )
 
-        #     # Add validated room info with price
-        #     validated_room = room_info.model_dump()
-        #     validated_room["price"] = room_price
-        #     validated_room["total_price"] = room_total_price
-        #     validated_rooms_info.append(validated_room)
+        # Проверяем каждую комнату
+        for room_info in booking_data.rooms_info:
+            # Проверка доступности комнаты
+            if room_info.room_id in booked_room_ids:
+                raise BadRequestException(
+                    f"Room {room_info.room_id} is already booked for these dates"
+                )
 
-        # # Create booking with all rooms
-        # return await cls.create(
-        #     session=session,
-        #     values=BookingCreateMultipleRoomsInternal(
-        #         check_in_date=booking_data.check_in_date,
-        #         check_out_date=booking_data.check_out_date,
-        #         rooms_info=validated_rooms_info,
-        #         total_days=total_days,
-        #         total_price=total_price,
-        #         user_id=user_id,
-        #         special_requests=(
-        #             booking_data.special_requests
-        #             if hasattr(booking_data, "special_requests")
-        #             else None
-        #         ),
-        #         hotel_id=db_room.hotel_id,
-        #     ),
-        # )
+            db_room = await RoomDAO.get_one_or_none_by_id(
+                session=session,
+                data_id=room_info.room_id,
+            )
+            if not db_room:
+                raise NotFoundException(f"Room with ID {room_info.room_id} not found")
+
+            # Проверка количества гостей
+            if room_info.guest_quantity > db_room.max_guests:
+                raise BadRequestException(
+                    f"Room {room_info.room_id} can only accommodate {db_room.max_guests} guests"
+                )
+
+            # Расчет цены
+            room_price = await cls._calculate_room_price(
+                session,
+                db_room,
+                room_info.guest_quantity,
+            )
+
+            room_total_price = total_days * room_price
+            total_price += room_total_price
+
+            # Добавляем проверенную информацию о комнате
+            validated_room = room_info.model_dump()
+            validated_room["price"] = room_price
+            validated_room["total_price"] = room_total_price
+            validated_rooms_info.append(validated_room)
+
+        # Создаем бронирование
+        booking = await cls.create(
+            session=session,
+            values=BookingCreateMultipleRoomsInternal(
+                check_in_date=booking_data.check_in_date,
+                check_out_date=booking_data.check_out_date,
+                rooms_info=validated_rooms_info,
+                total_days=total_days,
+                total_price=total_price,
+                user_id=user_id,
+                special_requests=getattr(booking_data, "special_requests", None),
+                hotel_id=hotel_id,
+                status=BookingStatus.PENDING,
+            ),
+        )
+
+        # Создаем записи о забронированных комнатах
+        for room_info in validated_rooms_info:
+            await BookedRoomDAO.create(
+                session=session,
+                values={
+                    "booking_id": booking.id,
+                    "room_id": room_info["room_id"],
+                    "guest_quantity": room_info["guest_quantity"],
+                    "price": room_info["price"],
+                },
+            )
+
+        return booking
+
+    @staticmethod
+    async def _calculate_room_price(
+        session: AsyncSession, room: Room, guest_quantity: int
+    ) -> float:
+        if room.use_dinamic_price:
+            db_room_prices = await RoomPriceDAO.get_all(
+                session=session,
+                filters=RoomPriceFilter(room_id=room.id),
+            )
+            if not db_room_prices:
+                return room.base_price
+
+            return await RoomPriceDAO.get_room_price_by_guest_quantity(
+                session=session,
+                room_id=room.id,
+                guest_quantity=guest_quantity,
+            )
+        return room.base_price

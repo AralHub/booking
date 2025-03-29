@@ -78,25 +78,32 @@ class RoomDAO(BaseDAO):
         check_in_date: date,
         check_out_date: date,
     ) -> bool:
-        # Получаем все комнаты отеля сгруппированные по типу
-        stmt = (
-            select(Room.room_type_id, func.count(Room.id).label("total_rooms"))
-            .where(and_(Room.hotel_id == hotel_id, Room.is_active == True))
-            .group_by(Room.room_type_id)
+        # Получаем все комнаты отеля
+        stmt = select(Room.id, Room.room_type_id, Room.quantity).where(
+            and_(
+                Room.hotel_id == hotel_id,
+            )
         )
-
         result = await session.execute(stmt)
-        rows = result.fetchall()
-        logger.debug(f"Query result rows: {rows}")  # Проверим структуру результата
-        available_rooms = {row.room_type_id: row.total_rooms for row in rows}
-        logger.debug(f"Available rooms by type: {available_rooms}")
+        rooms = result.fetchall()
+        # Создаем словарь доступных комнат по их ID
+        available_rooms = {room.id: room.quantity for room in rooms}
 
-        # Добавим проверку конкретных комнат
-        requested_room_ids = set()
+        # Проверяем запросы на комнаты
+        requested_rooms = {}
         for room_request in room_requests:
-            if room_request.room_id in requested_room_ids:
-                raise BadRequestException("Duplicate room request")
-            requested_room_ids.add(room_request.room_id)
+            if room_request.room_id not in available_rooms:
+                raise NotFoundException(f"Room {room_request.room_id} not found")
+
+            current_quantity = requested_rooms.get(room_request.room_id, 0)
+            new_quantity = current_quantity + room_request.quantity
+
+            if new_quantity > available_rooms[room_request.room_id]:
+                raise BadRequestException(
+                    f"Requested quantity {new_quantity} exceeds available quantity {available_rooms[room_request.room_id]} for room {room_request.room_id}"
+                )
+
+            requested_rooms[room_request.room_id] = new_quantity
 
         # Проверяем, что запрошенные комнаты не забронированы
         booked_room_ids = await cls.get_booked_rooms_by_hotel_id(
@@ -105,8 +112,8 @@ class RoomDAO(BaseDAO):
             check_out_date=check_out_date,
             hotel_id=hotel_id,
         )
-
-        if requested_room_ids & booked_room_ids:
+        # Проверяем пересечение с уже забронированными комнатами
+        if set(requested_rooms.keys()) & booked_room_ids:
             raise BadRequestException("Some of the requested rooms are already booked")
 
         return True
