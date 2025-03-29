@@ -155,9 +155,8 @@ class HotelDAO(BaseDAO):
             await HotelAmenityDAO.add_hotel_amenities(
                 session=session,
                 hotel_id=db_hotel.id,
-                hotel_amenities_data=hotel_create_data.facilities,
+                amenities=hotel_create_data.facilities,
             )
-
         return db_hotel
 
     @classmethod
