@@ -1,0 +1,76 @@
+{
+    "hotels": [
+        {
+            "description_ru": "Роскошный отель в центре города с великолепным видом на город",
+            "description_en": "Luxury hotel in the city center with magnificent city views",
+            "description_uz": "Shahar markazida joylashgan hashamatli mehmonxona",
+            "description_kk": "Қала орталығындағы салтанатты қонақ үй",
+            "name_ru": "Гранд Отель",
+            "name_en": "Grand Hotel",
+            "name_uz": "Grand Mehmonxonasi",
+            "name_kk": "Grand Қонақ үйі",
+            "hotel_category_id": 1,
+            "address": "ул. Центральная, 1",
+            "city_id": 1,
+            "latitude": 55.7558,
+            "longitude": 37.6173,
+            "facilities": [
+                1,
+                2,
+                3
+            ],
+            "information_for_booking": {
+                "check_in": "14:00",
+                "check_out": "12:00",
+                "star_rating": 5
+            },
+            "information_for_guests": {
+                "email_for_guests": "info@grandhotel.com",
+                "first_phone_for_guests": "998991234567",
+                "second_phone_for_guests": "998991112233",
+                "site_url": "https://www.grandhotel.com"
+            },
+            "rooms": [
+                {
+                    "quantity": 20,
+                    "base_price": 150000,
+                    "room_area": 35,
+                    "max_guests": 2,
+                    "room_type_id": 1,
+                    "room_amenities": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9
+                    ]
+                },
+                {
+                    "quantity": 15,
+                    "base_price": 250000,
+                    "room_area": 45,
+                    "max_guests": 3,
+                    "room_type_id": 2
+                },
+                {
+                    "quantity": 8,
+                    "base_price": 400000,
+                    "room_area": 60,
+                    "max_guests": 3,
+                    "room_type_id": 3
+                },
+                {
+                    "quantity": 2,
+                    "base_price": 800000,
+                    "room_area": 120,
+                    "max_guests": 4,
+                    "room_type_id": 4
+                }
+            ]
+        }
+    ]
+}
