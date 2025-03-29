@@ -27,6 +27,8 @@ from .amenities import router as amenities_router
 from .images import router as images_router
 from .price import router as price_router
 
+# from .types import router as types_router
+
 router = APIRouter(
     tags=["Hotel Rooms"],
     prefix="/hotels",

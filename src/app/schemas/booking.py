@@ -6,7 +6,7 @@ from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
 
 
 # region Booking Room
-class BookingRoomBase(BaseModel):
+class BookedRoomBase(BaseModel):
     room_id: int
     guest_quantity: int = Field(ge=1)
     guest_name: str = Field(
@@ -15,11 +15,11 @@ class BookingRoomBase(BaseModel):
     )
 
 
-class RoomBookingCreate(BookingRoomBase):
+class BookedRoomCreate(BookedRoomBase):
     pass
 
 
-class BookinRoomgRead(BookingRoomBase):
+class BookedRoomgRead(BookedRoomBase):
     id: int
     price: float
 
@@ -39,7 +39,7 @@ class BookingBase(BaseModel):
 class BookingCreateMultipleRooms(BaseModel):
     check_in_date: date
     check_out_date: date
-    rooms_info: list[RoomBookingCreate]
+    rooms_info: list[BookedRoomCreate]
     special_requests: str | None = None
 
 
@@ -62,7 +62,7 @@ class BookingRead(BookingBase):
     total_price: int
     total_days: int
     status: BOOKING_STATUS_FIELD
-    rooms_info: list[BookinRoomgRead]
+    rooms_info: list[BookedRoomgRead]
     special_requests: str | None = None
 
 

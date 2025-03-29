@@ -30,7 +30,7 @@ class BookingStatus(str, Enum):
     CANCELLED = "cancelled"
 
 
-class BookingRoom(IntIdPkMixin, Base):
+class BookedRoom(IntIdPkMixin, Base):
     booking_id: Mapped[int] = mapped_column(ForeignKey("bookings.id"))
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
     guest_name: Mapped[str] = mapped_column(String(50))
@@ -60,16 +60,14 @@ class Booking(IntIdPkMixin, Base):
     )
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     total_days: Mapped[int] = mapped_column(Integer, nullable=False)
-    booking_rooms: Mapped[list["BookingRoom"]] = relationship(
-        "BookingRoom",
+    special_requests: Mapped[str] = mapped_column(Text, nullable=True)
+    # relationships
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    booking_rooms: Mapped[list["BookedRoom"]] = relationship(
+        "BookedRoom",
         back_populates="booking",
         cascade="all, delete-orphan",
     )
-    special_requests: Mapped[str] = mapped_column(Text, nullable=True)
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
-    # relationships
-    # room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
-    # room: Mapped["Room"] = relationship("Room", back_populates="bookings")
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="bookings")
