@@ -34,12 +34,13 @@ async def add_amenities_to_room(
     room_id: int,
     amenities: list[int],
     hotel: HotelNameRead = Depends(valid_hotel_admin),
+    room: RoomRead = Depends(validate_hotel_room),
     session=SessionDep,
 ):
     return await RoomAmenityDAO.add_amenities_to_room(
         session=session,
-        hotel_id=hotel_id,
-        amenities=amenities,
+        room_id=room_id,
+        room_amenities=amenities,
     )
 
 

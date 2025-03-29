@@ -81,17 +81,17 @@ class HotelAmenityDAO(BaseDAO):
     async def add_hotel_amenities(
         cls,
         hotel_id: int,
-        hotel_amenities_data: list[int],
+        amenities: list[int],
         session: AsyncSession,
     ):
         query = (
-            select(cls.model)
-            .options(selectinload(cls.model.hotel_amenities))
-            .where(cls.model.id == hotel_id)
+            select(Hotel)
+            .options(selectinload(Hotel.hotel_amenities))
+            .where(Hotel.id == hotel_id)
         )
         result = await session.execute(query)
         db_hotel = result.scalar_one_or_none()
-        for hotel_amenity_id in hotel_amenities_data:
+        for hotel_amenity_id in amenities:
             hotel_amenity = await HotelAmenityDAO.get_one_or_none_by_id(
                 session=session,
                 data_id=hotel_amenity_id,
