@@ -11,9 +11,8 @@ from app.core.utils.slug_utils import generate_slug_for_hotel
 from app.dao.hotel import HotelDAO
 from app.dao.room import RoomDAO
 from app.dao.room.amenities import RoomAmenityDAO
-from app.dao.hotel.amenities import HotelAmenityDAO
 from app.schemas.hotel import HotelFullCreateInternal
-from app.schemas.room import RoomCreateInternal, RoomCreate
+from app.schemas.room import RoomCreate
 
 logger = logging.getLogger(__name__)
 
