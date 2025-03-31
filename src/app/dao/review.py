@@ -12,12 +12,12 @@ from app.schemas.review import (
     ReviewCreate,
     ReviewUpdate,
     ReviewCreateInternal,
-    ReviewCategoryCreateInternal,
-    ReviewCategoryRatingUpdate,
-    ReviewCategoryRatingCreate,
+    ReviewCategoryRatingCreateInternal,
+    ReviewCategoryRatingUpdateInternal,
     ReviewCategoryRatingFilter,
 )
 from app.models.review import Review, ReviewCategory, ReviewCategoryRating
+from app.dao.hotel.rating import HotelRatingDAO
 
 
 class ReviewCategoryDAO(BaseDAO):
@@ -44,49 +44,6 @@ class ReviewDAO(BaseDAO):
         )
         reviews = await session.execute(reviews_query)
         return reviews.unique().scalars().all()
-
-    @classmethod
-    async def get_hotel_review_summary(
-        cls, session: AsyncSession, hotel_id: int
-    ) -> dict:
-        # Общий средний рейтинг
-        general_rating = await session.execute(
-            select(func.avg(Review.rating)).where(Review.hotel_id == hotel_id)
-        )
-        avg_general = general_rating.scalar() or 0
-
-        # Рейтинги по категориям
-        category_ratings = await session.execute(
-            select(
-                ReviewCategory.name,
-                func.avg(ReviewCategoryRating.rating).label("avg_rating"),
-            )
-            .join(ReviewCategoryRating.review_category)
-            .where(ReviewCategoryRating.review_id == Review.id)
-            .where(Review.hotel_id == hotel_id)
-            .group_by(ReviewCategory.name)
-        )
-
-        return {
-            "general_rating": round(avg_general, 1),
-            "category_ratings": {
-                row.name: round(row.avg_rating, 1) for row in category_ratings
-            },
-        }
-
-    @classmethod
-    async def get_review_count_for_hotel(
-        cls,
-        session: AsyncSession,
-        hotel_id: int,
-    ) -> int:
-        review_count = await cls.count(
-            session=session,
-            filters=ReviewFilter(
-                hotel_id=hotel_id,
-            ),
-        )
-        return review_count
 
     @classmethod
     async def create_hotel_review(
@@ -120,7 +77,7 @@ class ReviewDAO(BaseDAO):
         )
         if len(review_create_data.category_ratings) > 0:
             for review_category_rating in review_create_data.category_ratings:
-                review_category_rating_create_data = ReviewCategoryCreateInternal(
+                review_category_rating_create_data = ReviewCategoryRatingCreateInternal(
                     review_category_id=review_category_rating.review_category_id,
                     rating=review_category_rating.rating,
                     review_id=craeted_review.id,
@@ -130,6 +87,10 @@ class ReviewDAO(BaseDAO):
                     session=session,
                     values=review_category_rating_create_data,
                 )
+        await HotelRatingDAO.create_hotel_sum_rating(
+            session=session,
+            hotel_id=hotel_id,
+        )
         return ReviewRead.model_validate(craeted_review)
 
     @classmethod
@@ -181,7 +142,7 @@ class ReviewDAO(BaseDAO):
             )
             # Создаем новые рейтинги
             for category_rating in review_update_data.category_ratings:
-                rating_data = ReviewCategoryCreateInternal(
+                rating_data = ReviewCategoryRatingCreateInternal(
                     review_category_id=category_rating.review_category_id,
                     rating=category_rating.rating,
                     review_id=review_id,

@@ -1,22 +1,27 @@
 from pydantic import BaseModel, Field
+from .mixins import MultilingualNameBase, MultilingualNameBaseUpdate
 
 
 # region ReviewCategory
-class ReviewCategoryBase(BaseModel):
-    name: str
+class ReviewCategoryBase(MultilingualNameBase):
+    pass
 
 
-class ReviewCategoryRead(ReviewCategoryBase):
+class ReviewCategoryRead(BaseModel):
     id: int
+    name: dict[str, str]
 
 
-class ReviewCategoryCreate(ReviewCategoryBase):
+class ReviewCategoryCreate(BaseModel):
+    name: dict[str, str]
+
+
+class ReviewCategoryUpdate(MultilingualNameBaseUpdate):
     pass
 
 
 class ReviewCategoryFilter(BaseModel):
     id: int | None = None
-    name: str | None = None
 
 
 # endregion
@@ -37,7 +42,11 @@ class ReviewCategoryRatingUpdate(BaseModel):
     rating: int | None = None
 
 
-class ReviewCategoryCreateInternal(ReviewCategoryRatingCreate):
+class ReviewCategoryRatingCreateInternal(ReviewCategoryRatingCreate):
+    review_id: int
+
+
+class ReviewCategoryRatingUpdateInternal(ReviewCategoryRatingUpdate):
     review_id: int
 
 
@@ -95,7 +104,7 @@ class ReviewFilter(BaseModel):
 
 
 class HotelReviewSummary(BaseModel):
-    general_rating: float
+    average_rating: float
     review_count: int
     category_ratings: dict[str, float]
 
