@@ -4,16 +4,18 @@ from sqlalchemy import Float, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin, TimestampMixin
+from app.models.mixins import IntIdPkMixin, TimestampMixin, MultilingualNameMixin
 
 if TYPE_CHECKING:
     from app.models.user import User  # noqa
     from app.models.hotel import Hotel  # noqa
 
 
-class ReviewCategory(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(String)
-
+class ReviewCategory(
+    IntIdPkMixin,
+    MultilingualNameMixin,
+    Base,
+):
     # relationships
     review_category_ratings = relationship(
         "ReviewCategoryRating",

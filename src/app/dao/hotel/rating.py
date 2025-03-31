@@ -29,13 +29,10 @@ class HotelRatingDAO(BaseDAO):
         session: AsyncSession,
         hotel_id: int,
     ) -> int:
-        review_count = await Review.count(
-            session=session,
-            filters=ReviewFilter(
-                hotel_id=hotel_id,
-            ),
+        result = await session.execute(
+            select(func.count(Review.id)).where(Review.hotel_id == hotel_id)
         )
-        return review_count
+        return result.unique().scalar_one_or_none()
 
     @classmethod
     async def get_hotel_summary_rating(
@@ -50,7 +47,7 @@ class HotelRatingDAO(BaseDAO):
             .where(HotelRating.hotel_id == hotel_id)
             .where(HotelCategoryRating.hotel_rating_id == HotelRating.id)
         )
-        rating = hotel_rating.scalar_one_or_none()
+        rating = hotel_rating.unique().scalar_one_or_none()
 
         return rating if rating else []
 
@@ -66,20 +63,25 @@ class HotelRatingDAO(BaseDAO):
         )
         avg_general = general_rating.scalar() or 0
         reviews_count = await cls._get_review_count_for_hotel(
+            cls,
             session=session,
             hotel_id=hotel_id,
         )
         # Рейтинги по категориям
-        category_ratings = await session.execute(
+        result = await session.execute(
             select(
-                ReviewCategory.name,
+                ReviewCategory.id,
                 func.avg(ReviewCategoryRating.rating).label("avg_rating"),
             )
             .join(ReviewCategoryRating.review_category)
-            .where(Review, ReviewCategoryRating.review_id == Review.id)
+            .join(Review, ReviewCategoryRating.review_id == Review.id)
             .where(Review.hotel_id == hotel_id)
-            .group_by(ReviewCategoryRating.rating)
+            .group_by(ReviewCategory.id)
         )
+        category_ratings = (
+            result.fetchall()
+        )  # без await, так как result.fetchall() возвращает обычный список
+
         hotel_rating = await cls.create(
             session=session,
             values=HotelRatingCreateInternal(
@@ -89,7 +91,7 @@ class HotelRatingDAO(BaseDAO):
             ),
         )
         # Создаем записи для каждой категории
-        for category in await category_ratings.fetchall():
+        for category in category_ratings:
             await HotelCategoryRatingDAO.create(
                 session=session,
                 values=HotelCategoryRatingCreateInternal(
