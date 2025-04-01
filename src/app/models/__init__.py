@@ -11,6 +11,7 @@ from .hotel.rules import HotelRule
 from .location import City, Country
 from .partner import Partner
 from .review import Review, ReviewCategory, ReviewCategoryRating
+from .hotel.rating import HotelRating, HotelCategoryRating
 from .room import Room
 from .room.amenities import RoomAmenity, RoomAmenityAssociation
 from .room.bed import BedType, RoomBedConfiguration
