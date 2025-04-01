@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import JSON, Float, ForeignKey, Integer
+from sqlalchemy import Float, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
@@ -27,7 +27,10 @@ class HotelRating(IntIdPkMixin, Base):
     reviews_count: Mapped[int] = mapped_column(Integer)
 
     # relationships
-    hotel: Mapped["Hotel"] = relationship(back_populates="rating")
+    hotel: Mapped["Hotel"] = relationship(
+        "Hotel",
+        back_populates="rating",
+    )
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     category_ratings: Mapped[list["HotelCategoryRating"]] = relationship(
         back_populates="hotel_rating",

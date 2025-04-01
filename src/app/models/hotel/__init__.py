@@ -17,11 +17,11 @@ if TYPE_CHECKING:
     from app.models.hotel.images import HotelImage
     from app.models.hotel.info import HotelInfo
     from app.models.hotel.location import HotelLocation
+    from app.models.hotel.rating import HotelRating
     from app.models.hotel.rules import HotelRule
     from app.models.partner import Partner
     from app.models.review import Review
     from app.models.room import Room
-    from app.models.hotel.rating import HotelRating
 
 
 class Hotel(
@@ -86,7 +86,7 @@ class Hotel(
         back_populates="hotel",
     )
     hotel_info: Mapped["HotelInfo"] = relationship(back_populates="hotel")
-    rating = relationship(
+    rating: Mapped["HotelRating"] = relationship(
         "HotelRating",
         back_populates="hotel",
     )
