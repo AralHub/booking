@@ -79,15 +79,15 @@ VERIFY_CODE_FIELD = Annotated[
     str,
     Field(pattern=r"^\d{5}$", examples=["12345"]),
 ]
-LONG_FIELD= Annotated[
-    float ,
+LONG_FIELD = Annotated[
+    float,
     Field(
         ge=-180,
         le=180,
     ),
 ]
 LAT_FIELD = Annotated[
-    float ,
+    float,
     Field(
         ge=-90,
         le=90,
@@ -177,7 +177,7 @@ BOOKING_STATUS_FIELD = Annotated[
     BookingStatus,
     Field(
         examples=[BookingStatus.CANCELLED.value],
-        default=BookingStatus.PENDING,
+        default=BookingStatus.BOOKED.value,
     ),
 ]
 BOOKING_STATUS_FIELD_UPDATE = Annotated[
