@@ -86,7 +86,7 @@ class Hotel(
         back_populates="hotel",
     )
     hotel_info: Mapped["HotelInfo"] = relationship(back_populates="hotel")
-    rating: Mapped["HotelRating"] = relationship(
+    hotel_rating: Mapped["HotelRating"] = relationship(
         "HotelRating",
         back_populates="hotel",
     )
