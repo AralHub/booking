@@ -48,7 +48,7 @@ class HotelFullCreate(
 class HotelFullCreateInternal(HotelFullCreate):
     hotel_admin_id: int
     created_at: datetime
-    slug: str | None = None
+    slug: str
 
 
 class BookingInformationUpdate(BaseModel):

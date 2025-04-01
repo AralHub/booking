@@ -1,22 +1,16 @@
-from datetime import date
-from sqlalchemy import func, select, and_, or_
-from sqlalchemy.types import Integer
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 from app.dao import BaseDAO
 from app.dao.room import RoomDAO
 from app.dao.room.price import RoomPriceDAO
-from app.dao.user import UserDAO
 from app.models.booking import Booking, BookingStatus
 from app.models.room import Room
-from app.models.user import User
 from app.schemas.room.price import RoomPriceFilter
 from app.schemas.room import RoomFilter
 from app.models.booking import Booking, BookingStatus
 from app.schemas.booking import (
     BookingCreateMultipleRooms,
     BookingCreateMultipleRoomsInternal,
-    BookedRoomCreate,
     BookedRoomCreateInternal,
 )
 from app.models.booking import BookedRoom
@@ -53,34 +47,34 @@ class BookingDAO(BaseDAO):
         )
 
         # Проверяем каждую комнату
-        for room_info in booking_data.rooms_info:
+        for room in booking_data.rooms_info:
             # Проверка доступности комнаты
-            if room_info.room_id in booked_room_ids:
+            if room.room_id in booked_room_ids:
                 raise BadRequestException(
-                    f"Room {room_info.room_id} is already booked for these dates"
+                    f"Room {room.room_id} is already booked for these dates"
                 )
 
             db_room = await RoomDAO.get_one_or_none(
                 session=session,
                 filters=RoomFilter(
-                    id=room_info.room_id,
+                    id=room.room_id,
                     hotel_id=hotel_id,
                 ),
             )
             if not db_room:
-                raise NotFoundException(f"Room with ID {room_info.room_id} not found")
+                raise NotFoundException(f"Room with ID {room.room_id} not found")
 
             # Проверка количества гостей
-            if room_info.guest_quantity > db_room.max_guests:
+            if room.guest_quantity > db_room.max_guests:
                 raise BadRequestException(
-                    f"Room {room_info.room_id} can only accommodate {db_room.max_guests} guests"
+                    f"Room {room.room_id} can only accommodate {db_room.max_guests} guests"
                 )
 
             # Расчет цены
             room_price = await cls._calculate_room_price(
                 session,
                 db_room,
-                room_info.guest_quantity,
+                room.guest_quantity,
             )
 
             room_total_price = total_days * room_price
@@ -101,16 +95,16 @@ class BookingDAO(BaseDAO):
             session=session,
             values=booking_create_data,
         )
-
-        booked_room = await BookedRoomDAO.create(
-            session=session,
-            values=BookedRoomCreateInternal(
-                booking_id=crated_booking.id,
-                room_id=room_info.room_id,
-                guest_quantity=room_info.guest_quantity,
-                guest_name=room_info.guest_name,
-            ),
-        )
+        for room in booking_data.rooms_info:
+            await BookedRoomDAO.create(
+                session=session,
+                values=BookedRoomCreateInternal(
+                    booking_id=crated_booking.id,
+                    room_id=room.room_id,
+                    guest_quantity=room.guest_quantity,
+                    guest_name=room.guest_name,
+                ),
+            )
 
         return crated_booking
 
