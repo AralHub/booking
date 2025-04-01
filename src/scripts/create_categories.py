@@ -7,7 +7,9 @@ from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
 from app.dao.hotel import HotelCategoryDAO
+from app.dao.review import ReviewCategoryDAO
 from app.schemas.hotel.category import HotelCategoryCreateInternal
+from app.schemas.review import ReviewCategoryCreate
 
 logger = logging.getLogger(__name__)
 
@@ -19,10 +21,13 @@ async def create_hotel_categories(
         HOTEL_CATEGORIES_JSON_PATH = (
             f"{SOURCE_DIR}/scripts/sample_data/hotel_categories.json"
         )
-
+        REVIEW_CATEGORIES_JSON_PATH = (
+            f"{SOURCE_DIR}/scripts/sample_data/review_categories.json"
+        )
         with open(HOTEL_CATEGORIES_JSON_PATH, encoding="utf-8") as file:
             hotel_categories_data = json.load(file)
-
+        with open(REVIEW_CATEGORIES_JSON_PATH, encoding="utf-8") as file:
+            review_categories_data = json.load(file)
         # Create hotel categories
         for hotel_category_item in hotel_categories_data["hotel_categories"]:
             try:
@@ -39,7 +44,20 @@ async def create_hotel_categories(
                     f"Failed to add category {hotel_category_item.get('name')["ru"]}: {e}"
                 )
                 continue
-
+        for review_category_item in review_categories_data["review_categories"]:
+            try:
+                review_category_create = ReviewCategoryCreate(
+                    name=review_category_item["name"],
+                )
+                await ReviewCategoryDAO.create(
+                    session=session,
+                    values=review_category_create,
+                )
+            except Exception as e:
+                logger.error(
+                    f"Failed to add category {review_category_item.get('name')["ru"]}: {e}"
+                )
+                continue
         await session.commit()
         logger.info("Transaction committed successfully")
 

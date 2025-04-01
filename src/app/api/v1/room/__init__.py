@@ -23,10 +23,6 @@ from app.schemas.room import (
 )
 from app.schemas.room.types import RoomTypeFilter
 
-from .amenities import router as amenities_router
-from .images import router as images_router
-from .price import router as price_router
-
 # from .types import router as types_router
 
 router = APIRouter(
@@ -105,8 +101,3 @@ async def update_hotel_room(
         room_id=room_id,
         hotel_id=hotel_id,
     )
-
-
-router.include_router(amenities_router)
-router.include_router(images_router)
-router.include_router(price_router)
