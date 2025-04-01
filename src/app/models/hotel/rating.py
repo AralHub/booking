@@ -27,11 +27,11 @@ class HotelRating(IntIdPkMixin, Base):
     reviews_count: Mapped[int] = mapped_column(Integer)
 
     # relationships
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     hotel: Mapped["Hotel"] = relationship(
         "Hotel",
-        back_populates="rating",
+        back_populates="hotel_rating",
     )
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     category_ratings: Mapped[list["HotelCategoryRating"]] = relationship(
         back_populates="hotel_rating",
         cascade="all, delete-orphan",
