@@ -8,7 +8,6 @@ from app.core.config import settings
 from app.dao.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.review import (
-    HotelReviewSummary,
     ReviewCreate,
     ReviewFilter,
     ReviewRead,

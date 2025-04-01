@@ -8,8 +8,8 @@ from .hotel.amenities import router as hotel_amenities_router
 from .hotel.images import router as hotel_images_router
 from .hotel.info import router as hotel_info_router
 from .hotel.location import router as hotel_location_router
-from .hotel.review import router as hotel_review_router
 from .hotel.rating import router as hotel_rating_router
+from .hotel.review import router as hotel_review_router
 from .hotel.rules import router as hotel_rules_router
 from .location import router as superuser_location_router
 from .partner import router as partner_router

@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, ForeignKey, String, Text
+from sqlalchemy import Float, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin, TimestampMixin, MultilingualNameMixin
+from app.models.mixins import IntIdPkMixin, MultilingualNameMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.user import User  # noqa
