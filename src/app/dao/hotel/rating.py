@@ -78,9 +78,7 @@ class HotelRatingDAO(BaseDAO):
             .where(Review.hotel_id == hotel_id)
             .group_by(ReviewCategory.id)
         )
-        category_ratings = (
-            result.fetchall()
-        )  # без await, так как result.fetchall() возвращает обычный список
+        category_ratings = result.fetchall()
 
         hotel_rating = await cls.create(
             session=session,

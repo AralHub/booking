@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from app.models.partner import Partner
     from app.models.review import Review
     from app.models.room import Room
+    from app.models.hotel.rating import HotelRating
 
 
 class Hotel(
@@ -85,7 +86,10 @@ class Hotel(
         back_populates="hotel",
     )
     hotel_info: Mapped["HotelInfo"] = relationship(back_populates="hotel")
-
+    rating = relationship(
+        "HotelRating",
+        back_populates="hotel",
+    )
     # languages: Mapped[list["Language"]] = relationship(
     #     secondary="hotel_language_associations",
     #     back_populates="hotels",
