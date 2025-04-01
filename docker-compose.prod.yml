@@ -74,70 +74,84 @@ services:
       - ./src:/code/src
       - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
-  # create_cities:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env.prod
-  #   depends_on:
-  #     - db
-  #     - web
-  #   command: python -m src.scripts.create_cities
-  #   volumes:
-  #     - ./src:/code/src
-  #     - ./src/.env.prod:/code/.env
-  #     - ./src/certs:/code/certs:ro
-  #     - ./src/scripts/sample_data:/code/scripts/sample_data
 
-  # create_categories:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env.prod
-  #   depends_on:
-  #     - db
-  #     - web
-  #   command: python -m src.scripts.create_categories
-  #   volumes:
-  #     - ./src:/code/src
-  #     - ./src/.env.prod:/code/.env
-  #     - ./src/certs:/code/certs:ro
-  #     - ./src/scripts/sample_data:/code/scripts/sample_data
+  create_cities:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_cities
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
 
-  # create_amenities:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env.prod
-  #   depends_on:
-  #     - db
-  #     - web
-  #   command: python -m src.scripts.create_amenities
-  #   volumes:
-  #     - ./src:/code/src
-  #     - ./src/.env.prod:/code/.env
-  #     - ./src/certs:/code/certs:ro
-  #     - ./src/scripts/sample_data:/code/scripts/sample_data
+  create_categories:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_categories
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
 
-  # create_room_types:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env.prod
-  #   depends_on:
-  #     - db
-  #     - web
-  #   command: python -m src.scripts.create_rooms
-  #   volumes:
-  #     - ./src:/code/src
-  #     - ./src/.env.prod:/code/.env
-  #     - ./src/certs:/code/certs:ro
-  #     - ./src/scripts/sample_data:/code/scripts/sample_data
+  create_amenities:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_amenities
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
 
+  create_room_types:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    command: python -m src.scripts.create_rooms
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
+  create_fake_db:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.dev
+    depends_on:
+      - db
+    command: python -m src.scripts.create_fakedb
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.dev:/code/.env
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
 
 
 volumes:
