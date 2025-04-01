@@ -150,7 +150,7 @@ services:
     command: python -m src.scripts.create_fakedb
     volumes:
       - ./src:/code/src
-      - ./src/.env.dev:/code/.env
+      - ./src/.env.prod:/code/.env
       - ./src/certs:/code/certs:ro
       - ./src/scripts/sample_data:/code/scripts/sample_data
 
