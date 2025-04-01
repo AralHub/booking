@@ -1,3 +1,4 @@
+from datetime import date
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 from app.dao import BaseDAO
@@ -14,6 +15,7 @@ from app.schemas.booking import (
     BookedRoomCreateInternal,
 )
 from app.models.booking import BookedRoom
+from sqlalchemy import select, and_, or_
 
 
 class BookedRoomDAO(BaseDAO):
@@ -128,3 +130,37 @@ class BookingDAO(BaseDAO):
                 guest_quantity=guest_quantity,
             )
         return room.base_price
+
+    @classmethod
+    async def get_bookings_by_hotel_ids(
+        cls,
+        session: AsyncSession,
+        hotel_ids: list[int],
+        check_in_date: date,
+        check_out_date: date,
+    ):
+        booked_rooms_stmt = (
+            select(BookedRoom.room_id)
+            .join(Booking, Booking.id == BookedRoom.booking_id)
+            .join(Room)  # Добавляем join с таблицей rooms
+            .where(
+                Room.hotel_id.in_(hotel_ids),  # Используем in_ для списка ID
+                Booking.status == BookingStatus.BOOKED,
+                or_(
+                    and_(
+                        Booking.check_in_date <= check_in_date,
+                        Booking.check_out_date > check_in_date,
+                    ),
+                    and_(
+                        Booking.check_in_date < check_out_date,
+                        Booking.check_out_date >= check_out_date,
+                    ),
+                    and_(
+                        Booking.check_in_date >= check_in_date,
+                        Booking.check_out_date <= check_out_date,
+                    ),
+                ),
+            )
+        )
+
+        return (await session.execute(booked_rooms_stmt)).scalars().all()

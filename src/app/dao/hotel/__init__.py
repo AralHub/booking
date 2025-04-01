@@ -48,6 +48,7 @@ from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
 from app.models.room import Room
 from app.models.hotel.location import HotelLocation
 from app.dao.room import RoomDAO
+from app.dao.booking import BookingDAO
 
 
 class HotelDAO(BaseDAO):
@@ -271,11 +272,11 @@ class HotelDAO(BaseDAO):
         )
         hotel_ids = hotels_in_city.scalars().all()
         # Получить перекрывающиеся бронирования
-        overlapping_bookings = await RoomDAO.get_overlapping_bookings(
+        overlapping_bookings = await BookingDAO.get_bookings_by_hotel_ids(
             session=session,
             check_in_date=check_in_date,
             check_out_date=check_out_date,
-            hotel_id=hotel_ids,
+            hotel_ids=hotel_ids,
         )
 
         # Извлекаем идентификаторы забронированных комнат
