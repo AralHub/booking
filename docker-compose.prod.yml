@@ -50,14 +50,14 @@ services:
     expose:
       - "6379"
 
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   environment:
-  #     - ADMINER_DEFAULT_SERVER=db
-  #     - ADMINER_DESIGN=dracula
-  #   ports:
-  #     - "8023:8080"
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      - ADMINER_DEFAULT_SERVER=db
+      - ADMINER_DESIGN=dracula
+    ports:
+      - "8023:8080"
 
   # -------- create first superuser --------
   create_superuser:
