@@ -146,6 +146,7 @@ services:
       - ./src/.env.prod
     depends_on:
       - db
+      - web
     command: python -m src.scripts.create_fakedb
     volumes:
       - ./src:/code/src
