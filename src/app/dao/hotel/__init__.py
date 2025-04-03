@@ -1,13 +1,24 @@
 from datetime import UTC, date, datetime
 
 from fastapi import Depends
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils.slug_utils import generate_slug_for_hotel
+from app.api.dependencies.hotel import validate_hotel
+
+from app.dao import BaseDAO
 from app.dao.hotel.amenities import HotelAmenityDAO
 from app.dao.hotel.location import HotelLocationDAO
 from app.dao.location import CityDAO
+from app.dao.review import ReviewDAO
+from app.dao.hotel.category import HotelCategoryDAO
+from app.dao.hotel.info import HotelInfoDAO
+from app.dao.room import RoomDAO
+from app.dao.booking import BookingDAO
+from app.dao.hotel.rules import HotelRuleDAO
+
 from app.models.hotel.amenities import HotelAmenityAssociation
 from app.models.booking import Booking
 from app.schemas.hotel.location import (
@@ -15,24 +26,16 @@ from app.schemas.hotel.location import (
     LocationFilter,
     LocationUpdate,
 )
-from app.schemas.location import CityFilter
-from app.dao.hotel.rules import HotelRuleDAO
-from app.schemas.hotel.rules import (
-    RuleCreateInternal,
-    RuleFilter,
-    RuleUpdate,
-)
-from app.dao import BaseDAO
-from app.core.exceptions.http_exceptions import NotFoundException
-
-from app.api.dependencies.hotel import validate_hotel
-from app.dao.review import ReviewDAO
-from app.dao.hotel.category import HotelCategoryDAO
-from app.dao.hotel.info import HotelInfoDAO
 from app.models.hotel import Hotel
+from app.models.room.price import RoomPrice
 from app.models.hotel.category import HotelCategory
 from app.models.hotel.location import HotelLocation
 from app.models.booking import BookingStatus
+from app.models.room import Room
+from app.models.hotel.location import HotelLocation
+from app.models.hotel.rating import HotelRating
+
+from app.schemas.location import CityFilter
 from app.schemas.hotel.category import HotelCategoryFilter
 from app.schemas.hotel.info import HotelInfoFilter, HotelInfoUpdate
 from app.schemas.hotel.info import (
@@ -44,12 +47,12 @@ from app.schemas.hotel.info import (
     HotelNameFilter,
     HotelNameUpdate,
 )
+from app.schemas.hotel.rules import (
+    RuleCreateInternal,
+    RuleFilter,
+    RuleUpdate,
+)
 from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
-from app.models.room import Room
-from app.models.hotel.location import HotelLocation
-from app.models.hotel.rating import HotelRating
-from app.dao.room import RoomDAO
-from app.dao.booking import BookingDAO
 
 
 class HotelDAO(BaseDAO):
@@ -60,13 +63,35 @@ class HotelDAO(BaseDAO):
         cls,
         session: AsyncSession,
     ):
+        min_price_subquery = (
+            select(
+                Room.hotel_id,
+                func.min(Room.base_price).label("min_price"),
+                func.first_value(Room.id)
+                .over(partition_by=Room.hotel_id, order_by=Room.base_price)
+                .label("cheapest_room_id"),
+            )
+            .group_by(Room.hotel_id, Room.id)
+            .subquery()
+        )
+
         query = (
             select(cls.model)
             .join(HotelRating, cls.model.id == HotelRating.hotel_id)
-            .options(selectinload(cls.model.hotel_rating))
-            .options(selectinload(cls.model.location))
+            .join(min_price_subquery, cls.model.id == min_price_subquery.c.hotel_id)
+            .join(Room, Room.id == min_price_subquery.c.cheapest_room_id)
+            .options(
+                selectinload(cls.model.hotel_rating),
+                selectinload(cls.model.location),
+                selectinload(
+                    cls.model.rooms.and_(
+                        Room.id == min_price_subquery.c.cheapest_room_id
+                    )
+                ).selectinload(Room.room_prices),
+            )
             .order_by(HotelRating.average_rating.desc())
         )
+
         result = await session.execute(query)
         return result.scalars().all()
 

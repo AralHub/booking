@@ -24,6 +24,15 @@ router = APIRouter(
 )
 
 
+@router.get("/count")
+async def get_hotels_count(
+    session=SessionDep,
+):
+    return await HotelDAO.count(
+        session=session,
+    )
+
+
 @router.get("/popular")
 async def get_popular_hotels(
     session=SessionDep,
