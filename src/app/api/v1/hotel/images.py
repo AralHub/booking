@@ -24,15 +24,10 @@ async def get_hotel_images(
     hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
-    db_hotel_images = await HotelImageDAO.get_all(
+    return await HotelImageDAO.get_hotel_images(
         session=session,
-        filters=HotelImageFilter(
-            hotel_id=hotel_id,
-        ),
+        hotel_id=hotel_id,
     )
-    if not db_hotel_images:
-        raise NotFoundException("Hotel doesn't have any images")
-    return db_hotel_images
 
 
 @router.post("/{hotel_id}/images")
@@ -42,17 +37,16 @@ async def add_hotel_image(
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
+
     file_path = await file_utils.save_png(
         file=photo,
         filename=f"hotel_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
         folder=f"hotel_{hotel_id}",
     )
-    return await HotelImageDAO.create(
+    return await HotelImageDAO.add_hotel_image(
         session=session,
-        values=HotelImageFilter(
-            hotel_id=hotel_id,
-            image=file_path,
-        ),
+        hotel_id=hotel_id,
+        file_path=file_path,
     )
 
 
@@ -63,22 +57,8 @@ async def delete_hotel_image(
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
-    image = await HotelImageDAO.get_one(
+    return await HotelImageDAO.delete_hotel_image(
         session=session,
-        filters=HotelImageFilter(
-            hotel_id=hotel_id,
-            id=image_id,
-        ),
-    )
-    if not image:
-        raise NotFoundException("Image not found")
-    await file_utils.delete_photo(
-        photo_path=image.image,
-    )
-    await HotelImageDAO.delete(
-        session=session,
-        filters=HotelImageFilter(
-            hotel_id=hotel_id,
-            id=image_id,
-        ),
+        hotel_id=hotel_id,
+        image_id=image_id,
     )

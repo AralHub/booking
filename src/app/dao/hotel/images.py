@@ -1,7 +1,82 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.dao import BaseDAO
 from app.models.hotel.images import HotelImage
+from datetime import UTC, datetime
+
+from fastapi import APIRouter, Depends, UploadFile
+
+from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.partner import valid_hotel_admin
+from app.core import SessionDep, TransactionSessionDep
+from app.core.config import settings
+from app.core.exceptions.http_exceptions import NotFoundException
+from app.core.utils import file_utils
+from app.dao.hotel.images import HotelImageDAO
+from app.schemas.hotel.images import HotelImageFilter
+from app.schemas.hotel.info import HotelNameRead
+from app.core.i18n.translations import ErrorCode
 
 
 class HotelImageDAO(BaseDAO):
     model = HotelImage
+
+    @classmethod
+    async def get_hotel_images(
+        cls,
+        session: AsyncSession,
+        hotel_id: int,
+    ):
+        db_hotel_images = await cls.get_all(
+            session=session,
+            filters=HotelImageFilter(
+                hotel_id=hotel_id,
+            ),
+        )
+
+        if not db_hotel_images:
+            raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
+        return db_hotel_images
+
+    @classmethod
+    async def add_hotel_image(
+        cls,
+        session: AsyncSession,
+        hotel_id: int,
+        file_path: str,
+    ):
+
+        await cls.create(
+            session=session,
+            values=HotelImageFilter(
+                hotel_id=hotel_id,
+                image=file_path,
+            ),
+        )
+
+    @classmethod
+    async def delete_hotel_image(
+        cls,
+        session: AsyncSession,
+        hotel_id: int,
+        image_id: int,
+    ):
+        image = await cls.get_one(
+            session=session,
+            filters=HotelImageFilter(
+                hotel_id=hotel_id,
+                id=image_id,
+            ),
+        )
+
+        if not image:
+            raise NotFoundException("Image not found")
+        await file_utils.delete_photo(
+            photo_path=image.image,
+        )
+        await cls.delete(
+            session=session,
+            filters=HotelImageFilter(
+                hotel_id=hotel_id,
+                id=image_id,
+            ),
+        )
