@@ -6,10 +6,8 @@ from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
 from app.dao.hotel.images import HotelImageDAO
-from app.schemas.hotel.images import HotelImageFilter
 from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(
