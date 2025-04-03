@@ -47,12 +47,28 @@ from app.schemas.hotel.info import (
 from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
 from app.models.room import Room
 from app.models.hotel.location import HotelLocation
+from app.models.hotel.rating import HotelRating
 from app.dao.room import RoomDAO
 from app.dao.booking import BookingDAO
 
 
 class HotelDAO(BaseDAO):
     model = Hotel
+
+    @classmethod
+    async def get_popular_hotels(
+        cls,
+        session: AsyncSession,
+    ):
+        query = (
+            select(cls.model)
+            .join(HotelRating, cls.model.id == HotelRating.hotel_id)
+            .options(selectinload(cls.model.hotel_rating))
+            .options(selectinload(cls.model.location))
+            .order_by(HotelRating.average_rating.desc())
+        )
+        result = await session.execute(query)
+        return result.scalars().all()
 
     @classmethod
     async def get_full_hotel_by_id(cls, hotel_id: int, session: AsyncSession):

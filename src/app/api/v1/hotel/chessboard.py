@@ -6,7 +6,10 @@ from sqlalchemy.future import select
 from app.core import SessionDep
 from app.models.hotel.chessboard import ChessBoard
 
-router = APIRouter(prefix="/chessboard")
+router = APIRouter(
+    prefix="/chessboard",
+    tags=["Hotel Chessboard"],
+)
 
 
 @router.get("/room-types/{room_type_id}/availability")

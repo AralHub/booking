@@ -19,9 +19,18 @@ from app.schemas.partner import PartnerRead
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
-    tags=["Hotels"],
+    tags=["Hotel"],
     prefix=settings.api_v1.hotel_prefix,
 )
+
+
+@router.get("/popular")
+async def get_popular_hotels(
+    session=SessionDep,
+):
+    return await HotelDAO.get_popular_hotels(
+        session=session,
+    )
 
 
 @router.post("/search")
