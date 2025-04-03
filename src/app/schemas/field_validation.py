@@ -1,5 +1,7 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Any
+
+from pydantic import BaseModel
 
 from pydantic import EmailStr, Field
 
@@ -187,3 +189,11 @@ BOOKING_STATUS_FIELD_UPDATE = Annotated[
         default=None,
     ),
 ]
+
+
+class Page(BaseModel):
+    page: int
+    page_size: int
+    total_elements: int
+    total_pages: int
+    content: Any

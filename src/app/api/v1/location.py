@@ -16,6 +16,7 @@ from app.schemas.location import (
     CountryFilter,
     CountryUpdate,
 )
+from app.schemas.field_validation import Page
 
 router = APIRouter(
     tags=["Superuser Locations"],
@@ -104,11 +105,33 @@ async def delete_country(
 @router.get("/locations/countries/{country_id}/cities")
 async def get_all_cities_by_country_id(
     country_id: int,
+    page: int = 1,
+    page_size: int = 10,
     session=SessionDep,
 ):
-    return await CityDAO.get_all(
+    # return await CityDAO.get_all(
+    #     session=session,
+    #     filters=CityFilter(country_id=country_id),
+    # )
+    city_count = await CityDAO.count(
         session=session,
         filters=CityFilter(country_id=country_id),
+    )
+    result = await CityDAO.paginate(
+        session=session,
+        page=page,
+        page_size=page_size,
+        filters=CityFilter(country_id=country_id),
+        order_by="id",
+        order_direction="desc",
+    )
+    return Page(
+        page=page,
+        page_size=page_size,
+        total_elements=city_count or 0,
+        total_pages=(city_count or 0) // page_size
+        + ((city_count or 0) % page_size > 0),
+        content=[CityRead.model_validate(city) for city in result],
     )
 
 
