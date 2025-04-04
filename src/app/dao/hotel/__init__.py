@@ -62,6 +62,7 @@ class HotelDAO(BaseDAO):
     async def get_popular_hotels(
         cls,
         session: AsyncSession,
+        limit: int,
     ):
         min_price_subquery = (
             select(
@@ -90,6 +91,7 @@ class HotelDAO(BaseDAO):
                 ).selectinload(Room.room_prices),
             )
             .order_by(HotelRating.average_rating.desc())
+            .limit(limit)
         )
 
         result = await session.execute(query)
@@ -328,7 +330,30 @@ class HotelDAO(BaseDAO):
 
         print(f"Забронированные номера: {booked_room_ids}")
         print(f"Требуемое размещение гостей: {guests}")
-
+        # chessboard_subquery = (
+        #     select(ChessBoard.room_type_id)
+        #     .where(
+        #         ChessBoard.check_date.between(check_in_date, check_out_date),
+        #         (ChessBoard.is_closed == True)  # комната закрыта
+        #         | (ChessBoard.available_rooms_count <= 0),  # нет доступных комнат
+        #     )
+        #     .subquery()
+        # )
+        # rooms_query = (
+        #     select(Room)
+        #     .join(Hotel, Room.hotel_id == Hotel.id)
+        #     .join(HotelLocation, Hotel.id == HotelLocation.hotel_id)
+        #     .where(
+        #         Room.id.not_in(booked_room_ids) if booked_room_ids else True,
+        #         # Исключаем комнаты, чьи типы имеют ограничения на выбранные даты
+        #         Room.room_type_id.not_in(chessboard_subquery),
+        #     )
+        #     .options(
+        #         selectinload(Room.hotel),
+        #         selectinload(Room.room_type),
+        #         selectinload(Room.bed_configurations),
+        #     )
+        # )
         # Получаем все доступные комнаты в городе
         rooms_query = (
             select(Room)

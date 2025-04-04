@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import get_current_active_auth_partner
@@ -35,10 +35,12 @@ async def get_hotels_count(
 
 @router.get("/popular")
 async def get_popular_hotels(
+    limit: int = Query(default=10, ge=1, le=100),
     session=SessionDep,
 ):
     return await HotelDAO.get_popular_hotels(
         session=session,
+        limit=limit,
     )
 
 
