@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDictclear
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # region Country
@@ -42,6 +42,16 @@ class CityBase(BaseModel):
 class CityRead(CityBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
+    country_id: int
+    slug: str
+    properties_count: int | None = None
+    image: str | None = None
+    aero_lat: float
+    aero_lng: float
+    rail_lat: float
+    rail_lng: float
+    geocode_lng: float
+    geocode_lat: float
 
 
 class CityCreate(BaseModel):
