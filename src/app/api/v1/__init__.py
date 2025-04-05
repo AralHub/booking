@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.core.config import settings
 
 from .booking import router as booking_router
+from .corp_user import router as corp_user_router
 from .hotel import router as hotel_router
 from .hotel.amenities import router as hotel_amenities_router
 from .hotel.images import router as hotel_images_router
@@ -36,6 +37,9 @@ router.include_router(
 )
 router.include_router(
     partner_router,
+)
+router.include_router(
+    corp_user_router,
 )
 router.include_router(
     favorites_router,

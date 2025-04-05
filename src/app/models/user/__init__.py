@@ -15,11 +15,6 @@ if TYPE_CHECKING:
     from app.models.review import Review
 
 
-class USER_ROLES(str, Enum):
-    SUPERADMIN = "superadmin"
-    USER = "user"
-
-
 class GENDER_TYPES(str, Enum):
     MALE = "male"
     FEMALE = "female"

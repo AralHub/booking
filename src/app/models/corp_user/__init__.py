@@ -11,18 +11,9 @@ from app.models.mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.booking import Booking
+    from app.models.corp_user.company import Company
     from app.models.favorites import UserFavorite
     from app.models.review import Review
-
-
-class USER_ROLES(str, Enum):
-    SUPERADMIN = "superadmin"
-    USER = "user"
-
-
-class GENDER_TYPES(str, Enum):
-    MALE = "male"
-    FEMALE = "female"
 
 
 class CorpUser(
@@ -31,6 +22,15 @@ class CorpUser(
     SoftDeleteMixin,
     Base,
 ):
+    first_name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+    last_name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
     phone_number: Mapped[str] = mapped_column(
         String(255),
         unique=True,
@@ -49,23 +49,6 @@ class CorpUser(
         String(255),
         nullable=False,
     )
-    first_name: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True,
-    )
-    last_name: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True,
-    )
-    birthday: Mapped[date] = mapped_column(
-        Date,
-        nullable=True,
-    )
-    gender: Mapped[GENDER_TYPES] = mapped_column(
-        SqlEnum(GENDER_TYPES, name="gender_types"),
-        nullable=True,
-    )
-
     is_verified: Mapped[bool] = mapped_column(
         default=False,
         server_default="false",
@@ -80,10 +63,11 @@ class CorpUser(
     )
 
     # relationships
-    country_id: Mapped[int] = mapped_column(
-        ForeignKey("countries.id"),
-        nullable=True,
+    company: Mapped["Company"] = relationship(
+        "Company",
+        back_populates="corp_user",
     )
+
     bookings: Mapped[list["Booking"]] = relationship(
         "Booking",
         back_populates="user",
