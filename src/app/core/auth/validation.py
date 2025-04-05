@@ -7,10 +7,8 @@ from jwt import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions.http_exceptions import UnauthorizedException
-from app.dao.corp_user import CorpUserDAO
 from app.dao.partner import PartnerDAO
 from app.dao.user import TokenBlacklistDAO, UserDAO
-from app.schemas.corp_user import CorpUserBase
 from app.schemas.partner import PartnerBase
 from app.schemas.user import UserBase, UserFilter
 
@@ -137,32 +135,6 @@ async def get_partner_by_token_sub(session: AsyncSession, payload: dict) -> Part
     raise UnauthorizedException("Invalid token (partner not found)")
 
 
-async def get_corp_user_by_token_sub(
-    session: AsyncSession, payload: dict
-) -> CorpUserBase:
-    corp_user_id: str | None = payload.get("sub")
-    jti = payload.get("jti")
-    role = payload.get("role")
-    if role != "corp_user":
-        raise UnauthorizedException("Invalid token (corp user not found)")
-    is_blacklisted = await TokenBlacklistDAO.get_token_by_jti(
-        session=session,
-        jti=jti,
-    )
-    if is_blacklisted:
-        raise UnauthorizedException("Invalid token (blacklisted)")
-    if not corp_user_id:
-        raise UnauthorizedException("Invalid token (corp user not found)")
-
-    corp_user = await CorpUserDAO.get_one_or_none_by_id(
-        session=session,
-        data_id=int(corp_user_id),
-    )
-    if corp_user:
-        return corp_user
-    raise UnauthorizedException("Invalid token (corp user not found)")
-
-
 async def authenticate_user(
     phone_number: str,
     password: str,
@@ -208,23 +180,3 @@ async def authenticate_partner(
 
     return db_partner
 
-
-async def authenticate_corp_user(
-    phone_number: str,
-    password: str,
-    session: AsyncSession,
-) -> CorpUserBase | None:
-    db_corp_user = await CorpUserDAO.get_corp_user_by_phone(
-        session=session,
-        phone_number=phone_number,
-    )
-    if not db_corp_user:
-        return None
-
-    elif not await verify_password(
-        password=password,
-        hashed_password=db_corp_user.password,
-    ):
-        return None
-
-    return db_corp_user
