@@ -1,6 +1,6 @@
 from .base import Base
 from .booking import Booking
-from .corp_user.company import Company
+# from .company import Company
 from .favorites import UserFavorite
 from .hotel import Hotel
 from .hotel.amenities import HotelAmenity, HotelAmenityAssociation
