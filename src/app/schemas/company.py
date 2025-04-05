@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 
@@ -10,7 +9,7 @@ class CompanyBase(BaseModel):
     city_id: int
 
 
-class CorpUserCreate(CompanyBase):
+class CompanyCreate(CompanyBase):
     pass
 
 

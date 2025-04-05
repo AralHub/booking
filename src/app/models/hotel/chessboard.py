@@ -1,19 +1,17 @@
 from datetime import date
-from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     Boolean,
     Date,
-    ForeignKey,
     Integer,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models import Base
 from app.models.mixins import IntIdPkMixin
 
-if TYPE_CHECKING:
-    from app.models.room.types import RoomType
+# if TYPE_CHECKING:
+    # from app.models.room.types import RoomType
 
 
 class ChessBoard(IntIdPkMixin, Base):
@@ -25,5 +23,5 @@ class ChessBoard(IntIdPkMixin, Base):
         default=False,
         server_default="false",
     )
-    room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
-    room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
+    # room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
+    # room_type: Mapped["RoomType"] = relationship(back_populates="rooms")

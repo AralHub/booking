@@ -7,7 +7,7 @@ from app.models import Base
 from app.models.mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
-    from app.models.corp_user import CorpUser
+    from app.models.user import User
 
 
 class Company(
@@ -45,11 +45,11 @@ class Company(
         ForeignKey("cities.id"),
         nullable=False,
     )
-    corp_user_id: Mapped[int] = mapped_column(
-        ForeignKey("corp_users.id"),
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
         nullable=False,
     )
-    corp_user: Mapped["CorpUser"] = relationship(
-        "CorpUser",
+    user: Mapped["User"] = relationship(
+        "User",
         back_populates="company",
     )

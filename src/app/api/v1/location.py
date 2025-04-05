@@ -5,6 +5,7 @@ from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import BadRequestException
 from app.dao.location import CityDAO, CountryDAO
+from app.schemas.field_validation import Page
 from app.schemas.location import (
     CityCreate,
     CityCreateInternal,
@@ -16,7 +17,6 @@ from app.schemas.location import (
     CountryFilter,
     CountryUpdate,
 )
-from app.schemas.field_validation import Page
 
 router = APIRouter(
     tags=["Superuser Locations"],
@@ -109,10 +109,6 @@ async def get_all_cities_by_country_id(
     page_size: int = 10,
     session=SessionDep,
 ):
-    # return await CityDAO.get_all(
-    #     session=session,
-    #     filters=CityFilter(country_id=country_id),
-    # )
     city_count = await CityDAO.count(
         session=session,
         filters=CityFilter(country_id=country_id),

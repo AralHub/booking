@@ -81,3 +81,7 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         "UserFavorite",
         back_populates="user",
     )
+    company_id: Mapped[int] = mapped_column(
+        ForeignKey("companies.id"),
+        nullable=True,
+    )

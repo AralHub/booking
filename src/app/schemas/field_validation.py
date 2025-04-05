@@ -1,9 +1,7 @@
 from datetime import datetime
 from typing import Annotated, Any
 
-from pydantic import BaseModel
-
-from pydantic import EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field
 
 from app.models.booking import BookingStatus
 from app.models.user import GENDER_TYPES
