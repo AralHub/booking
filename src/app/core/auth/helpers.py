@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from app.core.config import settings
-from app.schemas.corp_user import CorpUserBase
 from app.schemas.partner import PartnerBase
 from app.schemas.user import UserBase
 
@@ -82,21 +81,3 @@ async def create_refresh_token_partner(partner: PartnerBase) -> str:
     }
     return await create_refresh_jwt(jwt_payload)
 
-
-async def create_access_token_corp_user(corp_user: CorpUserBase) -> str:
-    jwt_payload = {
-        "sub": str(corp_user.id),
-        "first_name": corp_user.first_name,
-        "role": "corp_user",
-    }
-    return await create_access_jwt(jwt_payload)
-
-
-async def create_refresh_token_corp_user(corp_user: CorpUserBase) -> str:
-    jwt_payload = {
-        "sub": str(corp_user.id),
-        "first_name": corp_user.first_name,
-        "last_name": corp_user.last_name,
-        "role": "corp_user",
-    }
-    return await create_refresh_jwt(jwt_payload)
