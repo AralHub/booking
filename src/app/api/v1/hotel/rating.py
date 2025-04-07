@@ -2,7 +2,9 @@ from fastapi import APIRouter
 
 from app.core import SessionDep
 from app.core.config import settings
+from app.core.i18n.responses import DataResponse
 from app.dao.hotel.rating import HotelRatingDAO
+from app.schemas.hotel.rating import HotelRatingRead
 
 router = APIRouter(
     tags=["Hotel Rating"],
@@ -10,7 +12,10 @@ router = APIRouter(
 )
 
 
-@router.get("/{hotel_id}/rating")
+@router.get(
+    "/{hotel_id}/rating",
+    response_model=DataResponse[HotelRatingRead],
+)
 async def get_hotel_rating(
     hotel_id: int,
     session=SessionDep,
@@ -20,27 +25,6 @@ async def get_hotel_rating(
         session=session,
         hotel_id=hotel_id,
     )
-    return hotel_rating
-
-# @router.get("/{hotel_id}/reviews/summary")
-# async def get_hotel_review_summary(
-#     hotel_id: int,
-#     hotel: HotelNameRead = Depends(validate_hotel),
-#     session=SessionDep,
-# ):
-#     summary_data = await ReviewDAO.get_hotel_review_summary(
-#         session=session,
-#         hotel_id=hotel_id,
-#     )
-
-#     # Получаем количество отзывов
-#     review_count = await ReviewDAO.get_review_count_for_hotel(
-#         session=session,
-#         hotel_id=hotel_id,
-#     )
-
-#     return HotelReviewSummary(
-#         average_rating=summary_data["average_rating"],
-#         review_count=review_count,
-#         category_ratings=summary_data["category_ratings"],
-#     )
+    return DataResponse(
+        data=hotel_rating,
+    )

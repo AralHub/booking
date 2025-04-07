@@ -9,6 +9,18 @@ from ..field_validation import (
 )
 
 
+class LocationRead(BaseModel):
+    id: int
+    hotel_id: int
+    address: str
+    city_id: int
+    longitude: LONG_FIELD
+    latitude: LAT_FIELD
+    to_airport: float | None = None
+    to_railway: float | None = None
+    to_city_center: float | None = None
+
+
 class LocationCreate(BaseModel):
     address: str
     city_id: int
