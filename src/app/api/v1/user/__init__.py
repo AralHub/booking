@@ -8,6 +8,7 @@ from app.api.dependencies.user import (
     get_current_auth_user,
 )
 from app.core import TransactionSessionDep
+from app.core.i18n.responses import DataResponse, RESPONSE_MESSAGES
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
@@ -38,14 +39,20 @@ router = APIRouter(
 router.include_router(auth_router)
 
 
-@router.get("/me", response_model=UserRead)
+@router.get("/me", response_model=DataResponse[UserRead])
 async def get_my_profile(
     user: UserRead = Depends(get_current_active_auth_user),
 ):
-    return user
+    return DataResponse(
+        data=user,
+    )
 
 
-@router.put("/me", status_code=status.HTTP_200_OK)
+@router.put(
+    "/me",
+    status_code=status.HTTP_200_OK,
+    response_model=DataResponse[UserRead],
+)
 async def update_profile(
     user_update: UserUpdate,
     current_user: UserRead = Depends(get_current_auth_user),
@@ -53,6 +60,7 @@ async def update_profile(
 ):
     user_update_dict = user_update.model_dump(
         exclude_unset=True,
+        exclude_none=True,
     )
     update_internal = UserUpdateInternal(
         **user_update_dict,
@@ -65,11 +73,24 @@ async def update_profile(
         values=update_internal,
     )
     if updated_rows_count == 0:
-        raise NotFoundException("User not found")
-    return updated_rows_count
+        raise BadRequestException("User did not update")
+    updated_user = await UserDAO.get_one_or_none_by_id(
+        session=session,
+        data_id=current_user.id,
+    )
+    return DataResponse(
+        data=updated_user,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "User updated successfully",
+        ),
+    )
 
 
-@router.patch("/me/phone-number")
+@router.patch(
+    "/me/phone-number",
+    response_model=DataResponse[dict],
+)
 async def change_phone_number(
     user_update: PhoneNumber,
     current_user: UserRead = Depends(get_current_active_auth_user),
@@ -93,13 +114,19 @@ async def change_phone_number(
     success, message = await send_verification_sms(new_phone_number)
     if not success:
         raise TooManyRequestsException(message)
-    return {
-        "message": "Verification code sent successfully",
-        "phone_number": new_phone_number,
-    }
+    return DataResponse(
+        data={"phone_number": new_phone_number},
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Verification code sent successfully",
+        ),
+    )
 
 
-@router.post("/me/phone-number/verify")
+@router.post(
+    "/me/phone-number/verify",
+    response_model=DataResponse[dict],
+)
 async def verify_phone_number(
     verify_data: VerifyPhoneNumber,
     current_user: UserRead = Depends(get_current_active_auth_user),
@@ -121,15 +148,19 @@ async def verify_phone_number(
     )
     if updated_rows_count == 0:
         raise BadRequestException("User not found")
-    return {
-        "message": "Phone number updated successfully",
-        "phone_number": verify_data.phone_number,
-    }
+    return DataResponse(
+        data={"phone_number": verify_data.phone_number},
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Phone number updated successfully",
+        ),
+    )
 
 
 @router.delete(
     "/me",
     status_code=status.HTTP_200_OK,
+    response_model=DataResponse[dict],
 )
 async def user_delete(
     current_user: UserRead = Depends(get_current_active_auth_user),
@@ -150,6 +181,10 @@ async def user_delete(
             deleted_at=datetime.now(UTC),
         ),
     )
-    return {
-        "message": "User deleted successfully",
-    }
+    return DataResponse(
+        data={"id": db_user.id},
+        message=RESPONSE_MESSAGES.get(
+            "DATA_DELETED",
+            "User deleted successfully",
+        ),
+    )
