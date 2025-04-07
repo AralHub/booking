@@ -7,6 +7,10 @@ class HotelRatingBase(BaseModel):
     hotel_id: int
 
 
+class HotelRatingRead(HotelRatingBase):
+    id: int
+
+
 class HotelRatingCreateInternal(HotelRatingBase):
     hotel_id: int
 
