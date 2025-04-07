@@ -3,15 +3,14 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.location import validate_country
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
+from app.core.exceptions.http_exceptions import BadRequestException
 from app.core.i18n.responses import (
+    RESPONSE_MESSAGES,
     DataResponse,
     ListResponse,
-    RESPONSE_MESSAGES,
     PaginatedResponse,
 )
-from app.core.exceptions.http_exceptions import BadRequestException
 from app.dao.location import CityDAO, CountryDAO
-from app.schemas.field_validation import Page
 from app.schemas.location import (
     CityCreate,
     CityCreateInternal,
@@ -21,8 +20,8 @@ from app.schemas.location import (
     CountryBase,
     CountryCreate,
     CountryFilter,
-    CountryUpdate,
     CountryRead,
+    CountryUpdate,
 )
 
 router = APIRouter(
