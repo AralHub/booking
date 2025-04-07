@@ -7,6 +7,11 @@ class CountryBase(BaseModel):
     code: str
 
 
+class CountryRead(CountryBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+
+
 class CountryCreate(CountryBase):
     pass
 

@@ -3,6 +3,12 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.location import validate_country
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import (
+    DataResponse,
+    ListResponse,
+    RESPONSE_MESSAGES,
+    PaginatedResponse,
+)
 from app.core.exceptions.http_exceptions import BadRequestException
 from app.dao.location import CityDAO, CountryDAO
 from app.schemas.field_validation import Page
@@ -16,6 +22,7 @@ from app.schemas.location import (
     CountryCreate,
     CountryFilter,
     CountryUpdate,
+    CountryRead,
 )
 
 router = APIRouter(
@@ -24,18 +31,26 @@ router = APIRouter(
 
 
 # region Country
-@router.get("/locations/countries")
+@router.get(
+    "/locations/countries",
+    response_model=ListResponse[CountryRead],
+)
 async def get_countries(
     session=SessionDep,
 ):
-    return await CountryDAO.get_all(
+    countries = await CountryDAO.get_all(
         session=session,
         filters=None,
+    )
+    return ListResponse(
+        data=[CountryRead.model_validate(country) for country in countries],
+        total=len(countries),
     )
 
 
 @router.post(
     "/locations/countries",
+    response_model=DataResponse[CountryRead],
     dependencies=[Depends(get_current_superuser)],
 )
 async def add_country(
@@ -50,9 +65,16 @@ async def add_country(
     )
     if db_country:
         raise BadRequestException("Country already exists")
-    return await CountryDAO.create(
+    created_country = await CountryDAO.create(
         session=session,
         values=country_create_data,
+    )
+    return DataResponse(
+        data=created_country,
+        message=CountryRead.get(
+            "DATA_CREATED",
+            default="Country created successfully",
+        ),
     )
 
 
@@ -76,10 +98,17 @@ async def update_country(
         raise BadRequestException(
             f"Country with name {country_update_data.name} already exists"
         )
-    return await CountryDAO.update(
+    updated_country = await CountryDAO.update(
         session=session,
         filters=CountryFilter(id=country_id),
         values=country_update_data,
+    )
+    return DataResponse(
+        data=updated_country,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            default="Country updated successfully",
+        ),
     )
 
 
@@ -92,9 +121,16 @@ async def delete_country(
     country: CountryBase = Depends(validate_country),
     session=TransactionSessionDep,
 ):
-    return await CountryDAO.delete(
+    await CountryDAO.delete(
         session=session,
         filters=CountryFilter(id=country_id),
+    )
+    return DataResponse(
+        data={"id": country_id},
+        message=RESPONSE_MESSAGES.get(
+            "DATA_DELETED",
+            default="Country deleted successfully",
+        ),
     )
 
 
@@ -102,7 +138,10 @@ async def delete_country(
 
 
 # region City
-@router.get("/locations/countries/{country_id}/cities")
+@router.get(
+    "/locations/countries/{country_id}/cities",
+    response_model=PaginatedResponse[CityRead],
+)
 async def get_all_cities_by_country_id(
     country_id: int,
     page: int = 1,
@@ -121,19 +160,21 @@ async def get_all_cities_by_country_id(
         order_by="id",
         order_direction="desc",
     )
-    return Page(
-        page=page,
-        page_size=page_size,
-        total_elements=city_count or 0,
-        total_pages=(city_count or 0) // page_size
-        + ((city_count or 0) % page_size > 0),
-        content=[CityRead.model_validate(city) for city in result],
+    return PaginatedResponse(
+        data=[CityRead.model_validate(city) for city in result],
+        paginate={
+            "page": page,
+            "page_size": page_size,
+            "total_elements": city_count or 0,
+            "total_pages": (city_count or 0) // page_size
+            + ((city_count or 0) % page_size > 0),
+        },
     )
 
 
 @router.post(
     "/locations/countries/{country_id}/cities",
-    response_model=CityRead,
+    response_model=DataResponse[CityRead],
     dependencies=[Depends(get_current_superuser)],
 )
 async def add_city(
@@ -145,9 +186,16 @@ async def add_city(
         **city_create_data.model_dump(),
         country_id=country_id,
     )
-    return await CityDAO.create(
+    created_city = await CityDAO.create(
         session=session,
         values=create_city_data,
+    )
+    return DataResponse(
+        data=created_city,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_CREATED",
+            default="City created successfully",
+        ),
     )
 
 
@@ -160,10 +208,17 @@ async def update_city(
     city_update_data: CityUpdate,
     session=TransactionSessionDep,
 ):
-    return await CityDAO.update(
+    updated_city = await CityDAO.update(
         session=session,
         filters=CityFilter(id=city_id),
         values=city_update_data,
+    )
+    return DataResponse(
+        data=updated_city,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            default="City updated successfully",
+        ),
     )
 
 
@@ -175,10 +230,17 @@ async def delete_city(
     city_id: int,
     session=TransactionSessionDep,
 ):
-    return await CityDAO.delete(
+    await CityDAO.delete(
         session=session,
         filters=CityFilter(
             id=city_id,
+        ),
+    )
+    return DataResponse(
+        data={"id": city_id},
+        message=RESPONSE_MESSAGES.get(
+            "DATA_DELETED",
+            default="City deleted successfully",
         ),
     )
 
