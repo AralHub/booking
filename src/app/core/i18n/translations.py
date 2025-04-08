@@ -73,11 +73,15 @@ ERROR_MESSAGES = {
 }
 
 
-def get_error_message(error_code: ErrorCode, language: str = "en") -> str:
+def get_error_message(
+    error_code: ErrorCode,
+    language: str = "en",
+) -> str:
     """Получить переведенное сообщение об ошибке по коду ошибки и языку."""
     if language not in ERROR_MESSAGES:
         language = "en"  # Fallback на английский
 
     return ERROR_MESSAGES[language].get(
-        error_code, ERROR_MESSAGES["en"][ErrorCode.INTERNAL_SERVER_ERROR]
+        error_code,
+        ERROR_MESSAGES["en"][ErrorCode.INTERNAL_SERVER_ERROR],
     )
