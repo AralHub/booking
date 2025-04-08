@@ -3,7 +3,9 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep
+from app.core.i18n.responses import ListResponse
 from app.dao.hotel import HotelAmenityDAO
+from app.schemas.hotel.amenities import HotelAmenityRead
 from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(
@@ -12,15 +14,22 @@ router = APIRouter(
 )
 
 
-@router.get("/{hotel_id}/amenities")
+@router.get(
+    "/{hotel_id}/amenities",
+    response_model=ListResponse[HotelAmenityRead],
+)
 async def get_hotel_amenities(
     hotel_id: int,
     hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
-    return await HotelAmenityDAO.get_hotel_amenities(
+    hotel_amenities = await HotelAmenityDAO.get_hotel_amenities(
         session=session,
         hotel_id=hotel_id,
+    )
+    return ListResponse(
+        data=hotel_amenities,
+        total=len(hotel_amenities),
     )
 
 

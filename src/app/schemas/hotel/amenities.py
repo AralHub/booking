@@ -6,34 +6,6 @@ from app.schemas.mixins import (
     MultilingualNameBaseUpdate,
 )
 
-# region HotelAmenity
-
-
-class HotelAmenityCreate(MultilingualNameBase):
-    is_popular: bool
-    payment_type: PaymentType
-
-
-class HotelAmenityCreateInternal(BaseModel):
-    name: dict[str, str]
-    hotel_amenity_category_id: int
-
-
-class HotelAmenityUpdate(MultilingualNameBaseUpdate):
-    is_popular: bool | None = None
-    payment_type: PaymentType | None = None
-    amenity_category_id: int | None = None
-
-
-class HotelAmenityFilter(BaseModel):
-    id: int | None = None
-    is_popular: bool | None = None
-    hotel_amenity_category_id: int | None = None
-
-
-# endregion
-
-
 # region HotelAmenityCategory
 
 
@@ -53,4 +25,49 @@ class HotelAmenityCategoryFilter(BaseModel):
     id: int | None = None
 
 
+class HotelAmenityCategoryRead(BaseModel):
+    id: int
+    name: dict[str, str]
+
+
 # endregion
+
+# region HotelAmenity
+
+
+class HotelAmenityCreate(MultilingualNameBase):
+    is_popular: bool
+    payment_type: PaymentType
+
+
+class HotelAmenityCreateInternal(BaseModel):
+    name: dict[str, str]
+    hotel_amenity_category_id: int
+
+
+class HotelAmenityRead(BaseModel):
+    id: int
+    name: dict[str, str]
+    is_popular: bool
+    payment_type: PaymentType
+    hotel_amenity_category_id: int
+
+
+class HotelAmenityUpdate(MultilingualNameBaseUpdate):
+    is_popular: bool | None = None
+    payment_type: PaymentType | None = None
+
+
+class HotelAmenityFilter(BaseModel):
+    id: int | None = None
+    is_popular: bool | None = None
+    hotel_amenity_category_id: int | None = None
+
+
+# endregion
+
+
+class HotelAmenityCategoryWithAmenities(BaseModel):
+    id: int
+    name: dict[str, str]
+    hotel_amenities: list[HotelAmenityRead]

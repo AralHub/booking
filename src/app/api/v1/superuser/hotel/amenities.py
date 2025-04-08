@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.amenities import validate_hotel_amenities_category
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import ListResponse, DataResponse, RESPONSE_MESSAGES
+from app.dao.hotel import HotelAmenityDAO
 from app.dao.hotel.amenities import (
     HotelAmenityCategoryDAO,
-    HotelAmenityDAO,
 )
 from app.schemas.hotel.amenities import (
     HotelAmenityCategoryCreate,
@@ -15,7 +16,10 @@ from app.schemas.hotel.amenities import (
     HotelAmenityCreate,
     HotelAmenityCreateInternal,
     HotelAmenityFilter,
+    HotelAmenityCategoryWithAmenities,
     HotelAmenityUpdate,
+    HotelAmenityRead,
+    HotelAmenityCategoryRead,
 )
 
 router = APIRouter(
@@ -24,32 +28,52 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get(
+    "",
+    response_model=ListResponse[HotelAmenityCategoryWithAmenities],
+)
 async def get_all_hotel_amenities(
     session=SessionDep,
 ):
     """
     Все удобства отеля разделенные по категориям
     """
-    return await HotelAmenityCategoryDAO.get_all_amenities(
+    hotel_amenities = await HotelAmenityCategoryDAO.get_all_amenities(
         session=session,
+    )
+    return ListResponse(
+        data=hotel_amenities,
+        total=len(hotel_amenities),
     )
 
 
-@router.post("/categories/{category_id}/amenities")
+@router.post(
+    "/categories/{category_id}/amenities",
+    response_model=DataResponse[HotelAmenityRead],
+)
 async def create_hotel_amenity(
-    hotel_amenity_category_id: int,
+    category_id: int,
     hotel_amenity_data: HotelAmenityCreate,
+    validate_hotel_amenities_category: HotelAmenityCategoryRead = Depends(
+        validate_hotel_amenities_category
+    ),
     session=TransactionSessionDep,
 ):
     """
     Удобства по категории-удобств отеля
     """
-    return await HotelAmenityDAO.create(
+    created_amenity = await HotelAmenityDAO.create(
         session=session,
         values=HotelAmenityCreateInternal(
             name=hotel_amenity_data.to_dict_name(),
-            hotel_amenity_category_id=hotel_amenity_category_id,
+            hotel_amenity_category_id=category_id,
+        ),
+    )
+    return DataResponse(
+        data=created_amenity,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_CREATED",
+            "Hotel amenity created successfully",
         ),
     )
 
@@ -57,6 +81,7 @@ async def create_hotel_amenity(
 @router.put(
     "/amenities/{amenity_id}",
     dependencies=[Depends(get_current_superuser)],
+    response_model=DataResponse[HotelAmenityRead],
 )
 async def update_hotel_amenity(
     category_id: int,
@@ -67,7 +92,7 @@ async def update_hotel_amenity(
     """
     Обновить удобство в категории
     """
-    return await HotelAmenityDAO.update(
+    updated_amenity = await HotelAmenityDAO.update(
         session=session,
         filters=HotelAmenityFilter(
             id=amenity_id,
@@ -75,22 +100,42 @@ async def update_hotel_amenity(
         ),
         values=amenity_update_data,
     )
+    return DataResponse(
+        data=updated_amenity,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Hotel amenity updated successfully",
+        ),
+    )
 
 
-@router.delete("/amenities/{amenity_id}")
+@router.delete(
+    "/amenities/{amenity_id}",
+    response_model=DataResponse[dict],
+)
 async def delete_hotel_amenity(
     amenity_id: int,
     session=TransactionSessionDep,
 ):
-    return await HotelAmenityDAO.delete(
+    await HotelAmenityDAO.delete(
         session=session,
         filters=HotelAmenityFilter(
             id=amenity_id,
         ),
     )
+    return DataResponse(
+        data={"id": amenity_id},
+        message=RESPONSE_MESSAGES.get(
+            "DATA_DELETED",
+            "Hotel amenity deleted successfully",
+        ),
+    )
 
 
-@router.post("/categories")
+@router.post(
+    "/categories",
+    response_model=DataResponse[HotelAmenityCategoryRead],
+)
 async def create_hotel_amenities_category(
     hotel_amenity_category_data: HotelAmenityCategoryCreate,
     session=TransactionSessionDep,
@@ -98,10 +143,17 @@ async def create_hotel_amenities_category(
     """
     Создать категорию удобств отеля
     """
-    return await HotelAmenityCategoryDAO.create(
+    created_category = await HotelAmenityCategoryDAO.create(
         session=session,
         values=HotelAmenityCategoryCreateInternal(
             name=hotel_amenity_category_data.to_dict_name(),
+        ),
+    )
+    return DataResponse(
+        data=created_category,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_CREATED",
+            "Hotel amenities category created successfully",
         ),
     )
 
@@ -109,6 +161,7 @@ async def create_hotel_amenities_category(
 @router.put(
     "/categories/{category_id}",
     dependencies=[Depends(get_current_superuser)],
+    response_model=DataResponse[HotelAmenityCategoryRead],
 )
 async def update_hotel_amenities_category(
     category_id: int,
@@ -119,16 +172,26 @@ async def update_hotel_amenities_category(
     """
     Обновить удобство в категории
     """
-    return await HotelAmenityDAO.update(
+    updated_category = await HotelAmenityCategoryDAO.update(
         session=session,
         filters=HotelAmenityCategoryFilter(
             id=category_id,
         ),
         values=amenity_update_data,
     )
+    return DataResponse(
+        data=updated_category,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Hotel amenities category updated successfully",
+        ),
+    )
 
 
-@router.delete("/categories/{category_id}")
+@router.delete(
+    "/categories/{category_id}",
+    response_model=DataResponse[dict],
+)
 async def delete_hotel_amenities_category(
     category_id: int,
     hotel_amenities_category=Depends(validate_hotel_amenities_category),
@@ -138,9 +201,16 @@ async def delete_hotel_amenities_category(
     Удалить категорию удобств отеля
     """
 
-    return await HotelAmenityCategoryDAO.delete(
+    await HotelAmenityCategoryDAO.delete(
         session=session,
         filters=HotelAmenityCategoryFilter(
             id=hotel_amenities_category.id,
+        ),
+    )
+    return DataResponse(
+        data={"id": category_id},
+        message=RESPONSE_MESSAGES.get(
+            "DATA_DELETED",
+            "Hotel amenities category deleted successfully",
         ),
     )

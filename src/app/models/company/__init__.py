@@ -7,6 +7,7 @@ from app.models import Base
 from app.models.mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
+    from app.models.company.company_info import CompanyInfo
     from app.models.user import User
 
 
@@ -15,31 +16,15 @@ class Company(
     TimestampMixin,
     Base,
 ):
+    position: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+    )
     company_name: Mapped[str] = mapped_column(
         String(255),
         unique=True,
         nullable=False,
         index=True,
-    )
-
-    email: Mapped[str] = mapped_column(
-        String(255),
-        unique=True,
-        nullable=False,
-    )
-    address: Mapped[str] = mapped_column(
-        String(255),
-        nullable=True,
-    )
-    inn: Mapped[str] = mapped_column(
-        String(20),
-        unique=True,
-        nullable=False,
-        index=True,
-    )
-    bank_name: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
     )
     city_id: Mapped[int] = mapped_column(
         ForeignKey("cities.id"),
@@ -51,5 +36,9 @@ class Company(
     )
     user: Mapped["User"] = relationship(
         "User",
+        back_populates="company",
+    )
+    company_info: Mapped["CompanyInfo"] = relationship(
+        "CompanyInfo",
         back_populates="company",
     )

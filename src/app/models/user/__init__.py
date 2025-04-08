@@ -1,8 +1,8 @@
-from datetime import date, datetime
+from datetime import date
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import TIMESTAMP, Date, ForeignKey, String
+from sqlalchemy import Date, ForeignKey, String, text
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -11,6 +11,7 @@ from app.models.mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.booking import Booking
+    from app.models.company import Company
     from app.models.favorites import UserFavorite
     from app.models.review import Review
 
@@ -81,7 +82,8 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         "UserFavorite",
         back_populates="user",
     )
-    # company_id: Mapped[int] = mapped_column(
-    #     ForeignKey("companies.id"),
-    #     nullable=True,
-    # )
+    company: Mapped[Optional["Company"]] = relationship(
+        "Company",
+        back_populates="user",
+        uselist=False,
+    )

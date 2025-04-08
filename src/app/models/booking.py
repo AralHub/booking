@@ -76,4 +76,3 @@ class Booking(IntIdPkMixin, Base):
             name="check_in_date_before_check_out_date",
         ),
     )
-

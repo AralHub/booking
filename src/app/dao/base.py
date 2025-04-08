@@ -129,7 +129,7 @@ class BaseDAO(Generic[T]):
             result = await session.execute(query)
             await session.flush()
             logger.info(f"Обновлено {result.rowcount} записей.")
-            return result.rowcount
+            return result
         except IntegrityError as e:
             if isinstance(e.orig, UniqueViolationError):
                 raise HTTPException(
