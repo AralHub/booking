@@ -3,6 +3,7 @@ from jwt import InvalidTokenError
 
 from app.api.dependencies.user import get_current_auth_user
 from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import BaseResponse, RESPONSE_MESSAGES, DataResponse
 from app.core.auth.helpers import (
     REFRESH_TOKEN_TYPE,
     create_access_token,
@@ -45,6 +46,7 @@ router = APIRouter(prefix=settings.api.auth)
 @router.post(
     "/register",
     status_code=status.HTTP_201_CREATED,
+    response_model=BaseResponse,
 )
 async def register_user(
     user_data: UserCreate,
@@ -92,68 +94,75 @@ async def register_user(
         values=user_create_data,
     )
 
-    return {
-        "message": "Verification code sent successfully",
-        "phone_number": user_data.phone_number,
-    }
+    return BaseResponse(
+        message=RESPONSE_MESSAGES["AUTH_CODE_SENT"],
+        success=True,
+    )
 
 
 @router.post(
     "/verify",
     status_code=status.HTTP_201_CREATED,
+    response_model=DataResponse[TokenInfo],
 )
 async def verify_phone_number(
     response: Response,
     verify_data: VerifyPhoneNumber,
     session=TransactionSessionDep,
 ):
-    success, message = await redis_sms.verify_sms_code(
-        phone=verify_data.phone_number,
-        code=verify_data.code,
-    )
-    if not success:
-        raise BadRequestException(message)
-    # Проверяем, существует ли пользователь
-    db_user = await UserDAO.get_user_by_phone(
-        session=session,
-        phone_number=verify_data.phone_number,
-    )
-    if not db_user:
-        raise NotFoundException(
-            ErrorCode.USER_NOT_FOUND,
+    try:
+        success, message = await redis_sms.verify_sms_code(
+            phone=verify_data.phone_number,
+            code=verify_data.code,
         )
-    await UserDAO.update(
-        session=session,
-        filters=UserFilter(id=db_user.id),
-        values=UserUpdateInternal(
-            is_active=True,
-            is_verified=True,
-            is_fully_registered=True,
-        ),
-    )
-    # Создаем токены
-    access_token = await create_access_token(db_user)
-    refresh_token = await create_refresh_token(db_user)
-    response.delete_cookie(key="refresh_token")
-    response.set_cookie(
-        key=REFRESH_TOKEN_KEY,
-        value=refresh_token,
-        httponly=settings.crypt.REFRESH_TOKEN_HTTPONLY,
-        secure=settings.crypt.REFRESH_TOKEN_COOKIE_SECURE,
-        samesite=settings.crypt.REFRESH_TOKEN_COOKIE_SAMESITE,
-        max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-    )
-    return {
-        "tokens": TokenInfo(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            token_type="Bearer",
-        ),
-        "is_fully_registered": db_user.is_fully_registered,
-    }
+        if not success:
+            raise BadRequestException(message)
+        # Проверяем, существует ли пользователь
+        db_user = await UserDAO.get_user_by_phone(
+            session=session,
+            phone_number=verify_data.phone_number,
+        )
+        if not db_user:
+            raise NotFoundException(
+                ErrorCode.USER_NOT_FOUND,
+            )
+        await UserDAO.update(
+            session=session,
+            filters=UserFilter(id=db_user.id),
+            values=UserUpdateInternal(
+                is_active=True,
+                is_verified=True,
+                is_fully_registered=True,
+            ),
+        )
+        # Создаем токены
+        access_token = await create_access_token(db_user)
+        refresh_token = await create_refresh_token(db_user)
+        response.delete_cookie(key="refresh_token")
+        response.set_cookie(
+            key=REFRESH_TOKEN_KEY,
+            value=refresh_token,
+            httponly=settings.crypt.REFRESH_TOKEN_HTTPONLY,
+            secure=settings.crypt.REFRESH_TOKEN_COOKIE_SECURE,
+            samesite=settings.crypt.REFRESH_TOKEN_COOKIE_SAMESITE,
+            max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
+        )
+        return DataResponse(
+            message=RESPONSE_MESSAGES["PHONE_VERIFIED"],
+            success=True,
+            data=TokenInfo(
+                access_token=access_token,
+                refresh_token=refresh_token,
+            ),
+        )
+
+    except Exception:
+        raise BadRequestException(
+            error_code=ErrorCode.BAD_REQUEST,
+        )
 
 
-@router.post("/login", response_model=TokenInfo)
+@router.post("/login", response_model=DataResponse[TokenInfo])
 async def user_login(
     login_data: LoginUser,
     response: Response,
@@ -177,10 +186,12 @@ async def user_login(
         max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
     )
 
-    return TokenInfo(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        token_type="Bearer",
+    return DataResponse(
+        data=TokenInfo(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type="Bearer",
+        ),
     )
 
 
@@ -204,17 +215,13 @@ async def logout(
         )
         response.delete_cookie(key=REFRESH_TOKEN_KEY)
 
-        return {
-            "message": "Logged out successfully",
-        }
-
     except InvalidTokenError:
         raise UnauthorizedException("Invalid token")
 
 
 @router.post(
     "/refresh",
-    response_model=TokenInfo,
+    response_model=DataResponse[TokenInfo],
     status_code=status.HTTP_201_CREATED,
 )
 async def refresh_access_token(
@@ -234,7 +241,9 @@ async def refresh_access_token(
         payload=payload,
     )
     new_access_token = await create_access_token(db_user)
-    return TokenInfo(
-        access_token=new_access_token,
-        token_type="Bearer",
+    return DataResponse(
+        data=TokenInfo(
+            access_token=new_access_token,
+            token_type="Bearer",
+        ),
     )
