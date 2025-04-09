@@ -23,7 +23,10 @@ router = APIRouter(
 )
 
 
-@router.get("/{hotel_id}/images", response_model=ListResponse[HotelImageRead])
+@router.get(
+    "/{hotel_id}/images",
+    response_model=ListResponse[HotelImageRead],
+)
 async def get_hotel_images(
     hotel_id: int,
     hotel: HotelNameRead = Depends(validate_hotel),
@@ -71,7 +74,7 @@ async def add_hotel_image(
 
 @router.delete(
     "/{hotel_id}/images/{image_id}",
-    response_model=DataResponse[dict],
+    response_model=BaseResponse,
 )
 async def delete_hotel_image(
     hotel_id: int,

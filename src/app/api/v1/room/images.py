@@ -8,14 +8,24 @@ from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
 from app.dao.room.images import RoomImageDAO
 from app.schemas.hotel.info import HotelNameRead
-from app.schemas.room.images import RoomImageFilter
+from app.schemas.room.images import RoomImageFilter, RoomImageRead
+from app.core.i18n.responses import (
+    ListResponse,
+    DataResponse,
+    BaseResponse,
+    RESPONSE_MESSAGES,
+)
+from app.core.i18n.translations import ErrorCode
 
 router = APIRouter(
     tags=["Hotel Room Images"],
 )
 
 
-@router.get("/{hotel_id}/rooms/{room_id}/images")
+@router.get(
+    "/{hotel_id}/rooms/{room_id}/images",
+    response_model=ListResponse[RoomImageRead],
+)
 async def get_room_images(
     hotel_id: int,
     room_id: int,
@@ -29,11 +39,17 @@ async def get_room_images(
         ),
     )
     if not db_room_images:
-        raise NotFoundException("Hotel doesn't have any images")
-    return db_room_images
+        raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
+    return ListResponse[RoomImageRead](
+        data=db_room_images,
+        total=len(db_room_images),
+    )
 
 
-@router.post("/{hotel_id}/rooms/{room_id}/images")
+@router.post(
+    "/{hotel_id}/rooms/{room_id}/images",
+    response_model=DataResponse[RoomImageRead],
+)
 async def add_room_image(
     hotel_id: int,
     room_id: int,
@@ -46,16 +62,26 @@ async def add_room_image(
         filename=f"room_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
         folder=f"hotel_{hotel_id}",
     )
-    return await RoomImageDAO.create(
+    added_image = await RoomImageDAO.create(
         session=session,
         values=RoomImageFilter(
             room_id=room_id,
             image=file_path,
         ),
     )
+    return DataResponse[RoomImageRead](
+        data=added_image,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_CREATED",
+            "Room image created successfully",
+        ),
+    )
 
 
-@router.delete("/{hotel_id}/rooms/images/{image_id}")
+@router.delete(
+    "/{hotel_id}/rooms/images/{image_id}",
+    response_model=BaseResponse,
+)
 async def delete_room_image(
     hotel_id: int,
     room_id: int,
@@ -68,7 +94,9 @@ async def delete_room_image(
         data_id=image_id,
     )
     if not image:
-        raise NotFoundException("Image not found")
+        raise NotFoundException(
+            error_code=ErrorCode.NOT_FOUND,
+        )
     await file_utils.delete_photo(
         photo_path=image.image,
     )
@@ -76,5 +104,12 @@ async def delete_room_image(
         session=session,
         filters=RoomImageFilter(
             id=image_id,
+        ),
+    )
+    return BaseResponse(
+        success=True,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_DELETED",
+            "Hotel image deleted successfully",
         ),
     )
