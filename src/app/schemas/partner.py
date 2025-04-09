@@ -21,7 +21,6 @@ class PartnerRead(PartnerBase):
 
 class PartnerCreate(PartnerBase):
     password: PASSWORD_FIELD
-    model_config = ConfigDict(extra="forbid")
 
 
 class PartnerCreateInternal(PartnerCreate):

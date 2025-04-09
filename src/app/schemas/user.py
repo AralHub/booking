@@ -60,7 +60,6 @@ class UserRead(UserBase, TimestampSchema):
 
 class UserCreate(UserBase):
     password: PASSWORD_FIELD
-    model_config = ConfigDict(extra="forbid")
 
 
 class UserCreateInternal(UserCreate):
