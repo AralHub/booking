@@ -12,8 +12,15 @@ from app.schemas.review import (
     ReviewFilter,
     ReviewRead,
     ReviewUpdate,
+    ReviewRead,
 )
 from app.schemas.user import UserRead
+from app.core.i18n.responses import (
+    ListResponse,
+    DataResponse,
+    BaseResponse,
+    RESPONSE_MESSAGES,
+)
 
 router = APIRouter(
     tags=["Hotel Reviews"],
@@ -21,7 +28,10 @@ router = APIRouter(
 )
 
 
-@router.get("/{hotel_id}/reviews")
+@router.get(
+    "/{hotel_id}/reviews",
+    response_model=ListResponse[ReviewRead],
+)
 async def get_hotel_reviews(
     hotel_id: int,
     page: int = Query(default=1, ge=1, description="Номер страницы"),
@@ -29,7 +39,7 @@ async def get_hotel_reviews(
     hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
-    results = await ReviewDAO.paginate(
+    hotel_reviews = await ReviewDAO.paginate(
         session=session,
         filters=ReviewFilter(
             hotel_id=hotel_id,
@@ -39,10 +49,19 @@ async def get_hotel_reviews(
         order_by="created_at",
         order_direction="desc",
     )
-    return [ReviewRead.model_validate(item) for item in results]
+    return ListResponse[ReviewRead](
+        data=hotel_reviews,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_RETRIEVED",
+            "Hotel reviews retrieved successfully",
+        ),
+    )
 
 
-@router.post("/{hotel_id}/reviews")
+@router.post(
+    "/{hotel_id}/reviews",
+    response_model=DataResponse[ReviewRead],
+)
 async def create_hotel_reviews(
     hotel_id: int,
     review_create_data: ReviewCreate,
@@ -50,15 +69,25 @@ async def create_hotel_reviews(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
-    await ReviewDAO.create_hotel_review(
+    created_review = await ReviewDAO.create_hotel_review(
         session=session,
         review_create_data=review_create_data,
         hotel_id=hotel_id,
         user_id=current_user.id,
     )
+    return DataResponse[ReviewRead](
+        data=created_review,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_CREATED",
+            "Hotel review created successfully",
+        ),
+    )
 
 
-@router.put("/{hotel_id}/reviews/{review_id}")
+@router.put(
+    "/{hotel_id}/reviews/{review_id}",
+    response_model=DataResponse[ReviewRead],
+)
 async def update_hotel_review(
     hotel_id: int,
     review_id: int,
@@ -67,16 +96,26 @@ async def update_hotel_review(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
-    await ReviewDAO.update_hotel_review(
+    updated_review = await ReviewDAO.update_hotel_review(
         session=session,
         hotel_id=hotel_id,
         user_id=current_user.id,
         review_id=review_id,
         review_update_data=review_update_data,
     )
+    return DataResponse[ReviewRead](
+        data=updated_review,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Hotel review updated successfully",
+        ),
+    )
 
 
-@router.delete("/{hotel_id}/reviews/{review_id}")
+@router.delete(
+    "/{hotel_id}/reviews/{review_id}",
+    response_model=BaseResponse,
+)
 async def delete_hotel_review(
     hotel_id: int,
     review_id: int,
@@ -88,5 +127,12 @@ async def delete_hotel_review(
         session=session,
         filters=ReviewFilter(
             id=review_id,
+        ),
+    )
+    return BaseResponse(
+        success=True,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_DELETED",
+            "Hotel review deleted successfully",
         ),
     )
