@@ -13,9 +13,16 @@ from app.schemas.hotel import (
     HotelFullCreate,
     HotelFullUpdate,
     HotelSearch,
+    HotelFullRead,
 )
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
+from app.core.i18n.responses import (
+    RESPONSE_MESSAGES,
+    DataResponse,
+    ListResponse,
+    PaginatedResponse,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
@@ -44,7 +51,10 @@ async def get_popular_hotels(
     )
 
 
-@router.post("/search")
+@router.post(
+    "/search",
+    response_model=DataResponse[HotelFullRead],
+)
 async def search_hotels(
     search_data: HotelSearch,
     session=SessionDep,
@@ -58,10 +68,15 @@ async def search_hotels(
     )
     if not hotels:
         return []
-    return {
-        "data": hotels,
-        "total": len(hotels),
-    }
+    return PaginatedResponse(
+        data=[HotelFullRead.model_validate(hotel) for hotel in hotels],
+        paginate={
+            "page": 1,
+            "page_size": 10,
+            "total_elements": len(hotels),
+            "total_pages": 1,
+        },
+    )
 
 
 @router.get("/{hotel_id}")

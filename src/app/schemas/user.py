@@ -29,7 +29,6 @@ class LoginUser(BaseModel):
     password: PASSWORD_FIELD
 
 
-
 class VerifyPhoneNumber(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     code: VERIFY_CODE_FIELD
@@ -52,9 +51,6 @@ class UserRead(UserBase, TimestampSchema):
     birthday: Optional[BIRTHDAY_FIELD] = None
     gender: Optional[GENDER_FIELD] = None
     country_id: Optional[int] = None
-    is_active: bool
-    is_verified: bool
-    is_fully_registered: bool
 
 
 class UserCreate(UserBase):

@@ -443,7 +443,7 @@ class HotelDAO(BaseDAO):
                         "name": hotel.name,
                         "description": hotel.description,
                         "slug": hotel.slug,
-                        "category_name": (
+                        "category": (
                             hotel.hotel_category.name if hotel.hotel_category else None
                         ),
                         "location": (

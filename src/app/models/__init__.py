@@ -14,7 +14,7 @@ from .hotel.rating import HotelCategoryRating, HotelRating
 from .hotel.rules import HotelRule
 from .location import City, Country
 from .partner import Partner
-from .payment import Payment
+from .payment import PaymentMethod
 from .review import Review, ReviewCategory, ReviewCategoryRating
 from .room import Room
 from .room.amenities import RoomAmenity, RoomAmenityAssociation

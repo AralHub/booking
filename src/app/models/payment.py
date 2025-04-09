@@ -9,7 +9,7 @@ from app.models.mixins import IntIdPkMixin, MultilingualNameMixin
 #     from app.models.hotel import Hotel
 
 
-class Payment(
+class PaymentMethod(
     IntIdPkMixin,
     MultilingualNameMixin,
     Base,

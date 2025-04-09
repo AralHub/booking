@@ -8,11 +8,18 @@ from app.core.exceptions.http_exceptions import (
 )
 from app.dao.room.bed import BedTypeDAO, RoomBedConfDAO
 from app.schemas.hotel.info import HotelNameRead
-from app.schemas.room import (
+from app.schemas.room.bed import (
     BedFilter,
     RoomBedConfCreate,
     RoomBedConfCreateInternal,
     RoomBedConfFilter,
+    RoomBedConfRead,
+)
+from app.core.i18n.responses import (
+    ListResponse,
+    DataResponse,
+    BaseResponse,
+    RESPONSE_MESSAGES,
 )
 
 router = APIRouter(
@@ -20,7 +27,10 @@ router = APIRouter(
 )
 
 
-@router.get("/{hotel_id}/rooms/{room_id}/beds")
+@router.get(
+    "/{hotel_id}/rooms/{room_id}/beds",
+    response_model=DataResponse[RoomBedConfRead],
+)
 async def get_room_beds(
     hotel_id: int,
     room_id: int,

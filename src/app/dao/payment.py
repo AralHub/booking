@@ -1,6 +1,6 @@
 from app.dao.base import BaseDAO
-from app.models.payment import Payment
+from app.models.payment import PaymentMethod
 
 
 class PaymentDAO(BaseDAO):
-    model = Payment
+    model = PaymentMethod

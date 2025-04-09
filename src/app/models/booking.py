@@ -29,6 +29,11 @@ class BookingStatus(str, Enum):
     CANCELLED = "cancelled"
 
 
+class BookingType(str, Enum):
+    PERSONAL = "personal"
+    BUSINESS = "business"
+
+
 class BookedRoom(IntIdPkMixin, Base):
     booking_id: Mapped[int] = mapped_column(ForeignKey("bookings.id"))
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
@@ -60,6 +65,13 @@ class Booking(IntIdPkMixin, Base):
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     total_days: Mapped[int] = mapped_column(Integer, nullable=False)
     special_requests: Mapped[str] = mapped_column(Text, nullable=True)
+    payment_method_id: Mapped[int] = mapped_column(ForeignKey("payment_methods.id"))
+    booking_type: Mapped[BookingType] = mapped_column(
+        SqlEnum(BookingType),
+        nullable=False,
+        default=BookingType.PERSONAL,
+        server_default=text("'PERSONAL'"),
+    )
     # relationships
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
     booking_rooms: Mapped[list["BookedRoom"]] = relationship(
@@ -74,5 +86,9 @@ class Booking(IntIdPkMixin, Base):
         CheckConstraint(
             "check_in_date < check_out_date",
             name="check_in_date_before_check_out_date",
+        ),
+        CheckConstraint(
+            "(booking_type = 'PERSONAL') OR (booking_type = 'BUSINESS' AND company_id IS NOT NULL)",
+            name="business_booking_must_have_company",
         ),
     )

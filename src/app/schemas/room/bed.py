@@ -37,6 +37,12 @@ class BedConfCreate(BaseModel):
     quantity: int = Field(..., gt=0, description="Количество кроватей данного типа")
 
 
+class BedConfRead(BaseModel):
+    id: int
+    bed_type_id: int
+    quantity: int
+
+
 class RoomBedConfCreate(BaseModel):
     bed_configurations: list[BedConfCreate]
 
@@ -49,6 +55,12 @@ class RoomBedConfFilter(BaseModel):
     id: int | None = None
     quantity: int | None = None
     room_id: int | None = None
+
+
+class RoomBedConfRead(BaseModel):
+    id: int
+    room_id: int
+    bed_configurations: list[BedConfRead]
 
 
 # endregion

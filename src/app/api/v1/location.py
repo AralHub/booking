@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from app.api.dependencies.location import validate_country
 from app.api.dependencies.user import get_current_superuser
@@ -143,8 +143,8 @@ async def delete_country(
 )
 async def get_all_cities_by_country_id(
     country_id: int,
-    page: int = 1,
-    page_size: int = 10,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
     session=SessionDep,
 ):
     city_count = await CityDAO.count(
