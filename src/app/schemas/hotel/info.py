@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.schemas.field_validation import (
     EMAIL_FIELD,
@@ -65,6 +65,7 @@ class HotelInfoBase(BaseModel):
 
 
 class HotelInfoRead(HotelInfoBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     second_phone_number: PHONE_NUMBER_FIELD_UPDATE
     site_url: SITE_URL_FIELD_UPDATE
@@ -72,8 +73,8 @@ class HotelInfoRead(HotelInfoBase):
 
 
 class HotelInfoNameRead(HotelInfoRead):
-    hotel_name: str
-    hotel_description: str
+    hotel_name: dict[str, str]
+    hotel_description: dict[str, str]
     hotel_slug: str
     hotel_category_id: int
 

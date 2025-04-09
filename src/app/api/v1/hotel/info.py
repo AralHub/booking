@@ -4,6 +4,12 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import valid_hotel_admin
+from app.core.i18n.responses import (
+    DataResponse,
+    BaseResponse,
+    RESPONSE_MESSAGES,
+    ListResponse,
+)
 from app.core import TransactionSessionDep
 from app.core.config import settings
 from app.dao.hotel import HotelInfoDAO
@@ -14,6 +20,7 @@ from app.schemas.hotel.info import (
     HotelInfoUpdate,
     HotelInfoUpdateInternal,
     HotelNameRead,
+    HotelInfoRead,
 )
 
 logger = logging.getLogger(__name__)
@@ -23,15 +30,25 @@ router = APIRouter(
 )
 
 
-@router.get("/{hotel_id}/info")
+@router.get(
+    "/{hotel_id}/info",
+    response_model=DataResponse[HotelInfoRead],
+)
 async def get_hotel_info(
     hotel_id: int,
     hotel: HotelNameRead = Depends(validate_hotel),
     session=TransactionSessionDep,
 ):
-    return await HotelInfoDAO.get_hotel_info(
+    hotel_info = await HotelInfoDAO.get_hotel_info(
         session=session,
         hotel_id=hotel_id,
+    )
+    return DataResponse[HotelInfoRead](
+        data=hotel_info,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_RETRIEVED",
+            "Hotel info retrieved successfully",
+        ),
     )
 
 
