@@ -83,7 +83,7 @@ class MultilingualDescriptionBase(BaseModel):
             "ru": self.description_ru,
             "en": self.description_en,
             "uz": self.description_uz,
-            "kk ": self.description_kk,
+            "kk": self.description_kk,
         }
 
 
