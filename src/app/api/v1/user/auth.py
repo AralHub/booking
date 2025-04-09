@@ -165,7 +165,7 @@ async def user_login(
         session=session,
     )
     if not db_user:
-        raise UnauthorizedException("Wrong phone number or password.")
+        raise UnauthorizedException(error_code=ErrorCode.UNAUTHORIZED)
     access_token = await create_access_token(db_user)
     refresh_token = await create_refresh_token(db_user)
 
