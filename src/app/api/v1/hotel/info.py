@@ -52,7 +52,10 @@ async def get_hotel_info(
     )
 
 
-@router.post("/{hotel_id}/info")
+@router.post(
+    "/{hotel_id}/info",
+    response_model=DataResponse[HotelInfoRead],
+)
 async def add_hotel_info(
     hotel_id: int,
     hotel_info_create_data: HotelInfoCreate,
@@ -60,23 +63,33 @@ async def add_hotel_info(
     session=TransactionSessionDep,
 ):
 
-    return await HotelInfoDAO.create(
+    created_hotel_info = await HotelInfoDAO.create(
         session=session,
         values=HotelInfoCreateInternal(
             **hotel_info_create_data.model_dump(),
             hotel_id=hotel_id,
         ),
     )
+    return DataResponse[HotelInfoRead](
+        data=created_hotel_info,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_CREATED",
+            "Hotel info added successfully",
+        ),
+    )
 
 
-@router.put("/{hotel_id}/info")
+@router.put(
+    "/{hotel_id}/info",
+    response_model=DataResponse[HotelInfoRead],
+)
 async def update_hotel_info(
     hotel_id: int,
     hotel_info_update_data: HotelInfoUpdate,
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
-    return await HotelInfoDAO.update(
+    updated_hotel_info = await HotelInfoDAO.update(
         session=session,
         values=HotelInfoUpdateInternal(
             **hotel_info_update_data.model_dump(),
@@ -84,5 +97,12 @@ async def update_hotel_info(
         ),
         filters=HotelInfoFilter(
             hotel_id=hotel_id,
+        ),
+    )
+    return DataResponse[HotelInfoRead](
+        data=updated_hotel_info,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Hotel info updated successfully",
         ),
     )
