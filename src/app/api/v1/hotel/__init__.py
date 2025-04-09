@@ -58,7 +58,10 @@ async def search_hotels(
     )
     if not hotels:
         return []
-    return hotels
+    return {
+        "data": hotels,
+        "total": len(hotels),
+    }
 
 
 @router.get("/{hotel_id}")
