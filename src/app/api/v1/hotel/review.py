@@ -51,10 +51,6 @@ async def get_hotel_reviews(
     )
     return ListResponse[ReviewRead](
         data=hotel_reviews,
-        message=RESPONSE_MESSAGES.get(
-            "DATA_RETRIEVED",
-            "Hotel reviews retrieved successfully",
-        ),
     )
 
 

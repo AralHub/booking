@@ -13,6 +13,13 @@ from app.schemas.hotel.rules import (
     RuleFilter,
     RuleUpdate,
     RuleUpdateInternal,
+    RuleRead,
+)
+from app.core.i18n.responses import (
+    ListResponse,
+    DataResponse,
+    BaseResponse,
+    RESPONSE_MESSAGES,
 )
 
 logger = logging.getLogger(__name__)
@@ -22,47 +29,70 @@ router = APIRouter(
 )
 
 
-@router.get("/{hotel_id}/rules")
+@router.get(
+    "/{hotel_id}/rules",
+    response_model=DataResponse[RuleRead],
+)
 async def get_hotel_rule(
     hotel_id: int,
     hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
-    return await HotelRuleDAO.get_one_or_none(
+    hotel_rule = await HotelRuleDAO.get_one_or_none(
         session=session,
         filters=RuleFilter(hotel_id=hotel_id),
     )
+    return DataResponse[RuleRead](
+        data=hotel_rule,
+    )
 
 
-@router.post("/{hotel_id}/rules")
+@router.post("/{hotel_id}/rules", response_model=DataResponse[RuleRead])
 async def add_hotel_rule(
     hotel_id: int,
     rule_create_data: RuleCreate,
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
-    return await HotelRuleDAO.create(
+    added_rule = await HotelRuleDAO.create(
         session=session,
         values=RuleCreateInternal(
             **rule_create_data.model_dump(),
             hotel_id=hotel_id,
         ),
     )
+    return DataResponse[RuleRead](
+        data=added_rule,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_CREATED",
+            "Hotel rule created successfully",
+        ),
+    )
 
 
-@router.put("/{hotel_id}/rules")
+@router.put(
+    "/{hotel_id}/rules",
+    response_model=DataResponse[RuleRead],
+)
 async def update_hotel_rule(
     hotel_id: int,
     rule_update_data: RuleUpdate,
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
-    return await HotelRuleDAO.update(
+    updated_rule = await HotelRuleDAO.update(
         session=session,
         values=RuleUpdateInternal(
             **rule_update_data.model_dump(),
         ),
         filters=RuleFilter(
             hotel_id=hotel_id,
+        ),
+    )
+    return DataResponse[RuleRead](
+        data=updated_rule,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Hotel rule updated successfully",
         ),
     )

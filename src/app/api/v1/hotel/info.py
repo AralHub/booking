@@ -45,10 +45,6 @@ async def get_hotel_info(
     )
     return DataResponse[HotelInfoRead](
         data=hotel_info,
-        message=RESPONSE_MESSAGES.get(
-            "DATA_RETRIEVED",
-            "Hotel info retrieved successfully",
-        ),
     )
 
 
