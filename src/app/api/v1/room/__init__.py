@@ -43,7 +43,6 @@ router = APIRouter(
 )
 async def get_hotel_rooms(
     hotel_id: int,
-    room: RoomRead = Depends(validate_hotel_room),
     session=SessionDep,
 ):
     rooms = await RoomDAO.get_all(
