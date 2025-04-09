@@ -7,7 +7,7 @@ from app.core.utils import redis_sms, task_queue
 async def send_verification_sms(phone_number: str) -> tuple[bool, str]:
     code = "12345"
     # code = await code_generator()
-    success, message = await redis_sms.save_sms_code(
+    success, _ = await redis_sms.save_sms_code(
         phone=phone_number,
         code=code,
     )

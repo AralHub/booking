@@ -24,3 +24,8 @@ class RoomTypeUpdateInternal(RoomTypeUpdate):
 class RoomTypeFilter(BaseModel):
     id: int | None = None
     name: str | None = None
+
+
+class RoomTypeRead(RoomTypeBase):
+    id: int
+    name: dict[str, str]

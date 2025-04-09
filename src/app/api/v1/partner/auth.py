@@ -19,7 +19,6 @@ from app.core.auth.validation import (
     get_refresh_token_payload,
     validate_token_type,
 )
-from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
     BadRequestException,
     DuplicateValueException,
@@ -76,12 +75,11 @@ async def register_partner(
     # Если партнер уже существует и верифицирован/активен, возвращаем ошибку
     if db_partner and (db_partner.is_verified or db_partner.is_active):
         raise DuplicateValueException(
-            detail="Partner already exists",
             error_code=ErrorCode.USER_ALREADY_EXISTS,
         )
 
     # Отправляем SMS только если нужно регистрировать партнера
-    success, message = await send_verification_sms(partner_data.phone_number)
+    success, _ = await send_verification_sms(partner_data.phone_number)
     if not success:
         raise TooManyRequestsException(
             error_code=ErrorCode.TOO_MANY_REQUESTS,
@@ -131,12 +129,12 @@ async def verify_phone_number(
     verify_data: VerifyPhoneNumber,
     session=TransactionSessionDep,
 ):
-    success, message = await redis_sms.verify_sms_code(
+    success, _ = await redis_sms.verify_sms_code(
         phone=verify_data.phone_number,
         code=verify_data.code,
     )
     if not success:
-        raise BadRequestException(message)
+        raise BadRequestException(ErrorCode.BAD_REQUEST)
     # Проверяем, существует ли пользователь
     db_partner = await PartnerDAO.get_partner_by_phone(
         session=session,

@@ -4,16 +4,17 @@ from fastapi import status
 
 from app.core.i18n.translations import ErrorCode, get_error_message
 
+
 class CustomException(Exception):
     def __init__(
         self,
         status_code: int,
-        message: Optional[str] = None,
+        detail: Optional[str] = None,
         error_code: Optional[str] = None,
     ):
         self.status_code = status_code
         self.error_code = error_code
-        self.message = message or (
+        self.detail = detail or (
             get_error_message(error_code, "en")
             if error_code
             else "Something went wrong"
@@ -28,7 +29,7 @@ class CustomException(Exception):
         """Создает исключение из кода ошибки, используя стандартный статус код для класса"""
         instance = cls.__new__(cls)
         instance.error_code = error_code
-        instance.message = get_error_message(error_code, "en")
+        instance.detail = get_error_message(error_code, "en")
         instance.status_code = status_code or cls._default_status_code
         return instance
 
@@ -38,12 +39,12 @@ class BadRequestException(CustomException):
 
     def __init__(
         self,
-        message: Optional[str] = None,
+        detail: Optional[str] = None,
         error_code: Optional[str] = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
-            message=message,
+            detail=detail,
             error_code=error_code,
         )
 
@@ -53,12 +54,12 @@ class NotFoundException(CustomException):
 
     def __init__(
         self,
-        message: Optional[str] = None,
+        detail: Optional[str] = None,
         error_code: Optional[str] = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
-            message=message,
+            detail=detail,
             error_code=error_code,
         )
 
@@ -66,10 +67,10 @@ class NotFoundException(CustomException):
 class ForbiddenException(CustomException):
     _default_status_code = status.HTTP_403_FORBIDDEN
 
-    def __init__(self, message: Optional[str] = None, error_code: Optional[str] = None):
+    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
         super().__init__(
             status_code=self._default_status_code,
-            message=message,
+            detail=detail,
             error_code=error_code,
         )
 
@@ -79,12 +80,12 @@ class UnauthorizedException(CustomException):
 
     def __init__(
         self,
-        message: Optional[str] = None,
+        detail: Optional[str] = None,
         error_code: Optional[str] = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
-            message=message,
+            detail=detail,
             error_code=error_code,
         )
 
@@ -94,12 +95,12 @@ class UnprocessableEntityException(CustomException):
 
     def __init__(
         self,
-        message: Optional[str] = None,
+        detail: Optional[str] = None,
         error_code: Optional[str] = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
-            message=message,
+            detail=detail,
             error_code=error_code,
         )
 
@@ -109,12 +110,12 @@ class DuplicateValueException(CustomException):
 
     def __init__(
         self,
-        message: Optional[str] = None,
+        detail: Optional[str] = None,
         error_code: Optional[str] = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
-            message=message,
+            detail=detail,
             error_code=error_code,
         )
 
@@ -124,12 +125,12 @@ class TooManyRequestsException(CustomException):
 
     def __init__(
         self,
-        message: Optional[str] = None,
+        detail: Optional[str] = None,
         error_code: Optional[str] = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
-            message=message,
+            detail=detail,
             error_code=error_code,
         )
 

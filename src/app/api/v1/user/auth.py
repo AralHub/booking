@@ -65,7 +65,7 @@ async def register_user(
         )
 
     # Отправляем SMS только если нужно регистрировать партнера
-    success, message = await send_verification_sms(user_data.phone_number)
+    success, _ = await send_verification_sms(user_data.phone_number)
     if not success:
         raise TooManyRequestsException(
             error_code=ErrorCode.TOO_MANY_REQUESTS,
@@ -117,7 +117,7 @@ async def verify_phone_number(
     session=TransactionSessionDep,
 ):
 
-    success, message = await redis_sms.verify_sms_code(
+    success, _ = await redis_sms.verify_sms_code(
         phone=verify_data.phone_number,
         code=verify_data.code,
     )

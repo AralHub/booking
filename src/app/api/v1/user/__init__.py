@@ -103,16 +103,20 @@ async def change_phone_number(
         data_id=current_user.id,
     )
     if new_phone_number == db_user.phone_number:
-        raise DuplicateValueException("New phone number is the same as the current one")
+        raise DuplicateValueException(
+            error_code=ErrorCode.USER_ALREADY_EXISTS,
+        )
     db_user = await UserDAO.get_one_or_none(
         session=session,
         filters=UserFilter(phone_number=new_phone_number),
     )
     if db_user:
-        raise DuplicateValueException("Phone number is already registered")
+        raise DuplicateValueException(error_code=ErrorCode.USER_ALREADY_EXISTS)
     if await redis_sms.is_blocked(user_update.phone_number):
-        raise TooManyRequestsException("Phone number is blocked. Try again in an hour")
-    success, message = await send_verification_sms(new_phone_number)
+        raise TooManyRequestsException(
+            error_code=ErrorCode.TOO_MANY_REQUESTS,
+        )
+    success, _ = await send_verification_sms(new_phone_number)
     if not success:
         raise TooManyRequestsException(
             error_code=ErrorCode.TOO_MANY_REQUESTS,
@@ -135,12 +139,12 @@ async def verify_phone_number(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
-    success, message = await redis_sms.verify_sms_code(
+    success, _ = await redis_sms.verify_sms_code(
         phone=verify_data.phone_number,
         code=verify_data.code,
     )
     if not success:
-        raise BadRequestException(message)
+        raise BadRequestException(ErrorCode.BAD_REQUEST)
     update_user_phone_number = UserUpdateInternal(
         phone_number=verify_data.phone_number,
     )
