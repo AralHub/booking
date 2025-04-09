@@ -1,12 +1,13 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.exc import IntegrityError
 from app.dao import BaseDAO
 from app.core.exceptions.http_exceptions import BadRequestException
 from app.models.room.amenities import (
     RoomAmenity,
     RoomAmenityCategory,
+    RoomAmenityAssociation,
 )
 from app.models.room import Room
 
@@ -33,9 +34,54 @@ class RoomAmenityDAO(BaseDAO):
         session: AsyncSession,
         room_id: int,
     ):
-        query = select(cls.model).filter_by(room_id=room_id)
+        query = (
+            select(
+                RoomAmenityCategory.id.label("category_id"),
+                RoomAmenityCategory.name.label("category_name"),
+                RoomAmenity.id.label("amenity_id"),
+                RoomAmenity.name.label("amenity_name"),
+                RoomAmenity.icon.label("amenity_icon"),
+            )
+            .join(
+                RoomAmenity,
+                RoomAmenityCategory.id == RoomAmenity.room_amenity_category_id,
+            )
+            .join(
+                RoomAmenityAssociation,
+                RoomAmenity.id == RoomAmenityAssociation.room_amenity_id,
+            )
+            .where(RoomAmenityAssociation.room_id == room_id)
+        )
+
         result = await session.execute(query)
-        return result.scalars().all()
+        rows = result.all()
+        categories_dict = {}
+
+        for row in rows:
+            category_id = row.category_id
+
+            if category_id not in categories_dict:
+                categories_dict[category_id] = {
+                    "id": category_id,
+                    "name": row.category_name,
+                    "room_amenities": [],
+                }
+
+            categories_dict[category_id]["room_amenities"].append(
+                {
+                    "id": row.amenity_id,
+                    "name": row.amenity_name,
+                    "icon": row.amenity_icon,
+                    "room_amenity_category_id": category_id,
+                }
+            )
+
+        room_data = {
+            "id": room_id,
+            "room_amenity_categories": list(categories_dict.values()),
+        }
+
+        return room_data
 
     @classmethod
     async def add_amenities_to_room(

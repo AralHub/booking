@@ -43,7 +43,7 @@ router = APIRouter(
 )
 async def get_hotel_rooms(
     hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    room: RoomRead = Depends(validate_hotel_room),
     session=SessionDep,
 ):
     rooms = await RoomDAO.get_all(
@@ -54,6 +54,7 @@ async def get_hotel_rooms(
     )
     return ListResponse(
         data=rooms,
+        total=len(rooms),
     )
 
 
@@ -63,7 +64,7 @@ async def get_hotel_rooms(
 )
 async def get_hotel_room_types(
     hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    room: RoomRead = Depends(validate_hotel_room),
     session=SessionDep,
 ):
     room_types = await RoomDAO.get_hotel_room_types(
@@ -72,6 +73,7 @@ async def get_hotel_room_types(
     )
     return ListResponse(
         data=room_types,
+        total=len(room_types),
     )
 
 
@@ -82,7 +84,7 @@ async def get_hotel_room_types(
 async def get_room(
     hotel_id: int,
     room_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    room: RoomRead = Depends(validate_hotel_room),
     session=SessionDep,
 ):
     room = await RoomDAO.get_one_or_none(
@@ -97,31 +99,51 @@ async def get_room(
     )
 
 
-@router.post("/{hotel_id}/rooms")
+@router.post(
+    "/{hotel_id}/rooms",
+    response_model=DataResponse[RoomRead],
+)
 async def add_hotel_room(
     hotel_id: int,
     hotel_room_data: RoomCreate,
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
-    return await RoomDAO.add_room_to_hotel(
+    added_room = await RoomDAO.add_room_to_hotel(
         session=session,
         room_data=hotel_room_data,
         hotel_id=hotel_id,
     )
+    return DataResponse(
+        data=added_room,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_CREATED",
+            "Room created successfully",
+        ),
+    )
 
 
-@router.put("/{hotel_id}/rooms/{room_id}")
+@router.put(
+    "/{hotel_id}/rooms/{room_id}",
+    response_model=DataResponse[RoomRead],
+)
 async def update_hotel_room(
     hotel_id: int,
     room_id: int,
     room_update_data: RoomUpdate,
-    room: RoomRead = Depends(validate_hotel),
+    room: RoomRead = Depends(validate_hotel_room),
     session=TransactionSessionDep,
 ):
-    return await RoomDAO.update_hotel_room(
+    updated_room = await RoomDAO.update_hotel_room(
         session=session,
         room_data=room_update_data,
         room_id=room_id,
         hotel_id=hotel_id,
+    )
+    return DataResponse(
+        data=updated_room,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Room updated successfully",
+        ),
     )

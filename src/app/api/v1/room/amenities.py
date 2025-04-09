@@ -7,14 +7,26 @@ from app.core import SessionDep
 from app.dao.room.amenities import RoomAmenityDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.room import RoomRead
+from app.schemas.room.amenities import RoomAmenityRead, RoomAmenityAssociationRead
+from app.core.i18n.responses import (
+    ListResponse,
+    DataResponse,
+    BaseResponse,
+    RESPONSE_MESSAGES,
+)
 
 router = APIRouter(
     tags=["Hotel Room Amenities"],
 )
 
 
-@router.get("/{hotel_id}/rooms/{room_id}/amenities")
+@router.get(
+    "/{hotel_id}/rooms/{room_id}/amenities",
+    response_model=DataResponse[RoomAmenityAssociationRead],
+)
 async def get_room_amenities(
+    hotel_id: int,
+    room_id: int,
     room: RoomRead = Depends(validate_hotel_room),
     hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
@@ -22,9 +34,12 @@ async def get_room_amenities(
     """
     Все удобства комнат
     """
-    return await RoomAmenityDAO.get_room__amenities(
+    room_amenities = await RoomAmenityDAO.get_room_amenities(
         session=session,
-        room_id=room.id,
+        room_id=room_id,
+    )
+    return DataResponse(
+        data=room_amenities,
     )
 
 

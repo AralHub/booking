@@ -11,7 +11,8 @@ class RoomAmenityBase(MultilingualNameBase):
 class RoomAmenityRead(BaseModel):
     id: int
     name: dict[str, str]
-    is_popular: bool
+    icon: str | None = None
+    is_popular: bool | None = None
     room_amenity_category_id: int
 
 
@@ -61,4 +62,15 @@ class RoomAmenityCategoryFilter(BaseModel):
     id: int | None = None
 
 
+class RoomAmenityCategoryRead(BaseModel):
+    id: int
+    name: dict[str, str]
+    room_amenities: list[RoomAmenityRead]
+
+
 # endregion
+
+
+class RoomAmenityAssociationRead(BaseModel):
+    id: int
+    room_amenity_categories: list[RoomAmenityCategoryRead]
