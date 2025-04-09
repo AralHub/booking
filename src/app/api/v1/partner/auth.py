@@ -52,10 +52,16 @@ router = APIRouter(
     prefix="/auth",
 )
 
+from app.core.i18n.responses import (
+    RESPONSE_MESSAGES,
+    DataResponse,
+)
+
 
 @router.post(
     "/register",
     status_code=status.HTTP_201_CREATED,
+    response_model=DataResponse[dict],
 )
 async def register_partner(
     partner_data: PartnerCreate,
@@ -77,14 +83,19 @@ async def register_partner(
     # Отправляем SMS только если нужно регистрировать партнера
     success, message = await send_verification_sms(partner_data.phone_number)
     if not success:
-        raise TooManyRequestsException(message)
+        raise TooManyRequestsException(
+            error_code=ErrorCode.TOO_MANY_REQUESTS,
+        )
 
     # Хешируем пароль один раз
     hashed_password = hash_password(partner_data.password).decode("utf-8")
 
     # Подготавливаем общие данные для создания партнера
     partner_create_data = PartnerCreateInternal(
-        **partner_data.model_dump(exclude={"password"}),
+        **partner_data.model_dump(
+            exclude={"password"},
+            exclude_none=True,
+        ),
         password=hashed_password,
         is_active=False,
         is_verified=False,
@@ -104,15 +115,16 @@ async def register_partner(
         values=partner_create_data,
     )
 
-    return {
-        "message": "Verification code sent successfully",
-        "phone_number": partner_data.phone_number,
-    }
+    return DataResponse(
+        message=RESPONSE_MESSAGES["AUTH_CODE_SENT"],
+        success=True,
+    )
 
 
 @router.post(
     "/verify",
     status_code=status.HTTP_201_CREATED,
+    response_model=DataResponse[TokenInfo],
 )
 async def verify_phone_number(
     response: Response,
@@ -146,26 +158,20 @@ async def verify_phone_number(
     # Создаем токены
     access_token = await create_access_token_partner(db_partner)
     refresh_token = await create_refresh_token_partner(db_partner)
-    response.delete_cookie(key="refresh_token")
-    response.set_cookie(
-        key=REFRESH_TOKEN_KEY,
-        value=refresh_token,
-        httponly=settings.crypt.REFRESH_TOKEN_HTTPONLY,
-        secure=settings.crypt.REFRESH_TOKEN_COOKIE_SECURE,
-        samesite=settings.crypt.REFRESH_TOKEN_COOKIE_SAMESITE,
-        max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-    )
-    return {
-        "tokens": TokenInfo(
+    return DataResponse(
+        message=RESPONSE_MESSAGES["PHONE_VERIFIED"],
+        success=True,
+        data=TokenInfo(
             access_token=access_token,
             refresh_token=refresh_token,
-            token_type="Bearer",
         ),
-        "is_fully_registered": db_partner.is_fully_registered,
-    }
+    )
 
 
-@router.post("/login", response_model=TokenInfo)
+@router.post(
+    "/login",
+    response_model=DataResponse[TokenInfo],
+)
 async def partner_login(
     login_data: LoginUser,
     response: Response,
@@ -180,19 +186,13 @@ async def partner_login(
         raise UnauthorizedException("Wrong phone number or password.")
     access_token = await create_access_token_partner(db_partner)
     refresh_token = await create_refresh_token_partner(db_partner)
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=settings.crypt.REFRESH_TOKEN_HTTPONLY,
-        secure=settings.crypt.REFRESH_TOKEN_COOKIE_SECURE,
-        samesite=settings.crypt.REFRESH_TOKEN_COOKIE_SAMESITE,
-        max_age=settings.crypt.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
-    )
 
-    return TokenInfo(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        token_type="Bearer",
+    return DataResponse(
+        data=TokenInfo(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type="Bearer",
+        ),
     )
 
 
@@ -229,7 +229,7 @@ async def logout(
 
 @router.post(
     "/refresh",
-    response_model=TokenInfo,
+    response_model=DataResponse[TokenInfo],
     status_code=status.HTTP_201_CREATED,
 )
 async def refresh_access_token(
@@ -250,7 +250,9 @@ async def refresh_access_token(
         payload=payload,
     )
     new_access_token = await create_access_token_partner(partner)
-    return TokenInfo(
-        access_token=new_access_token,
-        token_type="Bearer",
+    return DataResponse(
+        data=TokenInfo(
+            access_token=new_access_token,
+            token_type="Bearer",
+        ),
     )

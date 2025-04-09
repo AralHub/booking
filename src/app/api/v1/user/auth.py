@@ -23,7 +23,7 @@ from app.core.exceptions.http_exceptions import (
     TooManyRequestsException,
     UnauthorizedException,
 )
-from app.core.i18n.responses import RESPONSE_MESSAGES, BaseResponse, DataResponse
+from app.core.i18n.responses import RESPONSE_MESSAGES, DataResponse
 from app.core.i18n.translations import ErrorCode
 from app.core.utils import redis_sms
 from app.core.utils.send_sms import send_verification_sms
@@ -46,7 +46,7 @@ router = APIRouter(prefix=settings.api.auth)
 @router.post(
     "/register",
     status_code=status.HTTP_201_CREATED,
-    response_model=BaseResponse,
+    response_model=DataResponse[dict],
 )
 async def register_user(
     user_data: UserCreate,
@@ -67,7 +67,9 @@ async def register_user(
     # Отправляем SMS только если нужно регистрировать партнера
     success, message = await send_verification_sms(user_data.phone_number)
     if not success:
-        raise TooManyRequestsException(message)
+        raise TooManyRequestsException(
+            error_code=ErrorCode.TOO_MANY_REQUESTS,
+        )
 
     # Хешируем пароль один раз
     hashed_password = hash_password(user_data.password).decode("utf-8")
@@ -97,9 +99,10 @@ async def register_user(
         values=user_create_data,
     )
 
-    return BaseResponse(
+    return DataResponse(
         message=RESPONSE_MESSAGES["AUTH_CODE_SENT"],
         success=True,
+        data={"phone_number": user_data.phone_number},
     )
 
 
@@ -153,7 +156,10 @@ async def verify_phone_number(
     )
 
 
-@router.post("/login", response_model=DataResponse[TokenInfo])
+@router.post(
+    "/login",
+    response_model=DataResponse[TokenInfo],
+)
 async def user_login(
     login_data: LoginUser,
     response: Response,

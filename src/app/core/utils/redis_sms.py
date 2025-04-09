@@ -6,7 +6,7 @@ from app.core.logger import logging
 from app.create_fastapi_app import redis_client
 
 logger = logging.getLogger(__name__)
-MAX_ATTEMPTS = 30
+MAX_ATTEMPTS = 10
 BLOCK_DURATION = 3600  # 1 час
 SMS_EXPIRE_TIME = 120  # 2 минуты
 VERIFIED_EXPIRE_TIME = 3600  # 1 час

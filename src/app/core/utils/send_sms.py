@@ -1,5 +1,6 @@
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import TooManyRequestsException
+from app.core.i18n.translations import ErrorCode
 from app.core.utils import redis_sms, task_queue
 
 
@@ -11,7 +12,9 @@ async def send_verification_sms(phone_number: str) -> tuple[bool, str]:
         code=code,
     )
     if not success:
-        raise TooManyRequestsException(message)
+        raise TooManyRequestsException(
+            error_code=ErrorCode.TOO_MANY_REQUESTS,
+        )
     message = f"{settings.eskiz.ESKIZ_TEMPLATE_TEXT} {code}"
     # await task_queue.pool.enqueue_job(
     #     "send_sms_task",

@@ -16,6 +16,7 @@ from app.core.exceptions.http_exceptions import (
     TooManyRequestsException,
 )
 from app.core.i18n.responses import RESPONSE_MESSAGES, DataResponse
+from app.core.i18n.translations import ErrorCode
 from app.core.utils import redis_sms
 from app.core.utils.send_sms import send_verification_sms
 from app.dao.user import UserDAO
@@ -113,7 +114,9 @@ async def change_phone_number(
         raise TooManyRequestsException("Phone number is blocked. Try again in an hour")
     success, message = await send_verification_sms(new_phone_number)
     if not success:
-        raise TooManyRequestsException(message)
+        raise TooManyRequestsException(
+            error_code=ErrorCode.TOO_MANY_REQUESTS,
+        )
     return DataResponse(
         data={"phone_number": new_phone_number},
         message=RESPONSE_MESSAGES.get(
