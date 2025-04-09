@@ -74,7 +74,10 @@ async def register_user(
 
     # Подготавливаем общие данные для создания партнера
     user_create_data = UserCreateInternal(
-        **user_data.model_dump(exclude={"password"}),
+        **user_data.model_dump(
+            exclude={"password"},
+            exclude_unset=True,
+        ),
         password=hashed_password,
         is_active=False,
         is_verified=False,

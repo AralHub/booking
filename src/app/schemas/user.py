@@ -28,7 +28,6 @@ class LoginUser(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     password: PASSWORD_FIELD
 
-    model_config = ConfigDict(extra="forbid")
 
 
 class VerifyPhoneNumber(BaseModel):
