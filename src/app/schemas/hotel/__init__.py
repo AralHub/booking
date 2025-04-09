@@ -1,5 +1,5 @@
 from datetime import date, datetime
-
+from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from ..field_validation import (
@@ -83,35 +83,35 @@ class HotelFullUpdateInternal(HotelFullUpdate):
     hotel_id: int
 
 
-class BookingInformationRead(BaseModel):
-    check_in: TIME_FIELD
-    check_out: TIME_FIELD
-    star_rating: int | None = None
+# class BookingInformationRead(BaseModel):
+#     check_in: TIME_FIELD
+#     check_out: TIME_FIELD
+#     star_rating: int | None = None
 
 
-class GuestInformationRead(BaseModel):
-    email_for_guests: EMAIL_FIELD_UPDATE
-    first_phone_for_guests: PHONE_NUMBER_FIELD
-    second_phone_for_guests: PHONE_NUMBER_FIELD_UPDATE
-    site_url: str | None = None
+# class GuestInformationRead(BaseModel):
+#     email_for_guests: EMAIL_FIELD_UPDATE
+#     first_phone_for_guests: PHONE_NUMBER_FIELD
+#     second_phone_for_guests: PHONE_NUMBER_FIELD_UPDATE
+#     site_url: str | None = None
 
 
-class HotelFullRead(BaseModel):
-    id: int
-    name: str
-    hotel_category_id: int
-    description: str | None = None
-    address: str
-    city_id: int
-    latitude: float
-    longitude: float
-    facilities: list[int]
-    information_for_booking: BookingInformationRead
-    information_for_guests: GuestInformationRead
-    created_at: datetime
-    updated_at: datetime | None = None
-    slug: str | None = None
-    model_config = ConfigDict(from_attributes=True)
+# class HotelFullRead(BaseModel):
+#     id: int
+#     name: dict[str, str]
+#     hotel_category_id: int
+#     description: dict[str, str] | None = None
+#     address: str
+#     city_id: int
+#     latitude: float
+#     longitude: float
+#     facilities: list[int]
+#     information_for_booking: BookingInformationRead
+#     information_for_guests: GuestInformationRead
+#     created_at: datetime
+#     updated_at: datetime | None = None
+#     slug: str | None = None
+#     model_config = ConfigDict(from_attributes=True)
 
 
 class HotelSearch(BaseModel):
@@ -123,3 +123,14 @@ class HotelSearch(BaseModel):
     price_max: int | None = None
     max_distance_to_center: int = None
     amenities: list[int] = []
+
+
+class HotelSearchResult(BaseModel):
+    id: int
+    name: dict
+    description: dict
+    slug: str
+    category: Optional[dict] = None
+    location: Optional[dict] = None
+    reviews_count: int = 0
+    available_rooms: list[dict] = []

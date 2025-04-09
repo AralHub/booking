@@ -13,7 +13,7 @@ from app.schemas.hotel import (
     HotelFullCreate,
     HotelFullUpdate,
     HotelSearch,
-    HotelFullRead,
+    HotelSearchResult,
 )
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
@@ -53,7 +53,7 @@ async def get_popular_hotels(
 
 @router.post(
     "/search",
-    response_model=DataResponse[HotelFullRead],
+    response_model=PaginatedResponse[HotelSearchResult],
 )
 async def search_hotels(
     search_data: HotelSearch,
@@ -68,12 +68,13 @@ async def search_hotels(
     )
     if not hotels:
         return []
+    # return hotels
     return PaginatedResponse(
-        data=[HotelFullRead.model_validate(hotel) for hotel in hotels],
+        data=[HotelSearchResult.model_validate(hotel) for hotel in hotels],
         paginate={
             "page": 1,
             "page_size": 10,
-            "total_elements": len(hotels),
+            "total": len(hotels),
             "total_pages": 1,
         },
     )

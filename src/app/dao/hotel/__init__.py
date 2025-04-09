@@ -315,18 +315,26 @@ class HotelDAO(BaseDAO):
         )
         hotel_ids = hotels_in_city.scalars().all()
         # Получить перекрывающиеся бронирования
-        overlapping_bookings = await BookingDAO.get_bookings_by_hotel_ids(
+        booking_ids = await BookingDAO.get_bookings_by_hotel_ids(
             session=session,
             check_in_date=check_in_date,
             check_out_date=check_out_date,
             hotel_ids=hotel_ids,
         )
-
+        print(f"Перекрывающиеся бронирования: {booking_ids}")
         # Извлекаем идентификаторы забронированных комнат
         booked_room_ids = []
-        for booking in overlapping_bookings:
-            for room_info in booking.rooms_info:
-                booked_room_ids.append(room_info["room_id"])
+        if booking_ids:
+            # Получаем полные объекты бронирований по их ID
+            bookings_query = select(Booking).where(Booking.id.in_(booking_ids))
+            result = await session.execute(bookings_query)
+            bookings = result.scalars().all()
+
+            # Теперь у нас есть полные объекты бронирований
+            for booking in bookings:
+                if hasattr(booking, "rooms_info") and booking.rooms_info:
+                    for room_info in booking.rooms_info:
+                        booked_room_ids.append(room_info["room_id"])
 
         print(f"Забронированные номера: {booked_room_ids}")
         print(f"Требуемое размещение гостей: {guests}")

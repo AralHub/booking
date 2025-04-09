@@ -164,7 +164,7 @@ async def get_all_cities_by_country_id(
         paginate={
             "page": page,
             "page_size": page_size,
-            "total_elements": city_count or 0,
+            "total": city_count or 0,
             "total_pages": (city_count or 0) // page_size
             + ((city_count or 0) % page_size > 0),
         },

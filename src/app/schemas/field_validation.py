@@ -192,6 +192,6 @@ BOOKING_STATUS_FIELD_UPDATE = Annotated[
 class Page(BaseModel):
     page: int
     page_size: int
-    total_elements: int
+    total: int
     total_pages: int
     content: Any
