@@ -115,7 +115,7 @@ class HotelFullUpdateInternal(HotelFullUpdate):
 
 
 class HotelSearch(BaseModel):
-    city: str
+    city: str = "tashkent"
     check_in: date
     check_out: date
     guests: list[int]
@@ -133,4 +133,6 @@ class HotelSearchResult(BaseModel):
     category: Optional[dict] = None
     location: Optional[dict] = None
     reviews_count: int = 0
+    rating: float | None = None
+    images: list[str] | None = []
     available_rooms: list[dict] = []

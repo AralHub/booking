@@ -12,6 +12,7 @@ from app.dao import BaseDAO
 from app.dao.hotel.amenities import HotelAmenityDAO
 from app.dao.hotel.location import HotelLocationDAO
 from app.dao.location import CityDAO
+from app.dao.hotel.rating import HotelRatingDAO
 from app.dao.review import ReviewDAO
 from app.dao.hotel.category import HotelCategoryDAO
 from app.dao.hotel.info import HotelInfoDAO
@@ -34,7 +35,7 @@ from app.models.booking import BookingStatus
 from app.models.room import Room
 from app.models.hotel.location import HotelLocation
 from app.models.hotel.rating import HotelRating
-
+from app.models.hotel.rating import HotelRating
 from app.schemas.location import CityFilter
 from app.schemas.hotel.category import HotelCategoryFilter
 from app.schemas.hotel.info import HotelInfoFilter, HotelInfoUpdate
@@ -58,6 +59,7 @@ from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
 class HotelDAO(BaseDAO):
     model = Hotel
 
+    # region Populars
     @classmethod
     async def get_popular_hotels(
         cls,
@@ -97,8 +99,14 @@ class HotelDAO(BaseDAO):
         result = await session.execute(query)
         return result.scalars().all()
 
+    # endregion
+    # region Full hotel
     @classmethod
-    async def get_full_hotel_by_id(cls, hotel_id: int, session: AsyncSession):
+    async def get_full_hotel_by_id(
+        cls,
+        hotel_id: int,
+        session: AsyncSession,
+    ):
         query = (
             select(cls.model)
             .options(
@@ -108,6 +116,8 @@ class HotelDAO(BaseDAO):
                 selectinload(cls.model.rule),
                 selectinload(cls.model.reviews),
                 selectinload(cls.model.hotel_category),
+                selectinload(cls.model.hotel_rating),
+                selectinload(cls.model.hotel_images),
             )
             .where(cls.model.id == hotel_id)
         )
@@ -115,6 +125,8 @@ class HotelDAO(BaseDAO):
         hotel = result.scalar_one_or_none()
         return hotel or None
 
+    # endregion
+    # region Create hotel
     @classmethod
     async def create_new_hotel(
         cls,
@@ -203,6 +215,8 @@ class HotelDAO(BaseDAO):
             )
         return db_hotel
 
+    # endregion
+    # region Update hotel
     @classmethod
     async def update_hotel(
         cls,
@@ -286,6 +300,8 @@ class HotelDAO(BaseDAO):
 
         return hotel
 
+    # endregion
+    # region Find hotels
     @classmethod
     async def find_hotels_for_booking(
         cls,
@@ -451,9 +467,17 @@ class HotelDAO(BaseDAO):
                         "name": hotel.name,
                         "description": hotel.description,
                         "slug": hotel.slug,
+                        "rating": (
+                            hotel.hotel_rating.average_rating
+                            if hotel.hotel_rating
+                            else None
+                        ),
                         "category": (
                             hotel.hotel_category.name if hotel.hotel_category else None
                         ),
+                        "images": [
+                            hotel_image.image for hotel_image in hotel.hotel_images
+                        ],
                         "location": (
                             {
                                 "address": hotel.location.address,
@@ -486,3 +510,5 @@ class HotelDAO(BaseDAO):
                     suitable_hotels_data.append(hotel_data)
 
         return suitable_hotels_data
+
+    # endregion
