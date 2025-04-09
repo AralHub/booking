@@ -132,7 +132,7 @@ async def verify_phone_number(
     )
     if not db_user:
         raise NotFoundException(
-            ErrorCode.USER_NOT_FOUND,
+            error_code=ErrorCode.USER_NOT_FOUND,
         )
     await UserDAO.update(
         session=session,

@@ -134,7 +134,7 @@ async def verify_phone_number(
         code=verify_data.code,
     )
     if not success:
-        raise BadRequestException(ErrorCode.BAD_REQUEST)
+        raise BadRequestException(error_code=ErrorCode.BAD_REQUEST)
     # Проверяем, существует ли пользователь
     db_partner = await PartnerDAO.get_partner_by_phone(
         session=session,

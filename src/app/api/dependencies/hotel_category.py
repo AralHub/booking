@@ -16,5 +16,5 @@ async def validate_hotel_category_by_id(
         data_id=category_id,
     )
     if not hotel_category:
-        raise NotFoundException(ErrorCode.NOT_FOUND)
+        raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
     return hotel_category

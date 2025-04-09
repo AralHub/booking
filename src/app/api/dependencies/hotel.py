@@ -20,11 +20,13 @@ async def validate_active_hotel(
     db_hotel = result.unique().scalar_one_or_none()
     if not db_hotel:
         raise NotFoundException(
-            detail="Hotel not found", error_code=ErrorCode.HOTEL_NOT_FOUND
+            detail="Hotel not found",
+            error_code=ErrorCode.HOTEL_NOT_FOUND,
         )
     if not db_hotel.is_active:
         raise NotFoundException(
-            detail="Hotel not found", error_code=ErrorCode.HOTEL_NOT_FOUND
+            detail="Hotel not found",
+            error_code=ErrorCode.HOTEL_NOT_FOUND,
         )
     return db_hotel
 

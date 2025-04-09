@@ -38,5 +38,5 @@ async def validate_room_type_id(
     result = await session.execute(query)
     db_room_type = result.unique().scalar_one_or_none()
     if not db_room_type:
-        raise NotFoundException(ErrorCode.NOT_FOUND)
+        raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
     return db_room_type

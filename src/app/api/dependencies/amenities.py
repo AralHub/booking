@@ -16,7 +16,7 @@ async def validate_hotel_amenities_category(
         data_id=category_id,
     )
     if not hotel_amenities_category:
-        raise NotFoundException(ErrorCode.NOT_FOUND)
+        raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
     return hotel_amenities_category
 
 
@@ -29,7 +29,7 @@ async def validate_hotel_amenity(
         data_id=amenity_id,
     )
     if not hotel_amenity:
-        raise NotFoundException(ErrorCode.NOT_FOUND)
+        raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
     return hotel_amenity
 
 
@@ -42,7 +42,7 @@ async def validate_room_amenities_category(
         data_id=category_id,
     )
     if not room_amenities_category:
-        raise NotFoundException(ErrorCode.NOT_FOUND)
+        raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
     return room_amenities_category
 
 
@@ -55,5 +55,5 @@ async def validate_room_amenity(
         data_id=amenity_id,
     )
     if not room_amenity:
-        raise NotFoundException(ErrorCode.NOT_FOUND)
+        raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
     return room_amenity
