@@ -1,15 +1,21 @@
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, UploadFile
-from app.core.i18n.responses import ListResponse, DataResponse, RESPONSE_MESSAGES
+
 from app.api.dependencies.hotel import validate_hotel
 from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
+from app.core.i18n.responses import (
+    RESPONSE_MESSAGES,
+    BaseResponse,
+    DataResponse,
+    ListResponse,
+)
 from app.core.utils import file_utils
 from app.dao.hotel.images import HotelImageDAO
-from app.schemas.hotel.info import HotelNameRead
 from app.schemas.hotel.images import HotelImageRead
+from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(
     tags=["Hotel Images"],
@@ -78,7 +84,10 @@ async def delete_hotel_image(
         hotel_id=hotel_id,
         image_id=image_id,
     )
-    return DataResponse[dict](
-        data={"id": image_id},
-        message="Hotel image deleted successfully",
+    return BaseResponse(
+        success=True,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_DELETED",
+            "Hotel image deleted successfully",
+        ),
     )
