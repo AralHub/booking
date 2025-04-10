@@ -53,7 +53,7 @@ async def add_hotel_image(
     session=TransactionSessionDep,
 ):
 
-    file_path = await file_utils.save_png(
+    file_path = await file_utils.save_photo(
         file=photo,
         filename=f"hotel_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
         folder=f"hotel_{hotel_id}",
