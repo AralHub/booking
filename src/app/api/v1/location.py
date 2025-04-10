@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, Query
 from app.api.dependencies.location import validate_country
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
-from app.core.exceptions.http_exceptions import BadRequestException
+from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
+from app.core.i18n.translations import ErrorCode
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     DataResponse,
@@ -137,6 +138,28 @@ async def delete_country(
 
 
 # region City
+@router.get(
+    "/locations/countries/{country_id}/cities/{city_slug}",
+    response_model=DataResponse[CityRead],
+)
+async def get_city_by_slug(
+    country_id: int,
+    city_slug: str,
+    session=SessionDep,
+):
+    db_city = await CityDAO.get_one_or_none(
+        session=session,
+        filters=CityFilter(slug=city_slug),
+    )
+    if not db_city:
+        raise NotFoundException(
+            error_code=ErrorCode.CITY_NOT_FOUND,
+        )
+    return DataResponse(
+        data=db_city,
+    )
+
+
 @router.get(
     "/locations/countries/{country_id}/cities",
     response_model=PaginatedResponse[CityRead],
