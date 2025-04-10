@@ -17,6 +17,7 @@ from app.schemas.hotel import (
     HotelFullUpdate,
     HotelSearch,
     HotelSearchResult,
+    HotelFullRead,
 )
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
@@ -94,16 +95,26 @@ async def search_hotels(
     )
 
 
-@router.get("/{hotel_slug}")
+@router.get(
+    "/{hotel_slug}",
+)
 async def get_full_hotel(
     hotel_slug: str,
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
-    return await HotelDAO.get_full_hotel_by_id(
+    hotel = await HotelDAO.get_full_hotel_by_id(
         session=session,
         hotel_id=hotel.id,
     )
+    if not hotel:
+        raise NotFoundException(
+            ErrorCode.HOTEL_NOT_FOUND,
+            "Hotel not found",
+        )
+    return {
+        "data": hotel,
+    }
 
 
 @router.post("")
