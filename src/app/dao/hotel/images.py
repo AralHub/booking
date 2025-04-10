@@ -6,6 +6,7 @@ from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.utils import file_utils
 from app.schemas.hotel.images import HotelImageFilter
 from app.core.i18n.translations import ErrorCode
+from app.core.config import settings
 
 
 class HotelImageDAO(BaseDAO):
@@ -39,7 +40,7 @@ class HotelImageDAO(BaseDAO):
             session=session,
             values=HotelImageFilter(
                 hotel_id=hotel_id,
-                image=file_path,
+                image=f"{settings.image_base_url}{file_path}",
             ),
         )
 

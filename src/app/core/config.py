@@ -204,6 +204,9 @@ class Settings:
     client_side_cache: ClientSideCacheSettings = ClientSideCacheSettings()
     environment: EnvironmentSettings = EnvironmentSettings()
     upload_path: str = config("UPLOAD_PATH", default="uploads")
+    image_base_url: str = config(
+        "IMAGE_BASE_URL", default="http://176.221.29.165:8022/"
+    )
 
 
 settings = Settings()

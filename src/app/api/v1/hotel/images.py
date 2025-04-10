@@ -44,6 +44,7 @@ async def get_hotel_images(
 
 @router.post(
     "/{hotel_id}/images",
+    response_model=DataResponse[HotelImageRead],
 )
 async def add_hotel_image(
     hotel_id: int,
@@ -62,13 +63,13 @@ async def add_hotel_image(
         hotel_id=hotel_id,
         file_path=file_path,
     )
-    return {
-        "data": added_image,
-        "message": RESPONSE_MESSAGES.get(
+    return DataResponse(
+        data=added_image,
+        message=RESPONSE_MESSAGES.get(
             "DATA_CREATED",
             "Hotel image created successfully",
         ),
-    }
+    )
 
 
 @router.delete(
