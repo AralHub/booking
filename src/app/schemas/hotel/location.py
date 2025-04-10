@@ -9,16 +9,40 @@ from ..field_validation import (
 )
 
 
+class Coordinates(BaseModel):
+    longitude: LONG_FIELD
+    latitude: LAT_FIELD
+
+
 class LocationRead(BaseModel):
     id: int
     hotel_id: int
     address: str
-    city_id: int
-    longitude: LONG_FIELD
-    latitude: LAT_FIELD
+    city: str
+    coordinates: Coordinates
     to_airport: float | None = None
     to_railway: float | None = None
     to_city_center: float | None = None
+
+    class Config:
+        from_attributes = True
+
+    @classmethod
+    def from_orm_with_city(cls, obj, city_name=None):
+        return cls(
+            id=obj.id,
+            hotel_id=obj.hotel_id,
+            address=obj.address,
+            city_id=obj.city_id,
+            coordinates=Coordinates(
+                longitude=obj.longitude,
+                latitude=obj.latitude,
+            ),
+            to_airport=obj.to_airport,
+            to_railway=obj.to_railway,
+            to_city_center=obj.to_city_center,
+            city=city_name,
+        )
 
 
 class LocationCreate(BaseModel):

@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.dao.location import CityDAO
 from app.dao import BaseDAO
@@ -15,7 +16,9 @@ from app.schemas.hotel.location import (
     LocationUpdate,
     LocationUpdateInternal,
     LocationFilter,
+    LocationRead,
 )
+from app.models.location import City
 
 
 class HotelLocationDAO(BaseDAO):
@@ -183,3 +186,19 @@ class HotelLocationDAO(BaseDAO):
                     to_city_center=None,
                 ),
             )
+
+    @classmethod
+    async def get_hotel_location(cls, session: AsyncSession, hotel_id: int):
+        query = (
+            select(cls.model, City.name.label("city"))
+            .where(cls.model.hotel_id == hotel_id)
+            .join(City, City.id == cls.model.city_id)
+        )
+        result = await session.execute(query)
+        db_result = result.one_or_none()
+
+        if db_result:
+            location, city_name = db_result
+
+            return LocationRead.from_orm_with_city(location, city_name)
+        return None

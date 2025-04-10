@@ -33,11 +33,9 @@ async def get_hotel_location(
     hotel: HotelNameRead = Depends(validate_hotel),
     session=SessionDep,
 ):
-    db_hotel_location = await HotelLocationDAO.get_one_or_none(
+    db_hotel_location = await HotelLocationDAO.get_hotel_location(
         session=session,
-        filters=LocationFilter(
-            hotel_id=hotel_id,
-        ),
+        hotel_id=hotel_id,
     )
     if not db_hotel_location:
         raise NotFoundException("Hotel location not found")
