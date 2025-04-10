@@ -1,10 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.core import SessionDep
 from app.core.config import settings
 from app.core.i18n.responses import DataResponse
 from app.dao.hotel.rating import HotelRatingDAO
 from app.schemas.hotel.rating import HotelRatingRead
+from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(
     tags=["Hotel Rating"],
@@ -13,17 +15,18 @@ router = APIRouter(
 
 
 @router.get(
-    "/{hotel_id}/rating",
+    "/{hotel_slug}/rating",
     response_model=DataResponse[HotelRatingRead],
 )
 async def get_hotel_rating(
-    hotel_id: int,
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
 
     hotel_rating = await HotelRatingDAO.get_hotel_summary_rating(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
     return DataResponse(
         data=hotel_rating,

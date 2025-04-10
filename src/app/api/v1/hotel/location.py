@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel
-from app.api.dependencies.partner import valid_hotel_admin
+from app.api.dependencies.hotel import validate_hotel, validate_hotel_by_slug
+from app.api.dependencies.partner import valid_hotel_admin, valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import NotFoundException
@@ -25,17 +25,17 @@ router = APIRouter(
 
 
 @router.get(
-    "/{hotel_id}/location",
+    "/{hotel_slug}/location",
     response_model=DataResponse[LocationRead],
 )
 async def get_hotel_location(
-    hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
     db_hotel_location = await HotelLocationDAO.get_hotel_location(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
     if not db_hotel_location:
         raise NotFoundException("Hotel location not found")
@@ -49,15 +49,15 @@ async def get_hotel_location(
     response_model=DataResponse[LocationRead],
 )
 async def add_hotel_location(
-    hotel_id: int,
+    hotel_slug: str,
     location_create_data: LocationCreate,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     created_location = await HotelLocationDAO.add_hotel_location(
         session=session,
         location_create_data=location_create_data,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
     return DataResponse(
         data=created_location,

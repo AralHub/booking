@@ -2,8 +2,8 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, UploadFile
 
-from app.api.dependencies.hotel import validate_hotel
-from app.api.dependencies.partner import valid_hotel_admin
+from app.api.dependencies.hotel import validate_hotel, validate_hotel_by_slug
+from app.api.dependencies.partner import valid_hotel_admin, valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.i18n.responses import (
@@ -24,17 +24,17 @@ router = APIRouter(
 
 
 @router.get(
-    "/{hotel_id}/images",
+    "/{hotel_slug}/images",
     response_model=ListResponse[HotelImageRead],
 )
 async def get_hotel_images(
-    hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
     hotel_images = await HotelImageDAO.get_hotel_images(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
     return ListResponse[HotelImageRead](
         data=hotel_images,
@@ -47,20 +47,20 @@ async def get_hotel_images(
     response_model=DataResponse[HotelImageRead],
 )
 async def add_hotel_image(
-    hotel_id: int,
+    hotel_slug: str,
     photo: UploadFile,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
 
     file_path = await file_utils.save_photo(
         file=photo,
         filename=f"hotel_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
-        folder=f"hotel_{hotel_id}",
+        folder=f"hotel_{hotel.id}",
     )
     added_image = await HotelImageDAO.add_hotel_image(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
         file_path=file_path,
     )
     return DataResponse(
@@ -73,18 +73,18 @@ async def add_hotel_image(
 
 
 @router.delete(
-    "/{hotel_id}/images/{image_id}",
+    "/{hotel_slug}/images/{image_id}",
     response_model=BaseResponse,
 )
 async def delete_hotel_image(
-    hotel_id: int,
+    hotel_slug: str,
     image_id: int,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     await HotelImageDAO.delete_hotel_image(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
         image_id=image_id,
     )
     return BaseResponse(

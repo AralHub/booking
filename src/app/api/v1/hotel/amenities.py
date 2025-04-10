@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.hotel import (
+    validate_hotel,
+    validate_hotel_by_slug,
+    valid_hotel_admin_by_slug,
+)
 from app.api.dependencies.partner import valid_hotel_admin
 from app.core import SessionDep, TransactionSessionDep
 from app.core.i18n.responses import (
@@ -20,17 +24,17 @@ router = APIRouter(
 
 
 @router.get(
-    "/{hotel_id}/amenities",
+    "/{hotel_slug}/amenities",
     response_model=ListResponse[HotelAmenityRead],
 )
 async def get_hotel_amenities(
-    hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
     hotel_amenities = await HotelAmenityDAO.get_hotel_amenities(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
     return ListResponse(
         data=hotel_amenities,
@@ -39,18 +43,18 @@ async def get_hotel_amenities(
 
 
 @router.post(
-    "/{hotel_id}/amenities",
+    "/{hotel_slug}/amenities",
     response_model=DataResponse[HotelAmenityRead],
 )
 async def add_amenities_to_hotel(
-    hotel_id: int,
+    hotel_slug: str,
     amenities: list[int],
     hotel: HotelNameRead = Depends(valid_hotel_admin),
     session=TransactionSessionDep,
 ):
     created_amenities = await HotelAmenityDAO.add_amenities_to_hotel(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
         amenities=amenities,
     )
     return DataResponse(
@@ -63,17 +67,17 @@ async def add_amenities_to_hotel(
 
 
 @router.delete(
-    "/{hotel_id}/amenities",
+    "/{hotel_slug}/amenities",
     response_model=BaseResponse,
 )
 async def remove_amenities_from_hotel(
-    hotel_id: int,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     await HotelAmenityDAO.remove_all_amenities_from_hotel(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
     return BaseResponse(
         success=True,
@@ -85,18 +89,18 @@ async def remove_amenities_from_hotel(
 
 
 @router.delete(
-    "/{hotel_id}/amenities/{amenity_id}",
+    "/{hotel_slug}/amenities/{amenity_id}",
     response_model=BaseResponse,
 )
 async def remove_amenity_from_hotel_by_id(
     hotel_id: int,
     amenity_id: int,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     await HotelAmenityDAO.remove_amenity_from_hotel(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
         amenity_id=amenity_id,
     )
     return BaseResponse(

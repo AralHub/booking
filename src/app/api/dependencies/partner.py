@@ -17,7 +17,7 @@ from app.core.logger import logging
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerBase, PartnerRead
 
-from .hotel import validate_hotel
+from .hotel import validate_hotel, validate_hotel_by_slug
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +51,15 @@ async def get_current_active_auth_partner(
 
 async def valid_hotel_admin(
     hotel: HotelNameRead = Depends(validate_hotel),
+    current_partner: PartnerRead = Depends(get_current_auth_partner),
+):
+    if hotel.hotel_admin_id != current_partner.id:
+        raise UnauthorizedException("Permission denied")
+    return hotel
+
+
+async def valid_hotel_admin_by_slug(
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     current_partner: PartnerRead = Depends(get_current_auth_partner),
 ):
     if hotel.hotel_admin_id != current_partner.id:

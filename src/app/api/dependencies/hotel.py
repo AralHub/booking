@@ -42,3 +42,16 @@ async def validate_hotel(
         logger.error(f"Hotel not found: {hotel_id}")
         raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
     return db_hotel
+
+
+async def validate_hotel_by_slug(
+    hotel_slug: str,
+    session=SessionDep,
+):
+    query = select(Hotel).filter_by(slug=hotel_slug)
+    result = await session.execute(query)
+    db_hotel = result.unique().scalar_one_or_none()
+    if not db_hotel:
+        logger.error(f"Hotel not found: {hotel_slug}")
+        raise NotFoundException(error_code=ErrorCode.HOTEL_NOT_FOUND)
+    return db_hotel
