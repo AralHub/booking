@@ -2,8 +2,11 @@ import logging
 
 from fastapi import APIRouter, Depends, Query
 
-from app.api.dependencies.hotel import validate_hotel
-from app.api.dependencies.partner import get_current_active_auth_partner
+from app.api.dependencies.hotel import validate_hotel, validate_hotel_by_slug
+from app.api.dependencies.partner import (
+    get_current_active_auth_partner,
+    valid_hotel_admin_by_slug,
+)
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import NotFoundException
@@ -65,10 +68,21 @@ async def search_hotels(
         check_in_date=search_data.check_in,
         check_out_date=search_data.check_out,
         guests=search_data.guests,
+        price_min=search_data.price_min,
+        price_max=search_data.price_max,
+        max_distance_to_center=search_data.max_distance_to_center,
+        amenities=search_data.amenities,
     )
     if not hotels:
-        return []
-    # return hotels
+        return PaginatedResponse(
+            data=[],
+            paginate={
+                "page": 1,
+                "page_size": 10,
+                "total": 0,
+                "total_pages": 1,
+            },
+        )
     return PaginatedResponse(
         data=[HotelSearchResult.model_validate(hotel) for hotel in hotels],
         paginate={
@@ -80,15 +94,15 @@ async def search_hotels(
     )
 
 
-@router.get("/{hotel_id}")
+@router.get("/{hotel_slug}")
 async def get_full_hotel(
-    hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
     return await HotelDAO.get_full_hotel_by_id(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
 
 
@@ -105,15 +119,15 @@ async def create_hotel(
     )
 
 
-@router.put("/{hotel_id}")
+@router.put("/{hotel_slug}")
 async def update_hotel(
     hotel_update_data: HotelFullUpdate,
-    hotel_id: int,
-    partner: PartnerRead = Depends(get_current_active_auth_partner),
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     return await HotelDAO.update_hotel(
         session=session,
         hotel_update_data=hotel_update_data,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
