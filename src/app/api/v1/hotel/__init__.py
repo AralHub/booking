@@ -17,7 +17,6 @@ from app.schemas.hotel import (
     HotelFullUpdate,
     HotelSearch,
     HotelSearchResult,
-    HotelFullRead,
 )
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
