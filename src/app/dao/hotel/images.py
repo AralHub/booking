@@ -35,7 +35,6 @@ class HotelImageDAO(BaseDAO):
         hotel_id: int,
         file_path: str,
     ):
-
         return await cls.create(
             session=session,
             values=HotelImageFilter(
