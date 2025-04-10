@@ -106,9 +106,7 @@ class RoomDAO(BaseDAO):
     ):
         # Получаем все активные бронирования на указанные даты
         booked_rooms_stmt = (
-            select(
-                BookedRoom.room_id,
-            )
+            select(BookedRoom.room_id, func.count().label("booked_count"))
             .join(Booking)
             .where(
                 and_(
@@ -133,58 +131,119 @@ class RoomDAO(BaseDAO):
                     ),
                 )
             )
+            .group_by(BookedRoom.room_id)
         )
-
-        booked_room_ids = set(
-            (await session.execute(booked_rooms_stmt)).scalars().all()
-        )
-        return booked_room_ids
+        booked_rooms_result = await session.execute(booked_rooms_stmt)
+        booked_rooms = booked_rooms_result.all()
+        return {room_id: count for room_id, count in booked_rooms}
 
     @classmethod
-    async def check_rooms_availability(
+    async def get_available_rooms(
         cls,
         session: AsyncSession,
         hotel_id: int,
-        room_requests: list[BookedRoomCreate],
         check_in_date: date,
         check_out_date: date,
-    ) -> bool:
-        # Получаем все комнаты отеля
-        stmt = select(Room.id, Room.room_type_id, Room.quantity).where(
-            and_(
-                Room.hotel_id == hotel_id,
-            )
-        )
-        result = await session.execute(stmt)
-        rooms = result.fetchall()
-        # Создаем словарь доступных комнат по их ID
-        available_rooms = {room.id: room.quantity for room in rooms}
-
-        # Проверяем запросы на комнаты
-        requested_rooms = {}
-        for room_request in room_requests:
-            if room_request.room_id not in available_rooms:
-                raise NotFoundException(f"Room {room_request.room_id} not found")
-
-            current_quantity = requested_rooms.get(room_request.room_id, 0)
-            new_quantity = current_quantity + room_request.quantity
-
-            if new_quantity > available_rooms[room_request.room_id]:
-                raise BadRequestException(
-                    f"Requested quantity {new_quantity} exceeds available quantity {available_rooms[room_request.room_id]} for room {room_request.room_id}"
-                )
-
-            requested_rooms[room_request.room_id] = new_quantity
-
-        # Проверяем, что запрошенные комнаты не забронированы
-        booked_room_ids = await cls.get_booked_rooms_by_hotel_id(
+        guests: list[int],
+    ):
+        booked_rooms_dict = await cls.get_booked_rooms_by_hotel_id(
             session=session,
             check_in_date=check_in_date,
             check_out_date=check_out_date,
             hotel_id=hotel_id,
         )
-        # Проверяем пересечение с уже забронированными комнатами
-        if set(requested_rooms.keys()) & booked_room_ids:
-            raise BadRequestException("Some of the requested rooms are already booked")
+        print(booked_rooms_dict)
+        available_rooms_stmt = (
+            select(
+                Room,
+                RoomType.name.label("room_type_name"),
+                RoomType.description.label("room_type_description"),
+            )
+            .join(RoomType, Room.room_type_id == RoomType.id)
+            .where(Room.hotel_id == hotel_id)
+        )
+        available_rooms_result = await session.execute(available_rooms_stmt)
 
-        return True
+        available_rooms = available_rooms_result.all()
+        rooms_data = []
+
+        for room, room_type_name, room_type_description in available_rooms:
+            # Проверяем доступное количество номеров
+            booked_count = booked_rooms_dict.get(room.id, 0)
+            available_quantity = room.quantity - booked_count
+
+            # Пропускаем номер, если все экземпляры забронированы
+            if available_quantity <= 0:
+                continue
+
+            # Получаем цену на указанный период
+            price = await RoomPriceDAO.get_room_price(
+                session=session,
+                room_id=room.id,
+                check_in_date=check_in_date,
+                check_out_date=check_out_date,
+            )
+            room_data = {
+                "id": room.id,
+                "name": room.name,
+                "quantity": room.quantity,
+                "available_quantity": available_quantity,
+                "description": room.description,
+                "max_guests": room.max_guests,
+                "room_type_id": room.room_type_id,
+                "room_type_name": room_type_name,
+                "room_type_description": room_type_description,
+                "base_price": room.base_price,
+                "actual_price": price,
+            }
+        rooms_data.append(room_data)
+
+        # Находим подходящие комнаты для размещения гостей
+        suitable_rooms = cls._find_suitable_rooms_for_guests(
+            available_rooms=rooms_data,
+            guests=guests,
+        )
+        return suitable_rooms
+
+    @classmethod
+    def _find_suitable_rooms_for_guests(
+        cls,
+        available_rooms: list[dict],
+        guests: list[int],
+    ):
+
+        # Копия списка гостей для манипуляций
+        remaining_guests = guests.copy()
+        remaining_guests.sort(reverse=True)
+
+        # Копия доступных номеров для отслеживания использования
+        rooms_to_use = []
+        available_rooms_copy = []
+
+        for room in available_rooms:
+            # Добавляем каждый номер столько раз, сколько у него доступных экземпляров
+            for _ in range(room["available_quantity"]):
+                available_rooms_copy.append(room.copy())
+
+        # Сортируем номера по убыванию максимального количества гостей
+        available_rooms_copy.sort(key=lambda x: x["max_guests"], reverse=True)
+
+        all_guests_accommodated = True
+        for group_size in remaining_guests:
+            room_found = False
+
+            for i, room in enumerate(available_rooms_copy):
+                if room["max_guests"] >= group_size:
+                    rooms_to_use.append(room)
+                    available_rooms_copy.pop(i)
+                    room_found = True
+                    break
+
+            if not room_found:
+                all_guests_accommodated = False
+                break
+
+        if not all_guests_accommodated:
+            return None
+
+        return rooms_to_use
