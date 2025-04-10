@@ -3,6 +3,7 @@ from datetime import date
 from pydantic import BaseModel, ConfigDict, Field
 
 from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
+from app.models.booking import BookingType
 
 
 # region Booking Room
@@ -44,6 +45,7 @@ class BookingCreateMultipleRooms(BaseModel):
     check_out_date: date
     rooms_info: list[BookedRoomCreate]
     special_requests: str | None = None
+    payment_method_id: int
 
 
 class BookingCreateMultipleRoomsInternal(BaseModel):
@@ -56,6 +58,8 @@ class BookingCreateMultipleRoomsInternal(BaseModel):
     special_requests: str | None = None
     status: BOOKING_STATUS_FIELD_UPDATE
     hotel_id: int
+    booking_type: BookingType
+    payment_method_id: int
 
 
 class BookingUpdateInternal(BaseModel):
