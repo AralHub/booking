@@ -1,14 +1,15 @@
 import uvicorn
-from fastapi import Request
+from fastapi import Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-
+from fastapi.staticfiles import StaticFiles
 from app.api.v1 import router as api_v1_router
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import CustomException
 from app.core.i18n.translations import get_error_message
 from app.core.logger import logging
 from app.create_fastapi_app import create_app
+from app.core.config import SOURCE_DIR, settings
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,11 @@ async def custom_exception_handler(request: Request, exc: CustomException):
     )
 
 
+main_app.mount(
+    "/storage",
+    StaticFiles(directory=str(SOURCE_DIR / "storage/")),
+    name="storage",
+)
 main_app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # В продакшене замените на конкретные домены
@@ -55,6 +61,14 @@ main_app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@main_app.middleware("http")
+async def limit_body_size(request: Request, call_next):
+    content_length = request.headers.get("Content-Length")
+    if content_length and int(content_length) > settings.max_file_size:  # 10 MB limit
+        raise HTTPException(status_code=413, detail="Payload Too Large")
+    return await call_next(request)
 
 
 if __name__ == "__main__":
