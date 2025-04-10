@@ -559,6 +559,7 @@ from app.schemas.hotel.location import (
     LocationUpdate,
 )
 from app.models.hotel import Hotel
+from app.models.location import City
 from app.models.room.price import RoomPrice
 from app.models.hotel.category import HotelCategory
 from app.models.hotel.location import HotelLocation
@@ -639,22 +640,73 @@ class HotelDAO(BaseDAO):
         session: AsyncSession,
     ):
         query = (
-            select(cls.model)
+            select(cls.model, City.name.label("city"))
             .options(
                 selectinload(cls.model.hotel_amenities),
                 selectinload(cls.model.hotel_info),
-                selectinload(cls.model.location).selectinload(HotelLocation.city),
+                selectinload(cls.model.location),
                 selectinload(cls.model.rule),
                 selectinload(cls.model.reviews),
                 selectinload(cls.model.hotel_category),
                 selectinload(cls.model.hotel_rating),
                 selectinload(cls.model.hotel_images),
             )
+            .join(HotelLocation, HotelLocation.hotel_id == cls.model.id)
+            .join(City, City.id == HotelLocation.city_id)
             .where(cls.model.id == hotel_id)
         )
         result = await session.execute(query)
-        hotel = result.scalar_one_or_none()
-        return hotel or None
+        hotel_result = result.first()
+
+        if not hotel_result:
+            return None
+        hotel, city_name = hotel_result
+
+        hotel_data = {
+            "id": hotel.id,
+            "name": hotel.name,
+            "hotel_category_id": hotel.hotel_category_id,
+            "description": hotel.description,
+            "location": {
+                "coordinates": {
+                    "latitude": hotel.location.latitude,
+                    "longitude": hotel.location.longitude,
+                },
+                "city": city_name,
+                "address": hotel.location.address,
+                "distance_to_center": hotel.location.to_city_center,
+                "distance_to_center": hotel.location.to_city_center,
+            },
+            "facilities": (
+                [amenity.hotel_amenity_id for amenity in hotel.hotel_amenities]
+                if hotel.hotel_amenities
+                else []
+            ),
+            "information_for_booking": {
+                "check_in": hotel.rule.check_in_from if hotel.rule else None,
+                "check_out": hotel.rule.check_out_from if hotel.rule else None,
+                "star_rating": (
+                    hotel.hotel_rating.average_rating if hotel.hotel_rating else None
+                ),
+            },
+            "information_for_guests": {
+                "email_for_guests": (
+                    hotel.hotel_info.email if hotel.hotel_info else None
+                ),
+                "first_phone_for_guests": (
+                    hotel.hotel_info.first_phone_number if hotel.hotel_info else None
+                ),
+                "second_phone_for_guests": (
+                    hotel.hotel_info.second_phone_number if hotel.hotel_info else None
+                ),
+                "site_url": hotel.hotel_info.site_url if hotel.hotel_info else None,
+            },
+            "created_at": hotel.created_at,
+            "updated_at": hotel.updated_at,
+            "slug": hotel.slug,
+        }
+
+        return hotel_data
 
     # endregion
     # region Create hotel
