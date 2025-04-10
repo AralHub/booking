@@ -43,7 +43,7 @@ async def get_hotel_images(
 
 
 @router.post(
-    "/{hotel_id}/images",
+    "/{hotel_slug}/images",
     response_model=DataResponse[HotelImageRead],
 )
 async def add_hotel_image(

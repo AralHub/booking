@@ -29,17 +29,17 @@ router = APIRouter(
 
 
 @router.get(
-    "/{hotel_id}/info",
+    "/{hotel_slug}/info",
     response_model=DataResponse[HotelInfoRead],
 )
 async def get_hotel_info(
-    hotel_id: int,
+    hotel_slug: str,
     hotel: HotelNameRead = Depends(validate_hotel),
     session=TransactionSessionDep,
 ):
     hotel_info = await HotelInfoDAO.get_hotel_info(
         session=session,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
     return DataResponse[HotelInfoRead](
         data=hotel_info,

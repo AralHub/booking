@@ -45,7 +45,7 @@ async def get_hotel_location(
 
 
 @router.post(
-    "/{hotel_id}/location",
+    "/{hotel_slug}/location",
     response_model=DataResponse[LocationRead],
 )
 async def add_hotel_location(
@@ -69,19 +69,19 @@ async def add_hotel_location(
 
 
 @router.put(
-    "/{hotel_id}/location",
+    "/{hotel_slug}/location",
     response_model=DataResponse[LocationRead],
 )
 async def update_hotel_location(
-    hotel_id: int,
+    hotel_slug: str,
     location_update_data: LocationUpdate,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     updated_location = await HotelLocationDAO.update_hotel_location(
         session=session,
         location_update_data=location_update_data,
-        hotel_id=hotel_id,
+        hotel_id=hotel.id,
     )
     return DataResponse(
         data=updated_location,

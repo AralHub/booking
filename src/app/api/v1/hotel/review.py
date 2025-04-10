@@ -57,7 +57,7 @@ async def get_hotel_reviews(
 
 
 @router.post(
-    "/{hotel_id}/reviews",
+    "/{hotel_slug}/reviews",
     response_model=DataResponse[ReviewRead],
 )
 async def create_hotel_reviews(
@@ -83,7 +83,7 @@ async def create_hotel_reviews(
 
 
 @router.put(
-    "/{hotel_id}/reviews/{review_id}",
+    "/{hotel_slug}/reviews/{review_id}",
     response_model=DataResponse[ReviewRead],
 )
 async def update_hotel_review(
