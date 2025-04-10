@@ -207,7 +207,7 @@ class Settings:
     image_base_url: str = config(
         "IMAGE_BASE_URL", default="http://176.221.29.165:8022/"
     )
-
+    max_file_size: int = config("MAX_FILE_SIZE", default=10 * 1024 * 1024)
 
 settings = Settings()
 
