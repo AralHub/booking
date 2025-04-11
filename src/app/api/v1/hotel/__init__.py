@@ -98,7 +98,6 @@ async def search_hotels(
 
 @router.get(
     "/{hotel_slug}",
-    response_model=DataResponse[HotelFullRead],
 )
 async def get_full_hotel(
     hotel_slug: str,
@@ -114,7 +113,9 @@ async def get_full_hotel(
             ErrorCode.HOTEL_NOT_FOUND,
             "Hotel not found",
         )
-    return DataResponse(data=hotel)
+    return {
+        "data": hotel,
+    }
 
 
 @router.post("")
