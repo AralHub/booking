@@ -17,6 +17,7 @@ from app.core.i18n.responses import (
 )
 from app.core.utils.parse_date import parse_date
 from app.dao.room import RoomDAO
+from app.dao.room.search import RoomSearchDAO
 from app.dao.room.types import RoomTypeDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.room import (
@@ -26,6 +27,7 @@ from app.schemas.room import (
     RoomRead,
     RoomUpdate,
     RoomUpdateInternal,
+    RoomSearch,
 )
 from app.schemas.room.types import RoomTypeFilter, RoomTypeRead
 
@@ -35,6 +37,29 @@ router = APIRouter(
     tags=["Hotel Rooms"],
     prefix="/hotels",
 )
+
+
+@router.post(
+    "/{hotel_slug}/rooms/search",
+    response_model=ListResponse[dict],
+)
+async def search_rooms_for_booking(
+    hotel_slug: str,
+    search_data: RoomSearch,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
+    session=SessionDep,
+):
+    rooms = await RoomSearchDAO.find_rooms_for_booking(
+        session=session,
+        hotel_id=hotel.id,
+        check_in_date=search_data.check_in,
+        check_out_date=search_data.check_out,
+        guests=search_data.guests,
+    )
+    return ListResponse(
+        data=rooms,
+        total=len(rooms),
+    )
 
 
 @router.get(

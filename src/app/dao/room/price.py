@@ -41,10 +41,7 @@ class RoomPriceDAO(BaseDAO):
             ),
         )
         if not room_price:
-            raise NotFoundException(
-                detail="Room price not found",
-                error_code=ErrorCode.ROOM_PRICE_NOT_FOUND,
-            )
+            return None
         return room_price
 
     @classmethod
