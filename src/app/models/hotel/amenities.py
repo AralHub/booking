@@ -15,11 +15,6 @@ if TYPE_CHECKING:
     from app.models.hotel import Hotel
 
 
-class PaymentType(str, Enum):
-    FREE = "free"
-    PAID = "paid"
-
-
 class HotelAmenityCategory(
     IntIdPkMixin,
     MultilingualNameMixin,
@@ -51,16 +46,7 @@ class HotelAmenity(
         default=True,
         server_default="true",
     )
-    is_popular: Mapped[bool] = mapped_column(
-        Boolean,
-        default=False,
-        server_default="false",
-    )
-    payment_type: Mapped[PaymentType] = mapped_column(
-        SqlEnum(PaymentType),
-        default=PaymentType.FREE,
-        server_default=text("'FREE'"),
-    )
+
     hotel_amenity_category_id: Mapped[int] = mapped_column(
         ForeignKey(
             "hotel_amenity_categories.id",

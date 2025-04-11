@@ -1,6 +1,5 @@
 from pydantic import BaseModel, ConfigDict
 
-from app.models.hotel.amenities import PaymentType
 from app.schemas.mixins import (
     MultilingualNameBase,
     MultilingualNameBaseUpdate,
@@ -37,7 +36,6 @@ class HotelAmenityCategoryRead(BaseModel):
 
 class HotelAmenityCreate(MultilingualNameBase):
     is_popular: bool
-    payment_type: PaymentType
 
 
 class HotelAmenityCreateInternal(BaseModel):
@@ -48,20 +46,17 @@ class HotelAmenityCreateInternal(BaseModel):
 class HotelAmenityRead(BaseModel):
     id: int
     name: dict[str, str]
-    is_popular: bool
-    payment_type: PaymentType
+    icon: str | None = None
     hotel_amenity_category_id: int
     model_config = ConfigDict(from_attributes=True)
 
 
 class HotelAmenityUpdate(MultilingualNameBaseUpdate):
     is_popular: bool | None = None
-    payment_type: PaymentType | None = None
 
 
 class HotelAmenityFilter(BaseModel):
     id: int | None = None
-    is_popular: bool | None = None
     hotel_amenity_category_id: int | None = None
 
 
