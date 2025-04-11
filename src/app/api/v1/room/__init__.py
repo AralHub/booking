@@ -41,7 +41,6 @@ router = APIRouter(
 
 @router.post(
     "/{hotel_slug}/rooms/search",
-    response_model=ListResponse[dict],
 )
 async def search_rooms_for_booking(
     hotel_slug: str,
@@ -56,10 +55,10 @@ async def search_rooms_for_booking(
         check_out_date=search_data.check_out,
         guests=search_data.guests,
     )
-    return ListResponse(
-        data=rooms,
-        total=len(rooms),
-    )
+    return {
+        "data": rooms,
+        "total": len(rooms),
+    }
 
 
 @router.get(

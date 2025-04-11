@@ -95,5 +95,3 @@ class RoomDAO(BaseDAO):
         return {
             "message": "Room updated successfully",
         }
-
-    
