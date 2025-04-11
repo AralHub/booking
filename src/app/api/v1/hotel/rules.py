@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel
-from app.api.dependencies.partner import valid_hotel_admin
+from app.api.dependencies.hotel import validate_hotel, validate_hotel_by_slug
+from app.api.dependencies.partner import valid_hotel_admin, valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.i18n.responses import (
@@ -28,24 +28,24 @@ router = APIRouter(
 
 
 @router.get(
-    "/{hotel_id}/rules",
+    "/{hotel_slug}/rules",
     response_model=DataResponse[RuleRead],
 )
 async def get_hotel_rule(
-    hotel_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
     hotel_rule = await HotelRuleDAO.get_one_or_none(
         session=session,
-        filters=RuleFilter(hotel_id=hotel_id),
+        filters=RuleFilter(hotel_id=hotel.id),
     )
     return DataResponse[RuleRead](
         data=hotel_rule,
     )
 
 
-@router.post("/{hotel_id}/rules", response_model=DataResponse[RuleRead])
+@router.post("/{hotel_slug}/rules", response_model=DataResponse[RuleRead])
 async def add_hotel_rule(
     hotel_id: int,
     rule_create_data: RuleCreate,
@@ -56,7 +56,7 @@ async def add_hotel_rule(
         session=session,
         values=RuleCreateInternal(
             **rule_create_data.model_dump(),
-            hotel_id=hotel_id,
+            hotel_id=hotel.id,
         ),
     )
     return DataResponse[RuleRead](
@@ -69,13 +69,13 @@ async def add_hotel_rule(
 
 
 @router.put(
-    "/{hotel_id}/rules",
+    "/{hotel_slug}/rules",
     response_model=DataResponse[RuleRead],
 )
 async def update_hotel_rule(
-    hotel_id: int,
+    hotel_slug: str,
     rule_update_data: RuleUpdate,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     updated_rule = await HotelRuleDAO.update(
@@ -84,7 +84,7 @@ async def update_hotel_rule(
             **rule_update_data.model_dump(),
         ),
         filters=RuleFilter(
-            hotel_id=hotel_id,
+            hotel_id=hotel.id,
         ),
     )
     return DataResponse[RuleRead](

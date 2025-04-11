@@ -74,7 +74,7 @@ async def add_hotel_info(
 
 
 @router.put(
-    "/{hotel_id}/info",
+    "/{hotel_slug}/info",
     response_model=DataResponse[HotelInfoRead],
 )
 async def update_hotel_info(
