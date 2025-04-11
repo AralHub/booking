@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.payment import PaymentDAO
 from app.schemas.payment import (
@@ -29,7 +28,7 @@ async def get_payment_methods(
 
 @router.post(
     "",
-    dependencies=[Depends(get_current_superuser)],
+    # dependencies=[Depends(get_current_superuser)],
 )
 async def create_payment_method(
     payment_create_data: PaymentCreate,
@@ -48,7 +47,7 @@ async def create_payment_method(
 
 @router.put(
     "/{payment_id}",
-    dependencies=[Depends(get_current_superuser)],
+    # dependencies=[Depends(get_current_superuser)],
 )
 async def update_payment_method(
     payment_id: int,

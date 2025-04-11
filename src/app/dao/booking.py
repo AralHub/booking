@@ -1,236 +1,5 @@
-# from datetime import date
-# from sqlalchemy import func, select, and_, or_
-# from sqlalchemy.ext.asyncio import AsyncSession
-# from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
-# from app.dao import BaseDAO
-# from app.dao.room import RoomDAO
-# from app.dao.room.price import RoomPriceDAO
-# from app.models.booking import Booking, BookingStatus
-# from app.models.room import Room
-# from app.schemas.room.price import RoomPriceFilter
-# from app.schemas.room import RoomFilter
-# from app.models.booking import Booking, BookingStatus
-# from app.schemas.booking import (
-#     BookingCreateMultipleRooms,
-#     BookingCreateMultipleRoomsInternal,
-#     BookedRoomCreateInternal,
-# )
-# from app.models.booking import BookedRoom, BookingType
-
-# import logging
-
-# logger = logging.getLogger(__name__)
-
-
-# class BookedRoomDAO(BaseDAO):
-#     model = BookedRoom
-
-
-# class BookingDAO(BaseDAO):
-#     model = Booking
-
-#     @classmethod
-#     async def create_booking(
-#         cls,
-#         session: AsyncSession,
-#         booking_data: BookingCreateMultipleRooms,
-#         user_id: int,
-#         hotel_id: int,
-#     ):
-#         # проверка на корректность дат
-#         if booking_data.check_in_date >= booking_data.check_out_date:
-#             raise BadRequestException(
-#                 detail="Check-out date must be after check-in date"
-#             )
-#         total_price = 0
-#         total_days = (booking_data.check_out_date - booking_data.check_in_date).days
-
-#         # Проверяем доступность комнат
-#         await cls.check_rooms_availability(
-#             session=session,
-#             check_in_date=booking_data.check_in_date,
-#             check_out_date=booking_data.check_out_date,
-#             hotel_id=hotel_id,
-#             rooms_info=booking_data.rooms_info,
-#         )
-
-#         # Расчет общей стоимости
-#         for room in booking_data.rooms_info:
-#             db_room = await RoomDAO.get_one_or_none(
-#                 session=session,
-#                 filters=RoomFilter(
-#                     id=room.room_id,
-#                     hotel_id=hotel_id,
-#                 ),
-#             )
-
-#             # Расчет цены
-#             room_price = await cls._calculate_room_price(
-#                 session,
-#                 db_room,
-#                 room.guest_quantity,
-#             )
-
-#             room_total_price = total_days * room_price
-#             total_price += room_total_price
-
-#         # Создаем бронирование
-#         booking_create_data = BookingCreateMultipleRoomsInternal(
-#             check_in_date=booking_data.check_in_date,
-#             check_out_date=booking_data.check_out_date,
-#             total_days=total_days,
-#             total_price=total_price,
-#             special_requests=getattr(booking_data, "special_requests", None),
-#             hotel_id=hotel_id,
-#             status=BookingStatus.BOOKED,
-#             user_id=user_id,
-#             booking_type=BookingType.PERSONAL,
-#             payment_method_id=booking_data.payment_method_id,
-#         )
-#         created_booking = await cls.create(
-#             session=session,
-#             values=booking_create_data,
-#         )
-#         logger.info(f"Created booking: {created_booking}")
-#         for room in booking_data.rooms_info:
-#             await BookedRoomDAO.create(
-#                 session=session,
-#                 values=BookedRoomCreateInternal(
-#                     booking_id=created_booking.id,
-#                     room_id=room.room_id,
-#                     guest_quantity=room.guest_quantity,
-#                     guest_name=room.guest_name,
-#                 ),
-#             )
-
-#         return created_booking
-
-#     @classmethod
-#     async def check_rooms_availability(
-#         cls,
-#         session: AsyncSession,
-#         check_in_date: date,
-#         check_out_date: date,
-#         hotel_id: int,
-#         rooms_info: list,
-#     ) -> None:
-#         """
-#         Проверяет доступность комнат для бронирования на указанные даты.
-#         Вызывает исключение, если комнаты недоступны.
-#         """
-#         logger.info(
-#             f"Проверка доступности комнат для отеля {hotel_id} с {check_in_date} по {check_out_date}"
-#         )
-
-#         # Получаем все пересекающиеся бронирования для отеля
-#         booked_rooms_count = await cls.get_booked_rooms_count_by_hotel_id(
-#             session=session,
-#             check_in_date=check_in_date,
-#             check_out_date=check_out_date,
-#             hotel_id=hotel_id,
-#         )
-
-#         logger.info(f"Booked rooms count for hotel {hotel_id}: {booked_rooms_count}")
-
-#         # Проверяем каждую комнату
-#         for room_info in rooms_info:
-#             logger.info(f"Checking room ID {room_info.room_id} for availability")
-
-#             db_room = await RoomDAO.get_one_or_none(
-#                 session=session,
-#                 filters=RoomFilter(
-#                     id=room_info.room_id,
-#                     hotel_id=hotel_id,
-#                 ),
-#             )
-#             if not db_room:
-#                 raise NotFoundException(f"Room with ID {room_info.room_id} not found")
-
-#             logger.info(
-#                 f"Found room in database: {db_room.id}, quantity: {getattr(db_room, 'quantity', 0)}"
-#             )
-
-#             # Проверка доступности комнаты с учетом количества
-#             current_booked_count = booked_rooms_count.get(room_info.room_id, 0)
-#             if current_booked_count >= getattr(db_room, "quantity", 1):
-#                 logger.error(
-#                     f"Room {room_info.room_id} is fully booked: {current_booked_count}/{getattr(db_room, 'quantity', 1)}"
-#                 )
-#                 raise BadRequestException(
-#                     f"Room {room_info.room_id} is already fully booked for these dates"
-#                 )
-
-#             # Проверка количества гостей
-#             if room_info.guest_quantity > db_room.max_guests:
-#                 raise BadRequestException(
-#                     f"Room {room_info.room_id} can only accommodate {db_room.max_guests} guests"
-#                 )
-
-#         logger.info("Все комнаты доступны для бронирования")
-
-#     @staticmethod
-#     async def _calculate_room_price(
-#         session: AsyncSession,
-#         room: Room,
-#         guest_quantity: int,
-#     ) -> float:
-#         if room.use_dinamic_price:
-#             db_room_prices = await RoomPriceDAO.get_all(
-#                 session=session,
-#                 filters=RoomPriceFilter(room_id=room.id),
-#             )
-#             if not db_room_prices:
-#                 return room.base_price
-
-#             return await RoomPriceDAO.get_room_price_by_guest_quantity(
-#                 session=session,
-#                 room_id=room.id,
-#                 guest_quantity=guest_quantity,
-#             )
-#         return room.base_price
-
-#     @classmethod
-#     async def get_booked_rooms_count_by_hotel_id(
-#         cls,
-#         session: AsyncSession,
-#         check_in_date: date,
-#         check_out_date: date,
-#         hotel_id: int,
-#     ) -> dict[int, int]:
-#         """
-#         Возвращает словарь, где ключ - ID комнаты, значение - количество забронированных комнат
-#         """
-
-#         # Создаем запрос для подсчета количества бронирований для каждой комнаты
-#         booked_rooms_count_stmt = (
-#             select(BookedRoom.room_id, func.count(BookedRoom.id).label("booking_count"))
-#             .join(Booking, Booking.id == BookedRoom.booking_id)
-#             .join(Room, Room.id == BookedRoom.room_id)
-#             .where(
-#                 Room.hotel_id == hotel_id,
-#                 Booking.status == BookingStatus.BOOKED,
-#                 or_(
-#                     and_(
-#                         Booking.check_in_date <= check_in_date,
-#                         Booking.check_out_date > check_in_date,
-#                     ),
-#                     and_(
-#                         Booking.check_in_date < check_out_date,
-#                         Booking.check_out_date >= check_out_date,
-#                     ),
-#                     and_(
-#                         Booking.check_in_date >= check_in_date,
-#                         Booking.check_out_date <= check_out_date,
-#                     ),
-#                 ),
-#             )
-#             .group_by(BookedRoom.room_id)
-#         )
-
-#         result = await session.execute(booked_rooms_count_stmt)
-#         booked_rooms_count = {room_id: count for room_id, count in result.all()}
-#         return booked_rooms_count
 from datetime import date
+from sqlalchemy import func, select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 from app.dao import BaseDAO
@@ -246,8 +15,11 @@ from app.schemas.booking import (
     BookingCreateMultipleRoomsInternal,
     BookedRoomCreateInternal,
 )
-from app.models.booking import BookedRoom
-from sqlalchemy import select, and_, or_
+from app.models.booking import BookedRoom, BookingType
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BookedRoomDAO(BaseDAO):
@@ -272,22 +44,18 @@ class BookingDAO(BaseDAO):
             )
         total_price = 0
         total_days = (booking_data.check_out_date - booking_data.check_in_date).days
-        # Получаем все пересекающиеся бронирования для отеля
-        booked_room_ids = await RoomDAO.get_booked_rooms_by_hotel_id(
+
+        # Проверяем доступность комнат
+        await cls.check_rooms_availability(
             session=session,
             check_in_date=booking_data.check_in_date,
             check_out_date=booking_data.check_out_date,
             hotel_id=hotel_id,
+            rooms_info=booking_data.rooms_info,
         )
 
-        # Проверяем каждую комнату
+        # Расчет общей стоимости
         for room in booking_data.rooms_info:
-            # Проверка доступности комнаты
-            if room.room_id in booked_room_ids:
-                raise BadRequestException(
-                    f"Room {room.room_id} is already booked for these dates"
-                )
-
             db_room = await RoomDAO.get_one_or_none(
                 session=session,
                 filters=RoomFilter(
@@ -295,14 +63,6 @@ class BookingDAO(BaseDAO):
                     hotel_id=hotel_id,
                 ),
             )
-            if not db_room:
-                raise NotFoundException(f"Room with ID {room.room_id} not found")
-
-            # Проверка количества гостей
-            if room.guest_quantity > db_room.max_guests:
-                raise BadRequestException(
-                    f"Room {room.room_id} can only accommodate {db_room.max_guests} guests"
-                )
 
             # Расчет цены
             room_price = await cls._calculate_room_price(
@@ -324,23 +84,89 @@ class BookingDAO(BaseDAO):
             hotel_id=hotel_id,
             status=BookingStatus.BOOKED,
             user_id=user_id,
+            booking_type=BookingType.PERSONAL,
+            payment_method_id=booking_data.payment_method_id,
         )
-        crated_booking = await cls.create(
+        created_booking = await cls.create(
             session=session,
             values=booking_create_data,
         )
+        logger.info(f"Created booking: {created_booking}")
         for room in booking_data.rooms_info:
             await BookedRoomDAO.create(
                 session=session,
                 values=BookedRoomCreateInternal(
-                    booking_id=crated_booking.id,
+                    booking_id=created_booking.id,
                     room_id=room.room_id,
                     guest_quantity=room.guest_quantity,
                     guest_name=room.guest_name,
                 ),
             )
 
-        return crated_booking
+        return created_booking
+
+    @classmethod
+    async def check_rooms_availability(
+        cls,
+        session: AsyncSession,
+        check_in_date: date,
+        check_out_date: date,
+        hotel_id: int,
+        rooms_info: list,
+    ) -> None:
+        """
+        Проверяет доступность комнат для бронирования на указанные даты.
+        Вызывает исключение, если комнаты недоступны.
+        """
+        logger.info(
+            f"Проверка доступности комнат для отеля {hotel_id} с {check_in_date} по {check_out_date}"
+        )
+
+        # Получаем все пересекающиеся бронирования для отеля
+        booked_rooms_count = await cls.get_booked_rooms_count_by_hotel_id(
+            session=session,
+            check_in_date=check_in_date,
+            check_out_date=check_out_date,
+            hotel_id=hotel_id,
+        )
+
+        logger.info(f"Booked rooms count for hotel {hotel_id}: {booked_rooms_count}")
+
+        # Проверяем каждую комнату
+        for room_info in rooms_info:
+            logger.info(f"Checking room ID {room_info.room_id} for availability")
+
+            db_room = await RoomDAO.get_one_or_none(
+                session=session,
+                filters=RoomFilter(
+                    id=room_info.room_id,
+                    hotel_id=hotel_id,
+                ),
+            )
+            if not db_room:
+                raise NotFoundException(f"Room with ID {room_info.room_id} not found")
+
+            logger.info(
+                f"Found room in database: {db_room.id}, quantity: {getattr(db_room, 'quantity', 0)}"
+            )
+
+            # Проверка доступности комнаты с учетом количества
+            current_booked_count = booked_rooms_count.get(room_info.room_id, 0)
+            if current_booked_count >= getattr(db_room, "quantity", 1):
+                logger.error(
+                    f"Room {room_info.room_id} is fully booked: {current_booked_count}/{getattr(db_room, 'quantity', 1)}"
+                )
+                raise BadRequestException(
+                    f"Room {room_info.room_id} is already fully booked for these dates"
+                )
+
+            # Проверка количества гостей
+            if room_info.guest_quantity > db_room.max_guests:
+                raise BadRequestException(
+                    f"Room {room_info.room_id} can only accommodate {db_room.max_guests} guests"
+                )
+
+        logger.info("Все комнаты доступны для бронирования")
 
     @staticmethod
     async def _calculate_room_price(
@@ -364,19 +190,24 @@ class BookingDAO(BaseDAO):
         return room.base_price
 
     @classmethod
-    async def get_bookings_by_hotel_ids(
+    async def get_booked_rooms_count_by_hotel_id(
         cls,
         session: AsyncSession,
-        hotel_ids: list[int],
         check_in_date: date,
         check_out_date: date,
-    ):
-        booked_rooms_stmt = (
-            select(BookedRoom.room_id)
+        hotel_id: int,
+    ) -> dict[int, int]:
+        """
+        Возвращает словарь, где ключ - ID комнаты, значение - количество забронированных комнат
+        """
+
+        # Создаем запрос для подсчета количества бронирований для каждой комнаты
+        booked_rooms_count_stmt = (
+            select(BookedRoom.room_id, func.count(BookedRoom.id).label("booking_count"))
             .join(Booking, Booking.id == BookedRoom.booking_id)
-            .join(Room)  # Добавляем join с таблицей rooms
+            .join(Room, Room.id == BookedRoom.room_id)
             .where(
-                Room.hotel_id.in_(hotel_ids),  # Используем in_ для списка ID
+                Room.hotel_id == hotel_id,
                 Booking.status == BookingStatus.BOOKED,
                 or_(
                     and_(
@@ -393,6 +224,40 @@ class BookingDAO(BaseDAO):
                     ),
                 ),
             )
+            .group_by(BookedRoom.room_id)
         )
 
-        return (await session.execute(booked_rooms_stmt)).scalars().all()
+        result = await session.execute(booked_rooms_count_stmt)
+        booked_rooms_count = {room_id: count for room_id, count in result.all()}
+        return booked_rooms_count
+
+    @staticmethod
+    async def is_room_available(
+        session: AsyncSession,
+        room: Room,
+        check_in_date: date,
+        check_out_date: date,
+        guest_quantity: int,
+    ) -> bool:
+        """
+        Проверяет, доступна ли конкретная комната для заданных дат и количества гостей.
+        """
+        # Получаем словарь с количеством забронированных комнат для отеля
+        booked_rooms_count = await BookingDAO.get_booked_rooms_count_by_hotel_id(
+            session=session,
+            check_in_date=check_in_date,
+            check_out_date=check_out_date,
+            hotel_id=room.hotel_id,
+        )
+        current_booked_count = booked_rooms_count.get(room.id, 0)
+        room_quantity = getattr(room, "quantity", 1)
+
+        # Проверка: если комната полностью забронирована
+        if current_booked_count >= room_quantity:
+            return False
+
+        # Проверка: если количество гостей превышает допустимое
+        if guest_quantity > room.max_guests:
+            return False
+
+        return True

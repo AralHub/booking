@@ -7,7 +7,7 @@ from app.core.exceptions.http_exceptions import (
 )
 from app.core.i18n.translations import ErrorCode
 from app.core.logger import logging
-from app.dao.review import ReviewDAO
+from app.dao.hotel.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.user import UserRead
 

@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, ConfigDict
 
 from ..field_validation import zero_to_none
 
@@ -17,6 +17,7 @@ class RoomRead(RoomBase):
     hotel_id: int
     max_guests: int
     room_type_id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RoomCreate(RoomBase):

@@ -13,7 +13,7 @@ from app.core.i18n.responses import (
     DataResponse,
     ListResponse,
 )
-from app.dao.review import ReviewDAO
+from app.dao.hotel.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.review import (
     ReviewCreate,

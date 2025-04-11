@@ -2,8 +2,9 @@ from datetime import date
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
 from app.models.booking import BookingType
+
+from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
 
 
 # region Booking Room

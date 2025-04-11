@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
-from app.dao.review import ReviewCategoryDAO
+from app.dao.hotel.review import ReviewCategoryDAO
 from app.schemas.review import (
     ReviewCategoryCreate,
     ReviewCategoryFilter,

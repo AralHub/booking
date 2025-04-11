@@ -18,6 +18,7 @@ from app.core.i18n.responses import (
 )
 from app.core.i18n.translations import ErrorCode
 from app.dao.hotel import HotelDAO
+from app.dao.hotel.search import HotelSearchDAO
 from app.schemas.hotel import (
     HotelFullCreate,
     HotelFullRead,
@@ -63,7 +64,7 @@ async def search_hotels(
     search_data: HotelSearch,
     session=SessionDep,
 ):
-    hotels = await HotelDAO.find_hotels_for_booking(
+    hotels = await HotelSearchDAO.find_hotels_for_booking(
         session=session,
         city=search_data.city,
         check_in_date=search_data.check_in,
