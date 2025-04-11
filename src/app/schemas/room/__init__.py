@@ -17,6 +17,7 @@ class RoomRead(RoomBase):
     hotel_id: int
     max_guests: int
     room_type_id: int
+    use_dinamic_price: bool
     model_config = ConfigDict(from_attributes=True)
 
 

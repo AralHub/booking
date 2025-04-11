@@ -137,3 +137,5 @@ class HotelSearchResult(BaseModel):
     rating: float | None = None
     images: list[str] | None = []
     available_rooms: list[dict] = []
+    min_price: float | None = None
+    guests: int | None = None

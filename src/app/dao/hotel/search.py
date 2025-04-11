@@ -8,7 +8,7 @@ from app.core.exceptions.http_exceptions import NotFoundException
 from app.dao.location import CityDAO
 from app.dao.booking import BookingDAO
 from app.dao.hotel import HotelDAO
-
+from app.models.room.price import RoomPrice
 from app.models.hotel.amenities import HotelAmenityAssociation
 from app.models.hotel import Hotel
 from app.models.hotel.location import HotelLocation
@@ -137,7 +137,10 @@ class HotelSearchDAO(HotelDAO):
         # Получаем все комнаты для указанных отелей
         rooms_query = (
             select(Room)
-            .options(selectinload(Room.room_type))
+            .options(
+                selectinload(Room.room_type),
+                selectinload(Room.room_prices),
+            )
             .where(Room.hotel_id.in_(hotel_ids))
         )
 
@@ -229,6 +232,9 @@ class HotelSearchDAO(HotelDAO):
         # Формируем окончательный результат
         suitable_hotels_data = []
         for hotel in hotels:
+            rooms = selected_rooms.get(hotel.id, [])
+
+            min_price, min_price_guests = cls._get_min_price_and_guests(rooms)
             hotel_data = {
                 "id": hotel.id,
                 "name": hotel.name,
@@ -237,6 +243,7 @@ class HotelSearchDAO(HotelDAO):
                 "rating": (
                     hotel.hotel_rating.average_rating if hotel.hotel_rating else None
                 ),
+                "reviews_count": len(hotel.reviews) if hotel.reviews else 0,
                 "category": hotel.hotel_category.name if hotel.hotel_category else None,
                 "images": (
                     [hotel_image.image for hotel_image in hotel.hotel_images]
@@ -258,12 +265,52 @@ class HotelSearchDAO(HotelDAO):
                     if hotel.location
                     else None
                 ),
-                "reviews_count": len(hotel.reviews) if hotel.reviews else 0,
+                "min_price": min_price,
+                "guests": min_price_guests,
                 "available_rooms": [
-                    RoomRead.from_orm(room).dict()
+                    RoomRead.model_validate(room).model_dump()
                     for room in selected_rooms.get(hotel.id, [])
                 ],
             }
             suitable_hotels_data.append(hotel_data)
 
         return suitable_hotels_data
+
+    @classmethod
+    def _get_min_price_and_guests(cls, rooms):
+        min_price = None
+        min_price_guests = None
+
+        for room in rooms:
+            # Проверяем, используется ли динамическое ценообразование
+            if not room.use_dinamic_price:
+                # Если не используется динамическое ценообразование, берем базовую цену для 1 гостя
+                room_price = room.base_price
+                guest_count = 1
+            else:
+                # Если используется динамическое ценообразование, находим минимальную цену
+                # из доступных вариантов цен для разного количества гостей
+                if not room.room_prices:
+                    # Если нет информации о ценах для разного количества гостей,
+                    # используем базовую цену для 1 гостя
+                    room_price = room.base_price
+                    guest_count = 1
+                else:
+                    # Находим минимальную цену и соответствующее количество гостей
+                    price_options = [
+                        (price.price, price.guest_quantity)
+                        for price in room.room_prices
+                    ]
+                    if price_options:
+                        room_price, guest_count = min(price_options, key=lambda x: x[0])
+                    else:
+                        room_price = room.base_price
+                        guest_count = 1
+
+            # Обновляем минимальную цену и количество гостей, если найдена более низкая цена
+            # или это первая обрабатываемая комната
+            if min_price is None or room_price < min_price:
+                min_price = room_price
+                min_price_guests = guest_count
+
+        return min_price, min_price_guests
