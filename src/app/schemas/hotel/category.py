@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from ..mixins import (
     MultilingualDescriptionBase,
@@ -12,8 +12,11 @@ class HotelCategoryBase(MultilingualNameBase):
     pass
 
 
-class HotelCategoryRead(HotelCategoryBase):
+class HotelCategoryRead(BaseModel):
     id: int
+    name: dict[str, str]
+    description: dict[str, str]
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HotelCategoryCreate(

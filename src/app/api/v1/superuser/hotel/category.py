@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel_category import validate_hotel_category_by_id
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import ListResponse
 from app.core.logger import logging
 from app.dao.hotel.category import HotelCategoryDAO
 from app.schemas.hotel.category import (
@@ -10,6 +11,7 @@ from app.schemas.hotel.category import (
     HotelCategoryCreate,
     HotelCategoryFilter,
     HotelCategoryUpdate,
+    HotelCategoryRead,
 )
 
 logger = logging.getLogger(__name__)
@@ -19,13 +21,20 @@ router = APIRouter(
 )
 
 
-@router.get("")
+@router.get(
+    "",
+    response_model=ListResponse[HotelCategoryRead],
+)
 async def get_hotel_categories(
     session=SessionDep,
 ):
-    return await HotelCategoryDAO.get_all(
+    categories = await HotelCategoryDAO.get_all(
         session=session,
         filters=None,
+    )
+    return ListResponse(
+        data=[HotelCategoryRead.model_validate(category) for category in categories],
+        total=len(categories),
     )
 
 
