@@ -10,8 +10,8 @@ from app.schemas.hotel.category import (
     HotelCategoryBase,
     HotelCategoryCreate,
     HotelCategoryFilter,
-    HotelCategoryUpdate,
     HotelCategoryRead,
+    HotelCategoryUpdate,
 )
 
 logger = logging.getLogger(__name__)

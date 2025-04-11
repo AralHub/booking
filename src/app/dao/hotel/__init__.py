@@ -205,11 +205,11 @@ class HotelDAO(BaseDAO):
             ),
         )
         # Add hotel amenities
-        if hotel_create_data.facilities:
+        if hotel_create_data.amenities:
             await HotelAmenityDAO.add_hotel_amenities(
                 session=session,
                 hotel_id=db_hotel.id,
-                amenities=hotel_create_data.facilities,
+                amenities=hotel_create_data.amenities,
             )
         await PartnerDAO.update(
             session=session,
@@ -298,11 +298,11 @@ class HotelDAO(BaseDAO):
             filters=RuleFilter(hotel_id=hotel_id),
         )
         # Add hotel amenities
-        if hotel_update_data.facilities:
+        if hotel_update_data.amenities:
             await HotelAmenityDAO.add_hotel_amenities(
                 session=session,
                 hotel_id=hotel_id,
-                hotel_amenities_data=hotel_update_data.facilities,
+                hotel_amenities_data=hotel_update_data.amenities,
             )
 
         return hotel

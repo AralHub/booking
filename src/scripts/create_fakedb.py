@@ -39,7 +39,7 @@ async def create_hotels(session: AsyncSession):
                     description_kk=hotel["description_kk"],
                     description_ru=hotel["description_ru"],
                     description_uz=hotel["description_uz"],
-                    facilities=hotel["facilities"],
+                    amenities=hotel["facilities"],
                     hotel_admin_id=1,
                     hotel_category_id=hotel["hotel_category_id"],
                     information_for_booking=hotel["information_for_booking"],

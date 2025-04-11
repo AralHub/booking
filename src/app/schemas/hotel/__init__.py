@@ -43,7 +43,7 @@ class HotelFullCreate(
     city_id: int
     latitude: float
     longitude: float
-    facilities: list[int]
+    amenities: list[int]
     information_for_booking: BookingInformation
     information_for_guests: GuestInformation
 
@@ -77,7 +77,7 @@ class HotelFullUpdate(
     city_id: int | None = None
     latitude: float | None = None
     longitude: float | None = None
-    facilities: list[int] | None = None
+    amenities: list[int] | None = None
     information_for_booking: BookingInformationUpdate
     information_for_guests: GuestInformationUpdate
 
@@ -106,7 +106,7 @@ class HotelFullRead(BaseModel):
     description: dict[str, str] | None = None
     location: LocationRead
     city: str | None = None
-    facilities: list[int]
+    amenities: list[int]
     information_for_booking: BookingInformationRead
     information_for_guests: GuestInformationRead
     created_at: datetime
