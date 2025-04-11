@@ -114,6 +114,7 @@ async def register_partner(
     )
 
     return DataResponse(
+        data={"phone_number": partner_data.phone_number},
         message=RESPONSE_MESSAGES["AUTH_CODE_SENT"],
         success=True,
     )
