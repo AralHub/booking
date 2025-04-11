@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_active_hotel
+from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
@@ -15,12 +15,12 @@ from app.schemas.hotel.info import HotelNameRead
 from app.schemas.user import UserRead
 
 router = APIRouter(
-    tags=["Hotel Boookings"],
-    prefix=settings.api_v1.hotel_prefix,
+    tags=["Boookings"],
+    prefix="/bookings",
 )
 
 
-@router.get("/{hotel_id}/bookings")
+@router.get("/bookings")
 async def get_bookings(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=SessionDep,
@@ -33,11 +33,9 @@ async def get_bookings(
     )
 
 
-@router.post("{hotel_id}/bookings")
+@router.post("/bookings")
 async def create_booking(
-    hotel_id: int,
     booking_create_data: BookingCreateMultipleRooms,
-    hotel: HotelNameRead = Depends(validate_active_hotel),
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
@@ -45,14 +43,12 @@ async def create_booking(
         session=session,
         booking_data=booking_create_data,
         user_id=current_user.id,
-        hotel_id=hotel_id,
     )
 
 
-@router.put("/{hotel_id}/bookings/{booking_id}/cancel")
+@router.put("/bookings/{booking_id}/cancel")
 async def cancel_booking(
     booking_id: int,
-    hotel: HotelNameRead = Depends(validate_active_hotel),
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
