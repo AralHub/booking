@@ -6,6 +6,7 @@ from app.api.dependencies.room import validate_hotel_room_by_slug
 from app.core import SessionDep
 from app.core.i18n.responses import (
     DataResponse,
+    ListResponse,
 )
 from app.dao.room.amenities import RoomAmenityDAO
 from app.schemas.hotel.info import HotelNameRead
@@ -19,7 +20,7 @@ router = APIRouter(
 
 @router.get(
     "/{hotel_slug}/rooms/{room_id}/amenities",
-    response_model=DataResponse[RoomAmenityAssociationRead],
+    response_model=ListResponse[dict],
 )
 async def get_room_amenities(
     hotel_slug: str,
@@ -35,8 +36,9 @@ async def get_room_amenities(
         session=session,
         room_id=room_id,
     )
-    return DataResponse(
-        data=room_amenities,
+    return ListResponse(
+        data=[room_amenities],
+        total=len(room_amenities),
     )
 
 

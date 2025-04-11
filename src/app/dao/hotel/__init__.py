@@ -111,13 +111,10 @@ class HotelDAO(BaseDAO):
         query = (
             select(cls.model)
             .options(
-                selectinload(cls.model.hotel_amenities),
                 selectinload(cls.model.hotel_info),
-                selectinload(cls.model.location).selectinload(HotelLocation.city),
                 selectinload(cls.model.rule),
                 selectinload(cls.model.hotel_category),
                 selectinload(cls.model.hotel_rating),
-                selectinload(cls.model.hotel_images),
             )
             .where(cls.model.id == hotel_id)
         )

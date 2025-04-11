@@ -21,7 +21,7 @@ router = APIRouter(
 
 @router.get(
     "/{hotel_slug}/amenities",
-    response_model=ListResponse[HotelAmenityRead],
+    response_model=ListResponse[dict],
 )
 async def get_hotel_amenities(
     hotel_slug: str,
@@ -33,7 +33,7 @@ async def get_hotel_amenities(
         hotel_id=hotel.id,
     )
     return ListResponse(
-        data=hotel_amenities,
+        data=[hotel_amenities],
         total=len(hotel_amenities),
     )
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.models.hotel.amenities import PaymentType
 from app.schemas.mixins import (
@@ -51,6 +51,7 @@ class HotelAmenityRead(BaseModel):
     is_popular: bool
     payment_type: PaymentType
     hotel_amenity_category_id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HotelAmenityUpdate(MultilingualNameBaseUpdate):

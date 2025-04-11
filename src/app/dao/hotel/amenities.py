@@ -31,16 +31,59 @@ class HotelAmenityDAO(BaseDAO):
     model = HotelAmenity
 
     @classmethod
-    async def get_hotel_amenities(cls, hotel_id: int, session: AsyncSession):
+    async def get_hotel_amenities(
+        cls,
+        session: AsyncSession,
+        hotel_id: int,
+    ):
         query = (
-            select(Hotel)
-            .options(selectinload(Hotel.hotel_amenities))
-            .where(Hotel.id == hotel_id)
+            select(
+                HotelAmenityCategory.id.label("category_id"),
+                HotelAmenityCategory.name.label("category_name"),
+                HotelAmenity.id.label("amenity_id"),
+                HotelAmenity.name.label("amenity_name"),
+                HotelAmenity.icon.label("amenity_icon"),
+            )
+            .join(
+                HotelAmenity,
+                HotelAmenityCategory.id == HotelAmenity.hotel_amenity_category_id,
+            )
+            .join(
+                HotelAmenityAssociation,
+                HotelAmenity.id == HotelAmenityAssociation.hotel_amenity_id,
+            )
+            .where(HotelAmenityAssociation.hotel_id == hotel_id)
         )
-        result = await session.execute(query)
-        db_hotel = result.scalar_one_or_none()
 
-        return db_hotel.hotel_amenities if db_hotel else []
+        result = await session.execute(query)
+        rows = result.all()
+        categories_dict = {}
+
+        for row in rows:
+            category_id = row.category_id
+
+            if category_id not in categories_dict:
+                categories_dict[category_id] = {
+                    "id": category_id,
+                    "name": row.category_name,
+                    "hotel_amenities": [],
+                }
+
+            categories_dict[category_id]["hotel_amenities"].append(
+                {
+                    "id": row.amenity_id,
+                    "name": row.amenity_name,
+                    "icon": row.amenity_icon,
+                    "hotel_amenity_category_id": category_id,
+                }
+            )
+
+        hotel_data = {
+            "id": hotel_id,
+            "hotel_amenity_categories": list(categories_dict.values()),
+        }
+
+        return hotel_data
 
     @classmethod
     async def delete_hotel_all_amenities(
