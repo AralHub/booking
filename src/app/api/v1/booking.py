@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
-from app.core.config import settings
 from app.dao.booking import BookingDAO
 from app.models.booking import BookingStatus
 from app.schemas.booking import (
@@ -11,7 +9,6 @@ from app.schemas.booking import (
     BookingFilter,
     BookingUpdateInternal,
 )
-from app.schemas.hotel.info import HotelNameRead
 from app.schemas.user import UserRead
 
 router = APIRouter(

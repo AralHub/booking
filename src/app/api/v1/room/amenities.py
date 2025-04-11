@@ -5,13 +5,11 @@ from app.api.dependencies.partner import valid_hotel_admin_by_slug
 from app.api.dependencies.room import validate_hotel_room_by_slug
 from app.core import SessionDep
 from app.core.i18n.responses import (
-    DataResponse,
     ListResponse,
 )
 from app.dao.room.amenities import RoomAmenityDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.room import RoomRead
-from app.schemas.room.amenities import RoomAmenityAssociationRead
 
 router = APIRouter(
     tags=["Hotel Room Amenities"],

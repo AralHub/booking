@@ -19,7 +19,7 @@ from app.dao.hotel.info import HotelInfoDAO
 from app.dao.room import RoomDAO
 from app.dao.booking import BookingDAO
 from app.dao.hotel.rules import HotelRuleDAO
-
+from app.dao.partner import PartnerDAO
 from app.models.hotel.amenities import HotelAmenityAssociation
 from app.models.booking import Booking
 from app.schemas.hotel.location import (
@@ -55,6 +55,7 @@ from app.schemas.hotel.rules import (
     RuleUpdate,
 )
 from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
+from app.schemas.partner import PartnerFilter, PartnerUpdateInternal
 
 
 class HotelDAO(BaseDAO):
@@ -210,6 +211,15 @@ class HotelDAO(BaseDAO):
                 hotel_id=db_hotel.id,
                 amenities=hotel_create_data.facilities,
             )
+        await PartnerDAO.update(
+            session=session,
+            values=PartnerUpdateInternal(
+                has_hotel=True,
+            ),
+            filters=PartnerFilter(
+                id=hotel_admin_id,
+            ),
+        )
         return db_hotel
 
     # endregion

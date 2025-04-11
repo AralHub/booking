@@ -25,9 +25,9 @@ from app.schemas.room import (
     RoomCreateInternal,
     RoomFilter,
     RoomRead,
+    RoomSearch,
     RoomUpdate,
     RoomUpdateInternal,
-    RoomSearch,
 )
 from app.schemas.room.types import RoomTypeFilter, RoomTypeRead
 

@@ -13,6 +13,7 @@ class PartnerBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     first_name: NAME_FIELD
     last_name: NAME_FIELD
+    has_hotel: bool | None = None
 
 
 class PartnerRead(PartnerBase):
@@ -27,6 +28,7 @@ class PartnerCreateInternal(PartnerCreate):
     is_active: bool = False
     is_verified: bool = True
     is_fully_registered: bool = False
+    has_hotel: bool = False
     model_config = ConfigDict(extra="forbid")
 
 
@@ -41,6 +43,7 @@ class PartnerUpdateInternal(PartnerUpdate):
     is_active: bool | None = None
     is_verified: bool | None = None
     is_fully_registered: bool | None = None
+    has_hotel: bool | None = None
     model_config = ConfigDict(extra="forbid")
 
 
@@ -52,3 +55,4 @@ class PartnerFilter(BaseModel):
     is_active: bool | None = None
     is_verified: bool | None = None
     is_fully_registered: bool | None = None
+    has_hotel: bool | None = None
