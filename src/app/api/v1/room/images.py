@@ -2,20 +2,21 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, UploadFile
 
-from app.api.dependencies.partner import valid_hotel_admin
+from app.api.dependencies.hotel import validate_hotel_by_slug
+from app.api.dependencies.partner import valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
+from app.core.i18n.responses import (
+    RESPONSE_MESSAGES,
+    BaseResponse,
+    DataResponse,
+    ListResponse,
+)
+from app.core.i18n.translations import ErrorCode
 from app.core.utils import file_utils
 from app.dao.room.images import RoomImageDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.room.images import RoomImageFilter, RoomImageRead
-from app.core.i18n.responses import (
-    ListResponse,
-    DataResponse,
-    BaseResponse,
-    RESPONSE_MESSAGES,
-)
-from app.core.i18n.translations import ErrorCode
 
 router = APIRouter(
     tags=["Hotel Room Images"],
@@ -23,18 +24,19 @@ router = APIRouter(
 
 
 @router.get(
-    "/{hotel_id}/rooms/{room_id}/images",
+    "/{hotel_slug}/rooms/{room_id}/images",
     response_model=ListResponse[RoomImageRead],
 )
 async def get_room_images(
-    hotel_id: int,
+    hotel_slug: str,
     room_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
     db_room_images = await RoomImageDAO.get_all(
         session=session,
         filters=RoomImageFilter(
-            hotel_id=hotel_id,
+            hotel_id=hotel.id,
             room_id=room_id,
         ),
     )
@@ -47,20 +49,20 @@ async def get_room_images(
 
 
 @router.post(
-    "/{hotel_id}/rooms/{room_id}/images",
+    "/{hotel_slug}/rooms/{room_id}/images",
     response_model=DataResponse[RoomImageRead],
 )
 async def add_room_image(
-    hotel_id: int,
+    hotel_slug: int,
     room_id: int,
     photo: UploadFile,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     file_path = await file_utils.save_photo(
         file=photo,
         filename=f"room_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
-        folder=f"hotel_{hotel_id}",
+        folder=f"hotel_{hotel.id}",
     )
     added_image = await RoomImageDAO.create(
         session=session,
@@ -79,14 +81,14 @@ async def add_room_image(
 
 
 @router.delete(
-    "/{hotel_id}/rooms/images/{image_id}",
+    "/{hotel_slug}/rooms/images/{image_id}",
     response_model=BaseResponse,
 )
 async def delete_room_image(
-    hotel_id: int,
+    hotel_slug: int,
     room_id: int,
     image_id: int,
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     image = await RoomImageDAO.get_one_or_none_by_id(

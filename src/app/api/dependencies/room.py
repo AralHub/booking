@@ -12,7 +12,7 @@ from app.models.room import Room
 from app.models.room.types import RoomType
 from app.schemas.hotel.info import HotelNameRead
 
-from .hotel import validate_hotel
+from .hotel import validate_hotel, validate_hotel_by_slug
 
 logger = logging.getLogger(__name__)
 
@@ -40,3 +40,16 @@ async def validate_room_type_id(
     if not db_room_type:
         raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
     return db_room_type
+
+
+async def validate_hotel_room_by_slug(
+    room_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
+    session=SessionDep,
+):
+    query = select(Room).filter_by(id=room_id, hotel_id=hotel.id)
+    result = await session.execute(query)
+    db_room = result.unique().scalar_one_or_none()
+    if not db_room:
+        raise room_not_found()
+    return db_room

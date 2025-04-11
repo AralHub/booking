@@ -10,22 +10,23 @@ from app.api.dependencies.partner import (
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import NotFoundException
-from app.core.i18n.translations import ErrorCode
-from app.dao.hotel import HotelDAO
-from app.schemas.hotel import (
-    HotelFullCreate,
-    HotelFullUpdate,
-    HotelSearch,
-    HotelSearchResult,
-)
-from app.schemas.hotel.info import HotelNameRead
-from app.schemas.partner import PartnerRead
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     DataResponse,
     ListResponse,
     PaginatedResponse,
 )
+from app.core.i18n.translations import ErrorCode
+from app.dao.hotel import HotelDAO
+from app.schemas.hotel import (
+    HotelFullCreate,
+    HotelFullRead,
+    HotelFullUpdate,
+    HotelSearch,
+    HotelSearchResult,
+)
+from app.schemas.hotel.info import HotelNameRead
+from app.schemas.partner import PartnerRead
 
 logger = logging.getLogger(__name__)
 router = APIRouter(
@@ -96,6 +97,7 @@ async def search_hotels(
 
 @router.get(
     "/{hotel_slug}",
+    response_model=DataResponse[HotelFullRead],
 )
 async def get_full_hotel(
     hotel_slug: str,
@@ -111,9 +113,7 @@ async def get_full_hotel(
             ErrorCode.HOTEL_NOT_FOUND,
             "Hotel not found",
         )
-    return {
-        "data": hotel,
-    }
+    return DataResponse(data=hotel)
 
 
 @router.post("")

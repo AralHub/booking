@@ -5,8 +5,8 @@ from app.core import SessionDep
 from app.core.config import settings
 from app.core.i18n.responses import DataResponse
 from app.dao.hotel.rating import HotelRatingDAO
-from app.schemas.hotel.rating import HotelRatingRead
 from app.schemas.hotel.info import HotelNameRead
+from app.schemas.hotel.rating import HotelRatingRead
 
 router = APIRouter(
     tags=["Hotel Rating"],

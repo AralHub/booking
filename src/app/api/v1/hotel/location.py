@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel, validate_hotel_by_slug
-from app.api.dependencies.partner import valid_hotel_admin, valid_hotel_admin_by_slug
+from app.api.dependencies.hotel import validate_hotel_by_slug
+from app.api.dependencies.partner import valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import NotFoundException
@@ -13,7 +13,6 @@ from app.dao.hotel.location import HotelLocationDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.hotel.location import (
     LocationCreate,
-    LocationFilter,
     LocationRead,
     LocationUpdate,
 )

@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 
-from app.api.dependencies.hotel import validate_hotel, validate_hotel_by_slug
+from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.review import (
-    validate_review_owner,
     validate_review_owner_by_slug,
 )
 from app.api.dependencies.user import get_current_active_auth_user

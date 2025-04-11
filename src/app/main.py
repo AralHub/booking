@@ -1,15 +1,15 @@
 import uvicorn
-from fastapi import Request, HTTPException
+from fastapi import HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+
 from app.api.v1 import router as api_v1_router
-from app.core.config import settings
+from app.core.config import SOURCE_DIR, settings
 from app.core.exceptions.http_exceptions import CustomException
 from app.core.i18n.translations import get_error_message
 from app.core.logger import logging
 from app.create_fastapi_app import create_app
-from app.core.config import SOURCE_DIR, settings
 
 logger = logging.getLogger(__name__)
 

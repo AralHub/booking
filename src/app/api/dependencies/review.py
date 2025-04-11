@@ -11,7 +11,7 @@ from app.dao.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.user import UserRead
 
-from .hotel import validate_hotel_by_slug, validate_hotel
+from .hotel import validate_hotel, validate_hotel_by_slug
 from .user import get_current_auth_user
 
 logger = logging.getLogger(__name__)

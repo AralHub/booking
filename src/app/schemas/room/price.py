@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RoomPriceBase(BaseModel):
@@ -9,6 +9,7 @@ class RoomPriceBase(BaseModel):
 class RoomPriceRead(RoomPriceBase):
     id: int
     room_id: int
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RoomPriceCreate(RoomPriceBase):

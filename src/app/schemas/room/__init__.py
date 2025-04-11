@@ -15,6 +15,7 @@ class RoomRead(RoomBase):
     id: int
     image: str | None = None
     hotel_id: int
+    max_guests: int
     room_type_id: int
 
 
