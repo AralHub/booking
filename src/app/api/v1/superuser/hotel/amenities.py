@@ -84,7 +84,6 @@ async def create_hotel_amenity(
     response_model=DataResponse[HotelAmenityRead],
 )
 async def update_hotel_amenity(
-    category_id: int,
     amenity_id: int,
     amenity_update_data: HotelAmenityUpdate,
     session=TransactionSessionDep,
@@ -96,7 +95,6 @@ async def update_hotel_amenity(
         session=session,
         filters=HotelAmenityFilter(
             id=amenity_id,
-            hotel_amenity_category_id=category_id,
         ),
         values=amenity_update_data,
     )
