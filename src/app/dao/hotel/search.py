@@ -58,27 +58,22 @@ class HotelSearchDAO(HotelDAO):
         if not available_rooms:
             return None
 
-        # Группируем комнаты по отелям
-        hotels_with_rooms, room_types = await cls._group_rooms_by_hotel(
-            session,
-            available_rooms,
-        )
+        # Группируем доступные комнаты по отелям (ключ – hotel_id, значение – список комнат)
+        available_rooms_by_hotel = {}
+        for room in available_rooms:
+            available_rooms_by_hotel.setdefault(room.hotel_id, []).append(room)
 
-        # Находим отели, подходящие для размещения всех групп гостей
-        suitable_hotels = cls._find_suitable_hotels_for_guests(
-            hotels_with_rooms,
-            guests,
-            room_types,
-        )
-
-        if not suitable_hotels["hotel_ids"]:
+        if not available_rooms_by_hotel:
             return None
+
+        # Идентификаторы отелей с доступными комнатами
+        suitable_hotel_ids = list(available_rooms_by_hotel.keys())
 
         # Загружаем полную информацию о подходящих отелях
         return await cls._load_hotels_full_info(
             session,
-            suitable_hotels["hotel_ids"],
-            suitable_hotels["selected_rooms"],
+            suitable_hotel_ids,
+            available_rooms_by_hotel,
         )
 
     @classmethod
@@ -104,13 +99,13 @@ class HotelSearchDAO(HotelDAO):
             .where(HotelLocation.city_id == db_city.id)
         )
 
-        # Добавляем фильтр по расстоянию до центра, если указан
+        # Фильтр по расстоянию до центра, если указан
         if max_distance_to_center is not None:
             hotels_query = hotels_query.where(
                 HotelLocation.to_city_center <= max_distance_to_center
             )
 
-        # Добавляем фильтр по удобствам, если указаны
+        # Фильтр по удобствам, если указаны
         if amenities and len(amenities) > 0:
             amenities_subquery = (
                 select(HotelAmenityAssociation.hotel_id)
@@ -124,7 +119,7 @@ class HotelSearchDAO(HotelDAO):
             )
             hotels_query = hotels_query.where(Hotel.id.in_(amenities_subquery))
 
-        # Получаем отели в городе с учетом фильтров
+        # Получаем отели с учетом фильтров
         hotels_result = await session.execute(hotels_query)
         return hotels_result.scalars().all()
 
@@ -146,7 +141,7 @@ class HotelSearchDAO(HotelDAO):
             .where(Room.hotel_id.in_(hotel_ids))
         )
 
-        # Добавляем фильтр по цене, если указан
+        # Фильтр по цене, если указан
         if price_min is not None:
             rooms_query = rooms_query.where(Room.base_price >= price_min)
         if price_max is not None:
@@ -174,7 +169,7 @@ class HotelSearchDAO(HotelDAO):
                 room_quantity = getattr(room, "quantity", 1)
                 booked_count = booked_rooms_count.get(room_id, 0)
 
-                # Если комната полностью забронирована, пропускаем ее
+                # Если комната полностью забронирована, пропускаем её
                 if booked_count >= room_quantity:
                     continue
 
@@ -207,92 +202,6 @@ class HotelSearchDAO(HotelDAO):
                     available_rooms.append(room)
 
         return available_rooms
-
-    @classmethod
-    async def _group_rooms_by_hotel(
-        cls,
-        session: AsyncSession,
-        available_rooms: list[Room],
-    ):
-        hotels_with_rooms = {}
-        room_types = {}
-
-        for room in available_rooms:
-            # Группируем комнаты по hotel_id
-            hotels_with_rooms.setdefault(room.hotel_id, []).append(room)
-            # Сохраняем информацию о типах комнат
-            room_type = getattr(room, "room_type", None)
-            room_types.setdefault(room.hotel_id, set()).add(room_type)
-
-        # Преобразуем множества room_types в списки
-        for hotel_id in room_types:
-            room_types[hotel_id] = list(room_types[hotel_id])
-
-        return hotels_with_rooms, room_types
-
-    @classmethod
-    def _find_suitable_hotels_for_guests(
-        cls,
-        hotels_with_rooms: dict,
-        guests: list[int],
-        room_types: dict,
-    ):
-        """
-        Находит отели, подходящие для размещения всех групп гостей.
-
-        Args:
-            hotels_with_rooms: словарь, где ключ – hotel_id, значение – список комнат данного отеля
-            guests: список с количеством гостей в каждой группе
-            room_types: словарь с типами комнат для каждого отеля
-
-        Returns:
-            словарь с id подходящих отелей и выбранными комнатами
-        """
-        suitable_hotels = {"hotel_ids": [], "selected_rooms": {}}
-
-        # Если гости не указаны, считаем все отели подходящими
-        if not guests:
-            suitable_hotels["hotel_ids"] = list(hotels_with_rooms.keys())
-            for hotel_id in hotels_with_rooms:
-                suitable_hotels["selected_rooms"][hotel_id] = hotels_with_rooms[
-                    hotel_id
-                ]
-            return suitable_hotels
-
-        # Проверяем каждый отель на возможность размещения всех групп гостей
-        for hotel_id, rooms in hotels_with_rooms.items():
-            # Проверяем, можно ли разместить всех гостей в комнатах этого отеля
-            can_accommodate = True
-            selected_rooms = []
-
-            # Проверяем каждую группу гостей
-            for guest_count in guests:
-                room_found = False
-
-                # Ищем комнату, подходящую для данной группы гостей
-                for room in rooms:
-                    max_guests = (
-                        getattr(room.room_type, "max_guests", 1)
-                        if room.room_type
-                        else 1
-                    )
-
-                    if max_guests >= guest_count:
-                        # Нашли подходящую комнату
-                        selected_rooms.append(room)
-                        room_found = True
-                        break
-
-                if not room_found:
-                    # Не нашли комнату для данной группы гостей
-                    can_accommodate = False
-                    break
-
-            if can_accommodate:
-                suitable_hotels["hotel_ids"].append(hotel_id)
-                suitable_hotels["selected_rooms"][hotel_id] = selected_rooms
-
-        return suitable_hotels
 
     @classmethod
     async def _load_hotels_full_info(
