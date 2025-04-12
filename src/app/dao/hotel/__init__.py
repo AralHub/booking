@@ -137,13 +137,13 @@ class HotelDAO(BaseDAO):
         session: AsyncSession,
         hotel_admin_id: int,
     ):
-        partner_hotel = await HotelDAO.get_one_or_none(
+        partner_hotel = await PartnerDAO.get_one_or_none(
             session=session,
-            filters=HotelFilter(
-                hotel_admin_id=hotel_admin_id,
+            filters=PartnerFilter(
+                id=hotel_admin_id,
             ),
         )
-        if partner_hotel:
+        if partner_hotel.has_hotel:
             raise DuplicateValueException(
                 error_code=ErrorCode.DUPLICATE_VALUE,
             )
