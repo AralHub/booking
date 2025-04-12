@@ -91,6 +91,12 @@ class RoomAmenityDAO(BaseDAO):
         room_id: int,
         amenities: list[int],
     ):
+        existing = await session.execute(
+            select(RoomAmenityAssociation).where(
+                RoomAmenityAssociation.room_id == room_id
+            )
+        )
+        existing_amenities = [a.room_amenity_id for a in existing.scalars().all()]
         query = (
             select(Room)
             .options(selectinload(Room.room_amenities))
@@ -99,12 +105,15 @@ class RoomAmenityDAO(BaseDAO):
         result = await session.execute(query)
         db_room = result.scalar_one_or_none()
         for room_amenity_id in amenities:
-            room_amenity = await cls.get_one_or_none_by_id(
-                session=session,
-                data_id=room_amenity_id,
-            )
-            if room_amenity:
-                db_room.room_amenities.append(room_amenity)
+            if room_amenity_id not in existing_amenities:
+                room_amenity = await cls.get_one_or_none_by_id(
+                    session=session,
+                    data_id=room_amenity_id,
+                )
+                if room_amenity:
+                    db_room.room_amenities.append(room_amenity)
+            else:
+                continue
         await session.commit()
 
     @classmethod
