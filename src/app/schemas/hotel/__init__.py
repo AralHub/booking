@@ -36,6 +36,8 @@ class GuestInformation(BaseModel):
 class HotelFullCreate(
     MultilingualNameBase,
     MultilingualDescriptionBase,
+    BookingInformation,
+    GuestInformation,
     BaseModel,
 ):
     hotel_category_id: int = 1
@@ -44,8 +46,6 @@ class HotelFullCreate(
     latitude: float
     longitude: float
     amenities: list[int]
-    information_for_booking: BookingInformation
-    information_for_guests: GuestInformation
 
 
 class HotelFullCreateInternal(HotelFullCreate):
