@@ -45,7 +45,7 @@ async def get_hotel_amenities(
 async def add_amenities_to_hotel(
     hotel_slug: str,
     amenities: list[int],
-    hotel: HotelNameRead = Depends(valid_hotel_admin),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
     created_amenities = await HotelAmenityDAO.add_amenities_to_hotel(
