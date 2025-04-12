@@ -127,6 +127,12 @@ class HotelAmenityDAO(BaseDAO):
         amenities: list[int],
         session: AsyncSession,
     ):
+        existing = await session.execute(
+            select(HotelAmenityAssociation).where(
+                HotelAmenityAssociation.hotel_id == hotel_id
+            )
+        )
+        existing_amenities = [a.hotel_amenity_id for a in existing.scalars().all()]
         query = (
             select(Hotel)
             .options(selectinload(Hotel.hotel_amenities))
@@ -135,10 +141,13 @@ class HotelAmenityDAO(BaseDAO):
         result = await session.execute(query)
         db_hotel = result.scalar_one_or_none()
         for hotel_amenity_id in amenities:
-            hotel_amenity = await HotelAmenityDAO.get_one_or_none_by_id(
-                session=session,
-                data_id=hotel_amenity_id,
-            )
-            if hotel_amenity:
-                db_hotel.hotel_amenities.append(hotel_amenity)
+            if hotel_amenity_id not in existing_amenities:
+                hotel_amenity = await HotelAmenityDAO.get_one_or_none_by_id(
+                    session=session,
+                    data_id=hotel_amenity_id,
+                )
+                if hotel_amenity:
+                    db_hotel.hotel_amenities.append(hotel_amenity)
+            else:
+                continue
         await session.commit()
