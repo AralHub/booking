@@ -63,6 +63,7 @@ async def search_rooms_for_booking(
 
 @router.get(
     "/{hotel_slug}/rooms",
+    response_model=ListResponse[RoomRead],
 )
 async def get_hotel_rooms(
     hotel_slug: str,
@@ -73,10 +74,11 @@ async def get_hotel_rooms(
         session=session,
         hotel_id=hotel.id,
     )
-    return {
-        "data": rooms,
-        "total": len(rooms),
-    }
+    # return rooms
+    return ListResponse(
+        data=rooms,
+        total=len(rooms),
+    )
 
 
 @router.post(

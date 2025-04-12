@@ -19,7 +19,7 @@ class RoomRead(RoomBase):
     max_guests: int
     room_type_id: int
     amenities: list[RoomAmenityRead] | None = None
-    room_type_name: str | None = None
+    room_type: str | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
