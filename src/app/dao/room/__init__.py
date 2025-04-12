@@ -135,7 +135,8 @@ class RoomDAO(BaseDAO):
         )
 
         result = await session.execute(query)
-        data = result.unique().all()
+        # Получаем список Room объектов
+        data = result.scalars().unique().all()
 
         rooms = []
         for row in data:
@@ -148,7 +149,7 @@ class RoomDAO(BaseDAO):
                 "max_guests": row.max_guests,
                 "room_type_id": row.room_type_id,
                 "use_dinamic_price": row.use_dinamic_price,
-                "room_type_name": row.room_type_name,
+                "room_type_name": row.room_type.name,
             }
             rooms.append(RoomRead(**room_dict))
 
