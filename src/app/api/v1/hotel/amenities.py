@@ -40,7 +40,7 @@ async def get_hotel_amenities(
 
 @router.post(
     "/{hotel_slug}/amenities",
-    response_model=DataResponse[HotelAmenityRead],
+    response_model=BaseResponse,
 )
 async def add_amenities_to_hotel(
     hotel_slug: str,
@@ -48,13 +48,13 @@ async def add_amenities_to_hotel(
     hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
-    created_amenities = await HotelAmenityDAO.add_hotel_amenities(
+    await HotelAmenityDAO.add_hotel_amenities(
         session=session,
         hotel_id=hotel.id,
         amenities=amenities,
     )
-    return DataResponse(
-        data=created_amenities,
+    return BaseResponse(
+        success=True,
         message=RESPONSE_MESSAGES.get(
             "DATA_CREATED",
             "Amenities added to hotel successfully",
