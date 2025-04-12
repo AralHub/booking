@@ -9,6 +9,7 @@ class RoomBase(BaseModel):
     quantity: int
     base_price: float
     room_area: float
+    use_dinamic_price: bool = False
 
 
 class RoomRead(RoomBase):
@@ -17,7 +18,6 @@ class RoomRead(RoomBase):
     hotel_id: int
     max_guests: int
     room_type_id: int
-    use_dinamic_price: bool
     amenities: list[RoomAmenityRead] | None = None
     room_type_name: str | None = None
     model_config = ConfigDict(from_attributes=True)
