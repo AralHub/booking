@@ -20,22 +20,20 @@ async def get_bookings(
     partner: PartnerRead = Depends(get_current_auth_partner),
     session=SessionDep,
 ):
-    partner_hotels = await HotelDAO.get_one_or_none(
+    partner_hotel = await HotelDAO.get_one_or_none(
         session=session,
         filters=HotelFilter(
             hotel_admin_id=partner.id,
         ),
     )
-    if not partner_hotels:
+    if not partner_hotel:
         raise NotFoundException(
             ErrorCode.HOTEL_NOT_FOUND,
             "Hotel not found",
         )
-    bookings = await BookingDAO.get_all(
+    bookings = await BookingDAO.get_bookings_by_hotel_id(
         session=session,
-        filters=BookingFilter(
-            hotel_id=partner_hotels.id,
-        ),
+        hotel_id=partner_hotel.id,
     )
     return {
         "data": bookings,

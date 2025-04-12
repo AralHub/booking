@@ -1,5 +1,6 @@
 from datetime import date
 from sqlalchemy import func, select, and_, or_
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 from app.dao import BaseDAO
@@ -261,3 +262,21 @@ class BookingDAO(BaseDAO):
             return False
 
         return True
+
+    @classmethod
+    async def get_bookings_by_hotel_id(
+        cls,
+        session: AsyncSession,
+        hotel_id: int,
+    ):
+        query = (
+            select(Booking)
+            .options(
+                selectinload(Booking.booked_rooms),
+                selectinload(Booking.user),
+            )
+            .where(Booking.hotel_id == hotel_id)
+            .order_by(Booking.created_at.desc())
+        )
+        result = await session.execute(query)
+        return result.scalars().all()
