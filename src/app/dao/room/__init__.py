@@ -1,6 +1,7 @@
 from datetime import date
 from sqlalchemy import and_, func, or_, select, case, text, literal_column, table
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from app.core.exceptions.http_exceptions import (
     NotFoundException,
     BadRequestException,
@@ -19,6 +20,7 @@ from app.schemas.room import (
     RoomUpdate,
     RoomUpdateInternal,
     RoomFilter,
+    RoomRead,
 )
 from app.schemas.room.types import RoomTypeFilter
 from app.dao.room.amenities import RoomAmenityDAO
@@ -52,7 +54,11 @@ class RoomDAO(BaseDAO):
                 detail="Room type not found",
             )
         hotel_room_create_data = RoomCreateInternal(
-            **room_data.model_dump(),
+            **room_data.model_dump(
+                exclude={
+                    "amenities",
+                }
+            ),
             hotel_id=hotel_id,
         )
         created_room = await cls.create(
@@ -115,3 +121,35 @@ class RoomDAO(BaseDAO):
                 amenities=amenities,
             )
         return updated_room
+
+    @classmethod
+    async def get_hotel_rooms(
+        cls,
+        session: AsyncSession,
+        hotel_id: int,
+    ):
+        query = (
+            select(cls.model)
+            .options(selectinload(cls.model.room_type))
+            .where(cls.model.hotel_id == hotel_id)
+        )
+
+        result = await session.execute(query)
+        data = result.unique().all()
+
+        rooms = []
+        for row in data:
+            room_dict = {
+                "id": row.id,
+                "quantity": row.quantity,
+                "base_price": row.base_price,
+                "room_area": row.room_area,
+                "hotel_id": row.hotel_id,
+                "max_guests": row.max_guests,
+                "room_type_id": row.room_type_id,
+                "use_dinamic_price": row.use_dinamic_price,
+                "room_type_name": row.room_type_name,
+            }
+            rooms.append(RoomRead(**room_dict))
+
+        return rooms
