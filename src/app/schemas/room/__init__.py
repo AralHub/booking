@@ -2,7 +2,7 @@ from datetime import date
 
 from pydantic import BaseModel, ConfigDict, field_validator
 from app.schemas.room.amenities import RoomAmenityRead
-from ..field_validation import zero_to_none
+from ..field_validation import zero_to_none, MAX_GUESTS_FIELD, MAX_GUESTS_FIELD_UPDATE
 
 
 class RoomBase(BaseModel):
@@ -24,7 +24,7 @@ class RoomRead(RoomBase):
 
 
 class RoomCreate(RoomBase):
-    max_guests: int
+    max_guests: MAX_GUESTS_FIELD
     room_type_id: int
     amenities: list[int] | None = None
 
@@ -34,7 +34,7 @@ class RoomCreateInternal(RoomCreate):
 
 
 class RoomUpdate(BaseModel):
-    max_guests: int | None = None
+    max_guests: MAX_GUESTS_FIELD_UPDATE
     image: str | None = None
     quantity: int | None = None
     base_price: float | None = None

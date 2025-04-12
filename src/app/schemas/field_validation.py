@@ -22,6 +22,21 @@ def zero_to_none(num: int) -> int | None:
 
 
 # Общие поля с аннотациями
+MAX_GUESTS_FIELD = Annotated[
+    int,
+    Field(
+        ge=1,
+        examples=[1],
+    ),
+]
+MAX_GUESTS_FIELD_UPDATE = Annotated[
+    int | None,
+    Field(
+        ge=1,
+        examples=[1],
+        default=None,
+    ),
+]
 NAME_FIELD = Annotated[
     str,
     Field(
