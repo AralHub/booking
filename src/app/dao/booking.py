@@ -272,7 +272,7 @@ class BookingDAO(BaseDAO):
         query = (
             select(Booking)
             .options(
-                selectinload(Booking.booked_rooms),
+                selectinload(Booking.booking_rooms),
                 selectinload(Booking.user),
             )
             .where(Booking.hotel_id == hotel_id)
