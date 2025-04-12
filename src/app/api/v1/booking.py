@@ -12,12 +12,12 @@ from app.schemas.booking import (
 from app.schemas.user import UserRead
 
 router = APIRouter(
-    tags=["Boookings"],
+    tags=["Bookings"],
     prefix="/bookings",
 )
 
 
-@router.get("/bookings")
+@router.get("")
 async def get_bookings(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=SessionDep,
@@ -30,7 +30,7 @@ async def get_bookings(
     )
 
 
-@router.post("/bookings")
+@router.post("")
 async def create_booking(
     booking_create_data: BookingCreateMultipleRooms,
     current_user: UserRead = Depends(get_current_active_auth_user),
@@ -43,7 +43,7 @@ async def create_booking(
     )
 
 
-@router.put("/bookings/{booking_id}/cancel")
+@router.put("/{booking_id}/cancel")
 async def cancel_booking(
     booking_id: int,
     current_user: UserRead = Depends(get_current_active_auth_user),
