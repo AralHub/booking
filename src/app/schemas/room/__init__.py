@@ -19,6 +19,7 @@ class RoomRead(RoomBase):
     room_type_id: int
     use_dinamic_price: bool
     amenities: list[RoomAmenityRead] | None = None
+    room_type_name: str | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
