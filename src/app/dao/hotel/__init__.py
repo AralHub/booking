@@ -121,7 +121,7 @@ class HotelDAO(BaseDAO):
                 selectinload(cls.model.rule),
                 selectinload(cls.model.hotel_category),
                 selectinload(cls.model.hotel_rating),
-                selectinload(cls.model.images),
+                selectinload(cls.model.hotel_images),
             )
             .where(cls.model.id == hotel_id)
         )
