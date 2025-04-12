@@ -165,6 +165,7 @@ async def update_hotel_room(
         room_data=room_update_data,
         room_id=room.id,
         hotel_id=hotel.id,
+        amenities=room_update_data.amenities,
     )
     return DataResponse(
         data=updated_room,

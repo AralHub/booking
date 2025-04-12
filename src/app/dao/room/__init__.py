@@ -21,6 +21,7 @@ from app.schemas.room import (
     RoomFilter,
 )
 from app.schemas.room.types import RoomTypeFilter
+from app.dao.room.amenities import RoomAmenityDAO
 import logging
 
 logger = logging.getLogger(__name__)
@@ -54,10 +55,21 @@ class RoomDAO(BaseDAO):
             **room_data.model_dump(),
             hotel_id=hotel_id,
         )
-        return await cls.create(
+        created_room = await cls.create(
             session=session,
             values=hotel_room_create_data,
         )
+        if room_data.amenities and len(room_data.amenities) != 0:
+            await RoomAmenityDAO.delete_room_all_amenities(
+                session=session,
+                room_id=created_room.id,
+            )
+            await RoomAmenityDAO.add_amenities_to_room(
+                session=session,
+                room_id=created_room.id,
+                amenities=room_data.amenities,
+            )
+        return created_room
 
     @classmethod
     async def update_hotel_room(
@@ -66,6 +78,7 @@ class RoomDAO(BaseDAO):
         room_data: RoomUpdate,
         room_id: int,
         hotel_id: int,
+        amenities: list[int] | None = None,
     ):
         # Проверяем существование room_type если он указан
         if room_data.room_type_id is not None:
@@ -77,12 +90,13 @@ class RoomDAO(BaseDAO):
             )
             if not room_type:
                 raise NotFoundException("Room type does not exist")
-        updated_row_count = await RoomDAO.update(
+        updated_room = await RoomDAO.update(
             session=session,
             values=RoomUpdateInternal(
                 **room_data.model_dump(
                     exclude_none=True,
                     exclude_unset=True,
+                    exclude={"amenities"},
                 )
             ),
             filters=RoomFilter(
@@ -90,8 +104,14 @@ class RoomDAO(BaseDAO):
                 hotel_id=hotel_id,
             ),
         )
-        if updated_row_count == 0 or updated_row_count is None:
-            raise NotFoundException("Room did not update")
-        return {
-            "message": "Room updated successfully",
-        }
+        if amenities and len(amenities) != 0:
+            await RoomAmenityDAO.delete_room_all_amenities(
+                session=session,
+                room_id=room_id,
+            )
+            await RoomAmenityDAO.add_amenities_to_room(
+                session=session,
+                room_id=room_id,
+                amenities=amenities,
+            )
+        return updated_room

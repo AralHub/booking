@@ -64,9 +64,9 @@ async def remove_amenities_from_room(
     room: RoomRead = Depends(validate_hotel_room_by_slug),
     session=SessionDep,
 ):
-    return await RoomAmenityDAO.remove_all_amenities_from_room(
+    return await RoomAmenityDAO.delete_room_all_amenities(
         session=session,
-        hotel_id=hotel.id,
+        room_id=room_id,
     )
 
 
@@ -79,7 +79,7 @@ async def remove_amenity_from_room_by_id(
     room: RoomRead = Depends(validate_hotel_room_by_slug),
     session=SessionDep,
 ):
-    await RoomAmenityDAO.remove_amenity_from_room(
+    await RoomAmenityDAO.delete_room_amenity(
         session=session,
         room_id=room_id,
         amenity_id=amenity_id,

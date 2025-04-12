@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.exc import IntegrityError
@@ -10,6 +10,7 @@ from app.models.room.amenities import (
     RoomAmenityAssociation,
 )
 from app.models.room import Room
+from app.models.room.amenities import RoomAmenityAssociation
 
 
 class RoomAmenityCategoryDAO(BaseDAO):
@@ -104,4 +105,39 @@ class RoomAmenityDAO(BaseDAO):
             )
             if room_amenity:
                 db_room.room_amenities.append(room_amenity)
+        await session.commit()
+
+    @classmethod
+    async def delete_room_all_amenities(
+        cls,
+        room_id: int,
+        session: AsyncSession,
+    ):
+        db_room = await session.scalar(
+            select(cls.model)
+            .where(cls.model.id == room_id)
+            .options(selectinload(cls.model.room_amenities))
+        )
+
+        await session.execute(
+            delete(RoomAmenityAssociation).where(
+                RoomAmenityAssociation.room_id == room_id
+            )
+        )
+        await session.commit()
+
+    @classmethod
+    async def delete_amenity_from_room(
+        cls,
+        session: AsyncSession,
+        room_id: int,
+        amenity_id: int,
+    ):
+        query = select(RoomAmenityAssociation).where(
+            RoomAmenityAssociation.room_id == room_id,
+            RoomAmenityAssociation.room_amenity_id == amenity_id,
+        )
+        result = await session.execute(query)
+        amenity_association = result.scalar()
+        await session.delete(amenity_association)
         await session.commit()
