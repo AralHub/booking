@@ -5,7 +5,7 @@ from app.core import SessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.i18n.translations import ErrorCode
 from app.dao.hotel import HotelDAO
-from app.schemas.hotel.info import HotelInfoFilter
+from app.schemas.hotel import HotelFilter
 from app.schemas.partner import (
     PartnerRead,
 )
@@ -20,7 +20,7 @@ async def get_hotels(
 ):
     partner_hotels = await HotelDAO.get_one_or_none(
         session=session,
-        filters=HotelInfoFilter(
+        filters=HotelFilter(
             hotel_admin_id=partner.id,
         ),
     )

@@ -139,3 +139,8 @@ class HotelSearchResult(BaseModel):
     available_rooms: list[dict] = []
     min_price: float | None = None
     guests: int | None = None
+
+
+class HotelFilter(BaseModel):
+    id: int | None = None
+    hotel_admin_id: int | None = None
