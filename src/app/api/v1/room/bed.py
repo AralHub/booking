@@ -23,13 +23,13 @@ from app.schemas.room.bed import (
 )
 
 router = APIRouter(
-    tags=["Room Beds"],
+    tags=["Hotel Room Beds"],
+    prefix="/hotels",
 )
 
 
 @router.get(
     "/{hotel_slug}/rooms/{room_id}/beds",
-    response_model=DataResponse[RoomBedConfRead],
 )
 async def get_room_beds(
     hotel_slug: str,
@@ -69,7 +69,6 @@ async def add_room_beds(
             room_id=room.id,
             **bed_conf.model_dump(),
         )
-        print(bed_conf_create_data)
         await RoomBedConfDAO.create(
             session=session,
             values=bed_conf_create_data,

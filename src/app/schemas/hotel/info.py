@@ -106,7 +106,6 @@ class HotelInfoFilter(BaseModel):
     second_phone_number: str | None = None
     email: EMAIL_FIELD_UPDATE
     site_url: SITE_URL_FIELD_UPDATE
-    hotel_admin_id: int
 
 
 # endregion

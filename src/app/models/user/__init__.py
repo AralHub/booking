@@ -21,6 +21,9 @@ class GENDER_TYPES(str, Enum):
     FEMALE = "female"
 
 
+from app.models.booking import BookingType
+
+
 class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
     phone_number: Mapped[str] = mapped_column(
         String(255),
@@ -64,6 +67,12 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
     is_superuser: Mapped[bool] = mapped_column(
         default=False,
         server_default="false",
+    )
+    role: Mapped[BookingType] = mapped_column(
+        SqlEnum(BookingType),
+        nullable=False,
+        default=BookingType.PERSONAL,
+        server_default=text("'PERSONAL'"),
     )
     # relationships
     country_id: Mapped[int] = mapped_column(

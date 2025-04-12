@@ -1,7 +1,7 @@
 from datetime import date
 
 from pydantic import BaseModel, ConfigDict, field_validator
-
+from app.schemas.room.amenities import RoomAmenityRead
 from ..field_validation import zero_to_none
 
 
@@ -18,12 +18,14 @@ class RoomRead(RoomBase):
     max_guests: int
     room_type_id: int
     use_dinamic_price: bool
+    amenities: list[RoomAmenityRead] | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
 class RoomCreate(RoomBase):
     max_guests: int
     room_type_id: int
+    amenities: list[int] | None = None
 
 
 class RoomCreateInternal(RoomCreate):
@@ -37,6 +39,7 @@ class RoomUpdate(BaseModel):
     base_price: float | None = None
     room_area: float | None = None
     room_type_id: int | None = None
+    amenities: list[int] | None = None
 
     @field_validator("room_type_id")
     def validate_and_sanitize_path(cls, v: int | None) -> int | None:

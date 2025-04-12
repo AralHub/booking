@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from app.models.booking import BookingType
 from app.models.user import GENDER_TYPES
 
 from .field_validation import (
@@ -70,6 +71,7 @@ class UserUpdate(BaseModel):
     birthday: BIRTHDAY_FIELD | None = None
     gender: GENDER_FIELD | None = None
     country_id: int | None = None
+    role: BookingType | None = None
     model_config = ConfigDict(extra="forbid")
 
 
