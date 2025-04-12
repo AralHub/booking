@@ -15,11 +15,11 @@ from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(
     tags=["Bookings"],
-    prefix="/bookings",
+    prefix="",
 )
 
 
-@router.get("")
+@router.get("/bookings")
 async def get_bookings(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=SessionDep,
@@ -32,7 +32,7 @@ async def get_bookings(
     )
 
 
-@router.post("/{hotel_slug}")
+@router.post("hotels/{hotel_slug}/bookings")
 async def create_booking(
     hotel_slug: str,
     booking_create_data: BookingCreateMultipleRooms,
@@ -48,7 +48,7 @@ async def create_booking(
     )
 
 
-@router.put("/{booking_id}/cancel")
+@router.put("/bookings/{booking_id}/cancel")
 async def cancel_booking(
     booking_id: int,
     current_user: UserRead = Depends(get_current_active_auth_user),
