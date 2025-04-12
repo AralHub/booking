@@ -14,7 +14,7 @@ from app.schemas.hotel.amenities import HotelAmenityRead
 from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(
-    prefix="/amenities",
+    prefix="/hotels",
     tags=["Hotel Amenities"],
 )
 
