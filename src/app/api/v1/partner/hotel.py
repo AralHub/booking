@@ -13,8 +13,8 @@ from app.schemas.partner import (
 router = APIRouter()
 
 
-@router.get("/hotels")
-async def get_hotels(
+@router.get("/hotel")
+async def get_hotel(
     partner: PartnerRead = Depends(get_current_auth_partner),
     session=SessionDep,
 ):
