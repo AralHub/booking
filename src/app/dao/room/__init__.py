@@ -149,7 +149,7 @@ class RoomDAO(BaseDAO):
                 "max_guests": row.max_guests,
                 "room_type_id": row.room_type_id,
                 "use_dinamic_price": row.use_dinamic_price,
-                "room_type_name": row.room_type.name,
+                "room_type": row.room_type.name,
             }
             rooms.append(RoomRead(**room_dict))
 
