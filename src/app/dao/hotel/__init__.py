@@ -4,7 +4,11 @@ from fastapi import Depends
 from sqlalchemy import delete, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from app.core.exceptions.http_exceptions import NotFoundException
+from app.core.exceptions.http_exceptions import (
+    NotFoundException,
+    DuplicateValueException,
+)
+from app.core.i18n.translations import ErrorCode
 from app.core.utils.slug_utils import generate_slug_for_hotel
 from app.api.dependencies.hotel import validate_hotel
 
@@ -38,6 +42,7 @@ from app.models.hotel.location import HotelLocation
 from app.models.hotel.rating import HotelRating
 from app.models.hotel.rating import HotelRating
 from app.schemas.location import CityFilter
+from app.schemas.hotel import HotelFilter
 from app.schemas.hotel.category import HotelCategoryFilter
 from app.schemas.hotel.info import HotelInfoFilter, HotelInfoUpdate
 from app.schemas.hotel.info import (
@@ -132,6 +137,16 @@ class HotelDAO(BaseDAO):
         session: AsyncSession,
         hotel_admin_id: int,
     ):
+        partner_hotel = await HotelDAO.get_one_or_none(
+            session=session,
+            filters=HotelFilter(
+                hotel_admin_id=hotel_admin_id,
+            ),
+        )
+        if partner_hotel:
+            raise DuplicateValueException(
+                error_code=ErrorCode.DUPLICATE_VALUE,
+            )
         db_hotel_category = await HotelCategoryDAO.get_one_or_none(
             session=session,
             filters=HotelCategoryFilter(id=hotel_create_data.hotel_category_id),
