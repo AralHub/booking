@@ -63,65 +63,20 @@ async def search_rooms_for_booking(
 
 @router.get(
     "/{hotel_slug}/rooms",
-    response_model=ListResponse[RoomRead],
 )
 async def get_hotel_rooms(
     hotel_slug: str,
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
-    rooms = await RoomDAO.get_all(
-        session=session,
-        filters=RoomFilter(
-            hotel_id=hotel.id,
-        ),
-    )
-    return ListResponse(
-        data=rooms,
-        total=len(rooms),
-    )
-
-
-@router.get(
-    "/{hotel_slug}/rooms/types",
-    response_model=ListResponse[RoomTypeRead],
-)
-async def get_hotel_room_types(
-    hotel_slug: str,
-    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
-    session=SessionDep,
-):
-    room_types = await RoomDAO.get_hotel_room_types(
+    rooms = await RoomDAO.get_hotel_rooms(
         session=session,
         hotel_id=hotel.id,
     )
-    return ListResponse(
-        data=room_types,
-        total=len(room_types),
-    )
-
-
-@router.get(
-    "/{hotel_slug}/rooms/{room_id}",
-    response_model=DataResponse[RoomRead],
-)
-async def get_room(
-    hotel_slug: str,
-    room_id: int,
-    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
-    room: RoomRead = Depends(validate_hotel_room_by_slug),
-    session=SessionDep,
-):
-    room = await RoomDAO.get_one_or_none(
-        session=session,
-        filters=RoomFilter(
-            hotel_id=hotel.id,
-            id=room_id,
-        ),
-    )
-    return DataResponse(
-        data=room,
-    )
+    return {
+        "data": rooms,
+        "total": len(rooms),
+    }
 
 
 @router.post(
