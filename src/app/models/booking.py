@@ -17,7 +17,7 @@ from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin
+from app.models.mixins import IntIdPkMixin, TimeStampedMixin
 
 if TYPE_CHECKING:
     from app.models.room import Room
@@ -45,7 +45,11 @@ class BookedRoom(IntIdPkMixin, Base):
     room: Mapped["Room"] = relationship("Room", back_populates="booking_rooms")
 
 
-class Booking(IntIdPkMixin, Base):
+class Booking(
+    IntIdPkMixin,
+    TimeStampedMixin,
+    Base,
+):
     check_in_date: Mapped[date] = mapped_column(
         Date,
         default=date.today,
