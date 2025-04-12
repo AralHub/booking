@@ -3,10 +3,18 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.amenities import validate_room_amenity
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import (
+    RESPONSE_MESSAGES,
+    BaseResponse,
+    DataResponse,
+    ListResponse,
+)
 from app.dao.room.amenities import (
+    RoomAmenityCategoryDAO,
     RoomAmenityDAO,
 )
 from app.schemas.room.amenities import (
+    RoomAmenityCategoryRead,
     RoomAmenityCreate,
     RoomAmenityFilter,
     RoomAmenityRead,
@@ -19,38 +27,48 @@ router = APIRouter(
 )
 
 
-@router.get("/categories/{category_id}/amenities")
-async def get_room_amenities_by_category(
-    category_id: int,
+@router.get(
+    "",
+    response_model=ListResponse[RoomAmenityCategoryRead],
+)
+async def get_all_room_amenities(
     session=SessionDep,
 ):
     """
     Удобства по категории-удобств комнат
     """
-    return await RoomAmenityDAO.get_all(
+    room_amenities = await RoomAmenityCategoryDAO.get_all_amenities(
         session=session,
-        filters=RoomAmenityFilter(room_amenity_category_id=category_id),
+    )
+    return ListResponse(
+        data=room_amenities,
+        total=len(room_amenities),
     )
 
 
 @router.post(
     "/categories/{category_id}/amenities",
     dependencies=[Depends(get_current_superuser)],
+    response_model=DataResponse[RoomAmenityRead],
 )
 async def create_room_amenity(
     category_id: int,
     amenity_create_data: RoomAmenityCreate,
     session=TransactionSessionDep,
 ):
-    return await RoomAmenityDAO.create(
+    created_amenity = await RoomAmenityDAO.create(
         session=session,
         values=amenity_create_data,
+    )
+    return DataResponse(
+        data=created_amenity,
     )
 
 
 @router.put(
     "/amenities/{amenity_id}",
     dependencies=[Depends(get_current_superuser)],
+    response_model=DataResponse[RoomAmenityRead],
 )
 async def update_room_amenity(
     category_id: int,
@@ -62,7 +80,7 @@ async def update_room_amenity(
     """
     Обновить удобство в категории
     """
-    return await RoomAmenityDAO.update(
+    updated_amenity = await RoomAmenityDAO.update(
         session=session,
         filters=RoomAmenityFilter(
             id=amenity_id,
@@ -70,15 +88,23 @@ async def update_room_amenity(
         ),
         values=amenity_update_data,
     )
+    return DataResponse(
+        data=updated_amenity,
+    )
 
 
 @router.delete(
     "/amenities/{amenity_id}",
     dependencies=[Depends(get_current_superuser)],
+    response_model=BaseResponse,
 )
 async def delete_room_amenity(
     amenity_id: int,
     room_amenity: RoomAmenityRead = Depends(validate_room_amenity),
     session=TransactionSessionDep,
 ):
-    return await RoomAmenityDAO.delete(session=session, filters=amenity_id)
+    await RoomAmenityDAO.delete(session=session, filters=amenity_id)
+    return BaseResponse(
+        success=True,
+        message=RESPONSE_MESSAGES.DELETE_SUCCESS,
+    )

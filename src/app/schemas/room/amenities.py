@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from ..mixins import MultilingualNameBase, MultilingualNameBaseUpdate
 
@@ -12,23 +12,20 @@ class RoomAmenityRead(BaseModel):
     id: int
     name: dict[str, str]
     icon: str | None = None
-    is_popular: bool | None = None
     room_amenity_category_id: int
 
 
 class RoomAmenityCreate(RoomAmenityBase):
-    is_popular: bool
+    pass
 
 
 class RoomAmenityCreateInternal(BaseModel):
     name: dict[str, str]
-    is_popular: bool = False
     room_id: int | None = None
     room_amenity_category_id: int
 
 
 class RoomAmenityUpdate(MultilingualNameBaseUpdate):
-    is_popular: bool | None = None
     room_amenity_category_id: int | None = None
 
 
@@ -38,7 +35,6 @@ class RoomAmenityUpdateInternal(RoomAmenityUpdate):
 
 class RoomAmenityFilter(BaseModel):
     id: int | None = None
-    is_popular: bool | None = None
     room_amenity_category_id: int | None = None
 
 
@@ -65,7 +61,8 @@ class RoomAmenityCategoryFilter(BaseModel):
 class RoomAmenityCategoryRead(BaseModel):
     id: int
     name: dict[str, str]
-    room_amenities: list[RoomAmenityRead]
+    room_amenities: list[RoomAmenityRead] | None = None
+    model_config = ConfigDict(from_attributes=True)
 
 
 # endregion
