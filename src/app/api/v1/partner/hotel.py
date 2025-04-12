@@ -10,10 +10,7 @@ from app.schemas.partner import (
     PartnerRead,
 )
 
-router = APIRouter(
-    tags=["Partners"],
-    prefix="/partners",
-)
+router = APIRouter()
 
 
 @router.get("/hotels")
