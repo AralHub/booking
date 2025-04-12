@@ -19,10 +19,14 @@ router = APIRouter(
 async def get_room_types(
     session=SessionDep,
 ):
-    return await RoomTypeDAO.get_all(
+    room_types = await RoomTypeDAO.get_all(
         session=session,
         filters=None,
     )
+    return {
+        "data": room_types,
+        "total": len(room_types),
+    }
 
 
 @router.post("/")
