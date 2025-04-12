@@ -37,4 +37,7 @@ async def get_bookings(
             hotel_id=partner_hotels.id,
         ),
     )
-    return bookings
+    return {
+        "data": bookings,
+        "total": len(bookings),
+    }

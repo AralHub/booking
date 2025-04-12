@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.user import get_current_active_auth_user
+from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.booking import BookingDAO
 from app.models.booking import BookingStatus
@@ -10,6 +11,7 @@ from app.schemas.booking import (
     BookingUpdateInternal,
 )
 from app.schemas.user import UserRead
+from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(
     tags=["Bookings"],
@@ -30,16 +32,19 @@ async def get_bookings(
     )
 
 
-@router.post("")
+@router.post("/{hotel_slug}")
 async def create_booking(
+    hotel_slug: str,
     booking_create_data: BookingCreateMultipleRooms,
     current_user: UserRead = Depends(get_current_active_auth_user),
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=TransactionSessionDep,
 ):
     return await BookingDAO.create_booking(
         session=session,
         booking_data=booking_create_data,
         user_id=current_user.id,
+        hotel_id=hotel.id,
     )
 
 
