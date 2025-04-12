@@ -14,6 +14,7 @@ from app.models.mixins import (
 if TYPE_CHECKING:
     from app.models.hotel.amenities import HotelAmenity, HotelAmenityAssociation
     from app.models.hotel.category import HotelCategory
+    from app.models.hotel.chessboard import ChessBoard
     from app.models.hotel.images import HotelImage
     from app.models.hotel.info import HotelInfo
     from app.models.hotel.location import HotelLocation
@@ -90,7 +91,6 @@ class Hotel(
         "HotelRating",
         back_populates="hotel",
     )
-    # languages: Mapped[list["Language"]] = relationship(
-    #     secondary="hotel_language_associations",
-    #     back_populates="hotels",
-    # )
+    chessboards: Mapped[list["ChessBoard"]] = relationship(
+        back_populates="hotel",
+    )

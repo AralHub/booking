@@ -185,10 +185,10 @@ class HotelDAO(BaseDAO):
             session=session,
             values=HotelInfoCreateInternal(
                 hotel_id=db_hotel.id,
-                first_phone_number=hotel_create_data.information_for_guests.first_phone_for_guests,
-                second_phone_number=hotel_create_data.information_for_guests.second_phone_for_guests,
-                email=hotel_create_data.information_for_guests.email_for_guests,
-                site_url=hotel_create_data.information_for_guests.site_url,
+                first_phone_number=hotel_create_data..,
+                second_phone_number=hotel_create_data.second_phone_for_guests,
+                email=hotel_create_data.email_for_guests,
+                site_url=hotel_create_data.site_url,
             ),
         )
         # Create location record
@@ -208,13 +208,13 @@ class HotelDAO(BaseDAO):
             values=RuleCreateInternal(
                 hotel_id=db_hotel.id,
                 check_in_from=(
-                    hotel_create_data.information_for_booking.check_in
-                    if hotel_create_data.information_for_booking.check_in
+                    hotel_create_data.check_in
+                    if hotel_create_data.check_in
                     else None
                 ),
                 check_out_from=(
-                    hotel_create_data.information_for_booking.check_out
-                    if hotel_create_data.information_for_booking.check_out
+                    hotel_create_data.check_out
+                    if hotel_create_data.check_out
                     else None
                 ),
             ),
