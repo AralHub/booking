@@ -24,14 +24,7 @@ router = APIRouter(
 )
 
 
-@router.get("/booking/{booking_uuid}")
-async def get_initial_booking(booking_uuid: str):
-    initial_booking = await redis_booking.get_booking_data(booking_uuid)
-    return {
-        "data": initial_booking,
-    }
-
-
+@router.get("/bookings")
 async def get_bookings(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=SessionDep,
@@ -42,6 +35,14 @@ async def get_bookings(
             user_id=current_user.id,
         ),
     )
+
+
+@router.get("/booking/{booking_uuid}")
+async def get_initial_booking(booking_uuid: str):
+    initial_booking = await redis_booking.get_booking_data(booking_uuid)
+    return {
+        "data": initial_booking,
+    }
 
 
 @router.post("/hotels/{hotel_slug}/bookings/initial")
