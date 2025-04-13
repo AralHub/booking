@@ -65,12 +65,10 @@ async def add_room_image(
         filename=f"room_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
         folder=f"hotel_{hotel.id}",
     )
-    added_image = await RoomImageDAO.create(
+    added_image = await RoomImageDAO.add_room_image(
         session=session,
-        values=RoomImageFilter(
-            room_id=room_id,
-            image=file_path,
-        ),
+        room_id=room_id,
+        file_path=file_path,
     )
     return DataResponse[RoomImageRead](
         data=added_image,
