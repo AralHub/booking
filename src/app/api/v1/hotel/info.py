@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.partner import valid_hotel_admin_by_slug
 from app.core import TransactionSessionDep
 from app.core.config import settings
@@ -34,7 +34,7 @@ router = APIRouter(
 )
 async def get_hotel_info(
     hotel_slug: str,
-    hotel: HotelNameRead = Depends(validate_hotel),
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=TransactionSessionDep,
 ):
     hotel_info = await HotelInfoDAO.get_hotel_info(
