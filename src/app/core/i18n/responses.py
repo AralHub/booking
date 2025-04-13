@@ -68,7 +68,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
     """
 
     data: list[T] = Field(default_factory=list, description="Список данных")
-    paginate: dict
+    pagination: dict
 
 
 # Стандартизированные сообщения об успешных операциях
