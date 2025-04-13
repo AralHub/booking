@@ -58,7 +58,6 @@ async def get_hotel_reviews(
 
 @router.post(
     "/{hotel_slug}/reviews",
-    response_model=DataResponse[ReviewRead],
 )
 async def create_hotel_reviews(
     hotel_slug: str,
@@ -73,18 +72,13 @@ async def create_hotel_reviews(
         hotel_id=hotel.id,
         user_id=current_user.id,
     )
-    return DataResponse[ReviewRead](
-        data=created_review,
-        message=RESPONSE_MESSAGES.get(
-            "DATA_CREATED",
-            "Hotel review created successfully",
-        ),
-    )
+    return {
+        "data": created_review,
+    }
 
 
 @router.put(
     "/{hotel_slug}/reviews/{review_id}",
-    response_model=DataResponse[ReviewRead],
 )
 async def update_hotel_review(
     hotel_slug: str,
@@ -101,13 +95,9 @@ async def update_hotel_review(
         review_id=review_id,
         review_update_data=review_update_data,
     )
-    return DataResponse[ReviewRead](
-        data=updated_review,
-        message=RESPONSE_MESSAGES.get(
-            "DATA_UPDATED",
-            "Hotel review updated successfully",
-        ),
-    )
+    return {
+        "data": updated_review,
+    }
 
 
 @router.delete(
