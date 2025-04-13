@@ -268,7 +268,14 @@ class HotelSearchDAO(HotelDAO):
                 "min_price": min_price,
                 "guests": min_price_guests,
                 "available_rooms": [
-                    RoomRead.model_validate(room).model_dump()
+                    RoomRead.model_validate(
+                        {
+                            **room.__dict__,
+                            "room_type": (
+                                room.room_type.name if room.room_type else None
+                            ),
+                        }
+                    ).model_dump()
                     for room in selected_rooms.get(hotel.id, [])
                 ],
             }
