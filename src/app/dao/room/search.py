@@ -91,8 +91,12 @@ class RoomSearchDAO(RoomDAO):
                 "room_type_id": room.room_type_id,
                 "room_type": room_type_name,
                 "base_price": room.base_price,
-                "amenities": room_amenities,
-                "images": room_images,
+                "amenities": (
+                    room_amenities.get("room_amenity_categories")
+                    if room_amenities.get("room_amenity_categories")
+                    else []
+                ),
+                "images": room_images if room_images else [],
                 "price_per_guest": price if price else None,
             }
             rooms_data.append(room_data)
