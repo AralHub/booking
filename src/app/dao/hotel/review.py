@@ -77,7 +77,10 @@ class ReviewDAO(BaseDAO):
                     user_id=user_id,
                 ),
             )
-            if len(review_create_data.category_ratings) > 0:
+            if (
+                review_create_data.amenities
+                and len(review_create_data.category_ratings) > 0
+            ):
                 for review_category_rating in review_create_data.category_ratings:
                     review_category_rating_create_data = ReviewCategoryRatingCreateInternal(
                         review_category_id=review_category_rating.review_category_id,
