@@ -49,7 +49,7 @@ class HotelRatingDAO(BaseDAO):
         )
         rating = hotel_rating.unique().scalar_one_or_none()
 
-        return rating if rating else []
+        return rating if rating else None
 
     @classmethod
     async def create_hotel_sum_rating(
