@@ -1,24 +1,21 @@
-build:
+build_dev:
 	docker-compose build
 
-start:
+start_dev:
 	docker-compose up -d
 
-stop:
+stop_dev:
 	docker-compose down
 
-log:
+log_dev:
 	docker-compose logs -f
 
-remove:
+remove_dev:
 	docker-compose down -v --rmi local
 
-restart:
+restart_dev:
 	docker-compose down
 	docker-compose up -d --build
-
-run_scripts:
-	docker-compose -f docker-compose.init.yml up -d
 
 #========== PROD ==========#
 build_prod:
