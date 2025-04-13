@@ -23,6 +23,7 @@ class HotelImageDAO(BaseDAO):
             filters=HotelImageFilter(
                 hotel_id=hotel_id,
             ),
+            order_by=[HotelImage.position.asc()],
         )
 
         if not db_hotel_images:

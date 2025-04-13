@@ -62,7 +62,12 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def get_all(cls, session: AsyncSession, filters: BaseModel | None):
+    async def get_all(
+        cls,
+        session: AsyncSession,
+        filters: BaseModel | None,
+        order_by: List[Any] | None = None,
+    ):
         if filters:
             filter_dict = filters.model_dump(exclude_unset=True)
         else:
@@ -72,6 +77,8 @@ class BaseDAO(Generic[T]):
         )
         try:
             query = select(cls.model).filter_by(**filter_dict)
+            if order_by:
+                query = query.order_by(*order_by)
             result = await session.execute(query)
             records = result.unique().scalars().all()
             logger.info(f"Найдено {len(records)} записей.")
