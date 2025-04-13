@@ -33,7 +33,15 @@ class ReviewDAO(BaseDAO):
     model = Review
 
     @classmethod
-    async def get_all_hotel_reviews(cls, session: AsyncSession, hotel_id: int):
+    async def get_all_hotel_reviews(
+        cls,
+        session: AsyncSession,
+        hotel_id: int,
+        page: int = 1,
+        page_size: int = 20,
+        order_by: str = "created_at",
+        order_direction: str = "desc",
+    ):
         reviews_query = (
             select(Review)
             .options(
@@ -43,8 +51,35 @@ class ReviewDAO(BaseDAO):
             )
             .where(Review.hotel_id == hotel_id)
         )
+        # reviews = await session.execute(reviews_query)
+        # return reviews.unique().scalars().all()
+        # Добавляем сортировку
+
+        order_column = getattr(cls.model, order_by)
+        if order_direction.lower() == "desc":
+            reviews_query = reviews_query.order_by(order_column.desc())
+        else:
+            reviews_query = reviews_query.order_by(order_column.asc())
+
+        count_query = (
+            select(func.count()).select_from(Review).where(Review.hotel_id == hotel_id)
+        )
+
+        total = await session.scalar(count_query)
+
+        # Применяем пагинацию
+        reviews_query = reviews_query.offset((page - 1) * page_size).limit(page_size)
         reviews = await session.execute(reviews_query)
-        return reviews.unique().scalars().all()
+
+        return {
+            "data": reviews.unique().scalars().all(),
+            "pagination": {
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+                "total_pages": (total + page_size - 1) // page_size,
+            },
+        }
 
     @classmethod
     async def create_hotel_review(

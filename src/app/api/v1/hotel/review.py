@@ -31,7 +31,6 @@ router = APIRouter(
 
 @router.get(
     "/{hotel_slug}/reviews",
-    response_model=ListResponse[ReviewRead],
 )
 async def get_hotel_reviews(
     hotel_slug: str,
@@ -40,20 +39,15 @@ async def get_hotel_reviews(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
-    hotel_reviews = await ReviewDAO.paginate(
+    hotel_reviews = await ReviewDAO.get_all_hotel_reviews(
         session=session,
-        filters=ReviewFilter(
-            hotel_id=hotel.id,
-        ),
+        hotel_id=hotel.id,
         page=page,
         page_size=page_size,
         order_by="created_at",
         order_direction="desc",
     )
-    return ListResponse[ReviewRead](
-        data=hotel_reviews,
-        total=len(hotel_reviews),
-    )
+    return hotel_reviews
 
 
 @router.post(
