@@ -176,6 +176,14 @@ async def partner_login(
     response: Response,
     session=SessionDep,
 ):
+    db_partner = await PartnerDAO.get_partner_by_phone(
+        session=session,
+        phone_number=login_data.phone_number,
+    )
+    if not db_partner:
+        raise UnauthorizedException(error_code=ErrorCode.UNAUTHORIZED)
+    if db_partner and not db_partner.is_active and not db_partner.is_verified:
+        raise UnauthorizedException(error_code=ErrorCode.UNAUTHORIZED)
     db_partner = await authenticate_partner(
         phone_number=login_data.phone_number,
         password=login_data.password,

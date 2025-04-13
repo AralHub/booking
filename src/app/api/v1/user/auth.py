@@ -165,6 +165,14 @@ async def user_login(
     response: Response,
     session=SessionDep,
 ):
+    db_user = await UserDAO.get_user_by_phone(
+        session=session,
+        phone_number=login_data.phone_number,
+    )
+    if not db_user:
+        raise UnauthorizedException(error_code=ErrorCode.UNAUTHORIZED)
+    if db_user and not db_user.is_active and not db_user.is_verified:
+        raise UnauthorizedException(error_code=ErrorCode.UNAUTHORIZED)
     db_user = await authenticate_user(
         phone_number=login_data.phone_number,
         password=login_data.password,
