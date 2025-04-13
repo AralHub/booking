@@ -168,9 +168,9 @@ class HotelLocationDAO(BaseDAO):
                         exclude_none=True,
                         exclude_unset=True,
                     ),
-                    to_airport=to_airport_distance,
-                    to_railway=to_railway_distance,
-                    to_city_center=to_center_distance,
+                    to_airport=round(to_airport_distance / 1000, 2),
+                    to_railway=round(to_railway_distance / 1000, 2),
+                    to_city_center=round(to_center_distance / 1000, 2),
                 ),
                 filters=LocationFilter(
                     hotel_id=hotel_id,
