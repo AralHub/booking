@@ -36,10 +36,17 @@ class HotelImageDAO(BaseDAO):
         hotel_id: int,
         file_path: str,
     ):
+        images_count = cls.count(
+            session=session,
+            filters=HotelImageFilter(
+                hotel_id=hotel_id,
+            ),
+        )
         return await cls.create(
             session=session,
             values=HotelImageFilter(
                 hotel_id=hotel_id,
+                position=images_count + 1,
                 image=f"{settings.image_base_url}{file_path}",
             ),
         )
