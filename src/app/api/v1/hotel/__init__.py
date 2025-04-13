@@ -40,9 +40,14 @@ router = APIRouter(
 async def get_hotels_count(
     session=SessionDep,
 ):
-    return await HotelDAO.count(
+    count = await HotelDAO.count(
         session=session,
     )
+    return {
+        "data": {
+            "count": count,
+        },
+    }
 
 
 @router.get("/popular")
