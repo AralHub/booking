@@ -10,8 +10,6 @@ from app.core.config import settings
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
-    DataResponse,
-    ListResponse,
 )
 from app.dao.hotel.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
