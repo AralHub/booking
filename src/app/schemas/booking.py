@@ -94,7 +94,7 @@ class BookingFilter(BaseModel):
 class BookingInitialBase(BaseModel):
     check_in_date: date
     check_out_date: date
-    rooms_info: list[BookedRoomCreate]
+    rooms_info: list[BookedRoomBase]
 
 
 class BookingInitialRead(BookingInitialBase):
