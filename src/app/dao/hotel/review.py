@@ -17,6 +17,7 @@ from app.schemas.review import (
     ReviewCategoryRatingUpdateInternal,
     ReviewCategoryRatingFilter,
 )
+from app.models.user import User
 from app.models.review import Review, ReviewCategory, ReviewCategoryRating
 from app.dao.hotel.rating import HotelRatingDAO
 
@@ -45,7 +46,11 @@ class ReviewDAO(BaseDAO):
         reviews_query = (
             select(Review)
             .options(
-                joinedload(Review.user),
+                joinedload(Review.user).load_only(
+                    User.id,
+                    User.first_name,
+                    User.last_name,
+                ),
                 joinedload(Review.review_category_ratings).joinedload(
                     ReviewCategoryRating.review_category
                 ),
