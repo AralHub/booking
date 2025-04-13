@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 
 from .mixins import MultilingualNameBase, MultilingualNameBaseUpdate
+from app.schemas.field_validation import RATING_FIELD, RATING_FIELD_UPDATE
 
 
 # region ReviewCategory
@@ -31,7 +32,7 @@ class ReviewCategoryFilter(BaseModel):
 # region ReviewCategoryRating
 class ReviewCategoryRatingBase(BaseModel):
     review_category_id: int
-    rating: int
+    rating: RATING_FIELD
 
 
 class ReviewCategoryRatingCreate(ReviewCategoryRatingBase):
@@ -40,7 +41,7 @@ class ReviewCategoryRatingCreate(ReviewCategoryRatingBase):
 
 class ReviewCategoryRatingUpdate(BaseModel):
     review_category_id: int
-    rating: int | None = None
+    rating: RATING_FIELD_UPDATE
 
 
 class ReviewCategoryRatingCreateInternal(ReviewCategoryRatingCreate):
