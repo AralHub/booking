@@ -51,9 +51,10 @@ class ReviewDAO(BaseDAO):
                     User.first_name,
                     User.last_name,
                 ),
-                joinedload(Review.review_category_ratings).joinedload(
-                    ReviewCategoryRating.review_category
-                ),
+                joinedload(
+                    Review.review_category_ratings,
+                    innerjoin=False,
+                ).joinedload(ReviewCategoryRating.review_category),
             )
             .where(Review.hotel_id == hotel_id)
         )
