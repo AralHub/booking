@@ -10,7 +10,6 @@ from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
     DataResponse,
-    ListResponse,
 )
 from app.core.utils import file_utils
 from app.dao.hotel.images import HotelImageDAO

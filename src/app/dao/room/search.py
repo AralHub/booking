@@ -8,7 +8,8 @@ from app.models.room.types import RoomType
 from app.dao.booking import BookingDAO
 from app.dao.room import RoomDAO
 from app.dao.room.price import RoomPriceDAO
-
+from app.dao.room.amenities import RoomAmenityDAO
+from app.dao.room.images import RoomImageDAO
 import logging
 
 logger = logging.getLogger(__name__)
@@ -72,15 +73,26 @@ class RoomSearchDAO(RoomDAO):
                 session=session,
                 room_id=room.id,
             )
-
+            room_amenities = await RoomAmenityDAO.get_room_amenities(
+                session=session,
+                room_id=room.id,
+            )
+            room_images = await RoomImageDAO.get_room_images(
+                session=session,
+                hotel_id=hotel_id,
+                room_id=room.id,
+            )
             room_data = {
                 "id": room.id,
                 "quantity": room.quantity,
+                "use_dinamic_price": room.use_dinamic_price,
                 "available_quantity": available_quantity,
                 "max_guests": room.max_guests,
                 "room_type_id": room.room_type_id,
-                "room_type_name": room_type_name,
+                "room_type": room_type_name,
                 "base_price": room.base_price,
+                "amenities": room_amenities,
+                "images": room_images,
                 "price_per_guest": price if price else None,
             }
             rooms_data.append(room_data)

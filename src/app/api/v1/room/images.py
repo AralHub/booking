@@ -34,15 +34,11 @@ async def get_room_images(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
-    db_room_images = await RoomImageDAO.get_all(
+    db_room_images = await RoomImageDAO.get_room_images(
         session=session,
-        filters=RoomImageFilter(
-            hotel_id=hotel.id,
-            room_id=room_id,
-        ),
+        hotel_id=hotel.id,
+        room_id=room_id,
     )
-    if not db_room_images:
-        raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
     return ListResponse[RoomImageRead](
         data=db_room_images,
         total=len(db_room_images),
