@@ -65,7 +65,7 @@ class ReviewDAO(BaseDAO):
             if db_review:
                 raise DuplicateValueException(error_code=ErrorCode.DUPLICATE_VALUE)
 
-            craeted_review = await ReviewDAO.create(
+            created_review = await ReviewDAO.create(
                 session=session,
                 values=ReviewCreateInternal(
                     **review_create_data.model_dump(
@@ -78,14 +78,14 @@ class ReviewDAO(BaseDAO):
                 ),
             )
             if (
-                review_create_data.amenities
+                review_create_data.category_ratings
                 and len(review_create_data.category_ratings) > 0
             ):
                 for review_category_rating in review_create_data.category_ratings:
                     review_category_rating_create_data = ReviewCategoryRatingCreateInternal(
                         review_category_id=review_category_rating.review_category_id,
                         rating=review_category_rating.rating,
-                        review_id=craeted_review.id,
+                        review_id=created_review.id,
                     )
 
                     await ReviewCategoryRatingDAO.create(
@@ -97,7 +97,7 @@ class ReviewDAO(BaseDAO):
                 hotel_id=hotel_id,
             )
             await session.commit()
-            return ReviewRead.model_validate(craeted_review)
+            return ReviewRead.model_validate(created_review)
         except Exception as e:
             await session.rollback()
             raise e
