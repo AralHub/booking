@@ -26,7 +26,7 @@ class HotelImageDAO(BaseDAO):
         )
 
         if not db_hotel_images:
-            raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
+            return None
         return db_hotel_images
 
     @classmethod
