@@ -36,6 +36,11 @@ async def get_hotel_images(
         session=session,
         hotel_id=hotel.id,
     )
+    if not hotel_images:
+        return ListResponse[HotelImageRead](
+            data=[],
+            total=0,
+        )
     return ListResponse[HotelImageRead](
         data=hotel_images,
         total=len(hotel_images),
