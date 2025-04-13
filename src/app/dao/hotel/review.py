@@ -6,6 +6,7 @@ from app.core.exceptions.http_exceptions import (
     NotFoundException,
 )
 from app.dao import BaseDAO
+from app.core.i18n.translations import ErrorCode
 from app.schemas.review import (
     ReviewRead,
     ReviewFilter,
@@ -53,45 +54,50 @@ class ReviewDAO(BaseDAO):
         hotel_id: int,
         user_id: int,
     ):
-        db_review = await ReviewDAO.get_one_or_none(
-            session=session,
-            filters=ReviewFilter(
-                hotel_id=hotel_id,
-                user_id=user_id,
-            ),
-        )
-        if db_review:
-            raise DuplicateValueException("User already has a review for this hotel")
-
-        craeted_review = await ReviewDAO.create(
-            session=session,
-            values=ReviewCreateInternal(
-                **review_create_data.model_dump(
-                    exclude={
-                        "category_ratings",
-                    }
+        try:
+            db_review = await ReviewDAO.get_one_or_none(
+                session=session,
+                filters=ReviewFilter(
+                    hotel_id=hotel_id,
+                    user_id=user_id,
                 ),
-                hotel_id=hotel_id,
-                user_id=user_id,
-            ),
-        )
-        if len(review_create_data.category_ratings) > 0:
-            for review_category_rating in review_create_data.category_ratings:
-                review_category_rating_create_data = ReviewCategoryRatingCreateInternal(
-                    review_category_id=review_category_rating.review_category_id,
-                    rating=review_category_rating.rating,
-                    review_id=craeted_review.id,
-                )
+            )
+            if db_review:
+                raise DuplicateValueException(error_code=ErrorCode.DUPLICATE_VALUE)
 
-                await ReviewCategoryRatingDAO.create(
-                    session=session,
-                    values=review_category_rating_create_data,
-                )
-        await HotelRatingDAO.create_hotel_sum_rating(
-            session=session,
-            hotel_id=hotel_id,
-        )
-        return ReviewRead.model_validate(craeted_review)
+            craeted_review = await ReviewDAO.create(
+                session=session,
+                values=ReviewCreateInternal(
+                    **review_create_data.model_dump(
+                        exclude={
+                            "category_ratings",
+                        }
+                    ),
+                    hotel_id=hotel_id,
+                    user_id=user_id,
+                ),
+            )
+            if len(review_create_data.category_ratings) > 0:
+                for review_category_rating in review_create_data.category_ratings:
+                    review_category_rating_create_data = ReviewCategoryRatingCreateInternal(
+                        review_category_id=review_category_rating.review_category_id,
+                        rating=review_category_rating.rating,
+                        review_id=craeted_review.id,
+                    )
+
+                    await ReviewCategoryRatingDAO.create(
+                        session=session,
+                        values=review_category_rating_create_data,
+                    )
+            await HotelRatingDAO.create_hotel_sum_rating(
+                session=session,
+                hotel_id=hotel_id,
+            )
+            await session.commit()
+            return ReviewRead.model_validate(craeted_review)
+        except Exception as e:
+            await session.rollback()
+            raise e
 
     @classmethod
     async def update_hotel_review(
@@ -110,7 +116,7 @@ class ReviewDAO(BaseDAO):
             ),
         )
         if not db_review:
-            raise NotFoundException("Review not found")
+            raise NotFoundException(error_code=ErrorCode.NOT_FOUND)
         # Обновляем основные данные отзыва
         update_data = review_update_data.model_dump(
             exclude={"category_ratings"},
