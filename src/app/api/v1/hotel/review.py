@@ -52,6 +52,7 @@ async def get_hotel_reviews(
     )
     return ListResponse[ReviewRead](
         data=hotel_reviews,
+        total=len(hotel_reviews),
     )
 
 
