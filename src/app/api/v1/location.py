@@ -153,7 +153,7 @@ async def get_city_by_slug(
     )
     if not db_city:
         raise NotFoundException(
-            error_code=ErrorCode.CITY_NOT_FOUND,
+            error_code=ErrorCode.NOT_FOUND,
         )
     return DataResponse(
         data=db_city,
