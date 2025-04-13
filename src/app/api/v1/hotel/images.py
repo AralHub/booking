@@ -25,7 +25,6 @@ router = APIRouter(
 
 @router.get(
     "/{hotel_slug}/images",
-    response_model=ListResponse[HotelImageRead],
 )
 async def get_hotel_images(
     hotel_slug: str,
@@ -37,14 +36,14 @@ async def get_hotel_images(
         hotel_id=hotel.id,
     )
     if not hotel_images:
-        return ListResponse[HotelImageRead](
-            data=[],
-            total=0,
-        )
-    return ListResponse[HotelImageRead](
-        data=hotel_images,
-        total=len(hotel_images),
-    )
+        return {
+            "data": [],
+            "total": 0,
+        }
+    return {
+        "data": hotel_images,
+        "total": len(hotel_images),
+    }
 
 
 @router.post(
