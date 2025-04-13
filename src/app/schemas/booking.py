@@ -87,3 +87,31 @@ class BookingFilter(BaseModel):
 
 
 # endregion
+
+
+# region Booking Initial
+
+
+class BookingInitialBase(BaseModel):
+    check_in_date: date
+    check_out_date: date
+    rooms_info: list[BookedRoomCreate]
+
+
+class BookingInitialRead(BookingInitialBase):
+    uuid: str
+    hotel_id: int
+    user_id: int
+
+
+class BookingInitialCreate(BookingInitialBase):
+    pass
+
+
+class BookingInitialCreateInternal(BookingInitialCreate):
+    uuid: str
+    hotel_id: int
+    user_id: int
+
+
+# endregion

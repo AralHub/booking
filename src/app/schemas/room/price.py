@@ -1,8 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 
+from ..field_validation import GUEST_QUANTITY_FIELD, GUEST_QUANTITY_FIELD_UPDATE
+
 
 class RoomPriceBase(BaseModel):
-    guest_quantity: int
+    guest_quantity: GUEST_QUANTITY_FIELD
     price: float
 
 
@@ -21,7 +23,7 @@ class RoomPriceCreateInternal(RoomPriceCreate):
 
 
 class RoomPriceUpdate(BaseModel):
-    guest_quantity: int | None = None
+    guest_quantity: GUEST_QUANTITY_FIELD_UPDATE
     price: float | None = None
 
 

@@ -1,7 +1,8 @@
 from pydantic import BaseModel, Field
 
-from .mixins import MultilingualNameBase, MultilingualNameBaseUpdate
 from app.schemas.field_validation import RATING_FIELD, RATING_FIELD_UPDATE
+
+from .mixins import MultilingualNameBase, MultilingualNameBaseUpdate
 
 
 # region ReviewCategory

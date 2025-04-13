@@ -145,7 +145,9 @@ class BookingDAO(BaseDAO):
                 ),
             )
             if not db_room:
-                raise NotFoundException(f"Room with ID {room_info.room_id} not found")
+                raise NotFoundException(
+                    detail=f"Room with ID {room_info.room_id} not found"
+                )
 
             logger.info(
                 f"Found room in database: {db_room.id}, quantity: {getattr(db_room, 'quantity', 0)}"
@@ -158,13 +160,13 @@ class BookingDAO(BaseDAO):
                     f"Room {room_info.room_id} is fully booked: {current_booked_count}/{getattr(db_room, 'quantity', 1)}"
                 )
                 raise BadRequestException(
-                    f"Room {room_info.room_id} is already fully booked for these dates"
+                    detail=f"Room {room_info.room_id} is already fully booked for these dates"
                 )
 
             # Проверка количества гостей
             if room_info.guest_quantity > db_room.max_guests:
                 raise BadRequestException(
-                    f"Room {room_info.room_id} can only accommodate {db_room.max_guests} guests"
+                    detail=f"Room {room_info.room_id} can only accommodate {db_room.max_guests} guests"
                 )
 
         logger.info("Все комнаты доступны для бронирования")
