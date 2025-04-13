@@ -6,7 +6,6 @@ from app.core.config import settings
 from app.core.i18n.responses import DataResponse
 from app.dao.hotel.rating import HotelRatingDAO
 from app.schemas.hotel.info import HotelNameRead
-from app.schemas.hotel.rating import HotelRatingRead
 
 router = APIRouter(
     tags=["Hotel Rating"],
@@ -16,7 +15,6 @@ router = APIRouter(
 
 @router.get(
     "/{hotel_slug}/rating",
-    response_model=DataResponse[HotelRatingRead],
 )
 async def get_hotel_rating(
     hotel_slug: str,
@@ -28,6 +26,10 @@ async def get_hotel_rating(
         session=session,
         hotel_id=hotel.id,
     )
-    return DataResponse(
-        data=hotel_rating,
-    )
+    if not hotel_rating:
+        return {
+            "data": {},
+        }
+    return {
+        "data": hotel_rating,
+    }
