@@ -19,6 +19,7 @@ from app.schemas.hotel.info import HotelNameRead
 from app.schemas.room.images import RoomImageFilter, RoomImageRead
 
 router = APIRouter(
+    prefix="/hotels",
     tags=["Hotel Room Images"],
 )
 
