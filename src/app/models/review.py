@@ -7,8 +7,8 @@ from app.models import Base
 from app.models.mixins import IntIdPkMixin, MultilingualNameMixin, TimestampMixin
 
 if TYPE_CHECKING:
-    from app.models.user import User  # noqa
-    from app.models.hotel import Hotel  # noqa
+    from app.models.user import User
+    from app.models.hotel import Hotel
 
 
 class ReviewCategory(
@@ -54,7 +54,7 @@ class Review(IntIdPkMixin, TimestampMixin, Base):
         back_populates="reviews",
     )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user = relationship(
+    user: Mapped["User"] = relationship(
         "User",
         back_populates="reviews",
     )

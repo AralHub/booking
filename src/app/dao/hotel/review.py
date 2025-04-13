@@ -51,9 +51,6 @@ class ReviewDAO(BaseDAO):
             )
             .where(Review.hotel_id == hotel_id)
         )
-        # reviews = await session.execute(reviews_query)
-        # return reviews.unique().scalars().all()
-        # Добавляем сортировку
 
         order_column = getattr(cls.model, order_by)
         if order_direction.lower() == "desc":
