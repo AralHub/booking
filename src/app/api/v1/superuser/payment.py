@@ -20,10 +20,14 @@ router = APIRouter(
 async def get_payment_methods(
     session=SessionDep,
 ):
-    return await PaymentDAO.get_all(
+    paymnets = await PaymentDAO.get_all(
         session=session,
         filters=None,
     )
+    return {
+        "data": paymnets,
+        "total": len(paymnets),
+    }
 
 
 @router.post(
@@ -42,7 +46,9 @@ async def create_payment_method(
         session=session,
         values=payment_create_internal,
     )
-    return db_payment
+    return {
+        "data": db_payment,
+    }
 
 
 @router.put(
@@ -58,10 +64,13 @@ async def update_payment_method(
         name=payment_update_data.to_dict_name(),
     )
     # Create main hotel record
-    await PaymentDAO.update(
+    updated_payment = await PaymentDAO.update(
         session=session,
         values=payment_update,
         filters=PaymentFilter(
             id=payment_id,
         ),
     )
+    return {
+        "data": updated_payment,
+    }
