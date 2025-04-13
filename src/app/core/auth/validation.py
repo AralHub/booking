@@ -107,6 +107,8 @@ async def get_user_by_token_sub(session: AsyncSession, payload: dict) -> UserBas
         data_id=user_id_int,
     )
     if user:
+        if not user.is_active:
+            raise UnauthorizedException("Inactive user")
         return user
     raise UnauthorizedException("Invalid token (user not found)")
 
@@ -131,6 +133,8 @@ async def get_partner_by_token_sub(session: AsyncSession, payload: dict) -> Part
         data_id=int(partner_id),
     )
     if partner:
+        if not partner.is_active:
+            raise UnauthorizedException("Inactive partner")
         return partner
     raise UnauthorizedException("Invalid token (partner not found)")
 
@@ -179,4 +183,3 @@ async def authenticate_partner(
         return None
 
     return db_partner
-
