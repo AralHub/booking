@@ -5,8 +5,6 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
-from app.core.exceptions.http_exceptions import BadRequestException
-from app.core.i18n.translations import ErrorCode
 from app.core.utils import redis_booking
 from app.dao.booking import BookingDAO
 from app.models.booking import BookingStatus

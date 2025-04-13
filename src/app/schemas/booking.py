@@ -11,14 +11,13 @@ from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
 class BookedRoomBase(BaseModel):
     room_id: int
     guest_quantity: int = Field(ge=1)
+
+
+class BookedRoomCreate(BookedRoomBase):
     guest_name: str = Field(
         min_length=2,
         max_length=50,
     )
-
-
-class BookedRoomCreate(BookedRoomBase):
-    pass
 
 
 class BookedRoomCreateInternal(BookedRoomCreate):
