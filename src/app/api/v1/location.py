@@ -184,7 +184,7 @@ async def get_all_cities_by_country_id(
     )
     return PaginatedResponse(
         data=[CityRead.model_validate(city) for city in result],
-        paginate={
+        pagination={
             "page": page,
             "page_size": page_size,
             "total": city_count or 0,

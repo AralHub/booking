@@ -78,7 +78,7 @@ async def search_hotels(
     if not hotels:
         return PaginatedResponse(
             data=[],
-            paginate={
+            pagination={
                 "page": 1,
                 "page_size": 10,
                 "total": 0,
@@ -87,7 +87,7 @@ async def search_hotels(
         )
     return PaginatedResponse(
         data=[HotelSearchResult.model_validate(hotel) for hotel in hotels],
-        paginate={
+        pagination={
             "page": 1,
             "page_size": 10,
             "total": len(hotels),
