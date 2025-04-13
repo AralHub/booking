@@ -45,9 +45,10 @@ class ReviewDAO(BaseDAO):
         reviews_query = (
             select(Review)
             .options(
-                joinedload(Review.review_category_ratings)
-                .joinedload(ReviewCategoryRating.review_category)
-                .joinedload(Review.user)
+                joinedload(Review.user),
+                joinedload(Review.review_category_ratings).joinedload(
+                    ReviewCategoryRating.review_category
+                ),
             )
             .where(Review.hotel_id == hotel_id)
         )
