@@ -234,7 +234,7 @@ class HotelSearchDAO(HotelDAO):
         for hotel in hotels:
             rooms = selected_rooms.get(hotel.id, [])
 
-            min_price, min_price_guests = cls._get_min_price_and_guests(rooms)
+            min_price, min_price_guests = HotelDAO._get_min_price_and_guests(rooms)
             hotel_data = {
                 "id": hotel.id,
                 "name": hotel.name,
@@ -282,42 +282,3 @@ class HotelSearchDAO(HotelDAO):
             suitable_hotels_data.append(hotel_data)
 
         return suitable_hotels_data
-
-    @classmethod
-    def _get_min_price_and_guests(cls, rooms):
-        min_price = None
-        min_price_guests = None
-
-        for room in rooms:
-            # Проверяем, используется ли динамическое ценообразование
-            if not room.use_dinamic_price:
-                # Если не используется динамическое ценообразование, берем базовую цену для 1 гостя
-                room_price = room.base_price
-                guest_count = 1
-            else:
-                # Если используется динамическое ценообразование, находим минимальную цену
-                # из доступных вариантов цен для разного количества гостей
-                if not room.room_prices:
-                    # Если нет информации о ценах для разного количества гостей,
-                    # используем базовую цену для 1 гостя
-                    room_price = room.base_price
-                    guest_count = 1
-                else:
-                    # Находим минимальную цену и соответствующее количество гостей
-                    price_options = [
-                        (price.price, price.guest_quantity)
-                        for price in room.room_prices
-                    ]
-                    if price_options:
-                        room_price, guest_count = min(price_options, key=lambda x: x[0])
-                    else:
-                        room_price = room.base_price
-                        guest_count = 1
-
-            # Обновляем минимальную цену и количество гостей, если найдена более низкая цена
-            # или это первая обрабатываемая комната
-            if min_price is None or room_price < min_price:
-                min_price = room_price
-                min_price_guests = guest_count
-
-        return min_price, min_price_guests
