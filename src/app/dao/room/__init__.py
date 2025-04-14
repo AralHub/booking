@@ -154,3 +154,20 @@ class RoomDAO(BaseDAO):
             rooms.append(RoomRead(**room_dict))
 
         return rooms
+
+    @classmethod
+    async def get_hotel_room_by_id(
+        cls,
+        session: AsyncSession,
+        room_id: int,
+    ):
+        query = (
+            select(cls.model)
+            .options(
+                selectinload(cls.model.room_type),
+                selectinload(cls.model.room_images),
+            )
+            .where(cls.model.id == room_id)
+        )
+        result = await session.execute(query)
+        return result.scalars().unique().one_or_none()
