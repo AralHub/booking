@@ -1,16 +1,14 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
-from app.api.dependencies.partner import valid_hotel_admin, valid_hotel_admin_by_slug
+from app.api.dependencies.partner import valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
-    DataResponse,
     ListResponse,
 )
 from app.dao.hotel import HotelAmenityDAO
-from app.schemas.hotel.amenities import HotelAmenityRead
 from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(

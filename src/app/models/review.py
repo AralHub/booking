@@ -8,7 +8,6 @@ from app.models.mixins import IntIdPkMixin, MultilingualNameMixin, TimestampMixi
 
 if TYPE_CHECKING:
     from app.models.user import User
-    from app.models.hotel import Hotel
 
 
 class ReviewCategory(

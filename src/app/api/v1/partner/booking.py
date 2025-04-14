@@ -4,13 +4,12 @@ from app.api.dependencies.partner import get_current_auth_partner
 from app.core import SessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.i18n.translations import ErrorCode
+from app.dao.booking import BookingDAO
 from app.dao.hotel import HotelDAO
 from app.schemas.hotel import HotelFilter
 from app.schemas.partner import (
     PartnerRead,
 )
-from app.dao.booking import BookingDAO
-from app.schemas.booking import BookingFilter
 
 router = APIRouter()
 

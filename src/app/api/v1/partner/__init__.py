@@ -12,8 +12,8 @@ from app.schemas.partner import (
 )
 
 from .auth import router as auth_router
-from .hotel import router as hotel_router
 from .booking import router as booking_router
+from .hotel import router as hotel_router
 
 router = APIRouter(
     tags=["Partners"],

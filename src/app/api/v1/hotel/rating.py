@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.core import SessionDep
 from app.core.config import settings
-from app.core.i18n.responses import DataResponse
 from app.dao.hotel.rating import HotelRatingDAO
 from app.schemas.hotel.info import HotelNameRead
 
