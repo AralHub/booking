@@ -99,12 +99,17 @@ class BookingDAO(BaseDAO):
             check_out_date=booking_data.check_out_date,
             total_days=total_days,
             total_price=total_price,
-            special_requests=getattr(booking_data, "special_requests", None),
+            special_requests=getattr(
+                booking_data,
+                "special_requests",
+                None,
+            ),
             hotel_id=hotel_id,
             status=BookingStatus.BOOKED,
             user_id=user_id,
             booking_type=BookingType.PERSONAL,
             payment_method_id=booking_data.payment_method_id,
+            time=booking_data.time,
         )
         created_booking = await cls.create(
             session=session,

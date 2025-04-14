@@ -46,6 +46,7 @@ class BookingCreateMultipleRooms(BaseModel):
     rooms_info: list[BookedRoomCreate]
     special_requests: str | None = None
     payment_method_id: int
+    time: str | None = None
 
 
 class BookingCreateMultipleRoomsInternal(BaseModel):
