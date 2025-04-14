@@ -177,6 +177,6 @@ class RoomDAO(BaseDAO):
             "max_guests": room.max_guests,
             "use_dinamic_price": room.use_dinamic_price,
             "room_type": room.room_type.name,
-            "room_images": room.room_images,
+            "images": room.room_images,
         }
         return room_dict
