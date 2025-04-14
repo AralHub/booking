@@ -89,28 +89,49 @@ class BookingFilter(BaseModel):
 
 
 # region Booking Initial
+class RoomInfoBase(BaseModel):
+    room_id: int
+    guest_quantity: int = Field(ge=1)
+
+
+class RoomInfoRead(RoomInfoBase):
+    price: float | None = None
+    type: str | None = None
+
+
+class RoomInfoCreate(RoomInfoBase):
+    pass
+
+
+class RoomInfoCreateInternal(RoomInfoRead):
+    pass
 
 
 class BookingInitialBase(BaseModel):
     check_in_date: date
     check_out_date: date
-    rooms_info: list[BookedRoomBase]
 
 
 class BookingInitialRead(BookingInitialBase):
     uuid: str
     hotel_id: int
     user_id: int
+    total_price: float
+    total_days: int
+    rooms_info: list[RoomInfoRead]
 
 
 class BookingInitialCreate(BookingInitialBase):
-    pass
+    rooms_info: list[RoomInfoCreate]
 
 
 class BookingInitialCreateInternal(BookingInitialCreate):
     uuid: str
     hotel_id: int
     user_id: int
+    total_price: float
+    total_days: int
+    rooms_info: list[RoomInfoCreateInternal]
 
 
 # endregion
