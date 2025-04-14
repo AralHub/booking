@@ -456,22 +456,27 @@ class BookingDAO(BaseDAO):
         hotels = await session.execute(hotel_query)
         hotels_dict = {hotel.id: hotel for hotel in hotels.scalars().all()}
 
-        # Формируем список бронирований с информацией об отеле
+        # Format the results without triggering lazy loads
         formatted_bookings = []
         for booking in bookings:
-            booking_dict = booking.__dict__
+            booking_dict = (
+                booking.__dict__.copy()
+            )  # Create a copy to avoid modifying the original
 
-            # Преобразуем room_images в images для каждой комнаты
-            for booked_room in booking_dict.get("booking_rooms", []):
-                if hasattr(booked_room.room, "room_images"):
-                    room_dict = booked_room.room.__dict__
-                    room_dict["images"] = room_dict.pop("room_images", [])
+            # Process booked rooms that are already loaded
+            if "booking_rooms" in booking_dict:
+                for booked_room in booking_dict["booking_rooms"]:
+                    room_dict = booked_room.room.__dict__.copy()
+                    # Only access room_images if it's already loaded (which it should be from selectinload)
+                    if "room_images" in room_dict:
+                        room_dict["images"] = room_dict.pop("room_images", [])
 
-            # Преобразуем hotel_images в images для отеля
+            # Add hotel info if available
             hotel = hotels_dict.get(booking.hotel_id)
             if hotel:
-                hotel_dict = hotel.__dict__
-                hotel_dict["images"] = hotel_dict.pop("hotel_images", [])
+                hotel_dict = hotel.__dict__.copy()
+                if "hotel_images" in hotel_dict:
+                    hotel_dict["images"] = hotel_dict.pop("hotel_images", [])
                 booking_dict["hotel_info"] = hotel_dict
             else:
                 booking_dict["hotel_info"] = None
