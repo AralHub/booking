@@ -37,5 +37,3 @@ restart_prod:
 	docker-compose -f docker-compose.prod.yml down
 	docker-compose -f docker-compose.prod.yml up -d --build
 	
-run_scripts_prod:
-	docker-compose -f docker-compose.init.yml up -d
