@@ -436,11 +436,6 @@ class BookingDAO(BaseDAO):
                 selectinload(Booking.booking_rooms)
                 .selectinload(BookedRoom.room)
                 .joinedload(Room.room_type),
-                joinedload(Booking.user).load_only(
-                    User.id,
-                    User.first_name,
-                    User.last_name,
-                ),
             )
             .where(Booking.user_id == user_id)
             .order_by(Booking.created_at.desc())
