@@ -478,7 +478,7 @@ class BookingDAO(BaseDAO):
                         hasattr(booked_room.room, "room_type")
                         and booked_room.room.room_type
                     ):
-                        room_dict["name"] = booked_room.room.room_type.name
+                        room_dict["room_type"] = booked_room.room.room_type.name
                         room_dict.pop("room_type", None)
             hotel = hotels_dict.get(booking.hotel_id)
             if hotel:
