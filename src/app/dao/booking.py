@@ -1,7 +1,7 @@
 import uuid as uuid_pkg
 from datetime import date
 from sqlalchemy import func, select, and_, or_
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload, load_only
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
@@ -12,6 +12,7 @@ from app.dao.room import RoomDAO
 from app.dao.room.price import RoomPriceDAO
 from app.dao.room.types import RoomTypeDAO
 
+from app.models.user import User
 from app.models.booking import (
     Booking,
     BookingStatus,
@@ -306,7 +307,11 @@ class BookingDAO(BaseDAO):
             select(Booking)
             .options(
                 selectinload(Booking.booking_rooms),
-                selectinload(Booking.user),
+                joinedload(Booking.user).load_only(
+                    User.id,
+                    User.first_name,
+                    User.last_name,
+                ),
             )
             .where(Booking.hotel_id == hotel_id)
             .order_by(Booking.created_at.desc())
