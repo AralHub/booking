@@ -86,11 +86,11 @@ async def get_refresh_token_payload(
 
 
 async def get_user_by_token_sub(session: AsyncSession, payload: dict) -> UserBase:
-    if payload.get("role") != "user":
-        raise UnauthorizedException("Invalid token type (user not found)")
     user_id: str | None = payload.get("sub")
-    # todo: check token blacklist
     jti = payload.get("jti")
+    role = payload.get("role")
+    if role != "user":
+        raise UnauthorizedException("Invalid token (user not found)")
     is_blacklisted = await TokenBlacklistDAO.get_token_by_jti(
         session=session,
         jti=jti,
