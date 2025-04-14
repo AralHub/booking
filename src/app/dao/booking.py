@@ -466,7 +466,22 @@ class BookingDAO(BaseDAO):
         formatted_bookings = []
         for booking in bookings:
             booking_dict = booking.__dict__
-            booking_dict["hotel_info"] = hotels_dict.get(booking.hotel_id)
+
+            # Преобразуем room_images в images для каждой комнаты
+            for booked_room in booking_dict.get("booking_rooms", []):
+                if hasattr(booked_room.room, "room_images"):
+                    room_dict = booked_room.room.__dict__
+                    room_dict["images"] = room_dict.pop("room_images", [])
+
+            # Преобразуем hotel_images в images для отеля
+            hotel = hotels_dict.get(booking.hotel_id)
+            if hotel:
+                hotel_dict = hotel.__dict__
+                hotel_dict["images"] = hotel_dict.pop("hotel_images", [])
+                booking_dict["hotel_info"] = hotel_dict
+            else:
+                booking_dict["hotel_info"] = None
+
             formatted_bookings.append(booking_dict)
 
         return formatted_bookings
