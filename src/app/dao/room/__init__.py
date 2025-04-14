@@ -1,5 +1,4 @@
-from datetime import date
-from sqlalchemy import and_, func, or_, select, case, text, literal_column, table
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from app.core.exceptions.http_exceptions import (
@@ -7,13 +6,8 @@ from app.core.exceptions.http_exceptions import (
     BadRequestException,
 )
 from app.dao import BaseDAO
-from app.models.booking import Booking, BookingStatus
-from app.dao.room.price import RoomPriceDAO
 from app.models.room import Room
-from app.models.room.price import RoomPrice
 from app.models.room.types import RoomType
-from app.models.booking import BookedRoom
-from app.schemas.booking import BookedRoomCreate
 from app.schemas.room import (
     RoomCreateInternal,
     RoomCreate,
@@ -170,4 +164,20 @@ class RoomDAO(BaseDAO):
             .where(cls.model.id == room_id)
         )
         result = await session.execute(query)
-        return result.scalars().unique().one_or_none()
+        room = result.scalars().unique().one_or_none()
+        if not room:
+            return None
+
+        room_dict = {
+            "id": room.id,
+            "quantity": room.quantity,
+            "base_price": room.base_price,
+            "room_area": room.room_area,
+            "hotel_id": room.hotel_id,
+            "max_guests": room.max_guests,
+            "room_type_id": room.room_type_id,
+            "use_dinamic_price": room.use_dinamic_price,
+            "room_type": room.room_type.name,
+            "room_images": room.room_images,
+        }
+        return room_dict
