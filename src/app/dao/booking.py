@@ -20,6 +20,7 @@ from app.models.booking import (
     BookedRoom,
 )
 from app.models.room import Room
+from app.models.room.types import RoomType
 from app.schemas.room.price import RoomPriceFilter
 from app.schemas.room import RoomFilter
 from app.schemas.booking import (
@@ -306,7 +307,12 @@ class BookingDAO(BaseDAO):
         query = (
             select(Booking)
             .options(
-                selectinload(Booking.booking_rooms),
+                selectinload(Booking.booking_rooms)
+                .joinedload(BookedRoom.room)
+                .joinedload(Room.room_type)
+                .load_only(
+                    RoomType.name,
+                ),
                 joinedload(Booking.user).load_only(
                     User.id,
                     User.first_name,
