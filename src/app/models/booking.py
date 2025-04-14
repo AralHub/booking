@@ -45,7 +45,7 @@ class BookedRoom(IntIdPkMixin, Base):
         server_default=None,
     )
     guest_quantity: Mapped[int] = mapped_column(Integer)
-    # price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    room_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
 
     booking: Mapped["Booking"] = relationship("Booking", back_populates="booking_rooms")
     room: Mapped["Room"] = relationship("Room", back_populates="booking_rooms")

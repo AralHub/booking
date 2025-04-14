@@ -23,6 +23,7 @@ class BookedRoomCreate(BookedRoomBase):
 
 class BookedRoomCreateInternal(BookedRoomCreate):
     booking_id: int
+    room_price: float
 
 
 class BookedRoomgRead(BookedRoomBase):

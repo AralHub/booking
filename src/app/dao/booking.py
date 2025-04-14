@@ -81,6 +81,7 @@ class BookingDAO(BaseDAO):
         )
 
         # Расчет общей стоимости
+        room_prices = {}
         for room in booking_data.rooms_info:
             db_room = await RoomDAO.get_one_or_none(
                 session=session,
@@ -99,7 +100,7 @@ class BookingDAO(BaseDAO):
 
             room_total_price = total_days * room_price
             total_price += room_total_price
-
+            room_prices[room.room_id] = room_price
         # Создаем бронирование
         booking_create_data = BookingCreateMultipleRoomsInternal(
             check_in_date=booking_data.check_in_date,
@@ -124,6 +125,7 @@ class BookingDAO(BaseDAO):
         )
         logger.info(f"Created booking: {created_booking}")
         for room in booking_data.rooms_info:
+            room_price = room_prices.get(room.room_id)
             await BookedRoomDAO.create(
                 session=session,
                 values=BookedRoomCreateInternal(
@@ -131,6 +133,7 @@ class BookingDAO(BaseDAO):
                     room_id=room.room_id,
                     guest_quantity=room.guest_quantity,
                     guest_name=room.guest_name,
+                    room_price=room_price,
                 ),
             )
 
@@ -215,12 +218,6 @@ class BookingDAO(BaseDAO):
             if not db_room_prices:
                 return room.base_price
 
-        #     return await RoomPriceDAO.get_room_price_by_guest_quantity(
-        #         session=session,
-        #         room_id=room.id,
-        #         guest_quantity=guest_quantity,
-        #     )
-        # return room.base_price
         dynamic_price = await RoomPriceDAO.get_room_price_by_guest_quantity(
             session=session,
             room_id=room.id,
@@ -445,7 +442,9 @@ class BookingDAO(BaseDAO):
         result = await session.execute(query)
         bookings = result.scalars().all()
         # Получаем информацию о всех отелях для бронирований
-
+        formatted_bookings = []
+        if not bookings:
+            return formatted_bookings
         hotel_ids = {booking.hotel_id for booking in bookings}
         hotel_query = (
             select(Hotel)
@@ -459,8 +458,6 @@ class BookingDAO(BaseDAO):
         )
         hotels = await session.execute(hotel_query)
         hotels_dict = {hotel.id: hotel for hotel in hotels.scalars().all()}
-
-        formatted_bookings = []
         for booking in bookings:
             booking_data = {
                 "id": booking.id,
@@ -479,60 +476,56 @@ class BookingDAO(BaseDAO):
                 "user_id": booking.user_id,
                 "created_at": booking.created_at,
                 "booking_rooms": [
-                    cls._serialize_booking_room(br) for br in booking.booking_rooms
+                    await cls._serialize_booking_room(
+                        booking_room=br,
+                        room=br.room,
+                    )
+                    for br in booking.booking_rooms
                 ],
                 "hotel_info": None,
             }
-        hotel = hotels_dict.get(booking.hotel_id)
-        if hotel:
-            booking_data["hotel_info"] = {
-                "id": hotel.id,
-                "name": hotel.name,
-                "slug": hotel.slug,
-                "description": hotel.description,
-                "hotel_category_id": hotel.hotel_category_id,
-                "hotel_admin_id": hotel.hotel_admin_id,
-                "images": hotel.hotel_images,
-                "location": {
-                    "id": hotel.location.id if hotel.location else None,
-                    "address": hotel.location.address if hotel.location else None,
-                    "city": (
-                        hotel.location.city.name
-                        if hotel.location and hotel.location.city
-                        else None
-                    ),
-                    "latitude": hotel.location.latitude if hotel.location else None,
-                    "longitude": hotel.location.longitude if hotel.location else None,
-                    "to_airport": hotel.location.to_airport if hotel.location else None,
-                    "to_railway": hotel.location.to_railway if hotel.location else None,
-                    "to_city_center": (
-                        hotel.location.to_city_center if hotel.location else None
-                    ),
-                },
-            }
-        formatted_bookings.append(booking_data)
+            
+            hotel = hotels_dict.get(booking.hotel_id)
+            if hotel:
+                booking_data["hotel_info"] = {
+                    "id": hotel.id,
+                    "name": hotel.name,
+                    "slug": hotel.slug,
+                    "description": hotel.description,
+                    "hotel_category_id": hotel.hotel_category_id,
+                    "hotel_admin_id": hotel.hotel_admin_id,
+                    "images": hotel.hotel_images,
+                    "location": {
+                        "id": hotel.location.id if hotel.location else None,
+                        "address": hotel.location.address if hotel.location else None,
+                        "city": (
+                            hotel.location.city.name
+                            if hotel.location and hotel.location.city
+                            else None
+                        ),
+                        "latitude": hotel.location.latitude if hotel.location else None,
+                        "longitude": hotel.location.longitude if hotel.location else None,
+                        "to_airport": hotel.location.to_airport if hotel.location else None,
+                        "to_railway": hotel.location.to_railway if hotel.location else None,
+                        "to_city_center": (
+                            hotel.location.to_city_center if hotel.location else None
+                        ),
+                    },
+                }
+            formatted_bookings.append(booking_data)
         return formatted_bookings
 
     @classmethod
-    def _serialize_room(cls, room: Room) -> dict:
+    async def _serialize_booking_room(
+        cls,
+        booking_room: BookedRoom,
+        room: Room,
+    ) -> dict:
         return {
-            "id": room.id,
-            "quantity": room.quantity,
-            "room_area": room.room_area,
-            "room_type": room.room_type.name if room.room_type else None,
-            "images": room.room_images,
-            "max_guests": room.max_guests,
-            "base_price": room.base_price,
-            "use_dinamic_price": room.use_dinamic_price,
-        }
-
-    @classmethod
-    def _serialize_booking_room(cls, booking_room: BookedRoom) -> dict:
-        return {
-            "id": booking_room.id,
+            "room_id": booking_room.room_id,
             "guest_name": booking_room.guest_name,
             "guest_quantity": booking_room.guest_quantity,
-            "room": (
-                cls._serialize_room(booking_room.room) if booking_room.room else None
-            ),
+            "price": booking_room.room_price,
+            "room_type": room.room_type.name if room.room_type else None,
+            "images": room.room_images,
         }
