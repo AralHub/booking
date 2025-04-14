@@ -435,8 +435,7 @@ class BookingDAO(BaseDAO):
                 .selectinload(Room.room_images),
                 selectinload(Booking.booking_rooms)
                 .selectinload(BookedRoom.room)
-                .joinedload(Room.room_type)
-                .load_only(RoomType.name),
+                .joinedload(Room.room_type),
                 joinedload(Booking.user).load_only(
                     User.id,
                     User.first_name,
