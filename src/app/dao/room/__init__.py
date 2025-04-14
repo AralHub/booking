@@ -175,7 +175,6 @@ class RoomDAO(BaseDAO):
             "room_area": room.room_area,
             "hotel_id": room.hotel_id,
             "max_guests": room.max_guests,
-            "room_type_id": room.room_type_id,
             "use_dinamic_price": room.use_dinamic_price,
             "room_type": room.room_type.name,
             "room_images": room.room_images,
