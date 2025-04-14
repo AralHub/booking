@@ -16,6 +16,7 @@ from app.dao.room import RoomDAO
 from app.dao.room.price import RoomPriceDAO
 from app.dao.room.types import RoomTypeDAO
 
+from app.models.hotel.location import HotelLocation
 from app.models.user import User
 from app.models.hotel import Hotel
 from app.models.booking import (
@@ -450,37 +451,37 @@ class BookingDAO(BaseDAO):
             .where(Hotel.id.in_(hotel_ids))
             .options(
                 selectinload(Hotel.hotel_images),
-                selectinload(Hotel.location),
+                selectinload(Hotel.location)
+                .joinedload(HotelLocation.city)
             )
         )
         hotels = await session.execute(hotel_query)
         hotels_dict = {hotel.id: hotel for hotel in hotels.scalars().all()}
 
-        # Format the results without triggering lazy loads
         formatted_bookings = []
         for booking in bookings:
-            booking_dict = (
-                booking.__dict__.copy()
-            )  # Create a copy to avoid modifying the original
+            # Можно использовать словарную сериализацию с помощью, например, Pydantic или собственных методов,
+            # чтобы избежать обхода через __dict__ и тем самым случайной ленивой загрузки.
+            booking_data = {
+                **booking.__dict__,
+                "hotel_info": None,
+            }
+            for booked_room in booking.booking_rooms:
+                if booked_room.room and hasattr(booked_room.room, "room_images"):
+                    # Переназначаем поле room_images в images
+                    room_data = {
+                        **booked_room.room.__dict__,
+                        "images": booked_room.room.room_images,  # уверены, что уже загружено
+                    }
+                    booked_room.room.__dict__.update(room_data)
 
-            # Process booked rooms that are already loaded
-            if "booking_rooms" in booking_dict:
-                for booked_room in booking_dict["booking_rooms"]:
-                    room_dict = booked_room.room.__dict__.copy()
-                    # Only access room_images if it's already loaded (which it should be from selectinload)
-                    if "room_images" in room_dict:
-                        room_dict["images"] = room_dict.pop("room_images", [])
-
-            # Add hotel info if available
             hotel = hotels_dict.get(booking.hotel_id)
             if hotel:
-                hotel_dict = hotel.__dict__.copy()
-                if "hotel_images" in hotel_dict:
-                    hotel_dict["images"] = hotel_dict.pop("hotel_images", [])
-                booking_dict["hotel_info"] = hotel_dict
-            else:
-                booking_dict["hotel_info"] = None
-
-            formatted_bookings.append(booking_dict)
+                hotel_data = {
+                    **hotel.__dict__,
+                    "images": hotel.hotel_images,  # также уже загружено
+                }
+                booking_data["hotel_info"] = hotel_data
+            formatted_bookings.append(booking_data)
 
         return formatted_bookings
