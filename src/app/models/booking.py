@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 class BookingStatus(str, Enum):
     BOOKED = "booked"
     CANCELLED = "cancelled"
+    COMPLETED = "completed"
 
 
 class BookingType(str, Enum):
@@ -37,7 +38,12 @@ class BookingType(str, Enum):
 class BookedRoom(IntIdPkMixin, Base):
     booking_id: Mapped[int] = mapped_column(ForeignKey("bookings.id"))
     room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
-    guest_name: Mapped[str] = mapped_column(String(50))
+    guest_name: Mapped[str] = mapped_column(
+        String(50),
+        nullable=True,
+        default=None,
+        server_default=None,
+    )
     guest_quantity: Mapped[int] = mapped_column(Integer)
     # price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
 
@@ -69,6 +75,12 @@ class Booking(
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     total_days: Mapped[int] = mapped_column(Integer, nullable=False)
     special_requests: Mapped[str] = mapped_column(Text, nullable=True)
+    time: Mapped[str] = mapped_column(
+        String,
+        nullable=True,
+        default=None,
+        server_default=None,
+    )
     payment_method_id: Mapped[int] = mapped_column(ForeignKey("payment_methods.id"))
     booking_type: Mapped[BookingType] = mapped_column(
         SqlEnum(BookingType),
