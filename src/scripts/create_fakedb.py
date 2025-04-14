@@ -55,7 +55,7 @@ async def create_hotels(session: AsyncSession):
                 created_hotel = await HotelDAO.create_new_hotel(
                     session=session,
                     hotel_create_data=hotel_create,
-                    hotel_admin_id=1,
+                    hotel_admin_id=hotel["hotel_admin_id"],
                 )
                 logger.info(f"Successfully created hotel: {hotel['name_en']}")
                 for hotel_room in hotel["rooms"]:

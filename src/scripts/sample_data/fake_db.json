@@ -14,6 +14,7 @@
             "city_id": 1,
             "latitude": 55.7558,
             "longitude": 37.6173,
+            "hotel_admin_id": 1,
             "facilities": [
                 1,
                 2,
@@ -67,6 +68,98 @@
                     "quantity": 2,
                     "base_price": 800000,
                     "room_area": 120,
+                    "max_guests": 4,
+                    "room_type_id": 4
+                }
+            ]
+        },
+        {
+            "description_ru": "Уютный бутик-отель рядом с парком",
+            "description_en": "Cozy boutique hotel near the park",
+            "description_uz": "Bog yonida qulay butik mehmonxona",
+            "description_kk": "Саябақ жанындағы жайлы бутик қонақ үйі",
+            "name_ru": "Бутик Отель Парк",
+            "name_en": "Park Boutique Hotel",
+            "name_uz": "Park Boutique Mehmonxonasi",
+            "name_kk": "Park Бутик Қонақ үйі",
+            "hotel_category_id": 2,
+            "address": "ул. Парковая, 5",
+            "city_id": 2,
+            "latitude": 55.7600,
+            "longitude": 37.6200,
+            "hotel_admin_id": 3,
+            "facilities": [2, 4, 5],
+            "information_for_booking": {
+                "check_in": "13:00",
+                "check_out": "11:00",
+                "star_rating": 4
+            },
+            "information_for_guests": {
+                "email_for_guests": "contact@parkboutique.com",
+                "first_phone_for_guests": "998991234568",
+                "second_phone_for_guests": "998991112234",
+                "site_url": "https://www.parkboutique.com"
+            },
+            "rooms": [
+                {
+                    "quantity": 10,
+                    "base_price": 100000,
+                    "room_area": 25,
+                    "max_guests": 2,
+                    "room_type_id": 1,
+                    "room_amenities": [1, 2, 3]
+                },
+                {
+                    "quantity": 5,
+                    "base_price": 180000,
+                    "room_area": 35,
+                    "max_guests": 2,
+                    "room_type_id": 2
+                }
+            ]
+        },
+        
+        
+        {
+            "description_ru": "Семейный отель с детской площадкой",
+            "description_en": "Family hotel with children's playground",
+            "description_uz": "Bolalar maydonchasi bor oilaviy mehmonxona",
+            "description_kk": "Балалар алаңы бар отбасылық қонақ үй",
+            "name_ru": "Семейный Отель",
+            "name_en": "Family Hotel",
+            "name_uz": "Family Mehmonxonasi",
+            "name_kk": "Family Қонақ үйі",
+            "hotel_category_id": 1,
+            "address": "ул. Семейная, 12",
+            "city_id": 5,
+            "latitude": 55.7900,
+            "longitude": 37.6500,
+            "hotel_admin_id": 5,
+            "facilities": [2, 3, 4, 7],
+            "information_for_booking": {
+                "check_in": "12:00",
+                "check_out": "10:00",
+                "star_rating": 3
+            },
+            "information_for_guests": {
+                "email_for_guests": "contact@familyhotel.com",
+                "first_phone_for_guests": "998991234571",
+                "second_phone_for_guests": "998991112237",
+                "site_url": "https://www.familyhotel.com"
+            },
+            "rooms": [
+                {
+                    "quantity": 20,
+                    "base_price": 90000,
+                    "room_area": 20,
+                    "max_guests": 2,
+                    "room_type_id": 1,
+                    "room_amenities": [1, 2]
+                },
+                {
+                    "quantity": 5,
+                    "base_price": 150000,
+                    "room_area": 40,
                     "max_guests": 4,
                     "room_type_id": 4
                 }
