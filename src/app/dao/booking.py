@@ -17,6 +17,7 @@ from app.dao.room.price import RoomPriceDAO
 from app.dao.room.types import RoomTypeDAO
 
 from app.models.hotel.location import HotelLocation
+from app.models.location import City
 from app.models.user import User
 from app.models.hotel import Hotel
 from app.models.booking import (
@@ -453,6 +454,7 @@ class BookingDAO(BaseDAO):
                 selectinload(Hotel.hotel_images),
                 selectinload(Hotel.location)
                 .joinedload(HotelLocation.city)
+                .load_only(City.name),
             )
         )
         hotels = await session.execute(hotel_query)
@@ -479,7 +481,15 @@ class BookingDAO(BaseDAO):
             if hotel:
                 hotel_data = {
                     **hotel.__dict__,
-                    "images": hotel.hotel_images,  # также уже загружено
+                    "images": hotel.hotel_images,
+                    "location": {
+                        **hotel.location.__dict__,
+                        "city": (
+                            hotel.location.city.name
+                            if hotel.location and hotel.location.city
+                            else None
+                        ),
+                    },
                 }
                 booking_data["hotel_info"] = hotel_data
             formatted_bookings.append(booking_data)
