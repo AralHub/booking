@@ -374,6 +374,7 @@ class BookingDAO(BaseDAO):
                 ),
             )
             processed_room = RoomInfoCreateInternal(
+                uuid=str(uuid_pkg.uuid4()),
                 room_id=room_info.room_id,
                 guest_quantity=room_info.guest_quantity,
                 price=room_price,

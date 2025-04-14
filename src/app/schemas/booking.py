@@ -95,6 +95,7 @@ class RoomInfoBase(BaseModel):
 
 
 class RoomInfoRead(RoomInfoBase):
+    uuid: str
     price: float | None = None
     type: str | None = None
 
