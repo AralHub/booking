@@ -81,6 +81,22 @@ async def get_hotel_rooms(
     )
 
 
+@router.get(
+    "/{hotel_slug}/rooms/{room_id}",
+)
+async def get_hotel_room_by_id(
+    room: RoomRead = Depends(validate_hotel_room_by_slug),
+    session=SessionDep,
+):
+    room = await RoomDAO.get_hotel_room_by_id(
+        session=session,
+        room_id=room.id,
+    )
+    return {
+        "data": room,
+    }
+
+
 @router.post(
     "/{hotel_slug}/rooms",
     response_model=DataResponse[RoomRead],
