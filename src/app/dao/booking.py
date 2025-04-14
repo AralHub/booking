@@ -8,11 +8,16 @@ from app.core.exceptions.http_exceptions import BadRequestException, NotFoundExc
 from app.core.utils import redis_booking
 
 from app.dao import BaseDAO
+
+# from app.dao.hotel import HotelDAO
+# from app.dao.hotel.images import HotelImageDAO
+# from app.dao.hotel.location import HotelLocationDAO
 from app.dao.room import RoomDAO
 from app.dao.room.price import RoomPriceDAO
 from app.dao.room.types import RoomTypeDAO
 
 from app.models.user import User
+from app.models.hotel import Hotel
 from app.models.booking import (
     Booking,
     BookingStatus,
@@ -415,3 +420,53 @@ class BookingDAO(BaseDAO):
 
         logger.info(f"Created temporary booking in Redis with ID: {booking_id}")
         return booking_id
+
+    @classmethod
+    async def get_bookings_by_user_id(
+        cls,
+        session: AsyncSession,
+        user_id: int,
+    ):
+        query = (
+            select(Booking)
+            .options(
+                selectinload(Booking.booking_rooms)
+                .joinedload(BookedRoom.room)
+                .joinedload(Room.room_type)
+                .load_only(RoomType.name),
+                selectinload(Booking.booking_rooms)
+                .joinedload(BookedRoom.room)
+                .joinedload(Room.room_images),
+                joinedload(Booking.user).load_only(
+                    User.id,
+                    User.first_name,
+                    User.last_name,
+                ),
+            )
+            .where(Booking.user_id == user_id)
+            .order_by(Booking.created_at.desc())
+        )
+        result = await session.execute(query)
+        bookings = result.scalars().all()
+        # Получаем информацию о всех отелях для бронирований
+
+        hotel_ids = {booking.hotel_id for booking in bookings}
+        hotel_query = (
+            select(Hotel)
+            .where(Hotel.id.in_(hotel_ids))
+            .options(
+                selectinload(Hotel.hotel_images),
+                selectinload(Hotel.location),
+            )
+        )
+        hotels = await session.execute(hotel_query)
+        hotels_dict = {hotel.id: hotel for hotel in hotels.scalars().all()}
+
+        # Формируем список бронирований с информацией об отеле
+        formatted_bookings = []
+        for booking in bookings:
+            booking_dict = booking.__dict__
+            booking_dict["hotel_info"] = hotels_dict.get(booking.hotel_id)
+            formatted_bookings.append(booking_dict)
+
+        return formatted_bookings

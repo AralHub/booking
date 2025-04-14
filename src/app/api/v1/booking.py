@@ -29,12 +29,14 @@ async def get_bookings(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=SessionDep,
 ):
-    return await BookingDAO.get_all(
+    bookings = await BookingDAO.get_bookings_by_user_id(
         session=session,
-        filters=BookingFilter(
-            user_id=current_user.id,
-        ),
+        user_id=current_user.id,
     )
+    return {
+        "data": bookings,
+        "total": len(bookings),
+    }
 
 
 @router.get("/booking/{booking_uuid}")
