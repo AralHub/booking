@@ -1,22 +1,38 @@
+import uuid as uuid_pkg
 from datetime import date
 from sqlalchemy import func, select, and_, or_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
+from app.core.utils import redis_booking
+
 from app.dao import BaseDAO
 from app.dao.room import RoomDAO
 from app.dao.room.price import RoomPriceDAO
-from app.models.booking import Booking, BookingStatus
+from app.dao.room.types import RoomTypeDAO
+
+from app.models.booking import (
+    Booking,
+    BookingStatus,
+    BookingType,
+    BookedRoom,
+)
 from app.models.room import Room
 from app.schemas.room.price import RoomPriceFilter
 from app.schemas.room import RoomFilter
-from app.models.booking import Booking, BookingStatus
 from app.schemas.booking import (
     BookingCreateMultipleRooms,
     BookingCreateMultipleRoomsInternal,
     BookedRoomCreateInternal,
+    BookingCreateMultipleRooms,
+    BookingFilter,
+    RoomInfoCreateInternal,
+    BookingInitialCreate,
+    BookingInitialCreateInternal,
+    BookingUpdateInternal,
 )
-from app.models.booking import BookedRoom, BookingType
+from app.schemas.room.types import RoomTypeFilter
 
 import logging
 
@@ -185,12 +201,27 @@ class BookingDAO(BaseDAO):
             if not db_room_prices:
                 return room.base_price
 
-            return await RoomPriceDAO.get_room_price_by_guest_quantity(
-                session=session,
-                room_id=room.id,
-                guest_quantity=guest_quantity,
+        #     return await RoomPriceDAO.get_room_price_by_guest_quantity(
+        #         session=session,
+        #         room_id=room.id,
+        #         guest_quantity=guest_quantity,
+        #     )
+        # return room.base_price
+        dynamic_price = await RoomPriceDAO.get_room_price_by_guest_quantity(
+            session=session,
+            room_id=room.id,
+            guest_quantity=guest_quantity,
+        )
+
+        # Если не удалось получить динамическую цену, возвращаем базовую
+        if dynamic_price is None:
+            logger.warning(
+                f"Failed to get dynamic price, using base price: {room.base_price}"
             )
-        return room.base_price
+            return room.base_price
+
+        logger.info(f"Using dynamic price: {dynamic_price}")
+        return dynamic_price
 
     @classmethod
     async def get_booked_rooms_count_by_hotel_id(
@@ -282,3 +313,88 @@ class BookingDAO(BaseDAO):
         )
         result = await session.execute(query)
         return result.scalars().all()
+
+    @classmethod
+    async def prepare_booking_data_for_redis(
+        cls,
+        session: AsyncSession,
+        booking_data: BookingInitialCreate,
+        user_id: int,
+        hotel_id: int,
+    ) -> dict:
+        """Подготовка данных для бронирования"""
+        logger.info(f"Preparing booking data for hotel {hotel_id}")
+        # проверка на корректность дат
+        if booking_data.check_in_date >= booking_data.check_out_date:
+            raise BadRequestException(
+                detail="Check-out date must be after check-in date"
+            )
+        total_price = 0
+        total_days = (booking_data.check_out_date - booking_data.check_in_date).days
+        # Проверяем доступность комнат
+        await cls.check_rooms_availability(
+            session=session,
+            check_in_date=booking_data.check_in_date,
+            check_out_date=booking_data.check_out_date,
+            hotel_id=hotel_id,
+            rooms_info=booking_data.rooms_info,
+        )
+        # Расчет общей стоимости
+        processed_rooms_info = []
+        for room_info in booking_data.rooms_info:
+            db_room = await RoomDAO.get_one_or_none(
+                session=session,
+                filters=RoomFilter(
+                    id=room_info.room_id,
+                    hotel_id=hotel_id,
+                ),
+            )
+
+            # Расчет цены
+            room_price = await cls._calculate_room_price(
+                session,
+                db_room,
+                room_info.guest_quantity,
+            )
+            room_type = await RoomTypeDAO.get_one_or_none(
+                session=session,
+                filters=RoomTypeFilter(
+                    id=db_room.room_type_id,
+                ),
+            )
+            processed_room = RoomInfoCreateInternal(
+                room_id=room_info.room_id,
+                guest_quantity=room_info.guest_quantity,
+                price=room_price,
+                type=room_type.name if room_type else None,
+            )
+            processed_rooms_info.append(processed_room.model_dump())
+
+            room_total_price = total_days * room_price
+            total_price += room_total_price
+        booking_create_data = BookingInitialCreateInternal(
+            check_in_date=booking_data.check_in_date,
+            check_out_date=booking_data.check_out_date,
+            total_days=total_days,
+            total_price=total_price,
+            hotel_id=hotel_id,
+            user_id=user_id,
+            uuid=str(uuid_pkg.uuid4()),
+            rooms_info=processed_rooms_info,
+        )
+
+        logger.info(f"Prepared booking data: {booking_create_data}")
+        return booking_create_data
+
+    @classmethod
+    async def create_booking_in_redis(
+        cls,
+        booking_data: BookingInitialCreateInternal,
+    ) -> str:
+        """Создание временного бронирования в Redis"""
+
+        # booking_create = booking_data.model_dump()
+        booking_id = await redis_booking.add_booking(booking_data)
+
+        logger.info(f"Created temporary booking in Redis with ID: {booking_id}")
+        return booking_id

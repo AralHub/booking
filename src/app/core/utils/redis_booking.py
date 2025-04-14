@@ -2,12 +2,12 @@ import json
 
 from app.core.logger import logging
 from app.create_fastapi_app import redis_client
-from app.schemas.booking import BookingInitialCreate, BookingInitialRead
+from app.schemas.booking import BookingInitialCreateInternal, BookingInitialRead
 
 logger = logging.getLogger(__name__)
 
 
-EXPIRATION_TIME = 600  # 10 minutes
+EXPIRATION_TIME = 3600 * 24  # 1 day
 
 
 async def get_booking_data(key: str):
@@ -18,9 +18,13 @@ async def get_booking_data(key: str):
     return None
 
 
-async def add_booking(booking: BookingInitialCreate):
+async def add_booking(booking: BookingInitialCreateInternal):
     document = booking.model_dump_json()
     booking_id = str(booking.uuid)
-    await redis_client.client.setex(booking_id, EXPIRATION_TIME, document)
+    await redis_client.client.setex(
+        booking_id,
+        EXPIRATION_TIME,
+        document,
+    )
     logger.info(f"Booking added to Redis: {booking_id}")
     return booking_id

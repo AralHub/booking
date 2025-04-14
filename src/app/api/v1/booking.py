@@ -53,20 +53,17 @@ async def create_booking_initial(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=TransactionSessionDep,
 ):
-    await BookingDAO.check_rooms_availability(
+    booking_data = await BookingDAO.prepare_booking_data_for_redis(
         session=session,
-        check_in_date=booking_create_data.check_in_date,
-        check_out_date=booking_create_data.check_out_date,
-        hotel_id=hotel.id,
-        rooms_info=booking_create_data.rooms_info,
-    )
-    booking_create = BookingInitialCreateInternal(
-        uuid=str(uuid_pkg.uuid4()),
-        hotel_id=hotel.id,
+        booking_data=booking_create_data,
         user_id=current_user.id,
-        **booking_create_data.model_dump(),
+        hotel_id=hotel.id,
     )
-    booking_id = await redis_booking.add_booking(booking_create)
+
+    booking_id = await BookingDAO.create_booking_in_redis(
+        booking_data=booking_data,
+    )
+
     return {
         "data": {
             "initial_booking_uuid": booking_id,
