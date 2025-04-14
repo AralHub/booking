@@ -462,21 +462,24 @@ class BookingDAO(BaseDAO):
 
         formatted_bookings = []
         for booking in bookings:
-            # Можно использовать словарную сериализацию с помощью, например, Pydantic или собственных методов,
-            # чтобы избежать обхода через __dict__ и тем самым случайной ленивой загрузки.
             booking_data = {
                 **booking.__dict__,
                 "hotel_info": None,
             }
             for booked_room in booking.booking_rooms:
-                if booked_room.room and hasattr(booked_room.room, "room_images"):
-                    # Переназначаем поле room_images в images
-                    room_data = {
-                        **booked_room.room.__dict__,
-                        "images": booked_room.room.room_images,  # уверены, что уже загружено
-                    }
-                    booked_room.room.__dict__.update(room_data)
+                if booked_room.room:
+                    room_dict = booked_room.room.__dict__
+                    if hasattr(booked_room.room, "room_images"):
+                        room_dict["images"] = booked_room.room.room_images
+                        room_dict.pop("room_images", None)
 
+                    # Заменяем room_type на name
+                    if (
+                        hasattr(booked_room.room, "room_type")
+                        and booked_room.room.room_type
+                    ):
+                        room_dict["name"] = booked_room.room.room_type.name
+                        room_dict.pop("room_type", None)
             hotel = hotels_dict.get(booking.hotel_id)
             if hotel:
                 hotel_data = {
