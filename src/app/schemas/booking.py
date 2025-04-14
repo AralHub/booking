@@ -4,11 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.booking import BookingType
 
-from .field_validation import (
-    BOOKING_STATUS_FIELD,
-    BOOKING_STATUS_FIELD_UPDATE,
-    NAME_FIELD_UPDATE,
-)
+from .field_validation import BOOKING_STATUS_FIELD, BOOKING_STATUS_FIELD_UPDATE
 
 
 # region Booking Room
@@ -18,7 +14,11 @@ class BookedRoomBase(BaseModel):
 
 
 class BookedRoomCreate(BookedRoomBase):
-    guest_name: NAME_FIELD_UPDATE
+    guest_name: str | None = Field(
+        min_length=2,
+        max_length=50,
+        default=None,
+    )
 
 
 class BookedRoomCreateInternal(BookedRoomCreate):
