@@ -16,33 +16,21 @@ from app.dao import BaseDAO
 from app.dao.hotel.amenities import HotelAmenityDAO
 from app.dao.hotel.location import HotelLocationDAO
 from app.dao.location import CityDAO
-from app.dao.hotel.rating import HotelRatingDAO
-from app.dao.hotel.review import ReviewDAO
 from app.dao.hotel.category import HotelCategoryDAO
 from app.dao.hotel.info import HotelInfoDAO
-from app.dao.room import RoomDAO
-from app.dao.booking import BookingDAO
 from app.dao.hotel.rules import HotelRuleDAO
 from app.dao.partner import PartnerDAO
-from app.models.hotel.amenities import HotelAmenityAssociation
-from app.models.booking import Booking
 from app.schemas.hotel.location import (
     LocationCreate,
     LocationFilter,
     LocationUpdate,
 )
 from app.models.hotel import Hotel
-from app.models.room.price import RoomPrice
-from app.models.room.types import RoomType
-from app.models.hotel.category import HotelCategory
 from app.models.hotel.location import HotelLocation
-from app.models.booking import BookingStatus
 from app.models.room import Room
-from app.models.hotel.location import HotelLocation
 from app.models.hotel.rating import HotelRating
 from app.models.hotel.rating import HotelRating
 from app.schemas.location import CityFilter
-from app.schemas.hotel import HotelFilter
 from app.schemas.hotel.category import HotelCategoryFilter
 from app.schemas.hotel.info import HotelInfoFilter, HotelInfoUpdate
 from app.schemas.hotel.info import (
@@ -92,7 +80,8 @@ class HotelDAO(BaseDAO):
             .join(Room, Room.id == min_price_subquery.c.cheapest_room_id)
             .options(
                 selectinload(cls.model.hotel_rating),
-                selectinload(cls.model.location),
+                selectinload(cls.model.location).selectinload(HotelLocation.city),
+                selectinload(cls.model.hotel_images),
                 selectinload(
                     cls.model.rooms.and_(
                         Room.id == min_price_subquery.c.cheapest_room_id
@@ -104,7 +93,46 @@ class HotelDAO(BaseDAO):
         )
 
         result = await session.execute(query)
-        return result.scalars().all()
+        hotels = result.scalars().all()
+        # Форматируем результат для возврата
+
+        formatted_hotels = []
+        for hotel in hotels:
+            min_price, min_guests = cls._get_min_price_and_guests(hotel.rooms)
+
+            # Извлекаем рейтинг
+            rating_data = None
+            if hotel.hotel_rating:
+                rating_data = {
+                    "average_rating": hotel.hotel_rating.average_rating,
+                    "reviews_count": hotel.hotel_rating.reviews_count,
+                }
+
+            # Информация о городе
+            city_data = None
+            if hotel.location and hotel.location.city:
+                city_data = {
+                    "name": hotel.location.city.name,
+                    "slug": hotel.location.city.slug,
+                }
+            hotel_data = {
+                "id": hotel.id,
+                "name": hotel.name,
+                "slug": hotel.slug,
+                "description": hotel.description,
+                "images": hotel.hotel_images,
+                "min_price": min_price,
+                "guests": min_guests,
+                "city": city_data.get("name"),
+                "to_city_center": hotel.location.to_city_center,
+            }
+            # Добавляем рейтинг на верхний уровень
+            if rating_data:
+                hotel_data.update(rating_data)
+
+            formatted_hotels.append(hotel_data)
+
+        return formatted_hotels
 
     # endregion
     # region Full hotel
@@ -365,3 +393,12 @@ class HotelDAO(BaseDAO):
                 min_price_guests = guest_count
 
         return min_price, min_price_guests
+
+    # region Partner
+    @classmethod
+    async def get_hotels_by_partner_id(cls, session: AsyncSession, partner_id: int):
+        query = select(cls.model).where(cls.model.hotel_admin_id == partner_id)
+        result = await session.execute(query)
+        return result.scalars().all()
+
+    # endregion
