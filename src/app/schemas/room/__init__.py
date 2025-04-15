@@ -22,6 +22,7 @@ class RoomRead(RoomBase):
     room_type_id: int
     amenities: list[RoomAmenityRead] | None = None
     room_type: str | None = None
+    images: list[str] | None = None
     model_config = ConfigDict(from_attributes=True)
 
 

@@ -124,7 +124,10 @@ class RoomDAO(BaseDAO):
     ):
         query = (
             select(cls.model)
-            .options(selectinload(cls.model.room_type))
+            .options(
+                selectinload(cls.model.room_type),
+                selectinload(cls.model.room_images),
+            )
             .where(cls.model.hotel_id == hotel_id)
         )
 
@@ -144,6 +147,7 @@ class RoomDAO(BaseDAO):
                 "room_type_id": row.room_type_id,
                 "use_dinamic_price": row.use_dinamic_price,
                 "room_type": row.room_type.name,
+                "images": row.room_images,
             }
             rooms.append(RoomRead(**room_dict))
 
