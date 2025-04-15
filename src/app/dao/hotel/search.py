@@ -246,12 +246,14 @@ class HotelSearchDAO(HotelDAO):
                 ),
                 "reviews_count": len(hotel.reviews) if hotel.reviews else 0,
                 "category": hotel.hotel_category.name if hotel.hotel_category else None,
-                "images": [
-                    HotelImageRead.model_validate(image)
-                    for image in hotel.hotel_images
-                ]
-                if hotel.hotel_images
-                else [],
+                "images": (
+                    [
+                        HotelImageRead.model_validate(image.model_dump())
+                        for image in hotel.hotel_images
+                    ]
+                    if hotel.hotel_images
+                    else []
+                ),
                 "location": (
                     {
                         "address": hotel.location.address,
