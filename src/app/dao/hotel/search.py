@@ -245,11 +245,7 @@ class HotelSearchDAO(HotelDAO):
                 ),
                 "reviews_count": len(hotel.reviews) if hotel.reviews else 0,
                 "category": hotel.hotel_category.name if hotel.hotel_category else None,
-                "images": (
-                    [hotel_image.image for hotel_image in hotel.hotel_images]
-                    if hotel.hotel_images
-                    else []
-                ),
+                "images": hotel.hotel_images if hotel.hotel_images else [],
                 "location": (
                     {
                         "address": hotel.location.address,
@@ -271,4 +267,3 @@ class HotelSearchDAO(HotelDAO):
             suitable_hotels_data.append(hotel_data)
 
         return suitable_hotels_data
-    

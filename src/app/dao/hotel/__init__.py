@@ -121,11 +121,7 @@ class HotelDAO(BaseDAO):
                     hotel.hotel_rating.average_rating if hotel.hotel_rating else None
                 ),
                 "reviews_count": len(hotel.reviews) if hotel.reviews else 0,
-                "images": (
-                    [hotel_image.image for hotel_image in hotel.hotel_images]
-                    if hotel.hotel_images
-                    else []
-                ),
+                "images": hotel.hotel_images if hotel.hotel_images else [],
                 "min_price": min_price,
                 "guests": min_guests,
                 "location": {
@@ -180,11 +176,7 @@ class HotelDAO(BaseDAO):
                 "rating": (
                     hotel.hotel_rating.average_rating if hotel.hotel_rating else None
                 ),
-                "images": (
-                    [hotel_image.image for hotel_image in hotel.hotel_images]
-                    if hotel.hotel_images
-                    else []
-                ),
+                "images": hotel.hotel_images if hotel.hotel_images else [],
                 "min_price": min_price,
                 "guests": min_guests,
                 "location": {
