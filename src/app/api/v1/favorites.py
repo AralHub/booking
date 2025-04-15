@@ -34,6 +34,10 @@ async def is_my_favorite(
     current_user: UserRead = Depends(get_current_auth_user),
     session=TransactionSessionDep,
 ):
+    if not current_user:
+        return {
+            "data": False,
+        }
     favorite = await UserFavoriteDAO.get_one_or_none(
         session=session,
         filters=UserFavoriteFilter(
@@ -42,9 +46,7 @@ async def is_my_favorite(
         ),
     )
     return {
-        "data": {
-            "is_favorite": True if favorite else False,
-        },
+        "data":  True if favorite else False,
     }
 
 
