@@ -148,15 +148,13 @@ async def verify_phone_number(
     update_user_phone_number = UserUpdateInternal(
         phone_number=verify_data.phone_number,
     )
-    updated_rows_count = await UserDAO.update(
+    updated_user = await UserDAO.update(
         session=session,
         filters=UserFilter(id=current_user.id),
         values=update_user_phone_number,
     )
-    if updated_rows_count == 0:
-        raise BadRequestException("User not found")
     return DataResponse(
-        data={"phone_number": verify_data.phone_number},
+        data={"phone_number": updated_user.phone_number},
         message=RESPONSE_MESSAGES.get(
             "DATA_UPDATED",
             "Phone number updated successfully",
