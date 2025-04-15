@@ -131,7 +131,8 @@ class ReviewDAO(BaseDAO):
                         session=session,
                         values=review_category_rating_create_data,
                     )
-            await HotelRatingDAO.create_hotel_sum_rating(
+
+            await HotelRatingDAO.recreate_hotel_sum_rating(
                 session=session,
                 hotel_id=hotel_id,
             )

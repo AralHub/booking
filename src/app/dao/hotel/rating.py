@@ -52,7 +52,7 @@ class HotelRatingDAO(BaseDAO):
         return rating if rating else None
 
     @classmethod
-    async def create_hotel_sum_rating(
+    async def recreate_hotel_sum_rating(
         cls,
         session: AsyncSession,
         hotel_id: int,
@@ -67,6 +67,13 @@ class HotelRatingDAO(BaseDAO):
             session=session,
             hotel_id=hotel_id,
         )
+
+        # Получаем существующий рейтинг
+        existing_rating = await cls.get_hotel_summary_rating(
+            session=session,
+            hotel_id=hotel_id,
+        )
+
         # Рейтинги по категориям
         result = await session.execute(
             select(
@@ -80,14 +87,31 @@ class HotelRatingDAO(BaseDAO):
         )
         category_ratings = result.fetchall()
 
-        hotel_rating = await cls.create(
-            session=session,
-            values=HotelRatingCreateInternal(
-                average_rating=avg_general,
-                reviews_count=reviews_count,
-                hotel_id=hotel_id,
-            ),
-        )
+        if existing_rating:
+            # Обновляем существующий рейтинг
+            existing_rating.average_rating = avg_general
+            existing_rating.reviews_count = reviews_count
+            await session.commit()
+
+            # Удаляем старые рейтинги категорий
+            await session.execute(
+                select(HotelCategoryRating)
+                .where(HotelCategoryRating.hotel_rating_id == existing_rating.id)
+                .delete()
+            )
+
+            hotel_rating = existing_rating
+        else:
+            # Создаем новый рейтинг если не существует
+            hotel_rating = await cls.create(
+                session=session,
+                values=HotelRatingCreateInternal(
+                    average_rating=avg_general,
+                    reviews_count=reviews_count,
+                    hotel_id=hotel_id,
+                ),
+            )
+
         # Создаем записи для каждой категории
         for category in category_ratings:
             await HotelCategoryRatingDAO.create(
