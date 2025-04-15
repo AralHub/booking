@@ -124,6 +124,7 @@ class HotelDAO(BaseDAO):
                 "min_price": min_price,
                 "guests": min_guests,
                 "city": city_data.get("name"),
+                "city_slug": city_data.get("slug"),
                 "to_city_center": hotel.location.to_city_center,
             }
             # Добавляем рейтинг на верхний уровень
