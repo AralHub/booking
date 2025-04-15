@@ -16,7 +16,7 @@ from app.models.room import Room
 
 from app.schemas.location import CityFilter
 from app.schemas.room import RoomRead
-from app.schemas.hotel.image import HotelImageRead
+from app.schemas.hotel.images import HotelImageRead
 
 
 class HotelSearchDAO(HotelDAO):

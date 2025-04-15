@@ -4,7 +4,7 @@ from typing import Optional, Any
 from pydantic import BaseModel, ConfigDict
 
 from app.schemas.hotel.location import LocationRead
-from app.schemas.hotel.image import HotelImageRead
+from app.schemas.hotel.images import HotelImageRead
 
 from ..field_validation import (
     EMAIL_FIELD,
