@@ -3,7 +3,7 @@ from datetime import date
 from sqlalchemy import func, select, and_, or_
 from sqlalchemy.orm import selectinload, joinedload, load_only
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.core.i18n.translations import ErrorCode
 from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 from app.core.utils import redis_booking
 
@@ -158,6 +158,13 @@ class BookingDAO(BaseDAO):
             f"Проверка доступности комнат для отеля {hotel_id} с {check_in_date} по {check_out_date}"
         )
 
+        # Считаем, сколько каждой комнаты запрашивается в текущем бронировании
+        requested_rooms_count = {}
+        for room_info in rooms_info:
+            requested_rooms_count[room_info.room_id] = requested_rooms_count.get(room_info.room_id, 0) + 1
+        
+        logger.info(f"Запрашиваемое количество комнат в этом бронировании: {requested_rooms_count}")
+
         # Получаем все пересекающиеся бронирования для отеля
         booked_rooms_count = await cls.get_booked_rooms_count_by_hotel_id(
             session=session,
@@ -169,39 +176,55 @@ class BookingDAO(BaseDAO):
         logger.info(f"Booked rooms count for hotel {hotel_id}: {booked_rooms_count}")
 
         # Проверяем каждую комнату
+        checked_room_ids = set()
         for room_info in rooms_info:
-            logger.info(f"Checking room ID {room_info.room_id} for availability")
+            room_id = room_info.room_id
+            
+            # Пропускаем, если уже проверили эту комнату
+            if room_id in checked_room_ids:
+                continue
+            
+            checked_room_ids.add(room_id)
+            logger.info(f"Checking room ID {room_id} for availability")
 
             db_room = await RoomDAO.get_one_or_none(
                 session=session,
                 filters=RoomFilter(
-                    id=room_info.room_id,
+                    id=room_id,
                     hotel_id=hotel_id,
                 ),
             )
             if not db_room:
                 raise NotFoundException(
-                    detail=f"Room with ID {room_info.room_id} not found"
+                    error_code=ErrorCode.NOT_FOUND,
+                    detail=f"Room with ID {room_id} not found"
                 )
 
+            room_quantity = getattr(db_room, "quantity", 1)
+            current_booked_count = booked_rooms_count.get(room_id, 0)
+            requested_count = requested_rooms_count.get(room_id, 0)
+            
             logger.info(
-                f"Found room in database: {db_room.id}, quantity: {getattr(db_room, 'quantity', 0)}"
+                f"Room {room_id}: Quantity={room_quantity}, Already booked={current_booked_count}, "
+                f"Requested in this booking={requested_count}"
             )
 
             # Проверка доступности комнаты с учетом количества
-            current_booked_count = booked_rooms_count.get(room_info.room_id, 0)
-            if current_booked_count >= getattr(db_room, "quantity", 1):
+            if current_booked_count + requested_count > room_quantity:
                 logger.error(
-                    f"Room {room_info.room_id} is fully booked: {current_booked_count}/{getattr(db_room, 'quantity', 1)}"
+                    f"Room {room_id} is not available in requested quantity: "
+                    f"Requested={requested_count}, Available={room_quantity-current_booked_count}"
                 )
                 raise BadRequestException(
-                    detail=f"Room {room_info.room_id} is already fully booked for these dates"
+                    error_code=ErrorCode.BAD_REQUEST,
+                    detail=f"Room {room_id} is not available in requested quantity",
                 )
 
             # Проверка количества гостей
             if room_info.guest_quantity > db_room.max_guests:
                 raise BadRequestException(
-                    detail=f"Room {room_info.room_id} can only accommodate {db_room.max_guests} guests"
+                    error_code=ErrorCode.BAD_REQUEST,
+                    detail=f"Room {room_id} can only accommodate {db_room.max_guests} guests",
                 )
 
         logger.info("Все комнаты доступны для бронирования")
