@@ -3,14 +3,12 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.user import get_current_auth_user
 from app.core import SessionDep, TransactionSessionDep
-from app.core.exceptions.http_exceptions import NotFoundException
-from app.core.i18n.translations import ErrorCode
 from app.core.config import settings
+from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
     DataResponse,
-    ListResponse,
 )
 from app.dao.favorites import UserFavoriteDAO
 from app.schemas.favorites import (
@@ -25,6 +23,29 @@ router = APIRouter(
     tags=["Favorites"],
     prefix=settings.api_v1.favorites_prefix,
 )
+
+
+@router.get(
+    "/{hotel_slug}",
+)
+async def is_my_favorite(
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
+    current_user: UserRead = Depends(get_current_auth_user),
+    session=TransactionSessionDep,
+):
+    favorite = await UserFavoriteDAO.get_one_or_none(
+        session=session,
+        filters=UserFavoriteFilter(
+            user_id=current_user.id,
+            hotel_id=hotel.id,
+        ),
+    )
+    return {
+        "data": {
+            "is_favorite": True if favorite else False,
+        },
+    }
 
 
 @router.get(
