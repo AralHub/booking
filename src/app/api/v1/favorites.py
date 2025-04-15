@@ -7,12 +7,16 @@ from app.api.dependencies.user import (
 )
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-from app.core.exceptions.http_exceptions import NotFoundException
+from app.core.exceptions.http_exceptions import (
+    NotFoundException,
+    DuplicateValueException,
+)
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
     DataResponse,
 )
+from app.core.i18n.translations import ErrorCode
 from app.dao.favorites import UserFavoriteDAO
 from app.schemas.favorites import (
     UserFavoriteCreateInternal,
@@ -80,6 +84,17 @@ async def add_favorite(
     current_user: UserRead = Depends(get_current_auth_user),
     session=TransactionSessionDep,
 ):
+    db_favorite = await UserFavoriteDAO.get_one_or_none(
+        session=session,
+        filters=UserFavoriteFilter(
+            user_id=current_user.id,
+            hotel_id=hotel.id,
+        ),
+    )
+    if db_favorite:
+        raise DuplicateValueException(
+            error_code=ErrorCode.DUPLICATE_VALUE,
+        )
     added_favorite = await UserFavoriteDAO.create(
         session=session,
         values=UserFavoriteCreateInternal(
@@ -97,30 +112,20 @@ async def add_favorite(
 
 
 @router.delete(
-    "/{favorite_id}",
+    "/{hotel_slug}",
     response_model=BaseResponse,
 )
 async def delete_favorite(
-    favorite_id: int,
+    hotel_slug: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     current_user: UserRead = Depends(get_current_auth_user),
     session=TransactionSessionDep,
 ):
-    favorite = await UserFavoriteDAO.get_one_or_none(
-        session=session,
-        filters=UserFavoriteFilter(
-            user_id=current_user.id,
-            id=favorite_id,
-        ),
-    )
-    if not favorite:
-        raise NotFoundException(
-            error_code="NOT_FOUND",
-        )
     await UserFavoriteDAO.delete(
         session=session,
         filters=UserFavoriteFilter(
             user_id=current_user.id,
-            id=favorite_id,
+            hotel_id=hotel.id,
         ),
     )
     return BaseResponse(
