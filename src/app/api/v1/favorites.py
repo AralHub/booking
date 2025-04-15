@@ -105,9 +105,12 @@ async def delete_favorite(
     current_user: UserRead = Depends(get_current_auth_user),
     session=TransactionSessionDep,
 ):
-    favorite = await UserFavoriteDAO.get_one_or_none_by_id(
+    favorite = await UserFavoriteDAO.get_one_or_none(
         session=session,
-        data_id=favorite_id,
+        filters=UserFavoriteFilter(
+            user_id=current_user.id,
+            id=favorite_id,
+        ),
     )
     if not favorite:
         raise NotFoundException(

@@ -94,6 +94,7 @@ class HotelDAO(BaseDAO):
                     )
                 ).selectinload(Room.room_prices),
             )
+            .distinct()
             .order_by(HotelRating.average_rating.desc())
             .limit(limit)
         )
