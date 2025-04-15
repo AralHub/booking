@@ -6,20 +6,23 @@ from .booking import router as booking_router
 from .favorites import router as favorites_router
 from .hotel import router as hotel_router
 from .hotel.amenities import router as hotel_amenities_router
+from .hotel.chessboard import router as hotel_chessboard_router
 from .hotel.images import router as hotel_images_router
 from .hotel.info import router as hotel_info_router
 from .hotel.location import router as hotel_location_router
 from .hotel.rating import router as hotel_rating_router
 from .hotel.review import router as hotel_review_router
 from .hotel.rules import router as hotel_rules_router
-from .location import router as superuser_location_router
 from .partner import router as partner_router
 from .room import router as room_router
+from .room.bed import router as room_bed_router
+
 # from .room.amenities import router as room_amenities_router
+from .superuser.location import router as superuser_location_router
 from .room.images import router as room_images_router
 from .room.price import router as room_price_router
-from .room.bed import router as room_bed_router
 from .superuser import router as superuser_router
+from .superuser.hotel import router as superuser_hotel_router
 from .superuser.hotel.amenities import router as superuser_hotel_amenities_router
 from .superuser.hotel.category import router as superuser_hotel_category_router
 from .superuser.payment import router as superuser_payment_router
@@ -43,6 +46,9 @@ router.include_router(
 )
 router.include_router(
     booking_router,
+)
+router.include_router(
+    hotel_chessboard_router,
 )
 router.include_router(
     hotel_router,
@@ -85,6 +91,9 @@ router.include_router(
 )
 router.include_router(
     superuser_router,
+)
+router.include_router(
+    superuser_hotel_router,
 )
 router.include_router(
     superuser_hotel_amenities_router,
