@@ -8,6 +8,7 @@ from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     DataResponse,
     ListResponse,
+    PaginatedResponse,
 )
 from app.core.i18n.translations import ErrorCode
 from app.dao.location import CityDAO, CountryDAO
@@ -162,20 +163,35 @@ async def get_city_by_slug(
 
 @router.get(
     "/locations/countries/{country_id}/cities",
-    response_model=ListResponse[CityRead],
+    response_model=PaginatedResponse[CityRead],
 )
 async def get_all_cities_by_country_id(
     country_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
     session=SessionDep,
 ):
-    cities = await CityDAO.get_all(
+    city_count = await CityDAO.count(
         session=session,
         filters=CityFilter(country_id=country_id),
-        order_by=[City.id.desc()],
     )
-    return ListResponse(
-        data=[CityRead.model_validate(city) for city in cities],
-        total=len(cities),
+    result = await CityDAO.paginate(
+        session=session,
+        page=page,
+        page_size=page_size,
+        filters=CityFilter(country_id=country_id),
+        order_by="id",
+        order_direction="desc",
+    )
+    return PaginatedResponse(
+        data=[CityRead.model_validate(city) for city in result],
+        pagination={
+            "page": page,
+            "page_size": page_size,
+            "total": city_count or 0,
+            "total_pages": (city_count or 0) // page_size
+            + ((city_count or 0) % page_size > 0),
+        },
     )
 
 
