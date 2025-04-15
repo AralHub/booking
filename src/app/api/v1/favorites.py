@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
-from app.api.dependencies.user import get_current_auth_user
+from app.api.dependencies.user import (
+    get_current_auth_user,
+    get_optional_active_auth_user,
+)
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import NotFoundException
@@ -31,7 +34,7 @@ router = APIRouter(
 async def is_my_favorite(
     hotel_slug: str,
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
-    current_user: UserRead = Depends(get_current_auth_user),
+    current_user: UserRead = Depends(get_optional_active_auth_user),
     session=TransactionSessionDep,
 ):
     if not current_user:
@@ -46,7 +49,7 @@ async def is_my_favorite(
         ),
     )
     return {
-        "data":  True if favorite else False,
+        "data": True if favorite else False,
     }
 
 
