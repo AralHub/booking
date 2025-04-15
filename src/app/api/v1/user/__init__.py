@@ -15,7 +15,7 @@ from app.core.exceptions.http_exceptions import (
     NotFoundException,
     TooManyRequestsException,
 )
-from app.core.i18n.responses import RESPONSE_MESSAGES, DataResponse
+from app.core.i18n.responses import RESPONSE_MESSAGES, DataResponse, BaseResponse
 from app.core.i18n.translations import ErrorCode
 from app.core.utils import redis_sms
 from app.core.utils.send_sms import send_verification_sms
@@ -132,7 +132,7 @@ async def change_phone_number(
 
 @router.post(
     "/me/phone-number/verify",
-    response_model=DataResponse[dict],
+    response_model=BaseResponse,
 )
 async def verify_phone_number(
     verify_data: VerifyPhoneNumber,
@@ -145,16 +145,14 @@ async def verify_phone_number(
     )
     if not success:
         raise BadRequestException(ErrorCode.BAD_REQUEST)
-    update_user_phone_number = UserUpdateInternal(
-        phone_number=verify_data.phone_number,
-    )
     updated_user = await UserDAO.update(
         session=session,
         filters=UserFilter(id=current_user.id),
-        values=update_user_phone_number,
+        values=UserUpdateInternal(
+            phone_number=verify_data.phone_number,
+        ),
     )
-    return DataResponse(
-        data={"phone_number": updated_user.phone_number},
+    return BaseResponse(
         message=RESPONSE_MESSAGES.get(
             "DATA_UPDATED",
             "Phone number updated successfully",
@@ -186,8 +184,8 @@ async def user_delete(
             deleted_at=datetime.now(UTC),
         ),
     )
-    return DataResponse(
-        data={"id": db_user.id},
+    return BaseResponse(
+        success=True,
         message=RESPONSE_MESSAGES.get(
             "DATA_DELETED",
             "User deleted successfully",

@@ -22,7 +22,7 @@ async def send_verification_sms(phone_number: str) -> tuple[bool, str]:
     #     phone_number=user_phone_number.phone_number,
     # )
     await task_queue.pool.enqueue_job(
-        "send_sms_code",
+        "send_sms_code_sample",
         message=message,
         phone_number=phone_number,
     )
