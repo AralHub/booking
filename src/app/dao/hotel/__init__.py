@@ -99,7 +99,7 @@ class HotelDAO(BaseDAO):
         )
 
         result = await session.execute(query)
-        hotels = result.unique().all()
+        hotels = result.scalars().all()
         # Форматируем результат для возврата
 
         formatted_hotels = []
