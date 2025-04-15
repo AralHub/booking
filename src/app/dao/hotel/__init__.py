@@ -103,7 +103,13 @@ class HotelDAO(BaseDAO):
         # Форматируем результат для возврата
 
         formatted_hotels = []
+        processed_hotel_ids = set()  # Множество для отслеживания обработанных ID отелей
+        
         for hotel in hotels:
+            # Пропускаем отели, которые уже обработали
+            if hotel.id in processed_hotel_ids:
+                continue
+                
             min_price, min_guests = cls._get_min_price_and_guests(hotel.rooms)
 
             # Информация о городе
@@ -113,6 +119,7 @@ class HotelDAO(BaseDAO):
                     "name": hotel.location.city.name,
                     "slug": hotel.location.city.slug,
                 }
+            
             hotel_data = {
                 "id": hotel.id,
                 "name": hotel.name,
@@ -126,13 +133,14 @@ class HotelDAO(BaseDAO):
                 "min_price": min_price,
                 "guests": min_guests,
                 "location": {
-                    "city": city_data.get("name"),
-                    "city_slug": city_data.get("slug"),
-                    "distance_to_center": hotel.location.to_city_center,
+                    "city": city_data.get("name") if city_data else None,
+                    "city_slug": city_data.get("slug") if city_data else None,
+                    "distance_to_center": hotel.location.to_city_center if hotel.location else None,
                 },
             }
-
+            
             formatted_hotels.append(hotel_data)
+            processed_hotel_ids.add(hotel.id)  # Добавляем ID в множество обработанных отелей
 
         return formatted_hotels
 
