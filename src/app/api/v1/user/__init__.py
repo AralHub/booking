@@ -145,7 +145,7 @@ async def verify_phone_number(
     )
     if not success:
         raise BadRequestException(ErrorCode.BAD_REQUEST)
-    updated_user = await UserDAO.update(
+    await UserDAO.update(
         session=session,
         filters=UserFilter(id=current_user.id),
         values=UserUpdateInternal(
