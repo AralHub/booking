@@ -15,17 +15,17 @@ class UserFavoriteDAO(BaseDAO):
         session: AsyncSession,
         user_id: int,
     ):
-        hotel_ids = await cls.get_all(
+        favorite_hotels = await cls.get_all(
             session=session,
             filters=UserFavoriteFilter(
                 user_id=user_id,
             ),
         )
         favorites = []
-        for hotel_id in hotel_ids:
+        for favorite_hotel in favorite_hotels:
             hotel = await HotelDAO.get_full_hotel_by_id(
                 session=session,
-                hotel_id=hotel_id,
+                hotel_id=favorite_hotel.hotel_id,
             )
             favorites.append(hotel)
         return favorites
