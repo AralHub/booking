@@ -149,7 +149,7 @@ class RoomDAO(BaseDAO):
                 "room_type": row.room_type.name,
                 "images": row.room_images,
             }
-            rooms.append(RoomRead(**room_dict))
+            rooms.append(room_dict)
 
         return rooms
 
