@@ -55,10 +55,14 @@ async def get_popular_hotels(
     limit: int = Query(default=10, ge=1, le=100),
     session=SessionDep,
 ):
-    return await HotelDAO.get_popular_hotels(
+    popular_hotels = await HotelDAO.get_popular_hotels(
         session=session,
         limit=limit,
     )
+    return {
+        "data": popular_hotels,
+        "total": len(popular_hotels),
+    }
 
 
 @router.post(
