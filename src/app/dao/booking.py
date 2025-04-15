@@ -62,6 +62,7 @@ class BookingDAO(BaseDAO):
         booking_data: BookingCreateMultipleRooms,
         user_id: int,
         hotel_id: int,
+        booking_type: str,
     ):
         # проверка на корректность дат
         if booking_data.check_in_date >= booking_data.check_out_date:
@@ -102,6 +103,7 @@ class BookingDAO(BaseDAO):
             total_price += room_total_price
             room_prices[room.room_id] = room_price
         # Создаем бронирование
+
         booking_create_data = BookingCreateMultipleRoomsInternal(
             check_in_date=booking_data.check_in_date,
             check_out_date=booking_data.check_out_date,
@@ -115,7 +117,7 @@ class BookingDAO(BaseDAO):
             hotel_id=hotel_id,
             status=BookingStatus.BOOKED,
             user_id=user_id,
-            booking_type=BookingType.PERSONAL,
+            booking_type=booking_type,
             payment_method_id=booking_data.payment_method_id,
             time=booking_data.time,
         )
@@ -484,7 +486,7 @@ class BookingDAO(BaseDAO):
                 ],
                 "hotel_info": None,
             }
-            
+
             hotel = hotels_dict.get(booking.hotel_id)
             if hotel:
                 booking_data["hotel_info"] = {
@@ -504,9 +506,15 @@ class BookingDAO(BaseDAO):
                             else None
                         ),
                         "latitude": hotel.location.latitude if hotel.location else None,
-                        "longitude": hotel.location.longitude if hotel.location else None,
-                        "to_airport": hotel.location.to_airport if hotel.location else None,
-                        "to_railway": hotel.location.to_railway if hotel.location else None,
+                        "longitude": (
+                            hotel.location.longitude if hotel.location else None
+                        ),
+                        "to_airport": (
+                            hotel.location.to_airport if hotel.location else None
+                        ),
+                        "to_railway": (
+                            hotel.location.to_railway if hotel.location else None
+                        ),
                         "to_city_center": (
                             hotel.location.to_city_center if hotel.location else None
                         ),
