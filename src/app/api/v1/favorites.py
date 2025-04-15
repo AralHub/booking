@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends
 from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.user import get_current_auth_user
 from app.core import SessionDep, TransactionSessionDep
+from app.core.exceptions.http_exceptions import NotFoundException
+from app.core.i18n.translations import ErrorCode
 from app.core.config import settings
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
@@ -27,22 +29,19 @@ router = APIRouter(
 
 @router.get(
     "",
-    response_model=ListResponse[UserFavoriteRead],
 )
 async def get_favorites(
     current_user: UserRead = Depends(get_current_auth_user),
     session=SessionDep,
 ):
-    favorites = await UserFavoriteDAO.get_all(
+    favorites = await UserFavoriteDAO.get_user_favorites(
         session=session,
-        filters=UserFavoriteFilter(
-            user_id=current_user.id,
-        ),
+        user_id=current_user.id,
     )
-    return ListResponse(
-        data=[UserFavoriteRead.model_validate(favorite) for favorite in favorites],
-        total=len(favorites),
-    )
+    return {
+        "data": favorites,
+        "total": len(favorites),
+    }
 
 
 @router.post(
@@ -72,20 +71,27 @@ async def add_favorite(
 
 
 @router.delete(
-    "/{hotel_slug}",
+    "/{favorite_id}",
     response_model=BaseResponse,
 )
 async def delete_favorite(
-    hotel_slug: str,
-    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
+    favorite_id: int,
     current_user: UserRead = Depends(get_current_auth_user),
     session=TransactionSessionDep,
 ):
+    favorite = await UserFavoriteDAO.get_by_id(
+        session=session,
+        id=favorite_id,
+    )
+    if not favorite:
+        raise NotFoundException(
+            error_code="NOT_FOUND",
+        )
     await UserFavoriteDAO.delete(
         session=session,
         filters=UserFavoriteFilter(
             user_id=current_user.id,
-            hotel_id=hotel.id,
+            id=favorite_id,
         ),
     )
     return BaseResponse(
