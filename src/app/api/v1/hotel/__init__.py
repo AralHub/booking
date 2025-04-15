@@ -118,10 +118,9 @@ async def get_full_hotel(
         hotel_id=hotel.id,
     )
     if not hotel:
-        raise NotFoundException(
-            ErrorCode.HOTEL_NOT_FOUND,
-            "Hotel not found",
-        )
+        return {
+            "data": {},
+        }
     return {
         "data": hotel,
     }

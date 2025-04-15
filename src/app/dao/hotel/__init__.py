@@ -29,7 +29,6 @@ from app.models.hotel import Hotel
 from app.models.hotel.location import HotelLocation
 from app.models.room import Room
 from app.models.hotel.rating import HotelRating
-from app.models.hotel.rating import HotelRating
 from app.schemas.location import CityFilter
 from app.schemas.hotel.category import HotelCategoryFilter
 from app.schemas.hotel.info import HotelInfoFilter, HotelInfoUpdate
@@ -47,8 +46,14 @@ from app.schemas.hotel.rules import (
     RuleFilter,
     RuleUpdate,
 )
-from app.schemas.hotel import HotelFullCreate, HotelFullUpdate
-from app.schemas.partner import PartnerFilter, PartnerUpdateInternal
+from app.schemas.hotel import (
+    HotelFullCreate,
+    HotelFullUpdate,
+)
+from app.schemas.partner import (
+    PartnerFilter,
+    PartnerUpdateInternal,
+)
 
 
 class HotelDAO(BaseDAO):
@@ -100,14 +105,6 @@ class HotelDAO(BaseDAO):
         for hotel in hotels:
             min_price, min_guests = cls._get_min_price_and_guests(hotel.rooms)
 
-            # Извлекаем рейтинг
-            rating_data = None
-            if hotel.hotel_rating:
-                rating_data = {
-                    "average_rating": hotel.hotel_rating.average_rating,
-                    "reviews_count": hotel.hotel_rating.reviews_count,
-                }
-
             # Информация о городе
             city_data = None
             if hotel.location and hotel.location.city:
@@ -120,18 +117,23 @@ class HotelDAO(BaseDAO):
                 "name": hotel.name,
                 "slug": hotel.slug,
                 "description": hotel.description,
-                "images": hotel.hotel_images,
+                "rating": (
+                    hotel.hotel_rating.average_rating if hotel.hotel_rating else None
+                ),
+                "reviews_count": len(hotel.reviews) if hotel.reviews else 0,
+                "images": (
+                    [hotel_image.image for hotel_image in hotel.hotel_images]
+                    if hotel.hotel_images
+                    else []
+                ),
                 "min_price": min_price,
                 "guests": min_guests,
                 "location": {
                     "city": city_data.get("name"),
                     "city_slug": city_data.get("slug"),
-                    "to_city_center": hotel.location.to_city_center,
+                    "distance_to_center": hotel.location.to_city_center,
                 },
             }
-            # Добавляем рейтинг на верхний уровень
-            if rating_data:
-                hotel_data.update(rating_data)
 
             formatted_hotels.append(hotel_data)
 
@@ -149,10 +151,10 @@ class HotelDAO(BaseDAO):
             select(cls.model)
             .options(
                 selectinload(cls.model.hotel_info),
-                selectinload(cls.model.rule),
                 selectinload(cls.model.hotel_category),
                 selectinload(cls.model.hotel_rating),
                 selectinload(cls.model.hotel_images),
+                selectinload(cls.model.location).selectinload(HotelLocation.city),
                 selectinload(cls.model.rooms).selectinload(Room.room_prices),
             )
             .where(cls.model.id == hotel_id)
@@ -163,7 +165,44 @@ class HotelDAO(BaseDAO):
             min_price, min_guests = cls._get_min_price_and_guests(hotel.rooms)
             hotel.min_price = min_price
             hotel.min_price_guests = min_guests
-            return hotel
+            city_data = None
+            if hotel.location and hotel.location.city:
+                city_data = {
+                    "name": hotel.location.city.name,
+                    "slug": hotel.location.city.slug,
+                }
+            hotel_data = {
+                "id": hotel.id,
+                "name": hotel.name,
+                "slug": hotel.slug,
+                "description": hotel.description,
+                "category": hotel.hotel_category.name if hotel.hotel_category else None,
+                "rating": (
+                    hotel.hotel_rating.average_rating if hotel.hotel_rating else None
+                ),
+                "images": (
+                    [hotel_image.image for hotel_image in hotel.hotel_images]
+                    if hotel.hotel_images
+                    else []
+                ),
+                "min_price": min_price,
+                "guests": min_guests,
+                "location": {
+                    "address": hotel.location.address,
+                    "coordinates": {
+                        "latitude": hotel.location.latitude,
+                        "longitude": hotel.location.longitude,
+                    },
+                    "city": city_data.get("name") if city_data else None,
+                    "city_slug": city_data.get("slug") if city_data else None,
+                    "distance_to_center": (
+                        hotel.location.to_city_center if hotel.location else None
+                    ),
+                },
+                "hotel_info": hotel.hotel_info,
+            }
+
+            return hotel_data
         else:
             return None
 
@@ -399,9 +438,24 @@ class HotelDAO(BaseDAO):
 
     # region Partner
     @classmethod
-    async def get_hotels_by_partner_id(cls, session: AsyncSession, partner_id: int):
-        query = select(cls.model).where(cls.model.hotel_admin_id == partner_id)
-        result = await session.execute(query)
-        return result.scalars().all()
+    async def get_hotels_by_partner_id(
+        cls,
+        session: AsyncSession,
+        partner_id: int,
+    ):
+        partner_hotels = await cls.get_all(
+            session=session,
+            filters=HotelNameFilter(
+                hotel_admin_id=partner_id,
+            ),
+        )
+        partner_hotels_full = []
+        for hotel in partner_hotels:
+            hotel_full = await cls.get_full_hotel_by_id(
+                hotel_id=hotel.id,
+                session=session,
+            )
+            partner_hotels_full.append(hotel_full)
+        return partner_hotels_full
 
     # endregion

@@ -267,18 +267,8 @@ class HotelSearchDAO(HotelDAO):
                 ),
                 "min_price": min_price,
                 "guests": min_price_guests,
-                "available_rooms": [
-                    RoomRead.model_validate(
-                        {
-                            **room.__dict__,
-                            "room_type": (
-                                room.room_type.name if room.room_type else None
-                            ),
-                        }
-                    ).model_dump()
-                    for room in selected_rooms.get(hotel.id, [])
-                ],
             }
             suitable_hotels_data.append(hotel_data)
 
         return suitable_hotels_data
+    
