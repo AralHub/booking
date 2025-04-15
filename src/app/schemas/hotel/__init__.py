@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel, ConfigDict
 
@@ -135,7 +135,7 @@ class HotelSearchResult(BaseModel):
     location: Optional[dict] = None
     reviews_count: int = 0
     rating: float | None = None
-    images: list[str] | None = []
+    images: list[Any] | None = []
     available_rooms: list[dict] = []
     min_price: float | None = None
     guests: int | None = None
