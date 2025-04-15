@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Float, ForeignKey, Integer
+from sqlalchemy import Float, ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
@@ -35,4 +35,10 @@ class HotelRating(IntIdPkMixin, Base):
     category_ratings: Mapped[list["HotelCategoryRating"]] = relationship(
         back_populates="hotel_rating",
         cascade="all, delete-orphan",
+    )
+    __table_args__ = (
+        UniqueConstraint(
+            "hotel_id",
+            "average_rating",
+        ),
     )
