@@ -1,0 +1,58 @@
+from fastapi import APIRouter, Depends
+
+from app.api.dependencies.user import get_current_superuser
+from app.api.dependencies.hotel import validate_hotel
+from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import (
+    RESPONSE_MESSAGES,
+    DataResponse,
+    ListResponse,
+    BaseResponse,
+)
+from app.dao.hotel import HotelDAO
+from app.schemas.hotel.info import (
+    HotelNameRead,
+    HotelNameFilter,
+    HotelNameUpdateInternal,
+)
+
+router = APIRouter(
+    tags=["Superuser Hotels"],
+    prefix="/superuser/hotels",
+)
+
+
+@router.get("")
+async def get_hotels(
+    session=SessionDep,
+):
+    hotels = await HotelDAO.get_all(
+        session=session,
+        filters=None,
+    )
+    return {
+        "data": hotels,
+        "total": len(hotels),
+    }
+
+
+@router.put("/{hotel_id}/status")
+async def update_hotel(
+    hotel_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel),
+    session=TransactionSessionDep,
+):
+    updated_hotel = await HotelDAO.update(
+        session=session,
+        values=HotelNameUpdateInternal(
+            is_active=not hotel.is_active,
+        ),
+        filters=HotelNameFilter(
+            id=hotel_id,
+        ),
+    )
+    return BaseResponse(
+        success=True,
+        message=RESPONSE_MESSAGES["hotel"]["status_updated"],
+        data=updated_hotel,
+    )
