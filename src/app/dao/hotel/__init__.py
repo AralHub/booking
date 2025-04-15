@@ -66,33 +66,16 @@ class HotelDAO(BaseDAO):
         session: AsyncSession,
         limit: int,
     ):
-        min_price_subquery = (
-            select(
-                Room.hotel_id,
-                func.min(Room.base_price).label("min_price"),
-                func.first_value(Room.id)
-                .over(partition_by=Room.hotel_id, order_by=Room.base_price)
-                .label("cheapest_room_id"),
-            )
-            .group_by(Room.hotel_id, Room.id)
-            .subquery()
-        )
 
         query = (
             select(cls.model)
             .join(HotelRating, cls.model.id == HotelRating.hotel_id)
-            .join(min_price_subquery, cls.model.id == min_price_subquery.c.hotel_id)
-            .join(Room, Room.id == min_price_subquery.c.cheapest_room_id)
             .options(
                 selectinload(cls.model.hotel_rating),
                 selectinload(cls.model.location).selectinload(HotelLocation.city),
                 selectinload(cls.model.hotel_images),
                 selectinload(cls.model.reviews),
-                selectinload(
-                    cls.model.rooms.and_(
-                        Room.id == min_price_subquery.c.cheapest_room_id
-                    )
-                ).selectinload(Room.room_prices),
+                selectinload(cls.model.rooms).selectinload(Room.room_prices),
             )
             .order_by(HotelRating.average_rating.desc())
             .limit(limit)
@@ -104,12 +87,12 @@ class HotelDAO(BaseDAO):
 
         formatted_hotels = []
         processed_hotel_ids = set()  # Множество для отслеживания обработанных ID отелей
-        
+
         for hotel in hotels:
             # Пропускаем отели, которые уже обработали
             if hotel.id in processed_hotel_ids:
                 continue
-                
+
             min_price, min_guests = cls._get_min_price_and_guests(hotel.rooms)
 
             # Информация о городе
@@ -119,7 +102,7 @@ class HotelDAO(BaseDAO):
                     "name": hotel.location.city.name,
                     "slug": hotel.location.city.slug,
                 }
-            
+
             hotel_data = {
                 "id": hotel.id,
                 "name": hotel.name,
@@ -135,12 +118,14 @@ class HotelDAO(BaseDAO):
                 "location": {
                     "city": city_data.get("name") if city_data else None,
                     "city_slug": city_data.get("slug") if city_data else None,
-                    "distance_to_center": hotel.location.to_city_center if hotel.location else None,
+                    "distance_to_center": (
+                        hotel.location.to_city_center if hotel.location else None
+                    ),
                 },
             }
-            
+
             formatted_hotels.append(hotel_data)
-            processed_hotel_ids.add(hotel.id)  # Добавляем ID в множество обработанных отелей
+            processed_hotel_ids.add(hotel.id)
 
         return formatted_hotels
 
