@@ -248,7 +248,7 @@ class HotelSearchDAO(HotelDAO):
                 "category": hotel.hotel_category.name if hotel.hotel_category else None,
                 "images": (
                     [
-                        HotelImageRead.model_validate(image.model_dump())
+                        HotelImageRead.model_validate(image.to_dict())
                         for image in hotel.hotel_images
                     ]
                     if hotel.hotel_images
