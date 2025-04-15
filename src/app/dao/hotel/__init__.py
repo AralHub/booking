@@ -87,6 +87,7 @@ class HotelDAO(BaseDAO):
                 selectinload(cls.model.hotel_rating),
                 selectinload(cls.model.location).selectinload(HotelLocation.city),
                 selectinload(cls.model.hotel_images),
+                selectinload(cls.model.reviews),
                 selectinload(
                     cls.model.rooms.and_(
                         Room.id == min_price_subquery.c.cheapest_room_id
