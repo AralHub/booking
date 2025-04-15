@@ -4,6 +4,7 @@ from typing import Optional, Any
 from pydantic import BaseModel, ConfigDict
 
 from app.schemas.hotel.location import LocationRead
+from app.schemas.hotel.image import HotelImageRead
 
 from ..field_validation import (
     EMAIL_FIELD,
@@ -135,7 +136,7 @@ class HotelSearchResult(BaseModel):
     location: Optional[dict] = None
     reviews_count: int = 0
     rating: float | None = None
-    images: list[Any] | None = []
+    images: list[HotelImageRead] | None = []
     available_rooms: list[dict] = []
     min_price: float | None = None
     guests: int | None = None
