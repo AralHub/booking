@@ -201,16 +201,6 @@ class HotelDAO(BaseDAO):
         session: AsyncSession,
         hotel_admin_id: int,
     ):
-        partner_hotel = await PartnerDAO.get_one_or_none(
-            session=session,
-            filters=PartnerFilter(
-                id=hotel_admin_id,
-            ),
-        )
-        if partner_hotel.has_hotel:
-            raise DuplicateValueException(
-                error_code=ErrorCode.DUPLICATE_VALUE,
-            )
         db_hotel_category = await HotelCategoryDAO.get_one_or_none(
             session=session,
             filters=HotelCategoryFilter(id=hotel_create_data.hotel_category_id),
