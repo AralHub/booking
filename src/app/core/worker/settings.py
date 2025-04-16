@@ -1,9 +1,7 @@
-from arq import cron
 from arq.connections import RedisSettings
 
 from ..config import settings
 from .functions import (
-    check_restaurant_is_expired,
     sample_background_task,
     send_sms_code_sample,
     send_sms_task,
