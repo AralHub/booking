@@ -55,6 +55,7 @@ class HotelNameFilter(BaseModel):
     slug: str | None = None
     hotel_category_id: int | None = None
     is_active: bool | None = None
+    hotel_admin_id: int | None = None
 
 
 # endregion

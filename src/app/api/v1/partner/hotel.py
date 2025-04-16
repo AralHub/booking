@@ -5,14 +5,11 @@ from app.api.dependencies.partner import (
     valid_hotel_admin_by_slug,
 )
 from app.core import SessionDep
-from app.core.exceptions.http_exceptions import NotFoundException
-from app.core.i18n.translations import ErrorCode
 from app.dao.hotel import HotelDAO
-from app.schemas.hotel import HotelFilter
+from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import (
     PartnerRead,
 )
-from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(prefix="/hotels")
 
