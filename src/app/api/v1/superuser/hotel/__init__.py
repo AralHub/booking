@@ -1,18 +1,18 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.user import get_current_superuser
 from app.api.dependencies.hotel import validate_hotel
+from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
+    BaseResponse,
     DataResponse,
     ListResponse,
-    BaseResponse,
 )
 from app.dao.hotel import HotelDAO
 from app.schemas.hotel.info import (
-    HotelNameRead,
     HotelNameFilter,
+    HotelNameRead,
     HotelNameUpdateInternal,
 )
 

@@ -12,7 +12,6 @@ from app.core.i18n.responses import (
 )
 from app.core.i18n.translations import ErrorCode
 from app.dao.location import CityDAO, CountryDAO
-from app.models.location import City
 from app.schemas.location import (
     CityCreate,
     CityCreateInternal,

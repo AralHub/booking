@@ -44,6 +44,7 @@ class HotelNameUpdate(BaseModel):
 
 class HotelNameUpdateInternal(HotelNameUpdate):
     id: int
+    is_active: bool | None = None
     slug: str | None = None
 
 
@@ -53,6 +54,7 @@ class HotelNameFilter(BaseModel):
     description: str | None = None
     slug: str | None = None
     hotel_category_id: int | None = None
+    is_active: bool | None = None
 
 
 # endregion

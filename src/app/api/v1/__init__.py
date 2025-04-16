@@ -16,15 +16,15 @@ from .hotel.rules import router as hotel_rules_router
 from .partner import router as partner_router
 from .room import router as room_router
 from .room.bed import router as room_bed_router
-
-# from .room.amenities import router as room_amenities_router
-from .superuser.location import router as superuser_location_router
 from .room.images import router as room_images_router
 from .room.price import router as room_price_router
 from .superuser import router as superuser_router
 from .superuser.hotel import router as superuser_hotel_router
 from .superuser.hotel.amenities import router as superuser_hotel_amenities_router
 from .superuser.hotel.category import router as superuser_hotel_category_router
+
+# from .room.amenities import router as room_amenities_router
+from .superuser.location import router as superuser_location_router
 from .superuser.payment import router as superuser_payment_router
 from .superuser.review import router as superuser_review_router
 from .superuser.room.amenities import router as superuser_room_amenities_router

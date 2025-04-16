@@ -8,7 +8,6 @@ from app.api.dependencies.user import (
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
 from app.core.exceptions.http_exceptions import (
-    NotFoundException,
     DuplicateValueException,
 )
 from app.core.i18n.responses import (

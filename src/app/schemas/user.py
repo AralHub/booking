@@ -52,6 +52,7 @@ class UserRead(UserBase, TimestampSchema):
     birthday: Optional[BIRTHDAY_FIELD] = None
     gender: Optional[GENDER_FIELD] = None
     country_id: Optional[int] = None
+    role: BookingType | None = None
 
 
 class UserCreate(UserBase):

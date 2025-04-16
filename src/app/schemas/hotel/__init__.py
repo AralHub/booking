@@ -1,10 +1,10 @@
 from datetime import date, datetime
-from typing import Optional, Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from app.schemas.hotel.location import LocationRead
 from app.schemas.hotel.images import HotelImageRead
+from app.schemas.hotel.location import LocationRead
 
 from ..field_validation import (
     EMAIL_FIELD,
