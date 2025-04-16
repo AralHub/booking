@@ -39,11 +39,11 @@ async def validate_and_save_file(
 
         # Validate image and format
         img = Image.open(BytesIO(contents))
-        if img.format not in allowed_formats:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"File must be one of: {', '.join(allowed_formats)}",
-            )
+        # if img.format not in allowed_formats:
+        #     raise HTTPException(
+        #         status_code=status.HTTP_400_BAD_REQUEST,
+        #         detail=f"File must be one of: {', '.join(allowed_formats)}",
+        #     )
 
         # Prepare directory path
         directory = settings.upload_path
