@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.partner import get_current_auth_partner
+from app.api.dependencies.partner import (
+    get_current_auth_partner,
+    valid_hotel_admin_by_slug,
+)
 from app.core import SessionDep
 from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.i18n.translations import ErrorCode
@@ -9,6 +12,7 @@ from app.schemas.hotel import HotelFilter
 from app.schemas.partner import (
     PartnerRead,
 )
+from app.schemas.hotel.info import HotelNameRead
 
 router = APIRouter(prefix="/hotels")
 
@@ -32,23 +36,17 @@ async def get_hotels(
 async def get_hotel(
     hotel_slug: str,
     partner: PartnerRead = Depends(get_current_auth_partner),
+    hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=SessionDep,
 ):
-    partner_hotels = await HotelDAO.get_one_or_none(
-        session=session,
-        filters=HotelFilter(
-            hotel_admin_id=partner.id,
-            slug=hotel_slug,
-        ),
-    )
-    if not partner_hotels:
-        raise NotFoundException(
-            ErrorCode.HOTEL_NOT_FOUND,
-            "Hotel not found",
-        )
+
+    if not hotel:
+        return {
+            "data": {},
+        }
     hotel = await HotelDAO.get_full_hotel_by_id(
         session=session,
-        hotel_id=partner_hotels.id,
+        hotel_id=hotel.id,
     )
     if not hotel:
         return {
