@@ -45,7 +45,9 @@ async def get_room_images(
             "total": 0,
         }
     return ListResponse[RoomImageRead](
-        data=db_room_images,
+        data=[
+            RoomImageRead.model_validate(room_image) for room_image in db_room_images
+        ],
         total=len(db_room_images),
     )
 
