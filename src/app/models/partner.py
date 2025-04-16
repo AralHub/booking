@@ -64,4 +64,6 @@ class Partner(IntIdPkMixin, Base):
         default=False,
         server_default="false",
     )
-    hotel: Mapped["Hotel"] = relationship(back_populates="hotel_admin")
+    hotels: Mapped[list["Hotel"]] = relationship(
+        back_populates="hotel_admin",
+    )

@@ -10,11 +10,27 @@ from app.schemas.partner import (
     PartnerRead,
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/hotels")
 
 
-@router.get("/hotel")
+@router.get("")
+async def get_hotels(
+    partner: PartnerRead = Depends(get_current_auth_partner),
+    session=SessionDep,
+):
+    partner_hotels = await HotelDAO.get_hotels_by_partner_id(
+        session=session,
+        partner_id=partner.id,
+    )
+    return {
+        "data": partner_hotels,
+        "total": len(partner_hotels),
+    }
+
+
+@router.get("/{hotel_slug}")
 async def get_hotel(
+    hotel_slug: str,
     partner: PartnerRead = Depends(get_current_auth_partner),
     session=SessionDep,
 ):
@@ -22,6 +38,7 @@ async def get_hotel(
         session=session,
         filters=HotelFilter(
             hotel_admin_id=partner.id,
+            slug=hotel_slug,
         ),
     )
     if not partner_hotels:
@@ -34,10 +51,9 @@ async def get_hotel(
         hotel_id=partner_hotels.id,
     )
     if not hotel:
-        raise NotFoundException(
-            ErrorCode.HOTEL_NOT_FOUND,
-            "Hotel not found",
-        )
+        return {
+            "data": {},
+        }
     return {
         "data": hotel,
     }

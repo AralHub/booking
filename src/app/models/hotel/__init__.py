@@ -84,7 +84,7 @@ class Hotel(
     hotel_admin_id: Mapped[int] = mapped_column(ForeignKey("partners.id"))
     hotel_admin: Mapped["Partner"] = relationship(
         "Partner",
-        back_populates="hotel",
+        back_populates="hotels",
     )
     hotel_info: Mapped["HotelInfo"] = relationship(back_populates="hotel")
     hotel_rating: Mapped["HotelRating"] = relationship(
