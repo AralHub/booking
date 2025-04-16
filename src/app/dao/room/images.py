@@ -17,7 +17,7 @@ class RoomImageDAO(BaseDAO):
         room_id: int,
         file_path: str,
     ):
-        images_count = cls.count(
+        images_count = await cls.count(
             session=session,
             filters=RoomImageFilter(
                 room_id=room_id,

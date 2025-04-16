@@ -37,7 +37,7 @@ class HotelImageDAO(BaseDAO):
         hotel_id: int,
         file_path: str,
     ):
-        images_count = cls.count(
+        images_count = await cls.count(
             session=session,
             filters=HotelImageFilter(
                 hotel_id=hotel_id,
