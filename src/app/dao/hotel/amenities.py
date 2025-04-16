@@ -63,13 +63,13 @@ class HotelAmenityDAO(BaseDAO):
             category_id = row.category_id
 
             if category_id not in categories_dict:
-                categories_dict = {
+                categories_dict[category_id] = {
                     "id": category_id,
                     "name": row.category_name,
                     "hotel_amenities": [],
                 }
 
-            categories_dict["hotel_amenities"].append(
+            categories_dict[category_id]["hotel_amenities"].append(
                 {
                     "id": row.amenity_id,
                     "name": row.amenity_name,
@@ -78,7 +78,7 @@ class HotelAmenityDAO(BaseDAO):
                 }
             )
 
-        return categories_dict
+        return list(categories_dict.values())
 
     @classmethod
     async def delete_hotel_all_amenities(
