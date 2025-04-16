@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
+@router.get("")
 async def get_room_types(
     session=SessionDep,
 ):
@@ -29,7 +29,7 @@ async def get_room_types(
     }
 
 
-@router.post("/")
+@router.post("")
 async def create_room_type(
     room_type_create: RoomTypeCreate,
     session=SessionDep,
