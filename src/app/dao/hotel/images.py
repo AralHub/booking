@@ -59,7 +59,7 @@ class HotelImageDAO(BaseDAO):
         hotel_id: int,
         image_id: int,
     ):
-        image = await cls.get_one(
+        image = await cls.get_one_or_none(
             session=session,
             filters=HotelImageFilter(
                 hotel_id=hotel_id,
