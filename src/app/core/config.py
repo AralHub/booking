@@ -205,7 +205,7 @@ class Settings:
     environment: EnvironmentSettings = EnvironmentSettings()
     upload_path: str = config("UPLOAD_PATH", default="uploads")
     image_base_url: str = config(
-        "IMAGE_BASE_URL", default="http://176.221.29.165:8022/"
+        "IMAGE_BASE_URL", default="http://api.nbooking.uz/"
     )
     max_file_size: int = config("MAX_FILE_SIZE", default=10 * 1024 * 1024)
 
