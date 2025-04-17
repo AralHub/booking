@@ -129,6 +129,7 @@ class RoomDAO(BaseDAO):
                 selectinload(cls.model.room_images),
             )
             .where(cls.model.hotel_id == hotel_id)
+            .order_by(cls.model.id)
         )
 
         result = await session.execute(query)
