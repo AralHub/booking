@@ -10,7 +10,6 @@ from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
     DataResponse,
-    ListResponse,
 )
 from app.core.i18n.translations import ErrorCode
 from app.core.utils import file_utils
@@ -51,7 +50,7 @@ async def get_room_images(
 
 @router.post(
     "/{hotel_slug}/rooms/{room_id}/images",
-    response_model=DataResponse[RoomImageRead],
+    response_model=BaseResponse,
 )
 async def add_room_image(
     hotel_slug: int,
@@ -65,13 +64,13 @@ async def add_room_image(
         filename=f"room_{datetime.now(UTC).strftime('%Y-%m-%d_%H-%M-%S')}",
         folder=f"hotel_{hotel.id}",
     )
-    added_image = await RoomImageDAO.add_room_image(
+    await RoomImageDAO.add_room_image(
         session=session,
         room_id=room_id,
         file_path=file_path,
     )
-    return DataResponse[RoomImageRead](
-        data=added_image,
+    return BaseResponse(
+        success=True,
         message=RESPONSE_MESSAGES.get(
             "DATA_CREATED",
             "Room image created successfully",
