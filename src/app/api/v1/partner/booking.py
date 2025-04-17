@@ -2,12 +2,15 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.partner import get_current_auth_partner
-from app.core import SessionDep
+from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import BaseResponse
 from app.dao.booking import BookingDAO
+from app.models.booking import BookingStatus
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import (
     PartnerRead,
 )
+from app.schemas.booking import BookingUpdateInternal, BookingFilter
 
 router = APIRouter(prefix="/hotels")
 
@@ -31,3 +34,26 @@ async def get_bookings(
         "data": bookings,
         "total": len(bookings),
     }
+
+
+@router.put("/{hotel_slug}/bookings/{booking_id}")
+async def complete_booking(
+    booking_id: int,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
+    partner: PartnerRead = Depends(get_current_auth_partner),
+    session=TransactionSessionDep,
+):
+    await BookingDAO.update(
+        session=session,
+        filters=BookingFilter(
+            id=booking_id,
+            hotel_id=hotel.id,
+        ),
+        values=BookingUpdateInternal(
+            status=BookingStatus.COMPLETED,
+        ),
+    )
+    return BaseResponse(
+        success=True,
+        message="Бронь завершена",
+    )
