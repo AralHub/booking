@@ -164,7 +164,6 @@ class RoomDAO(BaseDAO):
             .options(
                 selectinload(cls.model.room_type),
                 selectinload(cls.model.room_images),
-                selectinload(cls.model.room_amenities),
             )
             .where(cls.model.id == room_id)
         )
@@ -172,7 +171,10 @@ class RoomDAO(BaseDAO):
         room = result.scalars().unique().one_or_none()
         if not room:
             return None
-
+        room_amenities = await RoomAmenityDAO.get_room_amenities(
+            session=session,
+            room_id=room.id,
+        )
         room_dict = {
             "id": room.id,
             "quantity": room.quantity,
@@ -184,6 +186,8 @@ class RoomDAO(BaseDAO):
             "room_type_id": room.room_type_id,
             "room_type": room.room_type.name,
             "images": room.room_images,
-            "amenities": room.room_amenities,
+            "amenities": (
+                room_amenities.get("room_amenity_categories") if room_amenities else []
+            ),
         }
         return room_dict
