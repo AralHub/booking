@@ -355,6 +355,7 @@ class BookingDAO(BaseDAO):
                     User.id,
                     User.first_name,
                     User.last_name,
+                    User.phone_number,
                 ),
             )
             .where(Booking.hotel_id == hotel_id)
