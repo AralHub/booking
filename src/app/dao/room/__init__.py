@@ -164,6 +164,7 @@ class RoomDAO(BaseDAO):
             .options(
                 selectinload(cls.model.room_type),
                 selectinload(cls.model.room_images),
+                selectinload(cls.model.room_amenities),
             )
             .where(cls.model.id == room_id)
         )
@@ -183,5 +184,6 @@ class RoomDAO(BaseDAO):
             "room_type_id": room.room_type_id,
             "room_type": room.room_type.name,
             "images": room.room_images,
+            "amenities": room.room_amenities,
         }
         return room_dict
