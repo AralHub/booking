@@ -83,7 +83,7 @@ async def add_room_image(
     response_model=BaseResponse,
 )
 async def delete_room_image(
-    hotel_slug: int,
+    hotel_slug: str,
     room_id: int,
     image_id: int,
     hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
