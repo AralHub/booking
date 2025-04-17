@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
@@ -7,10 +8,16 @@ from app.api.dependencies.review import (
 from app.api.dependencies.user import get_current_active_auth_user
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
+from app.core.i18n.translations import ErrorCode
+from app.core.exceptions.http_exceptions import (
+    DuplicateValueException,
+    BadRequestException,
+)
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
 )
+from app.dao.booking import BookingDAO
 from app.dao.hotel.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.review import (
@@ -58,6 +65,30 @@ async def create_hotel_reviews(
     current_user: UserRead = Depends(get_current_active_auth_user),
     session=TransactionSessionDep,
 ):
+    completed_bookings = await BookingDAO.get_user_completed_bookings(
+        session=session,
+        user_id=current_user.id,
+        hotel_id=hotel.id,
+        current_date=datetime.today().date(),
+    )
+
+    if not completed_bookings:
+        raise BadRequestException(
+            error_code=ErrorCode.BAD_REQUEST,
+            message="Вы можете оставить отзыв только после завершенной брони в этом отеле",
+        )
+    existing_review = await ReviewDAO.get_one_or_none(
+        session=session,
+        filters=ReviewFilter(
+            user_id=current_user.id,
+            hotel_id=hotel.id,
+        ),
+    )
+    if existing_review:
+        raise DuplicateValueException(
+            error_code=ErrorCode.DUPLICATE_VALUE,
+            message="Вы уже оставили отзыв в этом отеле",
+        )
     created_review = await ReviewDAO.create_hotel_review(
         session=session,
         review_create_data=review_create_data,

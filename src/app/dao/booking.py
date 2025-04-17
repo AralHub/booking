@@ -161,9 +161,13 @@ class BookingDAO(BaseDAO):
         # Считаем, сколько каждой комнаты запрашивается в текущем бронировании
         requested_rooms_count = {}
         for room_info in rooms_info:
-            requested_rooms_count[room_info.room_id] = requested_rooms_count.get(room_info.room_id, 0) + 1
-        
-        logger.info(f"Запрашиваемое количество комнат в этом бронировании: {requested_rooms_count}")
+            requested_rooms_count[room_info.room_id] = (
+                requested_rooms_count.get(room_info.room_id, 0) + 1
+            )
+
+        logger.info(
+            f"Запрашиваемое количество комнат в этом бронировании: {requested_rooms_count}"
+        )
 
         # Получаем все пересекающиеся бронирования для отеля
         booked_rooms_count = await cls.get_booked_rooms_count_by_hotel_id(
@@ -179,11 +183,11 @@ class BookingDAO(BaseDAO):
         checked_room_ids = set()
         for room_info in rooms_info:
             room_id = room_info.room_id
-            
+
             # Пропускаем, если уже проверили эту комнату
             if room_id in checked_room_ids:
                 continue
-            
+
             checked_room_ids.add(room_id)
             logger.info(f"Checking room ID {room_id} for availability")
 
@@ -197,13 +201,13 @@ class BookingDAO(BaseDAO):
             if not db_room:
                 raise NotFoundException(
                     error_code=ErrorCode.NOT_FOUND,
-                    detail=f"Room with ID {room_id} not found"
+                    detail=f"Room with ID {room_id} not found",
                 )
 
             room_quantity = getattr(db_room, "quantity", 1)
             current_booked_count = booked_rooms_count.get(room_id, 0)
             requested_count = requested_rooms_count.get(room_id, 0)
-            
+
             logger.info(
                 f"Room {room_id}: Quantity={room_quantity}, Already booked={current_booked_count}, "
                 f"Requested in this booking={requested_count}"
@@ -560,3 +564,25 @@ class BookingDAO(BaseDAO):
             "room_type": room.room_type.name if room.room_type else None,
             "images": room.room_images,
         }
+
+    @classmethod
+    async def get_user_completed_bookings(
+        cls,
+        session: AsyncSession,
+        user_id: int,
+        hotel_id: int,
+        current_date: date,
+    ) -> list:
+        """
+        Получает список завершенных бронирований пользователя в указанном отеле
+        Бронь считается завершенной, если дата выезда меньше текущей даты
+        """
+        bookings = await session.execute(
+            select(Booking).where(
+                Booking.user_id == user_id,
+                Booking.hotel_id == hotel_id,
+                Booking.check_out_date < current_date,
+                Booking.status == BookingStatus.COMPLETED,
+            )
+        )
+        return bookings.scalars().all()
