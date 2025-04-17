@@ -22,6 +22,7 @@ from app.models.mixins import IntIdPkMixin, TimestampMixin
 if TYPE_CHECKING:
     from app.models.room import Room
     from app.models.user import User
+    from app.models.payment import PaymentMethod
 
 
 class BookingStatus(str, Enum):
@@ -74,6 +75,7 @@ class Booking(
     )
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     total_days: Mapped[int] = mapped_column(Integer, nullable=False)
+    total_guests: Mapped[int] = mapped_column(Integer, nullable=False)
     special_requests: Mapped[str] = mapped_column(Text, nullable=True)
     time: Mapped[str] = mapped_column(
         String,
@@ -82,6 +84,10 @@ class Booking(
         server_default=None,
     )
     payment_method_id: Mapped[int] = mapped_column(ForeignKey("payment_methods.id"))
+    payment_method: Mapped["PaymentMethod"] = relationship(
+        "PaymentMethod",
+        back_populates="bookings",
+    )
     booking_type: Mapped[BookingType] = mapped_column(
         SqlEnum(BookingType),
         nullable=False,

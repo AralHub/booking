@@ -26,6 +26,7 @@ from app.models.booking import (
     BookingType,
     BookedRoom,
 )
+from app.models.payment import PaymentMethod
 from app.models.room import Room
 from app.models.room.types import RoomType
 from app.schemas.room.price import RoomPriceFilter
@@ -55,6 +56,7 @@ class BookedRoomDAO(BaseDAO):
 class BookingDAO(BaseDAO):
     model = Booking
 
+    # region Create Booking
     @classmethod
     async def create_booking(
         cls,
@@ -83,6 +85,7 @@ class BookingDAO(BaseDAO):
 
         # Расчет общей стоимости
         room_prices = {}
+        total_guests = 0
         for room in booking_data.rooms_info:
             db_room = await RoomDAO.get_one_or_none(
                 session=session,
@@ -102,6 +105,7 @@ class BookingDAO(BaseDAO):
             room_total_price = total_days * room_price
             total_price += room_total_price
             room_prices[room.room_id] = room_price
+            total_guests += room.guest_quantity
         # Создаем бронирование
 
         booking_create_data = BookingCreateMultipleRoomsInternal(
@@ -109,6 +113,7 @@ class BookingDAO(BaseDAO):
             check_out_date=booking_data.check_out_date,
             total_days=total_days,
             total_price=total_price,
+            total_guests=total_guests,
             special_requests=getattr(
                 booking_data,
                 "special_requests",
@@ -141,6 +146,8 @@ class BookingDAO(BaseDAO):
 
         return created_booking
 
+    # endregion
+    # region Check Rooms
     @classmethod
     async def check_rooms_availability(
         cls,
@@ -233,6 +240,8 @@ class BookingDAO(BaseDAO):
 
         logger.info("Все комнаты доступны для бронирования")
 
+    # endregion
+    # region Calculate Price
     @staticmethod
     async def _calculate_room_price(
         session: AsyncSession,
@@ -263,6 +272,8 @@ class BookingDAO(BaseDAO):
         logger.info(f"Using dynamic price: {dynamic_price}")
         return dynamic_price
 
+    # endregion
+    # region Get Booked Rooms
     @classmethod
     async def get_booked_rooms_count_by_hotel_id(
         cls,
@@ -305,6 +316,8 @@ class BookingDAO(BaseDAO):
         booked_rooms_count = {room_id: count for room_id, count in result.all()}
         return booked_rooms_count
 
+    # endregion
+    # region Check Room
     @staticmethod
     async def is_room_available(
         session: AsyncSession,
@@ -336,6 +349,8 @@ class BookingDAO(BaseDAO):
 
         return True
 
+    # endregion
+    # region by Hotel ID
     @classmethod
     async def get_bookings_by_hotel_id(
         cls,
@@ -357,6 +372,9 @@ class BookingDAO(BaseDAO):
                     User.last_name,
                     User.phone_number,
                 ),
+                joinedload(Booking.payment_method).load_only(
+                    PaymentMethod.name,
+                ),
             )
             .where(Booking.hotel_id == hotel_id)
             .order_by(Booking.created_at.desc())
@@ -373,11 +391,12 @@ class BookingDAO(BaseDAO):
                 "total_price": booking.total_price,
                 "total_days": booking.total_days,
                 "special_requests": booking.special_requests,
-                "payment_method_id": booking.payment_method_id,
+                "payment_method": booking.payment_method.name,
                 "booking_type": booking.booking_type,
                 "time": booking.time,
                 "user_id": booking.user_id,
                 "created_at": booking.created_at,
+                "total_guests": booking.total_guests,
                 "user": {
                     "id": booking.user.id,
                     "first_name": booking.user.first_name,
@@ -400,6 +419,8 @@ class BookingDAO(BaseDAO):
             formatted_bookings.append(booking_data)
         return formatted_bookings
 
+    # endregion
+    # region Prepare for Redis
     @classmethod
     async def prepare_booking_data_for_redis(
         cls,
@@ -473,6 +494,8 @@ class BookingDAO(BaseDAO):
         logger.info(f"Prepared booking data: {booking_create_data}")
         return booking_create_data
 
+    # endregion
+    # region Create  in Redis
     @classmethod
     async def create_booking_in_redis(
         cls,
@@ -587,6 +610,8 @@ class BookingDAO(BaseDAO):
             formatted_bookings.append(booking_data)
         return formatted_bookings
 
+    # endregion
+    # region Serialize Booking Room
     @classmethod
     async def _serialize_booking_room(
         cls,
@@ -602,6 +627,8 @@ class BookingDAO(BaseDAO):
             "images": room.room_images,
         }
 
+    # endregion
+    # region Get User Completed
     @classmethod
     async def get_user_completed_bookings(
         cls,
@@ -623,3 +650,5 @@ class BookingDAO(BaseDAO):
             )
         )
         return bookings.scalars().all()
+
+    # endregion

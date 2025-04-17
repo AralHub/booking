@@ -57,12 +57,14 @@ class BookingCreateMultipleRoomsInternal(BaseModel):
     special_requests: str | None = None
     total_price: int
     total_days: int
+    total_guests: int
     user_id: int
     special_requests: str | None = None
     status: BOOKING_STATUS_FIELD_UPDATE
     hotel_id: int
     booking_type: BookingType
     payment_method_id: int
+    time: str | None = None
 
 
 class BookingUpdateInternal(BaseModel):
