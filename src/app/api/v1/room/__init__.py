@@ -98,7 +98,7 @@ async def get_hotel_room_by_id(
 
 @router.post(
     "/{hotel_slug}/rooms",
-    response_model=DataResponse[RoomRead],
+    response_model=BaseResponse,
 )
 async def add_hotel_room(
     hotel_slug: str,
@@ -106,13 +106,13 @@ async def add_hotel_room(
     hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
-    added_room = await RoomDAO.add_room_to_hotel(
+    await RoomDAO.add_room_to_hotel(
         session=session,
         room_data=hotel_room_data,
         hotel_id=hotel.id,
     )
-    return DataResponse(
-        data=added_room,
+    return BaseResponse(
+        success=True,
         message=RESPONSE_MESSAGES.get(
             "DATA_CREATED",
             "Room created successfully",
