@@ -123,9 +123,9 @@ class RoomAmenityDAO(BaseDAO):
         session: AsyncSession,
     ):
         db_room = await session.scalar(
-            select(cls.model)
-            .where(cls.model.id == room_id)
-            .options(selectinload(cls.model.room_amenities))
+            select(Room)
+            .where(Room.id == room_id)
+            .options(selectinload(Room.room_amenities))
         )
 
         await session.execute(
