@@ -87,9 +87,9 @@ class HotelAmenityDAO(BaseDAO):
         session: AsyncSession,
     ):
         db_hotel = await session.scalar(
-            select(cls.model)
-            .where(cls.model.id == hotel_id)
-            .options(selectinload(cls.model.hotel_amenities))
+            select(Hotel)
+            .where(Hotel.id == hotel_id)
+            .options(selectinload(Hotel.hotel_amenities))
         )
 
         await session.execute(
