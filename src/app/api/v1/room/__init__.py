@@ -122,7 +122,7 @@ async def add_hotel_room(
 
 @router.put(
     "/{hotel_slug}/rooms/{room_id}",
-    response_model=DataResponse[RoomRead],
+    response_model=BaseResponse,
 )
 async def update_hotel_room(
     hotel_slug: str,
@@ -132,15 +132,15 @@ async def update_hotel_room(
     room: RoomRead = Depends(validate_hotel_room_by_slug),
     session=TransactionSessionDep,
 ):
-    updated_room = await RoomDAO.update_hotel_room(
+    await RoomDAO.update_hotel_room(
         session=session,
         room_data=room_update_data,
         room_id=room.id,
         hotel_id=hotel.id,
         amenities=room_update_data.amenities,
     )
-    return DataResponse(
-        data=updated_room,
+    return BaseResponse(
+        success=True,
         message=RESPONSE_MESSAGES.get(
             "DATA_UPDATED",
             "Room updated successfully",
