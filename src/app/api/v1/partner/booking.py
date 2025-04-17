@@ -36,7 +36,7 @@ async def get_bookings(
     }
 
 
-@router.put("/{hotel_slug}/bookings/{booking_id}")
+@router.put("/{hotel_slug}/bookings/{booking_id}/complete")
 async def complete_booking(
     booking_id: int,
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
