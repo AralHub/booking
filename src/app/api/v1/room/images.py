@@ -53,7 +53,7 @@ async def get_room_images(
     response_model=BaseResponse,
 )
 async def add_room_image(
-    hotel_slug: int,
+    hotel_slug: str,
     room_id: int,
     photo: UploadFile,
     hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
