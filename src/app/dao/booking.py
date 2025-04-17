@@ -362,7 +362,43 @@ class BookingDAO(BaseDAO):
             .order_by(Booking.created_at.desc())
         )
         result = await session.execute(query)
-        return result.scalars().all()
+        bookings = result.scalars().all()
+        formatted_bookings = []
+        for booking in bookings:
+            booking_data = {
+                "id": booking.id,
+                "status": booking.status,
+                "check_in_date": booking.check_in_date,
+                "check_out_date": booking.check_out_date,
+                "total_price": booking.total_price,
+                "total_days": booking.total_days,
+                "special_requests": booking.special_requests,
+                "payment_method_id": booking.payment_method_id,
+                "booking_type": booking.booking_type,
+                "time": booking.time,
+                "user_id": booking.user_id,
+                "created_at": booking.created_at,
+                "user": {
+                    "id": booking.user.id,
+                    "first_name": booking.user.first_name,
+                    "last_name": booking.user.last_name,
+                    "phone_number": booking.user.phone_number,
+                },
+                "booking_rooms": [
+                    {
+                        "room_id": br.room_id,
+                        "guest_name": br.guest_name,
+                        "guest_quantity": br.guest_quantity,
+                        "room_price": br.room_price,
+                        "room_type": (
+                            br.room.room_type.name if br.room.room_type else None
+                        ),
+                    }
+                    for br in booking.booking_rooms
+                ],
+            }
+            formatted_bookings.append(booking_data)
+        return formatted_bookings
 
     @classmethod
     async def prepare_booking_data_for_redis(
