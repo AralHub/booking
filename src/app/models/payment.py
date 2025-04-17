@@ -1,12 +1,11 @@
-# from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING
 
-
+from sqlalchemy.orm import Mapped, relationship
 from app.models import Base
 from app.models.mixins import IntIdPkMixin, MultilingualNameMixin
 
-# if TYPE_CHECKING:
-#     from app.models.user import User
-#     from app.models.hotel import Hotel
+if TYPE_CHECKING:
+    from app.models.booking import Booking
 
 
 class PaymentMethod(
@@ -14,4 +13,7 @@ class PaymentMethod(
     MultilingualNameMixin,
     Base,
 ):
-    pass
+    bookings: Mapped[list["Booking"]] = relationship(
+        "Booking",
+        back_populates="payment_method",
+    )
