@@ -155,6 +155,11 @@ class HotelDAO(BaseDAO):
             min_price, min_guests = cls._get_min_price_and_guests(hotel.rooms)
             hotel.min_price = min_price
             hotel.min_price_guests = min_guests
+            total_rooms = 0
+            if hotel.rooms:
+                for room in hotel.rooms:
+                    if room.quantity is not None:
+                        total_rooms += room.quantity
             city_data = None
             if hotel.location and hotel.location.city:
                 city_data = {
@@ -173,6 +178,7 @@ class HotelDAO(BaseDAO):
                 "images": hotel.hotel_images if hotel.hotel_images else [],
                 "min_price": min_price,
                 "guests": min_guests,
+                "rooms_count": total_rooms,
                 "location": {
                     "address": hotel.location.address,
                     "coordinates": {
