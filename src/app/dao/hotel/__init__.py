@@ -144,6 +144,7 @@ class HotelDAO(BaseDAO):
                 selectinload(cls.model.hotel_category),
                 selectinload(cls.model.hotel_rating),
                 selectinload(cls.model.hotel_images),
+                selectinload(cls.model.rule),
                 selectinload(cls.model.location).selectinload(HotelLocation.city),
                 selectinload(cls.model.rooms).selectinload(Room.room_prices),
             )
@@ -192,6 +193,7 @@ class HotelDAO(BaseDAO):
                     ),
                 },
                 "hotel_info": hotel.hotel_info,
+                "hotel_rules": hotel.rule,
             }
 
             return hotel_data
