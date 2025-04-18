@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Mapped, relationship
+
 from app.models import Base
 from app.models.mixins import IntIdPkMixin, MultilingualNameMixin
 
