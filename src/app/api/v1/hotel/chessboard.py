@@ -34,7 +34,7 @@ async def get_chessboard_items(
     }
 
 
-@router.post("/{hotel_slug}/rooms/room_id/chessboard")
+@router.post("/{hotel_slug}/rooms/{room_id}/chessboard")
 async def create_chessboard_item(
     room_id: int,
     create_data: ChessBoardCreate,
