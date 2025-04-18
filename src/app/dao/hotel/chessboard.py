@@ -25,7 +25,6 @@ class ChessBoardDAO(BaseDAO):
         cls,
         session: AsyncSession,
         hotel_id: int,
-        room_id: int,
     ):
         query = (
             select(cls.model)
@@ -35,19 +34,11 @@ class ChessBoardDAO(BaseDAO):
                 )
             )
             .where(
-                cls.model.room_id == Room.id,
+                cls.model.hotel_id == hotel_id,
             )
         )
         result = session.execute(query)
         return result.scalars().all()
-        # chessboard_items = await cls.get_all(
-        #     session=session,
-        #     filters=ChessBoardFilter(
-        #         hotel_id=hotel_id,
-        #         room_id=room_id,
-        #     ),
-        # )
-        # return chessboard_items
 
     @classmethod
     async def create_chessboard_item(
