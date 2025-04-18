@@ -1,3 +1,4 @@
+from datetime import date
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -71,6 +72,21 @@ class ChessBoardDAO(BaseDAO):
         room_id: int,
         create_data: ChessBoardCreate,
     ):
+        existing_chessboard_item = await ChessBoardDAO.get_one_or_none(
+            session=session,
+            filters=ChessBoardFilter(
+                room_id=room_id,
+                check_date=create_data.check_date,
+            ),
+        )
+        if existing_chessboard_item:
+            await cls.delete(
+                session=session,
+                filters=ChessBoardFilter(
+                    room_id=room_id,
+                    check_date=create_data.check_date,
+                ),
+            )
         available_rooms_count = create_data.available_rooms_count
         db_room = await RoomDAO.get_hotel_room_by_id(
             session=session,
@@ -95,20 +111,31 @@ class ChessBoardDAO(BaseDAO):
         return created_chessboard_item
 
     @classmethod
-    async def update_chessboard_item(
+    async def get_available_rooms_by_dates(
         cls,
         session: AsyncSession,
-        update_data: ChessBoardUpdate,
-        room_id: int,
         hotel_id: int,
+        check_in_date: date,
+        check_out_date: date,
     ):
-        updated_chessboard_item = await cls.get_one_or_none(
-            session=session,
-            filters=ChessBoardFilter(
-                available_rooms_count=update_data.available_rooms_count,
-                check_date=update_data.check_date,
-                room_id=room_id,
-                hotel_id=hotel_id,
-            ),
+        """
+        Получает информацию о доступности номеров из шахматки на указанный период.
+        Возвращает словарь {room_id: {date: available_count}}
+        """
+        query = select(cls.model).where(
+            cls.model.hotel_id == hotel_id,
+            cls.model.check_date >= check_in_date,
+            cls.model.check_date < check_out_date,
         )
-        return updated_chessboard_item
+
+        result = await session.execute(query)
+        chessboard_items = result.scalars().all()
+
+        availability_map = {}
+        for item in chessboard_items:
+            if item.room_id not in availability_map:
+                availability_map[item.room_id] = {}
+
+            availability_map[item.room_id][item.check_date] = item.available_rooms_count
+
+        return availability_map

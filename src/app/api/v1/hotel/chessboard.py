@@ -48,28 +48,3 @@ async def create_chessboard_item(
         create_data=create_data,
     )
     return created_chessboard_item
-
-
-@router.put("/{hotel_slug}/rooms/{room_id}/chessboard")
-async def update_chessboard_item(
-    room_id: int,
-    update_data: ChessBoardUpdateInternal,
-    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
-    partner: PartnerRead = Depends(valid_hotel_admin_by_slug),
-    session=TransactionSessionDep,
-):
-    chessboard_item = await ChessBoardDAO.get_one_or_none(
-        session=session,
-        filters=ChessBoardFilter(
-            room_id=room_id,
-            check_date=update_data.check_date,
-        ),
-    )
-    if not chessboard_item:
-        await ChessBoardDAO.create_chessboard_item(
-            session=session,
-            room_id=room_id,
-            available_rooms_count=update_data.available_rooms_count,
-            create_data=update_data,
-        )
-    return chessboard_item
