@@ -48,15 +48,15 @@ class ChessBoardDAO(BaseDAO):
         create_data: ChessBoardCreate,
     ):
         available_rooms_count = create_data.available_rooms_count
-        room = await RoomDAO.get_hotel_room_by_id(
+        db_room = await RoomDAO.get_hotel_room_by_id(
             session=session,
             room_id=room_id,
         )
-        if not room:
+        if not db_room:
             raise BadRequestException(
                 error_code=ErrorCode.NOT_FOUND,
             )
-        if available_rooms_count > room.quantity:
+        if available_rooms_count > db_room.get("quantity"):
             raise BadRequestException(
                 error_code=ErrorCode.BAD_REQUEST,
             )
@@ -64,7 +64,7 @@ class ChessBoardDAO(BaseDAO):
             session=session,
             values=ChessBoardCreateInternal(
                 **create_data.model_dump(),
-                hotel_id=room.hotel_id,
+                hotel_id=db_room.hotel_id,
                 room_id=room_id,
             ),
         )
