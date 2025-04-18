@@ -1,11 +1,11 @@
 from datetime import date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ChessBoardBase(BaseModel):
     check_date: date
-    available_rooms_count: int
+    available_rooms_count: int = Field(..., ge=0)
 
 
 class ChessBoardRead(ChessBoardBase):

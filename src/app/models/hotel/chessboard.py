@@ -21,7 +21,6 @@ class ChessBoard(IntIdPkMixin, Base):
     check_date: Mapped[date] = mapped_column(
         Date,
         nullable=False,
-        unique=True,
     )
     available_rooms_count: Mapped[int] = mapped_column(
         Integer,
