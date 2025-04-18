@@ -13,11 +13,11 @@ class PartnerBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     first_name: NAME_FIELD
     last_name: NAME_FIELD
-    has_hotel: bool | None = None
 
 
 class PartnerRead(PartnerBase):
     id: int
+    has_hotel: bool | None = None
 
 
 class PartnerCreate(PartnerBase):

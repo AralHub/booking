@@ -71,6 +71,8 @@ async def get_popular_hotels(
 )
 async def search_hotels(
     search_data: HotelSearch,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
     session=SessionDep,
 ):
     hotels = await HotelSearchDAO.find_hotels_for_booking(
@@ -88,8 +90,8 @@ async def search_hotels(
         return PaginatedResponse(
             data=[],
             pagination={
-                "page": 1,
-                "page_size": 10,
+                "page": page,
+                "page_size": page_size,
                 "total": 0,
                 "total_pages": 1,
             },
@@ -97,8 +99,8 @@ async def search_hotels(
     return PaginatedResponse(
         data=[HotelSearchResult.model_validate(hotel) for hotel in hotels],
         pagination={
-            "page": 1,
-            "page_size": 10,
+            "page": page,
+            "page_size": page_size,
             "total": len(hotels),
             "total_pages": 1,
         },

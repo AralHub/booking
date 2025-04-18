@@ -356,7 +356,15 @@ class BookingDAO(BaseDAO):
         cls,
         session: AsyncSession,
         hotel_id: int,
+        page: int,
+        page_size: int,
     ):
+        offset = (page - 1) * page_size
+        count_query = select(func.count()).select_from(
+            select(Booking).where(Booking.hotel_id == hotel_id).subquery()
+        )
+        total_count = await session.execute(count_query)
+        total = total_count.scalar_one()
         query = (
             select(Booking)
             .options(
@@ -378,6 +386,8 @@ class BookingDAO(BaseDAO):
             )
             .where(Booking.hotel_id == hotel_id)
             .order_by(Booking.created_at.desc())
+            .offset(offset)
+            .limit(page_size)
         )
         result = await session.execute(query)
         bookings = result.scalars().all()
