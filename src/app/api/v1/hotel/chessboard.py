@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
-
 from app.api.dependencies.partner import valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.hotel.chessboard import ChessBoardDAO
@@ -10,7 +9,6 @@ from app.schemas.hotel.chessboard import (
     ChessBoardFilter,
     ChessBoardUpdateInternal,
 )
-from app.dao.hotel.chessboard import ChessBoardDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
 
@@ -23,7 +21,7 @@ router = APIRouter(
 @router.get("/{hotel_slug}/chessboard")
 async def get_chessboard_items(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
-    partner: PartnerRead = Depends(valid_hotel_admin_by_slug),
+    # partner: PartnerRead = Depends(valid_hotel_admin_by_slug),
     session=SessionDep,
 ):
     items = await ChessBoardDAO.get_chessboard_items(

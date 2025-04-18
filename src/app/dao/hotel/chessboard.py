@@ -15,6 +15,7 @@ from app.schemas.hotel.chessboard import (
     ChessBoardFilter,
 )
 from app.models.room import Room
+from app.models.room.types import RoomType
 
 
 class ChessBoardDAO(BaseDAO):
@@ -32,13 +33,36 @@ class ChessBoardDAO(BaseDAO):
                 selectinload(
                     cls.model.room,
                 )
+                .joinedload(Room.room_type)
+                .load_only(
+                    RoomType.name,
+                ),
             )
             .where(
                 cls.model.hotel_id == hotel_id,
             )
         )
         result = await session.execute(query)
-        return result.scalars().all()
+        chessboard_items = result.scalars().all()
+        # return chessboard_items
+        rooms_dict = {}
+        for item in chessboard_items:
+            room_id = item.room_id
+            if room_id not in rooms_dict:
+                rooms_dict[room_id] = {
+                    "room_id": room_id,
+                    "room_type": item.room.room_type.name,
+                    "chessboard_items": [],
+                }
+
+            item_dict = {
+                "id": item.id,
+                "check_date": item.check_date,
+                "available_rooms_count": item.available_rooms_count,
+            }
+            rooms_dict[room_id]["chessboard_items"].append(item_dict)
+
+        return list(rooms_dict.values())
 
     @classmethod
     async def create_chessboard_item(
