@@ -9,13 +9,12 @@ from app.core.exceptions.http_exceptions import NotFoundException
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
-    DataResponse,
 )
 from app.core.i18n.translations import ErrorCode
 from app.core.utils import file_utils
 from app.dao.room.images import RoomImageDAO
 from app.schemas.hotel.info import HotelNameRead
-from app.schemas.room.images import RoomImageFilter, RoomImageRead
+from app.schemas.room.images import RoomImageFilter
 
 router = APIRouter(
     prefix="/hotels",

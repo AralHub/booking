@@ -6,7 +6,6 @@ from app.core import SessionDep, TransactionSessionDep
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
-    ListResponse,
 )
 from app.dao.hotel import HotelAmenityDAO
 from app.schemas.hotel.info import HotelNameRead

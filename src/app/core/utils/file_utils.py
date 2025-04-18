@@ -3,7 +3,7 @@ import shutil
 from io import BytesIO
 
 import aiofiles
-from fastapi import HTTPException, UploadFile, status
+from fastapi import HTTPException, UploadFile
 from PIL import Image
 
 from app.core.exceptions.http_exceptions import BadRequestException

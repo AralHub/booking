@@ -20,9 +20,9 @@ from app.models import Base
 from app.models.mixins import IntIdPkMixin, TimestampMixin
 
 if TYPE_CHECKING:
+    from app.models.payment import PaymentMethod
     from app.models.room import Room
     from app.models.user import User
-    from app.models.payment import PaymentMethod
 
 
 class BookingStatus(str, Enum):
