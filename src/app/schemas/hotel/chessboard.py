@@ -4,25 +4,37 @@ from pydantic import BaseModel
 
 
 class ChessBoardBase(BaseModel):
-    room_type_id: int
     check_date: date
-    price: float | None = None
-    available_rooms: int
-    is_closed: bool
+    available_rooms_count: int
+
+
+class ChessBoardRead(ChessBoardBase):
+    id: int
+    room_id: int
+    hotel_id: int
 
 
 class ChessBoardCreate(ChessBoardBase):
     pass
 
 
-class ChessBoardUpdate(ChessBoardBase):
+class ChessBoardCreateInternal(ChessBoardCreate):
+    room_id: int
+    hotel_id: int
+
+
+class ChessBoardUpdate(BaseModel):
+    check_date: date | None = None
+    available_rooms_count: int | None = None
+
+
+class ChessBoardUpdateInternal(ChessBoardUpdate):
     pass
 
 
 class ChessBoardFilter(BaseModel):
     id: int | None = None
-    room_type_id: int | None = None
+    room_id: int | None = None
+    hotel_id: int | None = None
     check_date: date | None = None
-    price: float | None = None
-    available_rooms: int | None = None
-    is_closed: bool | None = None
+    available_rooms_count: int | None = None

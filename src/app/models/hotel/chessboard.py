@@ -1,27 +1,40 @@
 from datetime import date
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    Boolean,
     Date,
+    ForeignKey,
     Integer,
+    UniqueConstraint,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
 from app.models.mixins import IntIdPkMixin
 
-# if TYPE_CHECKING:
-    # from app.models.room.types import RoomType
+if TYPE_CHECKING:
+    from app.models.hotel import Hotel
+    from app.models.room import Room
 
 
 class ChessBoard(IntIdPkMixin, Base):
-    check_date: Mapped[date] = mapped_column(Date, nullable=False)
-    available_rooms_count: Mapped[int] = mapped_column(Integer, nullable=False)
-    is_closed: Mapped[bool] = mapped_column(
-        Boolean,
+    check_date: Mapped[date] = mapped_column(
+        Date,
         nullable=False,
-        default=False,
-        server_default="false",
+        unique=True,
     )
-    # room_type_id: Mapped[int] = mapped_column(ForeignKey("room_types.id"))
-    # room_type: Mapped["RoomType"] = relationship(back_populates="rooms")
+    available_rooms_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+    )
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel: Mapped["Hotel"] = relationship(back_populates="chessboards")
+    room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"))
+    room: Mapped["Room"] = relationship(back_populates="chessboards")
+    __table_args__ = (
+        UniqueConstraint(
+            "room_id",
+            "hotel_id",
+            "check_date",
+        ),
+    )

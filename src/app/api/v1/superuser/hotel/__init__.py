@@ -42,7 +42,7 @@ async def update_hotel(
     hotel: HotelNameRead = Depends(validate_hotel),
     session=TransactionSessionDep,
 ):
-    updated_hotel = await HotelDAO.update(
+    await HotelDAO.update(
         session=session,
         values=HotelNameUpdateInternal(
             is_active=not hotel.is_active,
@@ -53,6 +53,5 @@ async def update_hotel(
     )
     return BaseResponse(
         success=True,
-        message=RESPONSE_MESSAGES["hotel"]["status_updated"],
-        data=updated_hotel,
+        message=RESPONSE_MESSAGES.DATA_UPDATED,
     )

@@ -47,11 +47,11 @@ router.include_router(
 router.include_router(
     booking_router,
 )
-# router.include_router(
-#     hotel_chessboard_router,
-# )
 router.include_router(
     hotel_router,
+)
+router.include_router(
+    hotel_chessboard_router,
 )
 router.include_router(
     hotel_location_router,

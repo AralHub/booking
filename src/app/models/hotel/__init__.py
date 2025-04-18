@@ -91,6 +91,6 @@ class Hotel(
         "HotelRating",
         back_populates="hotel",
     )
-    # chessboards: Mapped[list["ChessBoard"]] = relationship(
-    #     back_populates="hotel",
-    # )
+    chessboards: Mapped[list["ChessBoard"]] = relationship(
+        back_populates="hotel",
+    )
