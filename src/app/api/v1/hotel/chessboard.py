@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
+
 from app.api.dependencies.partner import valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
 from app.dao.hotel.chessboard import ChessBoardDAO
@@ -9,6 +10,7 @@ from app.schemas.hotel.chessboard import (
     ChessBoardFilter,
     ChessBoardUpdateInternal,
 )
+from app.dao.hotel.chessboard import ChessBoardDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
 

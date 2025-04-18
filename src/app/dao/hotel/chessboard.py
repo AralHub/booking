@@ -50,7 +50,7 @@ class ChessBoardDAO(BaseDAO):
         available_rooms_count = create_data.available_rooms_count
         room = await RoomDAO.get_hotel_room_by_id(
             session=session,
-            room_id=create_data.room_id,
+            room_id=room_id,
         )
         if not room:
             raise BadRequestException(
