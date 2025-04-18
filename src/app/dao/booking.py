@@ -413,6 +413,9 @@ class BookingDAO(BaseDAO):
                     "last_name": booking.user.last_name,
                     "phone_number": booking.user.phone_number,
                 },
+                "rooms_count": len(booking.booking_rooms)
+                if booking.booking_rooms
+                else 0,
                 "booking_rooms": [
                     {
                         "room_id": br.room_id,
