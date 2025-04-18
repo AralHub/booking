@@ -64,7 +64,7 @@ class ChessBoardDAO(BaseDAO):
             session=session,
             values=ChessBoardCreateInternal(
                 **create_data.model_dump(),
-                hotel_id=db_room.hotel_id,
+                hotel_id=db_room.get("hotel_id"),
                 room_id=room_id,
             ),
         )
