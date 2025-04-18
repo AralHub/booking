@@ -37,7 +37,7 @@ class ChessBoardDAO(BaseDAO):
                 cls.model.hotel_id == hotel_id,
             )
         )
-        result = session.execute(query)
+        result = await session.execute(query)
         return result.scalars().all()
 
     @classmethod

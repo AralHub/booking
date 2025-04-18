@@ -24,7 +24,7 @@ async def get_chessboard_items(
     partner: PartnerRead = Depends(valid_hotel_admin_by_slug),
     session=SessionDep,
 ):
-    items = ChessBoardDAO.get_chessboard_items(
+    items = await ChessBoardDAO.get_chessboard_items(
         session=session,
         hotel_id=hotel.id,
     )
