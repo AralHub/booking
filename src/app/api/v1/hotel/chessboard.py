@@ -1,13 +1,16 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
 from app.api.dependencies.partner import valid_hotel_admin_by_slug
 from app.core import SessionDep, TransactionSessionDep
+from app.core.exceptions.http_exceptions import BadRequestException
+from app.core.i18n.translations import ErrorCode
+from app.dao.booking import BookingDAO
 from app.dao.hotel.chessboard import ChessBoardDAO
 from app.schemas.hotel.chessboard import (
     ChessBoardCreate,
-    ChessBoardFilter,
-    ChessBoardUpdateInternal,
 )
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.partner import PartnerRead
@@ -48,3 +51,29 @@ async def create_chessboard_item(
         create_data=create_data,
     )
     return created_chessboard_item
+
+
+@router.get("/{hotel_slug}/chessboard/active-bookings")
+async def get_active_bookings(
+    start_date: str,
+    end_date: str,
+    hotel: HotelNameRead = Depends(validate_hotel_by_slug),
+    session=SessionDep,
+):
+    try:
+        start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        start_date = start_date.date()
+        end_date = datetime.strptime(end_date, "%Y-%m-%d")
+        end_date = end_date.date()
+    except ValueError:
+        raise BadRequestException(
+            error_code=ErrorCode.BAD_REQUEST,
+            detail="Invalid date format",
+        )
+    active_booked_rooms_count = await BookingDAO.get_booked_rooms_by_dates(
+        session=session,
+        start_date=start_date,
+        end_date=end_date,
+        hotel_id=hotel.id,
+    )
+    return active_booked_rooms_count

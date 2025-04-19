@@ -1,5 +1,5 @@
 import uuid as uuid_pkg
-from datetime import date
+from datetime import date, timedelta
 from sqlalchemy import func, select, and_, or_
 from sqlalchemy.orm import selectinload, joinedload, load_only
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -413,9 +413,9 @@ class BookingDAO(BaseDAO):
                     "last_name": booking.user.last_name,
                     "phone_number": booking.user.phone_number,
                 },
-                "rooms_count": len(booking.booking_rooms)
-                if booking.booking_rooms
-                else 0,
+                "rooms_count": (
+                    len(booking.booking_rooms) if booking.booking_rooms else 0
+                ),
                 "booking_rooms": [
                     {
                         "room_id": br.room_id,
@@ -663,5 +663,116 @@ class BookingDAO(BaseDAO):
             )
         )
         return bookings.scalars().all()
+
+    # endregion
+    # region Active Bookings
+    @classmethod
+    async def get_booked_rooms_by_dates(
+        cls,
+        session: AsyncSession,
+        start_date: date,
+        end_date: date,
+        hotel_id: int,
+    ) -> dict:
+        """
+        Возвращает данные о бронированиях комнат с разбивкой по датам в указанном диапазоне
+        """
+        if start_date > end_date:
+            raise BadRequestException(
+                error_code=ErrorCode.BAD_REQUEST,
+                detail="Start date must be before end date",
+            )
+
+        # Получаем бронирования, которые пересекаются с указанным периодом
+        bookings_query = (
+            select(
+                Booking.id,
+                Booking.check_in_date,
+                Booking.check_out_date,
+                BookedRoom.room_id,
+                Room.room_type_id,
+                RoomType.name.label("room_type_name"),
+            )
+            .join(BookedRoom, Booking.id == BookedRoom.booking_id)
+            .join(Room, BookedRoom.room_id == Room.id)
+            .join(RoomType, Room.room_type_id == RoomType.id)
+            .where(
+                Room.hotel_id == hotel_id, 
+                Booking.status == BookingStatus.BOOKED,
+                # Добавляем фильтрацию по датам - бронирования, которые
+                # пересекаются с указанным периодом
+                or_(
+                    and_(
+                        Booking.check_in_date <= end_date,
+                        Booking.check_out_date > start_date
+                    )
+                )
+            )
+            .order_by(Room.id)
+        )
+
+        
+        bookings_result = await session.execute(bookings_query)
+        bookings = bookings_result.all()
+        logger.info(f"Найдено {len(bookings)} бронирований, пересекающихся с указанным периодом")
+
+        # Получаем уникальные комнаты
+        rooms_query = (
+            select(Room.id, RoomType.name.label("room_type_name"))
+            .join(RoomType, Room.room_type_id == RoomType.id)
+            .where(Room.hotel_id == hotel_id)
+            .order_by(Room.id)
+        )
+
+        rooms_result = await session.execute(rooms_query)
+        rooms = rooms_result.all()
+
+        # Считаем общее количество комнат
+        total_rooms_query = select(func.count()).select_from(
+            select(Room.id).where(Room.hotel_id == hotel_id).distinct().subquery()
+        )
+        total_rooms_result = await session.execute(total_rooms_query)
+        total_rooms = total_rooms_result.scalar_one()
+
+        # Формируем результат
+        result_data = []
+        for room_id, room_type_name in rooms:
+            room_bookings = {}
+
+            # Находим бронирования для этой комнаты
+            for booking in bookings:
+                if booking.room_id == room_id:
+                    # Определяем диапазон дат для обработки
+                    booking_start = max(booking.check_in_date, start_date)
+                    booking_end = min(booking.check_out_date, end_date)
+
+                    # Разбиваем диапазон дат на отдельные дни
+                    current_date = booking_start
+                    while current_date < booking_end:
+                        date_str = current_date.isoformat()
+                        if date_str not in room_bookings:
+                            room_bookings[date_str] = {
+                                "booking_id": booking.id,
+                                "check_date": date_str,
+                                "count": 1,
+                            }
+                        else:
+                            room_bookings[date_str]["count"] += 1
+
+                        current_date = current_date + timedelta(days=1)
+
+            # Добавляем информацию о комнате в результат
+            result_data.append(
+                {
+                    "room_id": room_id,
+                    "room_type": room_type_name,
+                    "active_bookings": list(room_bookings.values()),
+                }
+            )
+
+        return {
+            "data": result_data,
+            "total": total_rooms,
+        }
 
     # endregion
