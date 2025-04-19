@@ -103,9 +103,10 @@ class RoomSearchDAO(RoomDAO):
             # available_quantity = room.quantity - booked_count
 
             # Fetch the price for the room considering guest count
-            price = await RoomPriceDAO.get_room_price(
+            price = await RoomPriceDAO.get_room_price_by_guest_quantity(
                 session=session,
                 room_id=room.id,
+                guest_quantity=guest_count,
             )
             room_amenities = await RoomAmenityDAO.get_room_amenities(
                 session=session,

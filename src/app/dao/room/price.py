@@ -33,22 +33,6 @@ class RoomPriceDAO(BaseDAO):
         return room_prices
 
     @classmethod
-    async def get_room_price(
-        cls,
-        session: AsyncSession,
-        room_id: int,
-    ):
-        room_price = await cls.get_one_or_none(
-            session=session,
-            filters=RoomPriceFilter(
-                room_id=room_id,
-            ),
-        )
-        if not room_price:
-            return None
-        return room_price
-
-    @classmethod
     async def get_room_price_by_guest_quantity(
         cls,
         session: AsyncSession,
