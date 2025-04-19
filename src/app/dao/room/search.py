@@ -1,10 +1,10 @@
 import asyncio
-from datetime import date
+from datetime import date, timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.room import Room
 from app.models.room.types import RoomType
-
+from app.dao.hotel.chessboard import ChessBoardDAO
 from app.dao.booking import BookingDAO
 from app.dao.room import RoomDAO
 from app.dao.room.price import RoomPriceDAO
@@ -32,6 +32,15 @@ class RoomSearchDAO(RoomDAO):
             hotel_id=hotel_id,
         )
         logger.info(f"Booked rooms count for hotel {hotel_id}: {booked_rooms_dict}")
+        chessboard_availability = await ChessBoardDAO.get_available_rooms_by_dates(
+            session=session,
+            hotel_id=hotel_id,
+            check_in_date=check_in_date,
+            check_out_date=check_out_date,
+        )
+        logger.info(
+            f"Chessboard availability for hotel {hotel_id}: {chessboard_availability}"
+        )
 
         available_rooms_stmt = (
             select(
@@ -48,9 +57,34 @@ class RoomSearchDAO(RoomDAO):
         for room, room_type_name in available_rooms:
             room_id = room.id
             booked_count = booked_rooms_dict.get(room_id, 0)
-            if booked_count >= room.quantity:
-                continue  # Room is fully booked
 
+            # Проверяем ограничения шахматки на весь период
+            room_availability = chessboard_availability.get(room_id, {})
+            is_available_by_chessboard = True
+            min_available_from_chessboard = room.quantity
+
+            # Если есть данные шахматки для этой комнаты, проверяем все даты
+            if room_availability:
+                current_date = check_in_date
+                while current_date < check_out_date:
+                    if current_date in room_availability:
+                        # Если на эту дату комнат меньше, чем требуется, комната недоступна
+                        available_count = room_availability[current_date]
+                        min_available_from_chessboard = min(
+                            min_available_from_chessboard, available_count
+                        )
+                        if available_count <= booked_count:
+                            is_available_by_chessboard = False
+                            break
+                    current_date += timedelta(days=1)
+
+            # Если комната недоступна по шахматке или полностью забронирована
+            if not is_available_by_chessboard or booked_count >= room.quantity:
+                continue
+            # Учитываем ограничения шахматки при расчете доступного количества
+            available_quantity = min(
+                room.quantity - booked_count, min_available_from_chessboard
+            )
             # Check availability for each guest count in guests
             check_tasks = []
             for guest_count in guests:
@@ -66,7 +100,7 @@ class RoomSearchDAO(RoomDAO):
             if not all(check_results):
                 continue  # Room can't accommodate all guest counts
 
-            available_quantity = room.quantity - booked_count
+            # available_quantity = room.quantity - booked_count
 
             # Fetch the price for the room considering guest count
             price = await RoomPriceDAO.get_room_price(

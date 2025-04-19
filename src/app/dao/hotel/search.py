@@ -1,5 +1,5 @@
 import asyncio
-from datetime import date
+from datetime import date, timedelta
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -8,6 +8,8 @@ from app.core.exceptions.http_exceptions import NotFoundException
 from app.dao.location import CityDAO
 from app.dao.booking import BookingDAO
 from app.dao.hotel import HotelDAO
+from app.dao.hotel.chessboard import ChessBoardDAO
+
 from app.models.room.price import RoomPrice
 from app.models.hotel.amenities import HotelAmenityAssociation
 from app.models.hotel import Hotel
@@ -155,7 +157,17 @@ class HotelSearchDAO(HotelDAO):
         all_rooms = rooms_result.scalars().all()
 
         available_rooms = []
-
+        # Для каждого отеля получаем ограничения из шахматки
+        chessboard_data = {}
+        for hotel_id in hotel_ids:
+            chessboard_data[hotel_id] = (
+                await ChessBoardDAO.get_available_rooms_by_dates(
+                    session=session,
+                    hotel_id=hotel_id,
+                    check_in_date=check_in_date,
+                    check_out_date=check_out_date,
+                )
+            )
         # Для каждого отеля получаем количество забронированных комнат и фильтруем комнаты
         for hotel_id in hotel_ids:
             booked_rooms_count = await BookingDAO.get_booked_rooms_count_by_hotel_id(
@@ -165,6 +177,7 @@ class HotelSearchDAO(HotelDAO):
                 hotel_id=hotel_id,
             )
 
+            hotel_chessboard = chessboard_data.get(hotel_id, {})
             # Отбираем комнаты, принадлежащие конкретному отелю
             hotel_rooms = [room for room in all_rooms if room.hotel_id == hotel_id]
 
@@ -172,10 +185,30 @@ class HotelSearchDAO(HotelDAO):
                 room_id = room.id
                 room_quantity = getattr(room, "quantity", 1)
                 booked_count = booked_rooms_count.get(room_id, 0)
+                # Проверяем ограничения шахматки
+                room_availability = hotel_chessboard.get(room_id, {})
+                is_available_by_chessboard = True
+                min_available_from_chessboard = room_quantity
 
-                # Если комната полностью забронирована, пропускаем её
-                if booked_count >= room_quantity:
+                if room_availability:
+                    current_date = check_in_date
+                    while current_date < check_out_date:
+                        if current_date in room_availability:
+                            available_count = room_availability[current_date]
+                            min_available_from_chessboard = min(
+                                min_available_from_chessboard, available_count
+                            )
+                            if available_count <= booked_count:
+                                is_available_by_chessboard = False
+                                break
+                        current_date += timedelta(days=1)
+
+                # Если комната недоступна по шахматке или полностью забронирована
+                if not is_available_by_chessboard or booked_count >= room_quantity:
                     continue
+                # Если комната полностью забронирована, пропускаем её
+                # if booked_count >= room_quantity:
+                #     continue
 
                 # Проверяем доступность для каждого значения количества гостей
                 if guests is None:
