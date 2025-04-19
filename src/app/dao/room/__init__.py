@@ -192,6 +192,7 @@ class RoomDAO(BaseDAO):
             .options(
                 selectinload(cls.model.room_type),
                 selectinload(cls.model.room_images),
+                selectinload(cls.model.room_prices),
             )
             .where(cls.model.id == room_id)
         )
@@ -217,5 +218,6 @@ class RoomDAO(BaseDAO):
             "amenities": (
                 room_amenities.get("room_amenity_categories") if room_amenities else []
             ),
+            "room_prices": room.room_prices,
         }
         return room_dict
