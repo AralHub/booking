@@ -42,15 +42,17 @@ RATING_FIELD_UPDATE = Annotated[
 GUEST_QUANTITY_FIELD = Annotated[
     int,
     Field(
-        ge=2,
-        examples=[2],
+        ge=1,
+        le=30,
+        examples=[1],
     ),
 ]
 GUEST_QUANTITY_FIELD_UPDATE = Annotated[
     int | None,
     Field(
-        ge=2,
-        examples=[2],
+        ge=1,
+        le=30,
+        examples=[1],
         default=None,
     ),
 ]
@@ -58,6 +60,7 @@ MAX_GUESTS_FIELD = Annotated[
     int,
     Field(
         ge=1,
+        le=30,
         examples=[1],
     ),
 ]

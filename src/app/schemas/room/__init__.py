@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.schemas.room.amenities import RoomAmenityRead
 from app.schemas.room.images import RoomImageRead
-
+from app.schemas.room.price import RoomPriceCreate
 from ..field_validation import MAX_GUESTS_FIELD, MAX_GUESTS_FIELD_UPDATE, zero_to_none
 
 
@@ -45,6 +45,7 @@ class RoomUpdate(BaseModel):
     room_area: float | None = None
     room_type_id: int | None = None
     amenities: list[int] | None = None
+    room_prices: list[RoomPriceCreate] | None = None
 
     @field_validator("room_type_id")
     def validate_and_sanitize_path(cls, v: int | None) -> int | None:

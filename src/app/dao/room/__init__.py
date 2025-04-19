@@ -5,7 +5,9 @@ from app.core.exceptions.http_exceptions import (
     NotFoundException,
     BadRequestException,
 )
+from app.core.i18n.translations import ErrorCode
 from app.dao import BaseDAO
+from app.dao.room.price import RoomPriceDAO
 from app.models.room import Room
 from app.models.room.types import RoomType
 from app.schemas.room import (
@@ -90,20 +92,6 @@ class RoomDAO(BaseDAO):
             )
             if not room_type:
                 raise NotFoundException("Room type does not exist")
-        updated_room = await RoomDAO.update(
-            session=session,
-            values=RoomUpdateInternal(
-                **room_data.model_dump(
-                    exclude_none=True,
-                    exclude_unset=True,
-                    exclude={"amenities"},
-                )
-            ),
-            filters=RoomFilter(
-                id=room_id,
-                hotel_id=hotel_id,
-            ),
-        )
         if amenities and len(amenities) != 0:
             await RoomAmenityDAO.delete_room_all_amenities(
                 session=session,
@@ -114,6 +102,42 @@ class RoomDAO(BaseDAO):
                 room_id=room_id,
                 amenities=amenities,
             )
+        use_dinamic_price = False
+        if room_data.room_prices and len(room_data.room_prices) == room_data.max_guests:
+            await RoomPriceDAO.delete_room_all_prices(
+                session=session,
+                room_id=room_id,
+            )
+            await RoomPriceDAO.create_room_prices(
+                session=session,
+                room_id=room_id,
+                prices=room_data.room_prices,
+                max_guests=room_data.max_guests,
+            )
+            use_dinamic_price = True
+        else:
+            raise BadRequestException(
+                error_code=ErrorCode.BAD_REQUEST,
+                detail="Room prices are not valid",
+            )
+        updated_room = await RoomDAO.update(
+            session=session,
+            values=RoomUpdateInternal(
+                **room_data.model_dump(
+                    exclude_none=True,
+                    exclude_unset=True,
+                    exclude={
+                        "amenities",
+                        "room_prices",
+                    },
+                ),
+                use_dinamic_price=use_dinamic_price,
+            ),
+            filters=RoomFilter(
+                id=room_id,
+                hotel_id=hotel_id,
+            ),
+        )
         return updated_room
 
     @classmethod
