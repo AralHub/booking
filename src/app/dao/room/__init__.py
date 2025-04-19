@@ -115,7 +115,10 @@ class RoomDAO(BaseDAO):
                 max_guests=room_data.max_guests,
             )
             use_dinamic_price = True
-        else:
+        if room_data.room_prices and (
+            len(room_data.room_prices) != room_data.max_guests
+            or len(room_data.room_prices) == 0
+        ):
             raise BadRequestException(
                 error_code=ErrorCode.BAD_REQUEST,
                 detail="Room prices are not valid",
