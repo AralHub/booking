@@ -3,7 +3,7 @@ from fastapi import (
     HTTPException,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.api.dependencies.partner import get_partner_by_token_sub
 from app.core import db_helper
 from app.core.auth.helpers import ACCESS_TOKEN_TYPE
 from app.core.auth.validation import (
@@ -102,3 +102,23 @@ async def get_optional_active_auth_user(
     except Exception as exc:
         logger.exception(f"Unexpected error in get_optional_user: {exc}")
         return None
+
+
+async def get_current_active_user_or_partner(
+    payload: dict = Depends(get_current_token_payload),
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    user = await get_user_by_token_sub(
+        session=session,
+        payload=payload,
+    )
+    if user:
+        if user.is_active:
+            return user
+    partner = await get_partner_by_token_sub(
+        session=session,
+        payload=payload,
+    )
+    if partner:
+        return partner
+    raise UnauthorizedException(detail="Inactive user")
