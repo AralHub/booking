@@ -105,7 +105,6 @@ async def cancel_booking(
         session=session,
         filters=BookingFilter(
             id=booking_id,
-            user_id=current_user.id,
         ),
         update_data=BookingUpdateInternal(
             status=BookingStatus.CANCELLED,
