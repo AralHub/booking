@@ -25,11 +25,6 @@ class RoomPriceDAO(BaseDAO):
                 room_id=room_id,
             ),
         )
-        if not room_prices:
-            raise NotFoundException(
-                detail="Room prices not found",
-                error_code=ErrorCode.ROOM_PRICE_NOT_FOUND,
-            )
         return room_prices
 
     @classmethod
@@ -46,7 +41,7 @@ class RoomPriceDAO(BaseDAO):
                 guest_quantity=guest_quantity,
             ),
         )
-        return room_price_data.price if room_price_data else None
+        return room_price_data
 
     @classmethod
     async def create_room_prices(

@@ -101,13 +101,19 @@ class RoomSearchDAO(RoomDAO):
                 continue  # Room can't accommodate all guest counts
 
             # available_quantity = room.quantity - booked_count
-
-            # Fetch the price for the room considering guest count
-            price = await RoomPriceDAO.get_room_price_by_guest_quantity(
+            room_prices = await RoomPriceDAO.get_room_prices(
                 session=session,
                 room_id=room.id,
-                guest_quantity=guest_count,
             )
+            # room_prices = []
+            # for guest_count in guests:
+            #     print(guest_count)
+            #     room_price = await RoomPriceDAO.get_room_price_by_guest_quantity(
+            #         session=session,
+            #         room_id=room.id,
+            #         guest_quantity=guest_count,
+            #     )
+            #     room_prices.append(room_price)
             room_amenities = await RoomAmenityDAO.get_room_amenities(
                 session=session,
                 room_id=room.id,
@@ -132,7 +138,7 @@ class RoomSearchDAO(RoomDAO):
                     else []
                 ),
                 "images": room_images if room_images else [],
-                "price_per_guest": price if price else None,
+                "prices": room_prices if room_prices else [],
             }
             rooms_data.append(room_data)
 
