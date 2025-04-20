@@ -652,7 +652,7 @@ class BookingDAO(BaseDAO):
             select(Booking).where(
                 Booking.user_id == user_id,
                 Booking.hotel_id == hotel_id,
-                Booking.check_out_date < current_date,
+                Booking.check_out_date <= current_date,
                 Booking.status == BookingStatus.COMPLETED,
             )
         )
