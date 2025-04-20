@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
-from app.api.dependencies.user import get_current_active_auth_user
+from app.api.dependencies.partner import get_current_active_auth_partner
+from app.api.dependencies.user import (
+    get_current_active_auth_user,
+    get_current_active_user_or_partner,
+)
+from app.core.i18n.responses import BaseResponse
 from app.core import SessionDep, TransactionSessionDep
 from app.core.utils import redis_booking
 from app.dao.booking import BookingDAO
@@ -14,6 +19,7 @@ from app.schemas.booking import (
 )
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.user import UserRead
+from app.schemas.partner import PartnerRead
 
 router = APIRouter(
     tags=["Bookings"],
@@ -92,13 +98,16 @@ async def create_booking(
     )
 
 
-@router.put("/bookings/{booking_id}/cancel")
+@router.put(
+    "/bookings/{booking_id}/cancel",
+    response_model=BaseResponse,
+)
 async def cancel_booking(
     booking_id: int,
-    current_user: UserRead = Depends(get_current_active_auth_user),
+    current_user: UserRead = Depends(get_current_active_user_or_partner),
     session=TransactionSessionDep,
 ):
-    return await BookingDAO.update(
+    await BookingDAO.update(
         session=session,
         filters=BookingFilter(
             id=booking_id,
@@ -107,4 +116,32 @@ async def cancel_booking(
         update_data=BookingUpdateInternal(
             status=BookingStatus.CANCELLED,
         ),
+    )
+    return BaseResponse(
+        success=True,
+        message="Бронь отменена",
+    )
+
+
+@router.put(
+    "/bookings/{booking_id}/complete",
+    response_model=BaseResponse,
+)
+async def complete_booking(
+    booking_id: int,
+    partner: PartnerRead = Depends(get_current_active_auth_partner),
+    session=TransactionSessionDep,
+):
+    await BookingDAO.update(
+        session=session,
+        filters=BookingFilter(
+            id=booking_id,
+        ),
+        values=BookingUpdateInternal(
+            status=BookingStatus.COMPLETED,
+        ),
+    )
+    return BaseResponse(
+        success=True,
+        message="Бронь завершена",
     )
