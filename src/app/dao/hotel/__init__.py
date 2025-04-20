@@ -316,11 +316,11 @@ class HotelDAO(BaseDAO):
         if not db_hotel_category:
             raise NotFoundException("Hotel category not found")
         generated_slug = await generate_slug_for_hotel(
-            name=hotel_update_data.name,
+            name=hotel_update_data.name_en,
         )
         hotel_update = HotelNameUpdate(
-            name=hotel_update_data.name,
-            description=hotel_update_data.description,
+            name=hotel_update_data.to_dict_name(),
+            description=hotel_update_data.to_dict_description(),
             slug=generated_slug,
             hotel_category_id=hotel_update_data.hotel_category_id,
         )
@@ -361,14 +361,10 @@ class HotelDAO(BaseDAO):
             session=session,
             values=RuleUpdate(
                 check_in_from=(
-                    hotel_update_data.check_in
-                    if hotel_update_data.check_in
-                    else None
+                    hotel_update_data.check_in if hotel_update_data.check_in else None
                 ),
                 check_out_from=(
-                    hotel_update_data.check_out
-                    if hotel_update_data.check_out
-                    else None
+                    hotel_update_data.check_out if hotel_update_data.check_out else None
                 ),
             ),
             filters=RuleFilter(hotel_id=hotel_id),
