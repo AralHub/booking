@@ -71,6 +71,8 @@ class GuestInformationUpdate(BaseModel):
 class HotelFullUpdate(
     MultilingualNameBase,
     MultilingualDescriptionBase,
+    BookingInformationUpdate,
+    GuestInformationUpdate,
     BaseModel,
 ):
     hotel_category_id: int | None = None
@@ -79,8 +81,6 @@ class HotelFullUpdate(
     latitude: float | None = None
     longitude: float | None = None
     amenities: list[int] | None = None
-    information_for_booking: BookingInformationUpdate
-    information_for_guests: GuestInformationUpdate
 
 
 class HotelFullUpdateInternal(HotelFullUpdate):

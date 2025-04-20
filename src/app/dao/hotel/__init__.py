@@ -336,10 +336,10 @@ class HotelDAO(BaseDAO):
         await HotelInfoDAO.update(
             session=session,
             values=HotelInfoUpdate(
-                first_phone_number=hotel_update_data.information_for_guests.first_phone_for_guests,
-                second_phone_number=hotel_update_data.information_for_guests.second_phone_for_guests,
-                email=hotel_update_data.information_for_guests.email_for_guests,
-                site_url=hotel_update_data.information_for_guests.site_url,
+                first_phone_number=hotel_update_data.first_phone_for_guests,
+                second_phone_number=hotel_update_data.second_phone_for_guests,
+                email=hotel_update_data.email_for_guests,
+                site_url=hotel_update_data.site_url,
             ),
             filters=HotelInfoFilter(
                 hotel_id=hotel_id,
@@ -361,13 +361,13 @@ class HotelDAO(BaseDAO):
             session=session,
             values=RuleUpdate(
                 check_in_from=(
-                    hotel_update_data.information_for_booking.check_in
-                    if hotel_update_data.information_for_booking.check_in
+                    hotel_update_data.check_in
+                    if hotel_update_data.check_in
                     else None
                 ),
                 check_out_from=(
-                    hotel_update_data.information_for_booking.check_out
-                    if hotel_update_data.information_for_booking.check_out
+                    hotel_update_data.check_out
+                    if hotel_update_data.check_out
                     else None
                 ),
             ),
