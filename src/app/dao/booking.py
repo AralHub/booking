@@ -258,14 +258,14 @@ class BookingDAO(BaseDAO):
         )
 
         # Если не удалось получить динамическую цену, возвращаем базовую
-        if dynamic_price is None:
+        if dynamic_price.price is None:
             logger.warning(
                 f"Failed to get dynamic price, using base price: {room.base_price}"
             )
             return room.base_price
 
         logger.info(f"Using dynamic price: {dynamic_price}")
-        return dynamic_price
+        return dynamic_price.price
 
     # endregion
     # region Get Booked Rooms
