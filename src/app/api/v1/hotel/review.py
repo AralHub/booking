@@ -77,7 +77,6 @@ async def create_hotel_reviews(
     if not completed_bookings:
         raise BadRequestException(
             error_code=ErrorCode.BAD_REQUEST,
-            message="Вы можете оставить отзыв только после завершенной брони в этом отеле",
         )
     existing_review = await ReviewDAO.get_one_or_none(
         session=session,
@@ -89,7 +88,6 @@ async def create_hotel_reviews(
     if existing_review:
         raise DuplicateValueException(
             error_code=ErrorCode.DUPLICATE_VALUE,
-            message="Вы уже оставили отзыв в этом отеле",
         )
     created_review = await ReviewDAO.create_hotel_review(
         session=session,
