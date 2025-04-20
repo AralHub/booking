@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Integer, Numeric
+from sqlalchemy import ForeignKey, Integer, Numeric, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
@@ -19,3 +19,10 @@ class RoomPrice(IntIdPkMixin, Base):
     )
     price: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
     room: Mapped["Room"] = relationship(back_populates="room_prices")
+    __table_args__ = (
+        UniqueConstraint(
+            "room_id",
+            "guest_quantity",
+            name="unique_room_guest_quantity",
+        ),
+    )
