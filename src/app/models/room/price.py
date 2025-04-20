@@ -17,7 +17,10 @@ class RoomPrice(IntIdPkMixin, Base):
         Integer,
         nullable=False,
     )
-    price: Mapped[Decimal] = mapped_column(Numeric, nullable=True)
+    price: Mapped[Decimal] = mapped_column(
+        Numeric,
+        nullable=False,
+    )
     room: Mapped["Room"] = relationship(back_populates="room_prices")
     __table_args__ = (
         UniqueConstraint(
