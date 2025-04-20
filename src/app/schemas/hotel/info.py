@@ -38,6 +38,7 @@ class HotelNameCreateInternal(HotelNameCreate):
 
 class HotelNameUpdate(BaseModel):
     name: dict[str, str] | None = None
+    slug: str | None = None
     description: dict[str, str] | None = None
     hotel_category_id: int | None = None
 
