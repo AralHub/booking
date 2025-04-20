@@ -375,7 +375,7 @@ class HotelDAO(BaseDAO):
             await HotelAmenityDAO.add_hotel_amenities(
                 session=session,
                 hotel_id=hotel_id,
-                hotel_amenities_data=hotel_update_data.amenities,
+                amenities=hotel_update_data.amenities,
             )
 
         return hotel
