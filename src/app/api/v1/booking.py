@@ -6,8 +6,8 @@ from app.api.dependencies.user import (
     get_current_active_auth_user,
     get_current_active_user_or_partner,
 )
-from app.core.i18n.responses import BaseResponse
 from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import BaseResponse
 from app.core.utils import redis_booking
 from app.dao.booking import BookingDAO
 from app.models.booking import BookingStatus, BookingType
@@ -18,8 +18,8 @@ from app.schemas.booking import (
     BookingUpdateInternal,
 )
 from app.schemas.hotel.info import HotelNameRead
-from app.schemas.user import UserRead
 from app.schemas.partner import PartnerRead
+from app.schemas.user import UserRead
 
 router = APIRouter(
     tags=["Bookings"],
@@ -84,17 +84,11 @@ async def create_booking(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=TransactionSessionDep,
 ):
-    booking_type = (
-        BookingType.PERSONAL
-        if current_user.role == BookingType.PERSONAL
-        else BookingType.BUSINESS
-    )
     return await BookingDAO.create_booking(
         session=session,
         booking_data=booking_create_data,
         user_id=current_user.id,
         hotel_id=hotel.id,
-        booking_type=booking_type,
     )
 
 

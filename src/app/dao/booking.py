@@ -64,7 +64,6 @@ class BookingDAO(BaseDAO):
         booking_data: BookingCreateMultipleRooms,
         user_id: int,
         hotel_id: int,
-        booking_type: str,
     ):
         # проверка на корректность дат
         if booking_data.check_in_date >= booking_data.check_out_date:
@@ -122,7 +121,7 @@ class BookingDAO(BaseDAO):
             hotel_id=hotel_id,
             status=BookingStatus.BOOKED,
             user_id=user_id,
-            booking_type=booking_type,
+            booking_type=booking_data.booking_type,
             payment_method_id=booking_data.payment_method_id,
             time=booking_data.time,
         )
