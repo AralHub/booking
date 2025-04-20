@@ -248,13 +248,8 @@ class BookingDAO(BaseDAO):
         room: Room,
         guest_quantity: int,
     ) -> float:
-        if room.use_dinamic_price:
-            db_room_prices = await RoomPriceDAO.get_all(
-                session=session,
-                filters=RoomPriceFilter(room_id=room.id),
-            )
-            if not db_room_prices:
-                return room.base_price
+        if not room.use_dinamic_price:
+            return room.base_price
 
         dynamic_price = await RoomPriceDAO.get_room_price_by_guest_quantity(
             session=session,
@@ -697,24 +692,25 @@ class BookingDAO(BaseDAO):
             .join(Room, BookedRoom.room_id == Room.id)
             .join(RoomType, Room.room_type_id == RoomType.id)
             .where(
-                Room.hotel_id == hotel_id, 
+                Room.hotel_id == hotel_id,
                 Booking.status == BookingStatus.BOOKED,
                 # Добавляем фильтрацию по датам - бронирования, которые
                 # пересекаются с указанным периодом
                 or_(
                     and_(
                         Booking.check_in_date <= end_date,
-                        Booking.check_out_date > start_date
+                        Booking.check_out_date > start_date,
                     )
-                )
+                ),
             )
             .order_by(Room.id)
         )
 
-        
         bookings_result = await session.execute(bookings_query)
         bookings = bookings_result.all()
-        logger.info(f"Найдено {len(bookings)} бронирований, пересекающихся с указанным периодом")
+        logger.info(
+            f"Найдено {len(bookings)} бронирований, пересекающихся с указанным периодом"
+        )
 
         # Получаем уникальные комнаты
         rooms_query = (

@@ -130,7 +130,7 @@ class RoomSearchDAO(RoomDAO):
                     else []
                 ),
                 "images": room_images if room_images else [],
-                "prices": room_prices if room_prices else None,
+                "prices": room_prices if room_prices else [],
             }
             rooms_data.append(room_data)
 
