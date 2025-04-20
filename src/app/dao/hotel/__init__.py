@@ -316,6 +316,7 @@ class HotelDAO(BaseDAO):
         if not db_hotel_category:
             raise NotFoundException("Hotel category not found")
         generated_slug = await generate_slug_for_hotel(
+            session=session,
             name=hotel_update_data.name_en,
         )
         hotel_update = HotelNameUpdate(
