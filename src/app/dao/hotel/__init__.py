@@ -172,6 +172,7 @@ class HotelDAO(BaseDAO):
                 "name": hotel.name,
                 "slug": hotel.slug,
                 "description": hotel.description,
+                "category_id": hotel.hotel_category.id,
                 "category": hotel.hotel_category.name if hotel.hotel_category else None,
                 "rating": (
                     hotel.hotel_rating.average_rating if hotel.hotel_rating else None
