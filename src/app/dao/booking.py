@@ -748,12 +748,12 @@ class BookingDAO(BaseDAO):
 
                     # Разбиваем диапазон дат на отдельные дни
                     current_date = booking_start
-                    while current_date < booking_end:
+                    while current_date <= booking_end:
                         date_str = current_date.isoformat()
                         if date_str not in room_bookings:
                             room_bookings[date_str] = {
                                 "booking_id": booking.id,
-                                "check_date": date_str,
+                                "check_in_date": date_str,
                                 "count": 1,
                             }
                         else:
