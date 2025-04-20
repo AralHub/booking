@@ -20,10 +20,14 @@ router = APIRouter(
 async def get_review_categories(
     session=SessionDep,
 ):
-    return await ReviewCategoryDAO.get_all(
+    review_categories = await ReviewCategoryDAO.get_all(
         session=session,
         filters=None,
     )
+    return {
+        "data": review_categories,
+        "total": len(review_categories),
+    }
 
 
 @router.post(
