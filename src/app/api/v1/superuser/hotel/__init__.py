@@ -10,6 +10,7 @@ from app.core.i18n.responses import (
     ListResponse,
 )
 from app.dao.hotel import HotelDAO
+from app.models.booking import BookingStatus
 from app.schemas.hotel.info import (
     HotelNameFilter,
     HotelNameRead,
@@ -36,9 +37,10 @@ async def get_hotels(
     }
 
 
-@router.put("/{hotel_id}/status")
+@router.put("/{hotel_id}/activate")
 async def update_hotel(
     hotel_id: int,
+    status: BookingStatus,
     hotel: HotelNameRead = Depends(validate_hotel),
     session=TransactionSessionDep,
 ):
