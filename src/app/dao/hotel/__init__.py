@@ -186,6 +186,7 @@ class HotelDAO(BaseDAO):
                         "latitude": hotel.location.latitude,
                         "longitude": hotel.location.longitude,
                     },
+                    "city_id": hotel.location.city_id,
                     "city": city_data.get("name") if city_data else None,
                     "city_slug": city_data.get("slug") if city_data else None,
                     "distance_to_center": (
