@@ -19,6 +19,7 @@ from app.core.i18n.responses import (
 )
 from app.core.i18n.translations import ErrorCode
 from app.dao.booking import BookingDAO
+from app.dao.hotel.rating import HotelRatingDAO
 from app.dao.hotel.review import ReviewDAO
 from app.schemas.hotel.info import HotelNameRead
 from app.schemas.review import (
@@ -142,6 +143,10 @@ async def delete_hotel_review(
             user_id=review.user_id,
             hotel_id=hotel.id,
         ),
+    )
+    await HotelRatingDAO.recreate_hotel_sum_rating(
+        session=session,
+        hotel_id=hotel.id,
     )
     return BaseResponse(
         success=True,

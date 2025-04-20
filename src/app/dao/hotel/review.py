@@ -200,7 +200,10 @@ class ReviewDAO(BaseDAO):
                     session=session,
                     values=rating_data,
                 )
-
+        await HotelRatingDAO.recreate_hotel_sum_rating(
+            session=session,
+            hotel_id=hotel_id,
+        )
         updated_review = await cls.get_one_or_none(
             session=session,
             filters=ReviewFilter(id=review_id),
