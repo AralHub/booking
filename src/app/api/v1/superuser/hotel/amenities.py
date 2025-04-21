@@ -20,6 +20,7 @@ from app.schemas.hotel.amenities import (
     HotelAmenityFilter,
     HotelAmenityRead,
     HotelAmenityUpdate,
+    HotelAmenityUpdateInternal,
 )
 
 router = APIRouter(
@@ -54,7 +55,9 @@ async def get_all_hotel_amenities(
 async def create_hotel_amenity(
     category_id: int,
     hotel_amenity_data: HotelAmenityCreate,
-    validate_hotel_amenities_category: HotelAmenityCategoryRead = Depends(validate_hotel_amenities_category),
+    validate_hotel_amenities_category: HotelAmenityCategoryRead = Depends(
+        validate_hotel_amenities_category
+    ),
     session=TransactionSessionDep,
 ):
     """
@@ -173,7 +176,9 @@ async def update_hotel_amenities_category(
         filters=HotelAmenityCategoryFilter(
             id=category_id,
         ),
-        values=amenity_update_data,
+        values=HotelAmenityUpdateInternal(
+            name=amenity_update_data.to_dict_name,
+        ),
     )
     return DataResponse(
         data=updated_category,
