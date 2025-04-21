@@ -55,6 +55,10 @@ class HotelAmenityUpdate(MultilingualNameBaseUpdate):
     is_popular: bool | None = None
 
 
+class HotelAmenityUpdateInternal(BaseModel):
+    name: dict[str, str]
+
+
 class HotelAmenityFilter(BaseModel):
     id: int | None = None
     hotel_amenity_category_id: int | None = None
