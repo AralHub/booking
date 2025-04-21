@@ -35,7 +35,7 @@ class HotelAmenityCategoryRead(BaseModel):
 
 
 class HotelAmenityCreate(MultilingualNameBase):
-    is_popular: bool
+    is_popular: bool | None = None
 
 
 class HotelAmenityCreateInternal(BaseModel):
