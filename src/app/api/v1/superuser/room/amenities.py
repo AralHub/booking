@@ -76,7 +76,6 @@ async def create_room_amenity(
     response_model=DataResponse[RoomAmenityRead],
 )
 async def update_room_amenity(
-    category_id: int,
     amenity_id: int,
     amenity_update_data: RoomAmenityUpdate,
     room_amenity: RoomAmenityRead = Depends(validate_room_amenity),
@@ -89,9 +88,10 @@ async def update_room_amenity(
         session=session,
         filters=RoomAmenityFilter(
             id=amenity_id,
-            room_amenity_category_id=category_id,
         ),
-        values=amenity_update_data,
+        values=RoomAmenityUpdateInternal(
+            name=amenity_update_data.to_dict_name(),
+        ),
     )
     return DataResponse(
         data=updated_amenity,
