@@ -55,5 +55,8 @@ async def update_hotel(
     )
     return BaseResponse(
         success=True,
-        message=RESPONSE_MESSAGES.DATA_UPDATED,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Hotel status updated successfully",
+        ),
     )
