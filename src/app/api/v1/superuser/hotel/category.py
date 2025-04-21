@@ -66,7 +66,8 @@ async def update_hotel_category(
     return await HotelCategoryDAO.update(
         session=session,
         values=HotelCategoryUpdateInternal(
-            category_update_data.to_dict_name(),
+            name=category_update_data.to_dict_name(),
+            description=category_update_data.to_dict_description(),
         ),
         filters=HotelCategoryFilter(id=category_id),
     )
