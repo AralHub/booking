@@ -13,6 +13,7 @@ from app.schemas.hotel.category import (
     HotelCategoryRead,
     HotelCategoryUpdate,
     HotelCategoryUpdateInternal,
+    HotelCategoryCreateInternal,
 )
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,10 @@ async def create_hotel_category(
 ):
     return await HotelCategoryDAO.create(
         session=session,
-        values=category_create_data,
+        values=HotelCategoryCreateInternal(
+            name=category_create_data.to_dict_name(),
+            description=category_create_data.to_dict_description(),
+        ),
     )
 
 
