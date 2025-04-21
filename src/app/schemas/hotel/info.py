@@ -44,7 +44,6 @@ class HotelNameUpdate(BaseModel):
 
 
 class HotelNameUpdateInternal(HotelNameUpdate):
-    id: int
     is_active: bool | None = None
     slug: str | None = None
 
