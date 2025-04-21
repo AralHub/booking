@@ -116,7 +116,6 @@ async def verify_phone_number(
     verify_data: VerifyPhoneNumber,
     session=TransactionSessionDep,
 ):
-
     success, _ = await redis_sms.verify_sms_code(
         phone=verify_data.phone_number,
         code=verify_data.code,

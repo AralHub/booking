@@ -20,7 +20,6 @@ async def get_hotel_rating(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
-
     hotel_rating = await HotelRatingDAO.get_hotel_summary_rating(
         session=session,
         hotel_id=hotel.id,

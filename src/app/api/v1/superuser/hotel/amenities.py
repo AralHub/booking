@@ -54,9 +54,7 @@ async def get_all_hotel_amenities(
 async def create_hotel_amenity(
     category_id: int,
     hotel_amenity_data: HotelAmenityCreate,
-    validate_hotel_amenities_category: HotelAmenityCategoryRead = Depends(
-        validate_hotel_amenities_category
-    ),
+    validate_hotel_amenities_category: HotelAmenityCategoryRead = Depends(validate_hotel_amenities_category),
     session=TransactionSessionDep,
 ):
     """

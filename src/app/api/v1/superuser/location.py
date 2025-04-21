@@ -95,9 +95,7 @@ async def update_country(
         ),
     )
     if db_country and db_country.id != country_id:
-        raise BadRequestException(
-            f"Country with name {country_update_data.name} already exists"
-        )
+        raise BadRequestException(f"Country with name {country_update_data.name} already exists")
     updated_country = await CountryDAO.update(
         session=session,
         filters=CountryFilter(id=country_id),
@@ -188,8 +186,7 @@ async def get_all_cities_by_country_id(
             "page": page,
             "page_size": page_size,
             "total": city_count or 0,
-            "total_pages": (city_count or 0) // page_size
-            + ((city_count or 0) % page_size > 0),
+            "total_pages": (city_count or 0) // page_size + ((city_count or 0) % page_size > 0),
         },
     )
 

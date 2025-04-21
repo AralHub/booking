@@ -14,9 +14,7 @@ async def generate_slug_for_hotel(
 
     # Формируем запрос для поиска всех slug, начинающихся с base_slug
     # Используем LIKE с шаблоном base_slug-% или точно совпадающим с base_slug
-    query = select(Hotel.slug).where(
-        (Hotel.slug == base_slug) | (Hotel.slug.like(f"{base_slug}-%"))
-    )
+    query = select(Hotel.slug).where((Hotel.slug == base_slug) | (Hotel.slug.like(f"{base_slug}-%")))
 
     # Выполняем запрос и получаем все существующие slug
     result = await session.execute(query)
@@ -54,9 +52,7 @@ async def generate_slug_for_city(
 
     # Формируем запрос для поиска всех slug, начинающихся с base_slug
     # Используем LIKE с шаблоном base_slug-% или точно совпадающим с base_slug
-    query = select(City.slug).where(
-        (City.slug == base_slug) | (City.slug.like(f"{base_slug}-%"))
-    )
+    query = select(City.slug).where((City.slug == base_slug) | (City.slug.like(f"{base_slug}-%")))
 
     # Выполняем запрос и получаем все существующие slug
     result = await session.execute(query)

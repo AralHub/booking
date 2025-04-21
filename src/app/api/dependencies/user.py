@@ -3,6 +3,7 @@ from fastapi import (
     HTTPException,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.api.dependencies.partner import get_partner_by_token_sub
 from app.core import db_helper
 from app.core.auth.helpers import ACCESS_TOKEN_TYPE
@@ -71,9 +72,7 @@ async def get_optional_user(
         return user
     except HTTPException as http_exc:
         if http_exc.status_code != 401:
-            logger.exception(
-                f"Unexpected HTTPException in get_optional_user: {http_exc.detail}"
-            )
+            logger.exception(f"Unexpected HTTPException in get_optional_user: {http_exc.detail}")
         return None
     except Exception as exc:
         logger.exception(f"Unexpected error in get_optional_user: {exc}")
@@ -97,9 +96,7 @@ async def get_optional_active_auth_user(
         return user
     except HTTPException as http_exc:
         if http_exc.status_code != 401:
-            logger.exception(
-                f"Unexpected HTTPException in get_optional_user: {http_exc.detail}"
-            )
+            logger.exception(f"Unexpected HTTPException in get_optional_user: {http_exc.detail}")
         return None
     except Exception as exc:
         logger.exception(f"Unexpected error in get_optional_user: {exc}")

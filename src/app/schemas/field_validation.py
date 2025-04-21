@@ -97,9 +97,7 @@ PASSWORD_FIELD = Annotated[
     ),
 ]
 
-PHONE_NUMBER_FIELD = Annotated[
-    str, Field(pattern=r"^[1-9]\d{1,14}$", examples=["998991234567"])
-]
+PHONE_NUMBER_FIELD = Annotated[str, Field(pattern=r"^[1-9]\d{1,14}$", examples=["998991234567"])]
 
 PHONE_NUMBER_FIELD_UPDATE = Annotated[
     str | None,

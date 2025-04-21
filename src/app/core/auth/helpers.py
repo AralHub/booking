@@ -80,4 +80,3 @@ async def create_refresh_token_partner(partner: PartnerBase) -> str:
         "role": "partner",
     }
     return await create_refresh_jwt(jwt_payload)
-

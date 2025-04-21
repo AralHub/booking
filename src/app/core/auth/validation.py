@@ -26,9 +26,7 @@ def validate_token_type(
     current_token_type = payload.get(TOKEN_TYPE_FIELD)
     if current_token_type == token_type:
         return True
-    raise UnauthorizedException(
-        f"Invalid token type {current_token_type!r} expected {token_type!r}"
-    )
+    raise UnauthorizedException(f"Invalid token type {current_token_type!r} expected {token_type!r}")
 
 
 def get_current_token_payload(
@@ -146,7 +144,6 @@ async def authenticate_user(
     password: str,
     session: AsyncSession,
 ) -> UserBase | None:
-
     db_user = await UserDAO.get_one_or_none(
         session=session,
         filters=UserFilter(

@@ -72,9 +72,7 @@ class Room(IntIdPkMixin, Base):
     room_images: Mapped[list["RoomImage"]] = relationship(
         back_populates="room",
     )
-    bed_configurations: Mapped[list["RoomBedConfiguration"]] = relationship(
-        "RoomBedConfiguration", back_populates="room"
-    )
+    bed_configurations: Mapped[list["RoomBedConfiguration"]] = relationship("RoomBedConfiguration", back_populates="room")
     room_prices: Mapped[list["RoomPrice"]] = relationship(
         "RoomPrice",
         back_populates="room",

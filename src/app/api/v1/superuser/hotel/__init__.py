@@ -16,6 +16,7 @@ from app.schemas.hotel.info import (
     HotelNameRead,
     HotelNameUpdateInternal,
 )
+from app.schemas.user import UserRead
 
 router = APIRouter(
     tags=["Superuser Hotels"],
@@ -25,6 +26,7 @@ router = APIRouter(
 
 @router.get("")
 async def get_hotels(
+    superuser: UserRead = Depends(get_current_superuser),
     session=SessionDep,
 ):
     hotels = await HotelDAO.get_all(
@@ -37,10 +39,11 @@ async def get_hotels(
     }
 
 
-@router.put("/{hotel_id}/activate")
+@router.put("/{hotel_id}/change-status")
 async def update_hotel(
     hotel_id: int,
     status: BookingStatus,
+    superuser: UserRead = Depends(get_current_superuser),
     hotel: HotelNameRead = Depends(validate_hotel),
     session=TransactionSessionDep,
 ):

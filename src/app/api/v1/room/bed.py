@@ -57,7 +57,6 @@ async def add_room_beds(
     room: RoomRead = Depends(validate_hotel_room_by_slug),
     session=TransactionSessionDep,
 ):
-
     for bed_conf in room_bed_conf.bed_configurations:
         bed_type = await BedTypeDAO.get_one_or_none(
             session=session,

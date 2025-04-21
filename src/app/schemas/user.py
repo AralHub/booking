@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -49,9 +48,9 @@ class UserBase(BaseModel):
 
 class UserRead(UserBase, TimestampSchema):
     id: int
-    birthday: Optional[BIRTHDAY_FIELD] = None
-    gender: Optional[GENDER_FIELD] = None
-    country_id: Optional[int] = None
+    birthday: BIRTHDAY_FIELD | None = None
+    gender: GENDER_FIELD | None = None
+    country_id: int | None = None
     role: BookingType | None = None
 
 

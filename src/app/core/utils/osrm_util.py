@@ -66,9 +66,7 @@ class OSRMDistanceCalculator:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status != 200:
-                    raise ValueError(
-                        f"OSRM API error: {response.status} - {await response.text()}"
-                    )
+                    raise ValueError(f"OSRM API error: {response.status} - {await response.text()}")
                 return await response.json()
 
     async def calculate_distance(self, route_request: RouteRequest) -> RouteResponse:
@@ -100,9 +98,7 @@ class OSRMDistanceCalculator:
             total_duration=route["duration"],
         )
 
-    async def calculate_distance_between_points(
-        self, point_a: Coordinates, point_b: Coordinates
-    ) -> DistanceResponse:
+    async def calculate_distance_between_points(self, point_a: Coordinates, point_b: Coordinates) -> DistanceResponse:
         """
         Расчет расстояния между двумя точками через OSRM API
 
@@ -122,9 +118,7 @@ class OSRMDistanceCalculator:
         request = RouteRequest(points=points)
         response = await self.calculate_distance(request)
 
-        return DistanceResponse(
-            distance=response.total_distance, duration=response.total_duration
-        )
+        return DistanceResponse(distance=response.total_distance, duration=response.total_duration)
 
 
 distance_calculator = OSRMDistanceCalculator()

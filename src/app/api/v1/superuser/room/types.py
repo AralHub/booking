@@ -61,6 +61,4 @@ async def delete_room_type(
     room_type_id: int,
     session=TransactionSessionDep,
 ):
-    return await RoomTypeDAO.delete(
-        session=session, filters=RoomTypeFilter(id=room_type_id)
-    )
+    return await RoomTypeDAO.delete(session=session, filters=RoomTypeFilter(id=room_type_id))

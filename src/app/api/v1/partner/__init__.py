@@ -45,7 +45,6 @@ async def update_partner_profile(
     session=TransactionSessionDep,
     partner: PartnerRead = Depends(get_current_auth_partner),
 ):
-
     updated_partner = await PartnerDAO.update(
         session=session,
         values=PartnerUpdateInternal(

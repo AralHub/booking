@@ -10,7 +10,7 @@ from app.core import SessionDep, TransactionSessionDep
 from app.core.i18n.responses import BaseResponse
 from app.core.utils import redis_booking
 from app.dao.booking import BookingDAO
-from app.models.booking import BookingStatus, BookingType
+from app.models.booking import BookingStatus
 from app.schemas.booking import (
     BookingCreateMultipleRooms,
     BookingFilter,

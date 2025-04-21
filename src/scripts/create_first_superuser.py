@@ -22,9 +22,7 @@ async def create_first_user(session: AsyncSession) -> None:
         name = settings.first_user.ADMIN_NAME
         phone_number = settings.first_user.ADMIN_PHONE_NUMBER
         username = settings.first_user.ADMIN_USERNAME
-        hashed_password = hash_password(settings.first_user.ADMIN_PASSWORD).decode(
-            "utf-8"
-        )
+        hashed_password = hash_password(settings.first_user.ADMIN_PASSWORD).decode("utf-8")
 
         query = select(User).filter_by(phone_number=phone_number)
         result = await session.execute(query)

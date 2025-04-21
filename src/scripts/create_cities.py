@@ -50,9 +50,7 @@ async def create_fake_db(
                     values=city_create,
                 )
             except Exception as e:
-                logger.error(
-                    f"Failed to add city {city_data.get('name', 'unknown')}: {e}"
-                )
+                logger.error(f"Failed to add city {city_data.get('name', 'unknown')}: {e}")
                 continue
 
         await session.commit()

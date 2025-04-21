@@ -132,8 +132,8 @@ class HotelSearchResult(BaseModel):
     name: dict
     description: dict
     slug: str
-    category: Optional[dict] = None
-    location: Optional[dict] = None
+    category: dict | None = None
+    location: dict | None = None
     reviews_count: int = 0
     rating: float | None = None
     images: list[HotelImageRead] | None = []

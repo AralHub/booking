@@ -1,6 +1,5 @@
 import json
 from datetime import UTC, datetime, timedelta
-from typing import Optional
 
 from app.core.logger import logging
 from app.create_fastapi_app import redis_client
@@ -39,7 +38,7 @@ async def is_blocked(phone: str) -> bool:
     return bool(blocked)
 
 
-async def get_sms_code_data(phone: str) -> Optional[dict]:
+async def get_sms_code_data(phone: str) -> dict | None:
     data = await redis_client.client.get(_get_sms_key(phone))
     if not data:
         return None
@@ -56,16 +55,12 @@ async def save_sms_code(phone: str, code: str) -> tuple[bool, str]:
             return False, "Phone number is blocked. Try again in an hour"
 
         # Получаем счетчик запросов кода
-        request_counter = await redis_client.client.incr(
-            f"{REQUEST_COUNTER_PREFIX}{phone}"
-        )
+        request_counter = await redis_client.client.incr(f"{REQUEST_COUNTER_PREFIX}{phone}")
         logger.info(f"Request counter for {phone}: {request_counter}")
 
         # Если это первый запрос, устанавливаем TTL
         if request_counter == 1:
-            await redis_client.client.expire(
-                f"{REQUEST_COUNTER_PREFIX}{phone}", BLOCK_DURATION
-            )
+            await redis_client.client.expire(f"{REQUEST_COUNTER_PREFIX}{phone}", BLOCK_DURATION)
 
         # Проверяем количество запросов
         if request_counter > MAX_ATTEMPTS:
@@ -79,19 +74,13 @@ async def save_sms_code(phone: str, code: str) -> tuple[bool, str]:
         data = {
             "code": code,
             "created_at": datetime.now(UTC).isoformat(),
-            "expires_at": (
-                datetime.now(UTC) + timedelta(seconds=SMS_EXPIRE_TIME)
-            ).isoformat(),
+            "expires_at": (datetime.now(UTC) + timedelta(seconds=SMS_EXPIRE_TIME)).isoformat(),
         }
 
         # Сохраняем в Redis
-        await redis_client.client.set(
-            _get_sms_key(phone), json.dumps(data), ex=SMS_EXPIRE_TIME
-        )
+        await redis_client.client.set(_get_sms_key(phone), json.dumps(data), ex=SMS_EXPIRE_TIME)
 
-        logger.info(
-            f"Successfully saved code for {phone}. Attempt {request_counter} of {MAX_ATTEMPTS}"
-        )
+        logger.info(f"Successfully saved code for {phone}. Attempt {request_counter} of {MAX_ATTEMPTS}")
         return True, "SMS code saved successfully"
 
     except Exception as e:
@@ -122,9 +111,7 @@ async def verify_sms_code(phone: str, code: str) -> tuple[bool, str]:
             return False, "Too many attempts. Try again in an hour"
 
         # Сохраняем обновленные данные
-        await redis_client.client.set(
-            _get_sms_key(phone), json.dumps(data), ex=SMS_EXPIRE_TIME
-        )
+        await redis_client.client.set(_get_sms_key(phone), json.dumps(data), ex=SMS_EXPIRE_TIME)
 
         if data["code"] != code:
             return False, "Invalid code"

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import APIRouter, Depends, Request, Response, status
 from jwt import InvalidTokenError
 
@@ -211,13 +209,11 @@ async def partner_login(
 async def logout(
     request: Request,
     response: Response,
-    refresh_token_data: Optional[RefreshToken] = None,
+    refresh_token_data: RefreshToken | None = None,
     session=TransactionSessionDep,
 ):
     try:
-        token = refresh_token_data.refresh_token or request.cookies.get(
-            REFRESH_TOKEN_KEY
-        )
+        token = refresh_token_data.refresh_token or request.cookies.get(REFRESH_TOKEN_KEY)
         if not token:
             raise UnauthorizedException("Refresh token is missing")
         await TokenBlacklistDAO.add_to_blacklist(

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import status
 
 from app.core.i18n.translations import ErrorCode, get_error_message
@@ -9,22 +7,18 @@ class CustomException(Exception):
     def __init__(
         self,
         status_code: int,
-        detail: Optional[str] = None,
-        error_code: Optional[str] = None,
+        detail: str | None = None,
+        error_code: str | None = None,
     ):
         self.status_code = status_code
         self.error_code = error_code
-        self.detail = detail or (
-            get_error_message(error_code, "en")
-            if error_code
-            else "Something went wrong"
-        )
+        self.detail = detail or (get_error_message(error_code, "en") if error_code else "Something went wrong")
 
     @classmethod
     def from_error_code(
         cls,
         error_code: ErrorCode,
-        status_code: Optional[int] = None,
+        status_code: int | None = None,
     ):
         """Создает исключение из кода ошибки, используя стандартный статус код для класса"""
         instance = cls.__new__(cls)
@@ -39,8 +33,8 @@ class BadRequestException(CustomException):
 
     def __init__(
         self,
-        detail: Optional[str] = None,
-        error_code: Optional[str] = None,
+        detail: str | None = None,
+        error_code: str | None = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
@@ -54,8 +48,8 @@ class NotFoundException(CustomException):
 
     def __init__(
         self,
-        detail: Optional[str] = None,
-        error_code: Optional[str] = None,
+        detail: str | None = None,
+        error_code: str | None = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
@@ -67,7 +61,7 @@ class NotFoundException(CustomException):
 class ForbiddenException(CustomException):
     _default_status_code = status.HTTP_403_FORBIDDEN
 
-    def __init__(self, detail: Optional[str] = None, error_code: Optional[str] = None):
+    def __init__(self, detail: str | None = None, error_code: str | None = None):
         super().__init__(
             status_code=self._default_status_code,
             detail=detail,
@@ -80,8 +74,8 @@ class UnauthorizedException(CustomException):
 
     def __init__(
         self,
-        detail: Optional[str] = None,
-        error_code: Optional[str] = None,
+        detail: str | None = None,
+        error_code: str | None = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
@@ -95,8 +89,8 @@ class UnprocessableEntityException(CustomException):
 
     def __init__(
         self,
-        detail: Optional[str] = None,
-        error_code: Optional[str] = None,
+        detail: str | None = None,
+        error_code: str | None = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
@@ -110,8 +104,8 @@ class DuplicateValueException(CustomException):
 
     def __init__(
         self,
-        detail: Optional[str] = None,
-        error_code: Optional[str] = None,
+        detail: str | None = None,
+        error_code: str | None = None,
     ):
         super().__init__(
             status_code=self._default_status_code,
@@ -125,8 +119,8 @@ class TooManyRequestsException(CustomException):
 
     def __init__(
         self,
-        detail: Optional[str] = None,
-        error_code: Optional[str] = None,
+        detail: str | None = None,
+        error_code: str | None = None,
     ):
         super().__init__(
             status_code=self._default_status_code,

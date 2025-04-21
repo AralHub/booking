@@ -56,7 +56,6 @@ async def add_hotel_info(
     hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=TransactionSessionDep,
 ):
-
     created_hotel_info = await HotelInfoDAO.create(
         session=session,
         values=HotelInfoCreateInternal(

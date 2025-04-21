@@ -66,7 +66,7 @@ class BaseDAO(Generic[T]):
         cls,
         session: AsyncSession,
         filters: BaseModel | None,
-        order_by: List[Any] | None = None,
+        order_by: list[Any] | None = None,
     ):
         if filters:
             filter_dict = filters.model_dump(exclude_unset=True)
@@ -230,7 +230,7 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def get_by_ids(cls, session: AsyncSession, ids: List[int]) -> List[Any]:
+    async def get_by_ids(cls, session: AsyncSession, ids: list[int]) -> list[Any]:
         """Найти несколько записей по списку ID"""
         logger.info(f"Поиск записей {cls.model.__name__} по списку ID: {ids}")
         try:
@@ -245,7 +245,7 @@ class BaseDAO(Generic[T]):
 
     @classmethod
     async def upsert(
-        cls, session: AsyncSession, unique_fields: List[str], values: BaseModel
+        cls, session: AsyncSession, unique_fields: list[str], values: BaseModel
     ):
         """Создать запись или обновить существующую"""
         values_dict = values.model_dump(exclude_unset=True)
@@ -290,7 +290,7 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def bulk_update(cls, session: AsyncSession, records: List[BaseModel]) -> int:
+    async def bulk_update(cls, session: AsyncSession, records: list[BaseModel]) -> int:
         """Массовое обновление записей"""
         logger.info(f"Массовое обновление записей {cls.model.__name__}")
         try:
@@ -318,7 +318,7 @@ class BaseDAO(Generic[T]):
             raise
 
     @classmethod
-    async def delete_many(cls, session: AsyncSession, ids: List[int]) -> int:
+    async def delete_many(cls, session: AsyncSession, ids: list[int]) -> int:
         """Удалить несколько записей по списку ID"""
         logger.info(f"Удаление записей {cls.model.__name__} по списку ID: {ids}")
         if not ids:

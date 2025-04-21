@@ -20,9 +20,7 @@ logger = logging.getLogger(__name__)
 async def create_hotels(session: AsyncSession):
     try:
         # Загружаем данные из JSON
-        with open(
-            f"{SOURCE_DIR}/scripts/sample_data/fake_db.json", encoding="utf-8"
-        ) as file:
+        with open(f"{SOURCE_DIR}/scripts/sample_data/fake_db.json", encoding="utf-8") as file:
             hotels_data = json.load(file)
 
         for hotel in hotels_data["hotels"]:
@@ -70,11 +68,13 @@ async def create_hotels(session: AsyncSession):
                             room_type_id=hotel_room["room_type_id"],
                         ),
                     )
-                    await RoomAmenityDAO.add_amenities_to_room(
-                        session=session,
-                        amenities=hotel_room["room_amenities"],
-                        room_id=created_room.id,
-                    ),
+                    (
+                        await RoomAmenityDAO.add_amenities_to_room(
+                            session=session,
+                            amenities=hotel_room["room_amenities"],
+                            room_id=created_room.id,
+                        ),
+                    )
 
             except Exception as e:
                 logger.error(f"Failed to create hotel {hotel['name_en']}: {e}")

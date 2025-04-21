@@ -36,7 +36,6 @@ async def get_hotel(
     hotel: HotelNameRead = Depends(valid_hotel_admin_by_slug),
     session=SessionDep,
 ):
-
     if not hotel:
         return {
             "data": {},

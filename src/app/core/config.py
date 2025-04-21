@@ -87,12 +87,8 @@ class CryptSettings(BaseSettings):
     ACCESS_TOKEN_TYPE: str = config("ACCESS_TOKEN_TYPE", default="access")
     REFRESH_TOKEN_TYPE: str = config("REFRESH_TOKEN_TYPE", default="refresh")
     REFRESH_TOKEN_HTTPONLY: bool = config("REFRESH_TOKEN_HTTPONLY", default=True)
-    REFRESH_TOKEN_COOKIE_SECURE: bool = config(
-        "REFRESH_TOKEN_COOKIE_SECURE", default=True
-    )
-    REFRESH_TOKEN_COOKIE_SAMESITE: str = config(
-        "REFRESH_TOKEN_COOKIE_SAMESITE", default="Lax"
-    )
+    REFRESH_TOKEN_COOKIE_SECURE: bool = config("REFRESH_TOKEN_COOKIE_SECURE", default=True)
+    REFRESH_TOKEN_COOKIE_SAMESITE: str = config("REFRESH_TOKEN_COOKIE_SAMESITE", default="Lax")
 
 
 class DatabaseSettings(BaseSettings):
@@ -118,9 +114,7 @@ class PostgresSettings(DatabaseSettings):
     POSTGRES_PORT: int = config("POSTGRES_PORT", default=5432)
     POSTGRES_DB: str = config("POSTGRES_DB", default="postgres")
     POSTGRES_SYNC_PREFIX: str = config("POSTGRES_SYNC_PREFIX", default="postgresql://")
-    POSTGRES_ASYNC_PREFIX: str = config(
-        "POSTGRES_ASYNC_PREFIX", default="postgresql+asyncpg://"
-    )
+    POSTGRES_ASYNC_PREFIX: str = config("POSTGRES_ASYNC_PREFIX", default="postgresql+asyncpg://")
 
     @property
     def POSTGRES_URI(self) -> str:
@@ -204,10 +198,9 @@ class Settings:
     client_side_cache: ClientSideCacheSettings = ClientSideCacheSettings()
     environment: EnvironmentSettings = EnvironmentSettings()
     upload_path: str = config("UPLOAD_PATH", default="uploads")
-    image_base_url: str = config(
-        "IMAGE_BASE_URL", default="http://api.nbooking.uz/"
-    )
+    image_base_url: str = config("IMAGE_BASE_URL", default="http://api.nbooking.uz/")
     max_file_size: int = config("MAX_FILE_SIZE", default=10 * 1024 * 1024)
+
 
 settings = Settings()
 

@@ -18,12 +18,8 @@ async def create_hotel_categories(
     session: AsyncSession,
 ):
     try:
-        HOTEL_CATEGORIES_JSON_PATH = (
-            f"{SOURCE_DIR}/scripts/sample_data/hotel_categories.json"
-        )
-        REVIEW_CATEGORIES_JSON_PATH = (
-            f"{SOURCE_DIR}/scripts/sample_data/review_categories.json"
-        )
+        HOTEL_CATEGORIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/hotel_categories.json"
+        REVIEW_CATEGORIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/review_categories.json"
         with open(HOTEL_CATEGORIES_JSON_PATH, encoding="utf-8") as file:
             hotel_categories_data = json.load(file)
         with open(REVIEW_CATEGORIES_JSON_PATH, encoding="utf-8") as file:
@@ -40,9 +36,7 @@ async def create_hotel_categories(
                     values=hotel_category_create,
                 )
             except Exception as e:
-                logger.error(
-                    f"Failed to add category {hotel_category_item.get('name')["ru"]}: {e}"
-                )
+                logger.error(f"Failed to add category {hotel_category_item.get('name')["ru"]}: {e}")
                 continue
         for review_category_item in review_categories_data["review_categories"]:
             try:
@@ -54,9 +48,7 @@ async def create_hotel_categories(
                     values=review_category_create,
                 )
             except Exception as e:
-                logger.error(
-                    f"Failed to add category {review_category_item.get('name')["ru"]}: {e}"
-                )
+                logger.error(f"Failed to add category {review_category_item.get('name')["ru"]}: {e}")
                 continue
         await session.commit()
         logger.info("Transaction committed successfully")

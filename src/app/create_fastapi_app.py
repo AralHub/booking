@@ -121,9 +121,7 @@ def register_static_docs_routes(app: FastAPI):
     @app.get("/docs", include_in_schema=False)
     async def custom_swagger_ui_html(
         current_user: Any = Depends(
-            get_current_superuser
-            if settings.environment.ENVIRONMENT == EnvironmentOption.STAGING
-            else lambda: None
+            get_current_superuser if settings.environment.ENVIRONMENT == EnvironmentOption.STAGING else lambda: None
         ),
     ):
         return get_swagger_ui_html(
@@ -141,9 +139,7 @@ def register_static_docs_routes(app: FastAPI):
     @app.get("/redoc", include_in_schema=False)
     async def redoc_html(
         current_user: Any = Depends(
-            get_current_superuser
-            if settings.environment.ENVIRONMENT == EnvironmentOption.STAGING
-            else lambda: None
+            get_current_superuser if settings.environment.ENVIRONMENT == EnvironmentOption.STAGING else lambda: None
         ),
     ):
         return get_redoc_html(

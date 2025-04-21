@@ -20,6 +20,4 @@ class UserFavorite(IntIdPkMixin, Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="favorites")
 
-    __table_args__ = (
-        UniqueConstraint("user_id", "hotel_id", name="unique_user_hotel"),
-    )
+    __table_args__ = (UniqueConstraint("user_id", "hotel_id", name="unique_user_hotel"),)

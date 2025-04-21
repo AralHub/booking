@@ -2,7 +2,6 @@ import secrets
 import string
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 import httpx
 from pydantic import BaseModel, EmailStr, Field
@@ -66,7 +65,7 @@ class UserData(BaseModel):
 class UserResponse(BaseModel):
     status: str
     data: UserData
-    id: Optional[int] = None
+    id: int | None = None
 
 
 class SendSMSRequest(BaseModel):
@@ -103,15 +102,11 @@ class AsyncHttpClient:
     ):
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.request(
-                    method=method, url=url, headers=headers, data=data, timeout=timeout
-                )
+                response = await client.request(method=method, url=url, headers=headers, data=data, timeout=timeout)
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as exc:
-                logger.error(
-                    f"HTTP error {exc.response.status_code}: {exc.response.text}"
-                )
+                logger.error(f"HTTP error {exc.response.status_code}: {exc.response.text}")
                 if exc.response.status_code == 401:
                     if "auth/login" in url:
                         raise AuthenticationError("Invalid credentials") from exc

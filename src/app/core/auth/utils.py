@@ -10,7 +10,6 @@ from app.core.config import settings
 # from app.core.utils.eskiz_client import code_generator
 
 
-
 def encode_jwt(
     payload: dict,
     private_key: Path = settings.crypt.PRIVATE_KEY.read_text(),
@@ -67,5 +66,3 @@ async def verify_password(
         password=pwd_bytes,
         hashed_password=hashed_password,
     )
-
-
