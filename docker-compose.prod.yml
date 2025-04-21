@@ -58,28 +58,28 @@ services:
       - ADMINER_DESIGN=dracula
     ports:
       - "8023:8080"
-  # init_scripts:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./src/.env.prod
-  #   depends_on:
-  #     - db
-  #     - web
-  #   volumes:
-  #     - ./src:/code/src
-  #     - ./src/.env.prod:/code/.env
-  #     - ./src/certs:/code/certs:ro
-  #     - ./src/scripts/sample_data:/code/scripts/sample_data
-  #   command: >
-  #     sh -c "
-  #       python -m src.scripts.create_first_superuser &&
-  #       python -m src.scripts.create_cities &&
-  #       python -m src.scripts.create_categories &&
-  #       python -m src.scripts.create_amenities &&
-  #       python -m src.scripts.create_rooms
-  #     "
+  init_scripts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/.env.prod
+    depends_on:
+      - db
+      - web
+    volumes:
+      - ./src:/code/src
+      - ./src/.env.prod:/code/.env
+      - ./src/certs:/code/certs:ro
+      - ./src/scripts/sample_data:/code/scripts/sample_data
+    command: >
+      sh -c "
+        python -m src.scripts.create_first_superuser &&
+        python -m src.scripts.create_cities &&
+        python -m src.scripts.create_categories &&
+        python -m src.scripts.create_amenities &&
+        python -m src.scripts.create_rooms
+      "
 volumes:
   postgres-data:
-  redis-data: #pgadmin-data:
+  redis-data:
