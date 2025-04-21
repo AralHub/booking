@@ -38,10 +38,8 @@ async def get_hotels(
     }
 
 
-@router.put("/{hotel_id}/change-status")
+@router.put("/{hotel_id}/status")
 async def update_hotel(
-    hotel_id: int,
-    status: BookingStatus,
     superuser: UserRead = Depends(get_current_superuser),
     hotel: HotelNameRead = Depends(validate_hotel),
     session=TransactionSessionDep,
@@ -52,7 +50,7 @@ async def update_hotel(
             is_active=not hotel.is_active,
         ),
         filters=HotelNameFilter(
-            id=hotel_id,
+            id=hotel.id,
         ),
     )
     return BaseResponse(
