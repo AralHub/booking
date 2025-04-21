@@ -27,7 +27,10 @@ class HotelRating(IntIdPkMixin, Base):
     reviews_count: Mapped[int] = mapped_column(Integer)
 
     # relationships
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel_id: Mapped[int] = mapped_column(
+        ForeignKey("hotels.id"),
+        unique=True,
+    )
     hotel: Mapped["Hotel"] = relationship(
         "Hotel",
         back_populates="hotel_rating",
@@ -35,10 +38,4 @@ class HotelRating(IntIdPkMixin, Base):
     category_ratings: Mapped[list["HotelCategoryRating"]] = relationship(
         back_populates="hotel_rating",
         cascade="all, delete-orphan",
-    )
-    __table_args__ = (
-        UniqueConstraint(
-            "hotel_id",
-            "average_rating",
-        ),
     )
