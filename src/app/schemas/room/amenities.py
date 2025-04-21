@@ -47,8 +47,8 @@ class RoomAmenityCategoryBase(MultilingualNameBase):
     pass
 
 
-class RoomAmenityCategoryCreate(BaseModel):
-    name: dict[str, str]
+class RoomAmenityCategoryCreate(RoomAmenityCategoryBase):
+    pass
 
 
 class RoomAmenityCategoryCreateInternal(BaseModel):

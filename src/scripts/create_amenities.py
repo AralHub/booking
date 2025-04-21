@@ -13,7 +13,7 @@ from app.schemas.hotel.amenities import (
     HotelAmenityCreateInternal,
 )
 from app.schemas.room.amenities import (
-    RoomAmenityCategoryCreate,
+    RoomAmenityCategoryCreateInternal,
     RoomAmenityCreateInternal,
 )
 
@@ -24,8 +24,12 @@ async def create_amenities(
     session: AsyncSession,
 ):
     try:
-        HOTEL_AMENITIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/hotel_amenities.json"
-        ROOM_AMENITIES_JSON_PATH = f"{SOURCE_DIR}/scripts/sample_data/room_amenities.json"
+        HOTEL_AMENITIES_JSON_PATH = (
+            f"{SOURCE_DIR}/scripts/sample_data/hotel_amenities.json"
+        )
+        ROOM_AMENITIES_JSON_PATH = (
+            f"{SOURCE_DIR}/scripts/sample_data/room_amenities.json"
+        )
         with open(HOTEL_AMENITIES_JSON_PATH, encoding="utf-8") as file:
             hotel_amenities_data = json.load(file)
         with open(ROOM_AMENITIES_JSON_PATH, encoding="utf-8") as file:
@@ -53,15 +57,19 @@ async def create_amenities(
                             values=hotel_amenity_create,
                         )
                     except Exception as e:
-                        logger.error(f"Failed to add hotel amenity {hotel_amenity_name}: {e}")
+                        logger.error(
+                            f"Failed to add hotel amenity {hotel_amenity_name}: {e}"
+                        )
                         continue
             except Exception as e:
-                logger.error(f"Failed to add category {category_item['category_name']['ru']}: {e}")
+                logger.error(
+                    f"Failed to add category {category_item['category_name']['ru']}: {e}"
+                )
                 continue
         # Create room amenities
         for category_item in room_amenities_data:
             try:
-                room_amenity_category_create = RoomAmenityCategoryCreate(
+                room_amenity_category_create = RoomAmenityCategoryCreateInternal(
                     id=category_item["id"],
                     name=category_item["category_name"],
                 )
@@ -80,10 +88,14 @@ async def create_amenities(
                             values=room_amenity_create,
                         )
                     except Exception as e:
-                        logger.error(f"Failed to add room amenity {room_amenity_name}: {e}")
+                        logger.error(
+                            f"Failed to add room amenity {room_amenity_name}: {e}"
+                        )
                         continue
             except Exception as e:
-                logger.error(f"Failed to add category {category_item['category_name']['ru']}: {e}")
+                logger.error(
+                    f"Failed to add category {category_item['category_name']['ru']}: {e}"
+                )
                 continue
         await session.commit()
         logger.info("Transaction committed successfully")
