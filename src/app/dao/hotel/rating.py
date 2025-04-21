@@ -99,7 +99,7 @@ class HotelRatingDAO(BaseDAO):
                 .where(HotelCategoryRating.hotel_rating_id == existing_rating.id)
                 .delete()
             )
-
+            await session.commit()
             hotel_rating = existing_rating
         else:
             # Создаем новый рейтинг если не существует
