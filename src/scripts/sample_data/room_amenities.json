@@ -3,56 +3,72 @@
     "id": 1,
     "category_name": {
       "en": "Bathroom",
-      "ru": "Ванная комната"
+      "ru": "Ванная комната",
+      "uz": "Hammom",
+      "kk": "Жуынатын бөлме"
     },
     "amenities": [
       {
         "id": 1,
         "name": {
           "en": "Shower",
-          "ru": "Душ"
+          "ru": "Душ",
+          "uz": "Dush",
+          "kk": "Душ"
         }
       },
       {
         "id": 2,
         "name": {
           "en": "Bath",
-          "ru": "Ванна"
+          "ru": "Ванна",
+          "uz": "Vanna",
+          "kk": "Ванна"
         }
       },
       {
         "id": 3,
         "name": {
           "en": "Hydromassage bath",
-          "ru": "Гидромассажная ванна"
+          "ru": "Гидромассажная ванна",
+          "uz": "Gidromassajli vanna",
+          "kk": "Гидромассажды ванна"
         }
       },
       {
         "id": 4,
         "name": {
           "en": "Public bathroom",
-          "ru": "Общая ванная комната"
+          "ru": "Общая ванная комната",
+          "uz": "Umumiy hammom",
+          "kk": "Жалпы жуынатын бөлме"
         }
       },
       {
         "id": 5,
         "name": {
           "en": "Bidet",
-          "ru": "Биде"
+          "ru": "Биде",
+          "uz": "Bide",
+          "kk": "Биде"
         }
       },
       {
         "id": 6,
         "name": {
           "en": "Toilet paper",
-          "ru": "Туалетная бумага"
+          "ru": "Туалетная бумага",
+          "uz": "Hojat qog'ozi",
+          "kk": "Дәретхана қағазы"
         }
       },
       {
         "id": 7,
         "name": {
           "en": "Hand dryer",
-          "ru": "Фен для рук"
+          "ru": "Фен для рук",
+          "uz": "Qo'l quritgich",
+          "kk": "Қол кептіргіш"
         }
       }
     ]
@@ -61,63 +77,81 @@
     "id": 2,
     "category_name": {
       "en": "Food and drinks",
-      "ru": "Еда и напитки"
+      "ru": "Еда и напитки",
+      "uz": "Oziq-ovqat va ichimliklar",
+      "kk": "Азық-түлік пен сусындар"
     },
     "amenities": [
       {
         "id": 8,
         "name": {
           "en": "Refrigerator",
-          "ru": "Холодильник"
+          "ru": "Холодильник",
+          "uz": "Muzlatkich",
+          "kk": "Тоңазытқыш"
         }
       },
       {
         "id": 3,
         "name": {
           "en": "Dining area",
-          "ru": "Столовая зона"
+          "ru": "Столовая зона",
+          "uz": "Ovqatlanish zonasi",
+          "kk": "Асхана аймағы"
         }
       },
       {
         "id": 9,
         "name": {
           "en": "Barbecue set",
-          "ru": "Принадлежности для барбекю"
+          "ru": "Принадлежности для барбекю",
+          "uz": "Barbekyu to'plami",
+          "kk": "Барбекю жиынтығы"
         }
       },
       {
         "id": 10,
         "name": {
           "en": "Oven",
-          "ru": "Плита"
+          "ru": "Плита",
+          "uz": "Pechn",
+          "kk": "Пісіргіш"
         }
       },
       {
         "id": 11,
         "name": {
           "en": "Toaster",
-          "ru": "Тостер"
+          "ru": "Тостер",
+          "uz": "Toster",
+          "kk": "Тостер"
         }
       },
       {
         "id": 12,
         "name": {
           "en": "Electric kettle",
-          "ru": "Электрический чайник"
+          "ru": "Электрический чайник",
+          "uz": "Elektr choynak",
+          "kk": "Электр шәйнек"
         }
       },
       {
         "id": 13,
         "name": {
           "en": "Microwave",
-          "ru": "Микроволновка"
+          "ru": "Микроволновка",
+          "uz": "Mikroto'lqinli pech",
+          "kk": "Микротолқынды пеш"
         }
       },
       {
         "id": 14,
         "name": {
           "en": "Coffee machine",
-          "ru": "Кофемашина (внутри номера)"
+          "ru": "Кофемашина (внутри номера)",
+          "uz": "Kofe mashinasi (xona ichida)",
+          "kk": "Кофе машинасы (бөлме ішінде)"
         }
       }
     ]
@@ -126,112 +160,144 @@
     "id": 3,
     "category_name": {
       "en": "Comfort",
-      "ru": "Удобства"
+      "ru": "Удобства",
+      "uz": "Qulayliklar",
+      "kk": "Жайлылықтар"
     },
     "amenities": [
       {
         "id": 15,
         "name": {
           "en": "Parquet/Wooden floor",
-          "ru": "Паркет/Деревянный пол"
+          "ru": "Паркет/Деревянный пол",
+          "uz": "Parket/Yog'och pol",
+          "kk": "Паркет/Ағаш еден"
         }
       },
       {
         "id": 16,
         "name": {
           "en": "Carpet",
-          "ru": "Ковровое покрытие"
+          "ru": "Ковровое покрытие",
+          "uz": "Gilam",
+          "kk": "Кілем"
         }
       },
       {
         "id": 17,
         "name": {
           "en": "Fireplace",
-          "ru": "Камин"
+          "ru": "Камин",
+          "uz": "Kamin",
+          "kk": "Камин"
         }
       },
       {
         "id": 3,
         "name": {
           "en": "Heating",
-          "ru": "Отопление"
+          "ru": "Отопление",
+          "uz": "Isitish",
+          "kk": "Жылыту"
         }
       },
       {
         "id": 18,
         "name": {
           "en": "Living room",
-          "ru": "Гостиная"
+          "ru": "Гостиная",
+          "uz": "Mehmonxona",
+          "kk": "Қонақ бөлме"
         }
       },
       {
         "id": 19,
         "name": {
           "en": "Toilet with handrails",
-          "ru": "Туалет с поручнями"
+          "ru": "Туалет с поручнями",
+          "uz": "Tutqichli hojatxona",
+          "kk": "Тұтқалары бар дәретхана"
         }
       },
       {
         "id": 20,
         "name": {
           "en": "Adjoining room",
-          "ru": "Смежный номер"
+          "ru": "Смежный номер",
+          "uz": "Qo'shni xona",
+          "kk": "Жанасқан бөлме"
         }
       },
       {
         "id": 21,
         "name": {
           "en": "Iron",
-          "ru": "Утюг"
+          "ru": "Утюг",
+          "uz": "Dazmol",
+          "kk": "Үтік"
         }
       },
       {
         "id": 22,
         "name": {
           "en": "Ironing board",
-          "ru": "Гладильная доска"
+          "ru": "Гладильная доска",
+          "uz": "Dazmollash taxtasi",
+          "kk": "Үтіктеу тақтасы"
         }
       },
       {
         "id": 23,
         "name": {
           "en": "Mosquito net",
-          "ru": "Москитная сетка"
+          "ru": "Москитная сетка",
+          "uz": "Chivin to'ri",
+          "kk": "Маса торы"
         }
       },
       {
         "id": 3,
         "name": {
           "en": "Sofa bed",
-          "ru": "Диван-кровать"
+          "ru": "Диван-кровать",
+          "uz": "Yig'ma divan",
+          "kk": "Диван-кереует"
         }
       },
       {
         "id": 24,
         "name": {
           "en": "Trash bins",
-          "ru": "Мусорные баки"
+          "ru": "Мусорные баки",
+          "uz": "Axlat qutilari",
+          "kk": "Қоқыс жәшіктері"
         }
       },
       {
         "id": 25,
         "name": {
           "en": "Private pool",
-          "ru": "Личный бассейн"
+          "ru": "Личный бассейн",
+          "uz": "Shaxsiy basseyn",
+          "kk": "Жеке бассейн"
         }
       },
       {
         "id": 26,
         "name": {
           "en": "Tile/Marble floor",
-          "ru": "Плиточный/Мраморный пол"
+          "ru": "Плиточный/Мраморный пол",
+          "uz": "Kafel/Marmar pol",
+          "kk": "Кафель/Мәрмәр еден"
         }
       },
       {
         "id": 27,
         "name": {
           "en": "Socket near bed",
-          "ru": "Розетка около кровати"
+          "ru": "Розетка около кровати",
+          "uz": "Krovat yonidagi rozetka",
+          "kk": "Кереует жанындағы розетка"
         }
       }
     ]
@@ -240,91 +306,117 @@
     "id": 4,
     "category_name": {
       "en": "Technology",
-      "ru": "Технологии"
+      "ru": "Технологии",
+      "uz": "Texnologiyalar",
+      "kk": "Технологиялар"
     },
     "amenities": [
       {
         "id": 28,
         "name": {
           "en": "Air conditioning",
-          "ru": "Кондиционер"
+          "ru": "Кондиционер",
+          "uz": "Konditsioner",
+          "kk": "Кондиционер"
         }
       },
       {
         "id": 29,
         "name": {
           "en": "Computer",
-          "ru": "Компьютер"
+          "ru": "Компьютер",
+          "uz": "Kompyuter",
+          "kk": "Компьютер"
         }
       },
       {
         "id": 30,
         "name": {
           "en": "Cooler",
-          "ru": "Охладитель"
+          "ru": "Охладитель",
+          "uz": "Sovutgich",
+          "kk": "Салқындатқыш"
         }
       },
       {
         "id": 31,
         "name": {
           "en": "Game console",
-          "ru": "Игровая приставка"
+          "ru": "Игровая приставка",
+          "uz": "O'yin pristavkasi",
+          "kk": "Ойын консолі"
         }
       },
       {
         "id": 32,
         "name": {
           "en": "Safe",
-          "ru": "Сейф"
+          "ru": "Сейф",
+          "uz": "Seyf",
+          "kk": "Сейф"
         }
       },
       {
         "id": 33,
         "name": {
           "en": "Soundproofing",
-          "ru": "Звукоизоляция"
+          "ru": "Звукоизоляция",
+          "uz": "Ovoz o'tkazmaslik",
+          "kk": "Дыбыс оқшаулау"
         }
       },
       {
         "id": 34,
         "name": {
           "en": "Wi-Fi",
-          "ru": "Wi-Fi"
+          "ru": "Wi-Fi",
+          "uz": "Wi-Fi",
+          "kk": "Wi-Fi"
         }
       },
       {
         "id": 35,
         "name": {
           "en": "Phone",
-          "ru": "Телефон"
+          "ru": "Телефон",
+          "uz": "Telefon",
+          "kk": "Телефон"
         }
       },
       {
         "id": 36,
         "name": {
           "en": "Flat-screen TV",
-          "ru": "Телевизор с плоским экраном"
+          "ru": "Телевизор с плоским экраном",
+          "uz": "Yassi ekranli televizor",
+          "kk": "Жазық экранды теледидар"
         }
       },
       {
         "id": 37,
         "name": {
           "en": "Satellite channels",
-          "ru": "Спутниковые каналы"
+          "ru": "Спутниковые каналы",
+          "uz": "Sun'iy yo'ldosh kanallari",
+          "kk": "Спутниктік арналар"
         }
       },
       {
         "id": 38,
         "name": {
           "en": "Cable channels",
-          "ru": "Кабельные каналы"
+          "ru": "Кабельные каналы",
+          "uz": "Kabel kanallari",
+          "kk": "Кабельдік арналар"
         }
       },
       {
         "id": 39,
         "name": {
           "en": "Smart TV",
-          "ru": "Смарт-ТВ"
+          "ru": "Смарт-ТВ",
+          "uz": "Smart TV",
+          "kk": "Smart TV"
         }
       }
     ]
@@ -333,98 +425,126 @@
     "id": 5,
     "category_name": {
       "en": "Services and extras",
-      "ru": "Услуги и дополнения"
+      "ru": "Услуги и дополнения",
+      "uz": "Xizmatlar va qo'shimchalar",
+      "kk": "Қызметтер мен қосымшалар"
     },
     "amenities": [
       {
         "id": 40,
         "name": {
           "en": "Alarm clock",
-          "ru": "Будильник"
+          "ru": "Будильник",
+          "uz": "Budilnik",
+          "kk": "Оят сағат"
         }
       },
       {
         "id": 41,
         "name": {
           "en": "Wake-up service",
-          "ru": "Услуга «Звонок-будильник»"
+          "ru": "Услуга «Звонок-будильник»",
+          "uz": "«Budilnik-qo'ng'iroq» xizmati",
+          "kk": "«Ояту қоңырауы» қызметі"
         }
       },
       {
         "id": 42,
         "name": {
           "en": "Bed linen",
-          "ru": "Постельное белье"
+          "ru": "Постельное белье",
+          "uz": "Yotoq choyshablari",
+          "kk": "Төсек жабдықтары"
         }
       },
       {
         "id": 43,
         "name": {
           "en": "Laundry",
-          "ru": "Прачечная"
+          "ru": "Прачечная",
+          "uz": "Kir yuvish xizmati",
+          "kk": "Кір жуу"
         }
       },
       {
         "id": 44,
         "name": {
           "en": "Laundry (additional charge)",
-          "ru": "Прачечная (за дополнительную плату)"
+          "ru": "Прачечная (за дополнительную плату)",
+          "uz": "Kir yuvish (qo'shimcha to'lov)",
+          "kk": "Кір жуу (қосымша ақы)"
         }
       },
       {
         "id": 45,
         "name": {
           "en": "Cleaning products",
-          "ru": "Чистящие средства"
+          "ru": "Чистящие средства",
+          "uz": "Tozalash vositalari",
+          "kk": "Тазалау құралдары"
         }
       },
       {
         "id": 46,
         "name": {
           "en": "Wake-up service",
-          "ru": "Услуга «Звонок-будильник»"
+          "ru": "Услуга «Звонок-будильник»",
+          "uz": "«Budilnik-qo'ng'iroq» xizmati",
+          "kk": "«Ояту қоңырауы» қызметі"
         }
       },
       {
         "id": 47,
         "name": {
           "en": "Bed linen",
-          "ru": "Постельное белье"
+          "ru": "Постельное белье",
+          "uz": "Yotoq choyshablari",
+          "kk": "Төсек жабдықтары"
         }
       },
       {
         "id": 48,
         "name": {
           "en": "Laundry",
-          "ru": "Прачечная"
+          "ru": "Прачечная",
+          "uz": "Kir yuvish xizmati",
+          "kk": "Кір жуу"
         }
       },
       {
         "id": 49,
         "name": {
           "en": "Laundry (additional charge)",
-          "ru": "Прачечная (за дополнительную плату)"
+          "ru": "Прачечная (за дополнительную плату)",
+          "uz": "Kir yuvish (qo'shimcha to'lov)",
+          "kk": "Кір жуу (қосымша ақы)"
         }
       },
       {
         "id": 50,
         "name": {
           "en": "Cleaning products",
-          "ru": "Чистящие средства"
+          "ru": "Чистящие средства",
+          "uz": "Tozalash vositalari",
+          "kk": "Тазалау құралдары"
         }
       },
       {
         "id": 51,
         "name": {
           "en": "Balcony",
-          "ru": "Балкон"
+          "ru": "Балкон",
+          "uz": "Balkon",
+          "kk": "Балкон"
         }
       },
       {
         "id": 52,
         "name": {
           "en": "Ground floor room",
-          "ru": "Номер на первом этаже"
+          "ru": "Номер на первом этаже",
+          "uz": "Birinchi qavatdagi xona",
+          "kk": "Бірінші қабаттағы бөлме"
         }
       }
     ]

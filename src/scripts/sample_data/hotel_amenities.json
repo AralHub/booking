@@ -3,70 +3,90 @@
     "id": 1,
     "category_name": {
       "en": "Popular services",
-      "ru": "Популярные услуги"
+      "ru": "Популярные услуги",
+      "uz": "Ommabop xizmatlar",
+      "kk": "Танымал қызметтер"
     },
     "amenities": [
       {
         "id": 1,
         "name": {
           "en": "Wi-fi",
-          "ru": "Wi-fi"
+          "ru": "Wi-fi",
+          "uz": "Wi-fi",
+          "kk": "Wi-fi"
         }
       },
       {
         "id": 2,
         "name": {
           "en": "Pool",
-          "ru": "Бассейн"
+          "ru": "Бассейн",
+          "uz": "Basseyn",
+          "kk": "Бассейн"
         }
       },
       {
         "id": 3,
         "name": {
           "en": "Sauna",
-          "ru": "Сауна"
+          "ru": "Сауна",
+          "uz": "Sauna",
+          "kk": "Сауна"
         }
       },
       {
         "id": 4,
         "name": {
-          "en": "Confername_ence room",
-          "ru": "Конференц-зал"
+          "en": "Conference room",
+          "ru": "Конференц-зал",
+          "uz": "Konferentsiya zali",
+          "kk": "Конференц-зал"
         }
       },
       {
         "id": 5,
         "name": {
           "en": "Non-smoking rooms",
-          "ru": "Номера для некурящих"
+          "ru": "Номера для некурящих",
+          "uz": "Chekilmaydigan xonalar",
+          "kk": "Темекі шегуге болмайтын бөлмелер"
         }
       },
       {
         "id": 6,
         "name": {
           "en": "Family rooms",
-          "ru": "Семейные номера"
+          "ru": "Семейные номера",
+          "uz": "Oila uchun xonalar",
+          "kk": "Отбасылық бөлмелер"
         }
       },
       {
         "id": 7,
         "name": {
-          "en": "Gardname_en",
-          "ru": "Сад"
+          "en": "Garden",
+          "ru": "Сад",
+          "uz": "Bog'",
+          "kk": "Бақ"
         }
       },
       {
         "id": 8,
         "name": {
           "en": "Terrace",
-          "ru": "Терраса"
+          "ru": "Терраса",
+          "uz": "Terrasa",
+          "kk": "Терраса"
         }
       },
       {
         "id": 9,
         "name": {
           "en": "Smoking rooms",
-          "ru": "Номера для курящих"
+          "ru": "Номера для курящих",
+          "uz": "Chekiladigan xonalar",
+          "kk": "Темекі шегуге арналған бөлмелер"
         }
       }
     ]
@@ -75,35 +95,45 @@
     "id": 2,
     "category_name": {
       "en": "Technologies",
-      "ru": "Технологии"
+      "ru": "Технологии",
+      "uz": "Texnologiyalar",
+      "kk": "Технологиялар"
     },
     "amenities": [
       {
         "id": 10,
         "name": {
           "en": "Business center",
-          "ru": "Бизнес-центр"
+          "ru": "Бизнес-центр",
+          "uz": "Biznes markazi",
+          "kk": "Бизнес орталық"
         }
       },
       {
         "id": 11,
         "name": {
           "en": "Elevator",
-          "ru": "Лифт"
+          "ru": "Лифт",
+          "uz": "Lift",
+          "kk": "Лифт"
         }
       },
       {
         "id": 12,
         "name": {
           "en": "Flat-screen TV",
-          "ru": "Телевизор с плоским экраном"
+          "ru": "Телевизор с плоским экраном",
+          "uz": "Yassi ekranli televizor",
+          "kk": "Жазық экранды теледидар"
         }
       },
       {
         "id": 13,
         "name": {
           "en": "Electric vehicle charging station",
-          "ru": "Станция зарядки электромобилей"
+          "ru": "Станция зарядки электромобилей",
+          "uz": "Elektr transport vositalarini zaryadlash stantsiyasi",
+          "kk": "Электр көліктерін зарядтау станциясы"
         }
       }
     ]
@@ -112,91 +142,117 @@
     "id": 3,
     "category_name": {
       "en": "Health services",
-      "ru": "Оздоровительные услуги"
+      "ru": "Оздоровительные услуги",
+      "uz": "Sog'lomlashtirish xizmatlari",
+      "kk": "Сауықтыру қызметтері"
     },
     "amenities": [
       {
         "id": 14,
         "name": {
-          "en": "Hydrotherapy",
-          "ru": "Гидромассажная ванна/джакузи"
+          "en": "Hot tub/Jacuzzi",
+          "ru": "Гидромассажная ванна/джакузи",
+          "uz": "Jakuzi",
+          "kk": "Джакузи"
         }
       },
       {
         "id": 15,
         "name": {
           "en": "Fitness",
-          "ru": "Фитнес"
+          "ru": "Фитнес",
+          "uz": "Fitnes",
+          "kk": "Фитнес"
         }
       },
       {
         "id": 16,
         "name": {
           "en": "Yoga",
-          "ru": "Йога"
+          "ru": "Йога",
+          "uz": "Yoga",
+          "kk": "Йога"
         }
       },
       {
         "id": 17,
         "name": {
           "en": "Massage chair",
-          "ru": "Массажное кресло"
+          "ru": "Массажное кресло",
+          "uz": "Massaj kreslosi",
+          "kk": "Массаж орындығы"
         }
       },
       {
         "id": 18,
         "name": {
           "en": "Children's pool",
-          "ru": "Детский бассейн"
+          "ru": "Детский бассейн",
+          "uz": "Bolalar basseyni",
+          "kk": "Балалар бассейні"
         }
       },
       {
         "id": 19,
         "name": {
-          "en": "Hydrotherapy",
-          "ru": "Гидромассажная ванна"
+          "en": "Hot tub",
+          "ru": "Гидромассажная ванна",
+          "uz": "Gidromassajli vanna",
+          "kk": "Гидромассажды ванна"
         }
       },
       {
         "id": 20,
         "name": {
           "en": "Steam room",
-          "ru": "Парная"
+          "ru": "Парная",
+          "uz": "Bug' xonasi",
+          "kk": "Бу бөлмесі"
         }
       },
       {
         "id": 21,
         "name": {
           "en": "Personal trainer",
-          "ru": "Личный тренер"
+          "ru": "Личный тренер",
+          "uz": "Shaxsiy murabbiy",
+          "kk": "Жеке жаттықтырушы"
         }
       },
       {
         "id": 22,
         "name": {
           "en": "Turkish bath",
-          "ru": "Турецкая баня"
+          "ru": "Турецкая баня",
+          "uz": "Turk hammomi",
+          "kk": "Түрік моншасы"
         }
       },
       {
         "id": 23,
         "name": {
           "en": "Solarium",
-          "ru": "Солярий"
+          "ru": "Солярий",
+          "uz": "Solariy",
+          "kk": "Солярий"
         }
       },
       {
         "id": 24,
         "name": {
-          "en": "Onsname_en",
-          "ru": "Онсэн"
+          "en": "Onsen",
+          "ru": "Онсэн",
+          "uz": "Onsen",
+          "kk": "Онсэн"
         }
       },
       {
         "id": 25,
         "name": {
           "en": "Public baths",
-          "ru": "Общественные бани"
+          "ru": "Общественные бани",
+          "uz": "Jamoat hammomlari",
+          "kk": "Қоғамдық моншалар"
         }
       }
     ]
@@ -205,112 +261,144 @@
     "id": 4,
     "category_name": {
       "en": "Food and drinks",
-      "ru": "Питание и напитки"
+      "ru": "Питание и напитки",
+      "uz": "Ovqatlanish va ichimliklar",
+      "kk": "Тамақтану және сусындар"
     },
     "amenities": [
       {
         "id": 26,
         "name": {
           "en": "Restaurant",
-          "ru": "Ресторан"
+          "ru": "Ресторан",
+          "uz": "Restoran",
+          "kk": "Мейрамхана"
         }
       },
       {
         "id": 27,
         "name": {
-          "en": "Swedish buffet",
-          "ru": "Ресторан (шведский стол)"
+          "en": "Buffet restaurant",
+          "ru": "Ресторан (шведский стол)",
+          "uz": "Bufet restoran",
+          "kk": "Буфет мейрамханасы"
         }
       },
       {
         "id": 28,
         "name": {
           "en": "Bar",
-          "ru": "Бар"
+          "ru": "Бар",
+          "uz": "Bar",
+          "kk": "Бар"
         }
       },
       {
         "id": 29,
         "name": {
-          "en": "Food delivery",
-          "ru": "Доставка продуктов"
+          "en": "Grocery delivery",
+          "ru": "Доставка продуктов",
+          "uz": "Oziq-ovqat yetkazib berish",
+          "kk": "Азық-түлік жеткізу"
         }
       },
       {
         "id": 30,
         "name": {
           "en": "Vending machine (drinks)",
-          "ru": "Торговый автомат (напитки)"
+          "ru": "Торговый автомат (напитки)",
+          "uz": "Savdo avtomati (ichimliklar)",
+          "kk": "Сауда автоматы (сусындар)"
         }
       },
       {
         "id": 31,
         "name": {
-          "en": "Vname_ending machine (snacks)",
-          "ru": "Торговый автомат (закуски)"
+          "en": "Vending machine (snacks)",
+          "ru": "Торговый автомат (закуски)",
+          "uz": "Savdo avtomati (gazaklar)",
+          "kk": "Сауда автоматы (жеңіл тағамдар)"
         }
       },
       {
         "id": 32,
         "name": {
-          "en": "Dietary mname_enu (on request)",
-          "ru": "Диетическое меню (по запросу)"
+          "en": "Dietary menu (on request)",
+          "ru": "Диетическое меню (по запросу)",
+          "uz": "Dietali menyu (so'rov bo'yicha)",
+          "kk": "Диеталық мәзір (сұраныс бойынша)"
         }
       },
       {
         "id": 33,
         "name": {
-          "en": "Food delivery to room",
-          "ru": "Доставка еды в номер"
+          "en": "Room service",
+          "ru": "Доставка еды в номер",
+          "uz": "Xonaga ovqat yetkazish",
+          "kk": "Бөлмеге тамақ жеткізу"
         }
       },
       {
         "id": 34,
         "name": {
-          "en": "Breakfast in room (on request)",
-          "ru": "Завтрак в номер (по запросу)"
+          "en": "Breakfast in the room (on request)",
+          "ru": "Завтрак в номер (по запросу)",
+          "uz": "Nonushta xonada (so'rov bo'yicha)",
+          "kk": "Бөлмедегі таңғы ас (сұраныс бойынша)"
         }
       },
       {
         "id": 35,
         "name": {
           "en": "Snack bar",
-          "ru": "Снэк-бар"
+          "ru": "Снэк-бар",
+          "uz": "Snack-bar",
+          "kk": "Снэк-бар"
         }
       },
       {
         "id": 36,
         "name": {
-          "en": "Barbecue equipmname_ent",
-          "ru": "Принадлежности для барбекю"
+          "en": "Barbecue facilities",
+          "ru": "Принадлежности для барбекю",
+          "uz": "Barbekyu anjomlari",
+          "kk": "Барбекю жабдықтары"
         }
       },
       {
         "id": 37,
         "name": {
           "en": "Packed lunches (on request)",
-          "ru": "Упакованные ланчи (по запросу)"
+          "ru": "Упакованные ланчи (по запросу)",
+          "uz": "Qadoqlangan tushliklar (so'rov bo'yicha)",
+          "kk": "Оралған түскі ас (сұраныс бойынша)"
         }
       },
       {
         "id": 38,
         "name": {
           "en": "Coffee shop on site",
-          "ru": "Кофейня на территории"
+          "ru": "Кофейня на территории",
+          "uz": "Hududdagi qahvaxona",
+          "kk": "Аумақтағы кофехана"
         }
       },
       {
         "id": 39,
         "name": {
-          "en": "Fname_ruits",
-          "ru": "Фрукты"
+          "en": "Fruits",
+          "ru": "Фрукты",
+          "uz": "Meva",
+          "kk": "Жемістер"
         }
       },
       {
         "id": 40,
         "name": {
-          "en": "Childrname_en's mname_enu",
-          "ru": "Детское меню"
+          "en": "Kids' menu",
+          "ru": "Детское меню",
+          "uz": "Bolalar menyusi",
+          "kk": "Балалар мәзірі"
         }
       }
     ]
@@ -319,63 +407,81 @@
     "id": 5,
     "category_name": {
       "en": "Entertainment and family services",
-      "ru": "Развлечения и семейные услуги"
+      "ru": "Развлечения и семейные услуги",
+      "uz": "Ko'ngilochar va oilaviy xizmatlar",
+      "kk": "Ойын-сауық және отбасылық қызметтер"
     },
     "amenities": [
       {
         "id": 41,
         "name": {
           "en": "Night club/DJ",
-          "ru": "Ночной клуб/диджей"
+          "ru": "Ночной клуб/диджей",
+          "uz": "Tungi klub/DJ",
+          "kk": "Түнгі клуб/диджей"
         }
       },
       {
         "id": 42,
         "name": {
           "en": "New Year's shows",
-          "ru": "Новогодние представления"
+          "ru": "Новогодние представления",
+          "uz": "Yangi yil tomoshalari",
+          "kk": "Жаңа жылдық көрсетілімдер"
         }
       },
       {
         "id": 43,
         "name": {
-          "en": "Childrname_en's playground",
-          "ru": "Детская площадка"
+          "en": "Children's playground",
+          "ru": "Детская площадка",
+          "uz": "Bolalar maydonchasi",
+          "kk": "Балалар ойын алаңы"
         }
       },
       {
         "id": 44,
         "name": {
-          "en": "Childrname_en's TV channels",
-          "ru": "Детские телеканалы"
+          "en": "Kids' TV channels",
+          "ru": "Детские телеканалы",
+          "uz": "Bolalar telekanallari",
+          "kk": "Балалар телеарналары"
         }
       },
       {
         "id": 45,
         "name": {
-          "en": "Indoor game zone",
-          "ru": "Игровая зона в помещении"
+          "en": "Indoor play area",
+          "ru": "Игровая зона в помещении",
+          "uz": "Yopiq o'yin zonasi",
+          "kk": "Жабық ойын аймағы"
         }
       },
       {
         "id": 46,
         "name": {
           "en": "Board games and/or puzzles",
-          "ru": "Настольные игры и/или пазлы"
+          "ru": "Настольные игры и/или пазлы",
+          "uz": "Stol o'yinlari va/yoki boshqotirmalar",
+          "kk": "Үстел ойындары және/немесе басқатырғыштар"
         }
       },
       {
         "id": 47,
         "name": {
-          "en": "Childcare services",
-          "ru": "Услуги по уходу за детьми"
+          "en": "Babysitting/child services",
+          "ru": "Услуги по уходу за детьми",
+          "uz": "Bolalar uchun qarash xizmatlari",
+          "kk": "Бала күтімі бойынша қызметтер"
         }
       },
       {
         "id": 48,
         "name": {
           "en": "Stroller",
-          "ru": "Детская коляска"
+          "ru": "Детская коляска",
+          "uz": "Bolalar aravachasi",
+          "kk": "Балалар арбасы"
         }
       }
     ]
@@ -384,49 +490,63 @@
     "id": 6,
     "category_name": {
       "en": "Sport and recreation",
-      "ru": "Спорт и отдых"
+      "ru": "Спорт и отдых",
+      "uz": "Sport va dam olish",
+      "kk": "Спорт және демалыс"
     },
     "amenities": [
       {
         "id": 49,
         "name": {
           "en": "Basketball court",
-          "ru": "Баскетбольная площадка"
+          "ru": "Баскетбольная площадка",
+          "uz": "Basketbol maydonchasi",
+          "kk": "Баскетбол алаңы"
         }
       },
       {
         "id": 50,
         "name": {
           "en": "Bowling",
-          "ru": "Боулинг"
+          "ru": "Боулинг",
+          "uz": "Bouling",
+          "kk": "Боулинг"
         }
       },
       {
         "id": 51,
         "name": {
           "en": "Table tennis",
-          "ru": "Настольный теннис"
+          "ru": "Настольный теннис",
+          "uz": "Stol tennisi",
+          "kk": "Үстел теннисі"
         }
       },
       {
         "id": 52,
         "name": {
           "en": "Horse riding",
-          "ru": "Верховая езда"
+          "ru": "Верховая езда",
+          "uz": "Otda sayr qilish",
+          "kk": "Атпен серуендеу"
         }
       },
       {
         "id": 53,
         "name": {
-          "en": "Badminton equipmname_ent",
-          "ru": "Снаряжение для бадминтона"
+          "en": "Badminton equipment",
+          "ru": "Снаряжение для бадминтона",
+          "uz": "Badminton anjomlari",
+          "kk": "Бадминтон жабдықтары"
         }
       },
       {
         "id": 54,
         "name": {
           "en": "Beach",
-          "ru": "Пляж"
+          "ru": "Пляж",
+          "uz": "Plyaj",
+          "kk": "Жағажай"
         }
       }
     ]
@@ -435,70 +555,90 @@
     "id": 7,
     "category_name": {
       "en": "Transport",
-      "ru": "Транспорт"
+      "ru": "Транспорт",
+      "uz": "Transport",
+      "kk": "Көлік"
     },
     "amenities": [
       {
         "id": 55,
         "name": {
           "en": "Covered parking",
-          "ru": "Крытая парковка"
+          "ru": "Крытая парковка",
+          "uz": "Yopiq avtoturargoh",
+          "kk": "Жабық автотұрақ"
         }
       },
       {
         "id": 56,
         "name": {
-          "en": "Bike rname_ental",
-          "ru": "Прокат велосипедов"
+          "en": "Bike rental",
+          "ru": "Прокат велосипедов",
+          "uz": "Velosipedlar ijarasi",
+          "kk": "Велосипедтерді жалға беру"
         }
       },
       {
         "id": 57,
         "name": {
-          "en": "Guarded parking",
-          "ru": "Охраняемая парковка"
+          "en": "Secured parking",
+          "ru": "Охраняемая парковка",
+          "uz": "Qo'riqlanadigan avtoturargoh",
+          "kk": "Қорғалған автотұрақ"
         }
       },
       {
         "id": 58,
         "name": {
           "en": "Street parking",
-          "ru": "Уличная парковка"
+          "ru": "Уличная парковка",
+          "uz": "Ko'cha avtoturargohi",
+          "kk": "Көше бойындағы автотұрақ"
         }
       },
       {
         "id": 59,
         "name": {
           "en": "Taxi service",
-          "ru": "Заказ такси"
+          "ru": "Заказ такси",
+          "uz": "Taksi buyurtma qilish",
+          "kk": "Такси шақыру"
         }
       },
       {
         "id": 60,
         "name": {
-          "en": "Transfer (paid)",
-          "ru": "Трансфер (платно)"
+          "en": "Shuttle service (additional charge)",
+          "ru": "Трансфер (платно)",
+          "uz": "Transfer (qo'shimcha to'lov)",
+          "kk": "Трансфер (қосымша ақы)"
         }
       },
       {
         "id": 61,
         "name": {
-          "en": "Transfer to ski slope",
-          "ru": "Трансфер до горнолыжного склона"
+          "en": "Ski shuttle",
+          "ru": "Трансфер до горнолыжного склона",
+          "uz": "Tog'-chang'i yonbag'riga transfer",
+          "kk": "Тау шаңғысы трассасына трансфер"
         }
       },
       {
         "id": 62,
         "name": {
-          "en": "Bike",
-          "ru": "Велосипед"
+          "en": "Bicycle",
+          "ru": "Велосипед",
+          "uz": "Velosiped",
+          "kk": "Велосипед"
         }
       },
       {
         "id": 63,
         "name": {
-          "en": "Car rname_ental",
-          "ru": "Прокат автомобилей"
+          "en": "Car rental",
+          "ru": "Прокат автомобилей",
+          "uz": "Avtomobillarni ijaraga olish",
+          "kk": "Автомобильдерді жалға беру"
         }
       }
     ]
@@ -506,50 +646,64 @@
   {
     "id": 8,
     "category_name": {
-      "en": "Services at the registration desk",
-      "ru": "Услуги на стойке регистрации"
+      "en": "Services at the reception",
+      "ru": "Услуги на стойке регистрации",
+      "uz": "Qabulxonadagi xizmatlar",
+      "kk": "Қабылдау орнындағы қызметтер"
     },
     "amenities": [
       {
         "id": 64,
         "name": {
-          "en": "Ticket sales services",
-          "ru": "Услуги по продаже билетов"
+          "en": "Ticket service",
+          "ru": "Услуги по продаже билетов",
+          "uz": "Chiptalar sotish xizmati",
+          "kk": "Билет сату қызметі"
         }
       },
       {
         "id": 65,
         "name": {
-          "en": "ATM on site",
-          "ru": "Банкомат на территории отеля"
+          "en": "ATM/cash machine on site",
+          "ru": "Банкомат на территории отеля",
+          "uz": "Bankomat (hududda)",
+          "kk": "Банкомат (аумақта)"
         }
       },
       {
         "id": 66,
         "name": {
-          "en": "Guided tours (paid)",
-          "ru": "Услуги гида (платно)"
+          "en": "Tour desk (additional charge)",
+          "ru": "Услуги гида (платно)",
+          "uz": "Ekskursiya byurosi (qo'shimcha to'lov)",
+          "kk": "Экскурсиялық бюро (қосымша ақы)"
         }
       },
       {
         "id": 67,
         "name": {
-          "en": "Parking for guests' cars",
-          "ru": "Парковка автомобиля персоналом"
+          "en": "Valet parking",
+          "ru": "Парковка автомобиля персоналом",
+          "uz": "Avtomobilni xizmat ko'rsatuvchi xodim tomonidan parkovka qilish",
+          "kk": "Автомобильді қызметкердің тұрағына қою"
         }
       },
       {
         "id": 68,
         "name": {
-          "en": "Tourist office (paid)",
-          "ru": "Экскурсионное бюро (платно)"
+          "en": "Tour desk (additional charge)",
+          "ru": "Экскурсионное бюро (платно)",
+          "uz": "Sayyohlik axborot byurosi (qo'shimcha to'lov)",
+          "kk": "Туристік ақпарат бюросы (қосымша ақы)"
         }
       },
       {
         "id": 69,
         "name": {
-          "en": "Currname_ency exchange",
-          "ru": "Обмен валюты"
+          "en": "Currency exchange",
+          "ru": "Обмен валюты",
+          "uz": "Valyuta ayirboshlash",
+          "kk": "Валюта айырбастау"
         }
       }
     ]
@@ -558,56 +712,72 @@
     "id": 9,
     "category_name": {
       "en": "Cleaning and laundry services",
-      "ru": "Уборка и прачечные услуги"
+      "ru": "Уборка и прачечные услуги",
+      "uz": "Tozalash va kir yuvish xizmatlari",
+      "kk": "Тазалау және кір жуу қызметтері"
     },
     "amenities": [
       {
         "id": 70,
         "name": {
-          "en": "Laundry",
-          "ru": "Химчистка"
+          "en": "Dry cleaning",
+          "ru": "Химчистка",
+          "uz": "Quruq tozalash",
+          "kk": "Химчистка"
         }
       },
       {
         "id": 71,
         "name": {
           "en": "Laundry",
-          "ru": "Химчистка"
+          "ru": "Прачечная",
+          "uz": "Kir yuvish",
+          "kk": "Кір жуу"
         }
       },
       {
         "id": 72,
         "name": {
           "en": "Dry cleaning",
-          "ru": "Прачечная"
+          "ru": "Прачечная",
+          "uz": "Kir yuvish xizmati",
+          "kk": "Кір жуу"
         }
       },
       {
         "id": 73,
         "name": {
-          "en": "Dry cleaning",
-          "ru": "Прачечная"
+          "en": "Laundry",
+          "ru": "Химчистка",
+          "uz": "Quruq tozalash",
+          "kk": "Химчистка"
         }
       },
       {
         "id": 74,
         "name": {
-          "en": "Shoe cleaning",
-          "ru": "Чистка обуви"
+          "en": "Shoe shine",
+          "ru": "Чистка обуви",
+          "uz": "Poyabzal tozalash",
+          "kk": "Аяқ киім тазалау"
         }
       },
       {
         "id": 75,
         "name": {
-          "en": "Daily cleaning",
-          "ru": "Ежедневная уборка"
+          "en": "Daily housekeeping",
+          "ru": "Ежедневная уборка",
+          "uz": "Har kungi tozalash",
+          "kk": "Күнделікті тазалау"
         }
       },
       {
         "id": 76,
         "name": {
-          "en": "Pressing service",
-          "ru": "Пресс для брюк"
+          "en": "Trouser press",
+          "ru": "Пресс для брюк",
+          "uz": "Shim pressi",
+          "kk": "Шалбар пресі"
         }
       }
     ]
@@ -616,28 +786,36 @@
     "id": 10,
     "category_name": {
       "en": "Shops",
-      "ru": "Магазины"
+      "ru": "Магазины",
+      "uz": "Do'konlar",
+      "kk": "Дүкендер"
     },
     "amenities": [
       {
         "id": 77,
         "name": {
-          "en": "Shops on site",
-          "ru": "Магазины на территории"
+          "en": "Shops (on site)",
+          "ru": "Магазины на территории",
+          "uz": "Do'konlar (hududda)",
+          "kk": "Дүкендер (аумақта)"
         }
       },
       {
         "id": 78,
         "name": {
           "en": "Mini-market on site",
-          "ru": "Мини-маркет на территории"
+          "ru": "Мини-маркет на территории",
+          "uz": "Mini-market (hududda)",
+          "kk": "Мини-маркет (аумақта)"
         }
       },
       {
         "id": 79,
         "name": {
           "en": "Souvenir shop",
-          "ru": "Сувенирный магазин"
+          "ru": "Сувенирный магазин",
+          "uz": "Sovg'alar do'koni",
+          "kk": "Кәдесыйлар дүкені"
         }
       }
     ]
@@ -645,22 +823,28 @@
   {
     "id": 11,
     "category_name": {
-      "en": "Public areas",
-      "ru": "Зоны общественного пользования"
+      "en": "Common areas",
+      "ru": "Зоны общественного пользования",
+      "uz": "Umumiy foydalanish joylari",
+      "kk": "Ортақ пайдалану аймақтары"
     },
     "amenities": [
       {
         "id": 80,
         "name": {
-          "en": "Common lounge/lobby with TV",
-          "ru": "Общий лаунж/гостиная с телевизором"
+          "en": "Shared lounge/TV area",
+          "ru": "Общий лаунж/гостиная с телевизором",
+          "uz": "Umumiy dam olish xonasi/televizorli xona",
+          "kk": "Ортақ демалыс бөлмесі/теледидар аймағы"
         }
       },
       {
         "id": 81,
         "name": {
-          "en": "Terrace for sunbathing",
-          "ru": "Терраса для загара"
+          "en": "Sun terrace",
+          "ru": "Терраса для загара",
+          "uz": "Quyosh terarasi",
+          "kk": "Күнге күюге арналған терраса"
         }
       }
     ]
@@ -669,77 +853,99 @@
     "id": 12,
     "category_name": {
       "en": "Miscellaneous",
-      "ru": "Разное"
+      "ru": "Разное",
+      "uz": "Boshqalar",
+      "kk": "Басқалары"
     },
     "amenities": [
       {
         "id": 82,
         "name": {
-          "en": "Smoking prohibited on site",
-          "ru": "Курение на территории запрещено"
+          "en": "Non-smoking throughout",
+          "ru": "Курение на территории запрещено",
+          "uz": "Butun hududda chekish taqiqlanadi",
+          "kk": "Бүкіл аумақта темекі шегуге тыйым салынған"
         }
       },
       {
         "id": 83,
         "name": {
-          "en": "Luxury for newlyweds",
-          "ru": "Люкс для новобрачных"
+          "en": "Honeymoon suite",
+          "ru": "Люкс для новобрачных",
+          "uz": "Yangi turmush qurganlar uchun lyuks xona",
+          "kk": "Жаңа үйленушілерге арналған люкс"
         }
       },
       {
         "id": 84,
         "name": {
-          "en": "V.I.P. services",
-          "ru": "V.I.P. услуги"
+          "en": "VIP room facilities",
+          "ru": "V.I.P. услуги",
+          "uz": "VIP xona qulayliklari",
+          "kk": "VIP бөлме жабдықтары"
         }
       },
       {
         "id": 85,
         "name": {
-          "en": "Emergency medical assistance",
-          "ru": "Вызов скорой медицинской помощи"
+          "en": "Emergency cord in bathroom",
+          "ru": "Вызов скорой медицинской помощи",
+          "uz": "Hammomda favqulodda chaqiruv arqoni",
+          "kk": "Ванна бөлмесіндегі шұғыл қоңырау шалу бауы"
         }
       },
       {
         "id": 86,
         "name": {
-          "en": "First aid kit",
-          "ru": "Аптечка"
+          "en": "First aid kit available",
+          "ru": "Аптечка",
+          "uz": "Birinchi yordam qutichasi mavjud",
+          "kk": "Бірінші медициналық көмек қобдишасы бар"
         }
       },
       {
         "id": 87,
         "name": {
           "en": "Pet basket",
-          "ru": "Корзина для домашних животных"
+          "ru": "Корзина для домашних животных",
+          "uz": "Uy hayvonlari uchun savat",
+          "kk": "Үй жануарларына арналған себет"
         }
       },
       {
         "id": 88,
         "name": {
           "en": "24-hour security",
-          "ru": "Круглосуточная охрана"
+          "ru": "Круглосуточная охрана",
+          "uz": "24 soatlik xavfsizlik",
+          "kk": "Тәулік бойы күзет"
         }
       },
       {
         "id": 89,
         "name": {
           "en": "Smoke detectors",
-          "ru": "Датчики дыма"
+          "ru": "Датчики дыма",
+          "uz": "Tutun detektorlari",
+          "kk": "Түтін детекторлары"
         }
       },
       {
         "id": 90,
         "name": {
           "en": "Fire extinguishers",
-          "ru": "Огнетушители"
+          "ru": "Огнетушители",
+          "uz": "O't o'chirgichlar",
+          "kk": "Өрт сөндіргіштері"
         }
       },
       {
         "id": 91,
         "name": {
-          "en": "Hypoallergname_enic room",
-          "ru": "Гипоаллергенный номер"
+          "en": "Allergy-free room",
+          "ru": "Гипоаллергенный номер",
+          "uz": "Gipoallergen xona",
+          "kk": "Аллергиясыз бөлме"
         }
       }
     ]

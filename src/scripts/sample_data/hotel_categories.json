@@ -4,88 +4,120 @@
       "id": 1,
       "name": {
         "ru": "Отель",
-        "en": "Hotel"
+        "en": "Hotel",
+        "uz": "Mehmonxona",
+        "kk": "Қонақүй"
       },
       "description": {
         "ru": "Средство размещения, состоящее из определённого количества номеров.",
-        "en": "A place to stay, consisting of a certain number of rooms."
+        "en": "A place to stay, consisting of a certain number of rooms.",
+        "uz": "Ma’lum miqdordagi xonalar mavjud bo‘lgan mehmonxona.",
+        "kk": "Бөлмелердің белгілі бір саны бар орналастыру орны."
       }
     },
     {
       "id": 2,
       "name": {
         "ru": "Бутик отель",
-        "en": "Boutique hotel"
+        "en": "Boutique hotel",
+        "uz": "Butik mehmonxona",
+        "kk": "Бутик қонақүй"
       },
       "description": {
         "ru": "Представляет собой небольшой отель, обычно от 10 до 100 номеров в уникальном оформлении каждого из номеров.",
-        "en": "A small hotel, usually from 10 to 100 rooms, in unique design of each room."
+        "en": "A small hotel, usually from 10 to 100 rooms, in unique design of each room.",
+        "uz": "Har bir xonasi o‘ziga xos tarzda bezatilgan, odatda 10 dan 100 gacha xonalarga ega kichik mehmonxona.",
+        "kk": "Әр бөлмесі ерекше дизайнымен безендірілген, әдетте 10-нан 100 бөлмеге дейінгі шағын қонақүй."
       }
     },
     {
       "id": 3,
       "name": {
         "ru": "Хостел",
-        "en": "Hostel"
+        "en": "Hostel",
+        "uz": "Xostel",
+        "kk": "Хостел"
       },
       "description": {
         "ru": "Европейская система размещения, предоставляющая своим постояльцам жильё.",
-        "en": "European system of accommodation, providing accommodation to its guests."
+        "en": "European system of accommodation, providing accommodation to its guests.",
+        "uz": "Yevropa turidagi arzon turar joy tizimi, mehmonlarga umumiy turar joy taqdim etadi.",
+        "kk": "Қонақтарға орналастыру ұсынатын Еуропалық жүйе."
       }
     },
     {
       "id": 4,
       "name": {
         "ru": "Гостевой дом",
-        "en": "Guest house"
+        "en": "Guest house",
+        "uz": "Mehmon uyi",
+        "kk": "Қонақ үйі"
       },
       "description": {
         "ru": "Условия проживания приближён к домашним, дом разделен на небольшие номера, но количество их небольшое.",
-        "en": "Conditions of accommodation are similar to home, the house is divided into small rooms, but the number of them is small."
+        "en": "Conditions of accommodation are similar to home, the house is divided into small rooms, but the number of them is small.",
+        "uz": "Yashash sharoitlari uy sharoitiga yaqin, kichik xonalarga bo‘lingan uylardir.",
+        "kk": "Тұрмыс жағдайы үйге ұқсас, үй шағын бөлмелерге бөлінген, бірақ саны аз."
       }
     },
     {
       "id": 5,
       "name": {
         "ru": "Апартаменты",
-        "en": "Apartments"
+        "en": "Apartments",
+        "uz": "Apartamentlar",
+        "kk": "Пәтерлер"
       },
       "description": {
         "ru": "Средство размещения, состоящее из номеров квартирного типа, по условиям схожих с условиями меблированных комнат.",
-        "en": "A place to stay, consisting of rooms of apartment type, similar to the conditions of furnished rooms."
+        "en": "A place to stay, consisting of rooms of apartment type, similar to the conditions of furnished rooms.",
+        "uz": "Mebellangan xonalarga o‘xshash sharoitlarga ega bo‘lgan, kvartira tipidagi xonalardan iborat turar joy.",
+        "kk": "Жиһаздалған бөлмелерге ұқсас жағдайдағы пәтер типіндегі бөлмелерден тұратын орналастыру орны."
       }
     },
     {
       "id": 6,
       "name": {
         "ru": "Курортный отель",
-        "en": "Resort hotel"
+        "en": "Resort hotel",
+        "uz": "Kurort mehmonxonasi",
+        "kk": "Курорттық қонақүй"
       },
       "description": {
         "ru": "Средства размещения, расположенные на курорте и оказывающие на собственной базе услуги оздоровительного характера.",
-        "en": "Places to stay, located on a resort and providing services of a health-improving nature on its own basis."
+        "en": "Places to stay, located on a resort and providing services of a health-improving nature on its own basis.",
+        "uz": "Kurort hududida joylashgan va salomatlikka ijobiy ta’sir ko‘rsatadigan xizmatlarni taqdim etuvchi joy.",
+        "kk": "Курортта орналасқан және денсаулықты жақсартуға арналған қызметтер көрсететін орналастыру орны."
       }
     },
     {
       "id": 7,
       "name": {
         "ru": "Дача",
-        "en": "Dacha"
+        "en": "Dacha",
+        "uz": "Dacha (shahar tashqarisidagi uy)",
+        "kk": "Дача (қаладан тыс үй)"
       },
       "description": {
         "ru": "Средство размещения, загородный дом для городских жителей, как правило, не используемый его владельцами для постоянного проживания.",
-        "en": "A place to stay, a country house for city dwellers, usually not used by its owners for permanent residence."
+        "en": "A place to stay, a country house for city dwellers, usually not used by its owners for permanent residence.",
+        "uz": "Shahar aholisi uchun mo‘ljallangan, doimiy yashash uchun emas, vaqtincha foydalaniladigan shahar tashqarisidagi uy.",
+        "kk": "Қала тұрғындарына арналған, әдетте тұрақты тұру үшін емес, уақытша қолданылатын қаладан тыс үй."
       }
     },
     {
       "id": 8,
       "name": {
         "ru": "Курортная зона",
-        "en": "Resort zone"
+        "en": "Resort zone",
+        "uz": "Kurort hududi",
+        "kk": "Курорттық аймақ"
       },
       "description": {
         "ru": "Территория, подлежащая специальной охране, характеризующаяся особо благоприятными природными условиями и лечебными факторами.",
-        "en": "A territory subject to special protection, characterized by particularly favorable natural conditions and healing factors."
+        "en": "A territory subject to special protection, characterized by particularly favorable natural conditions and healing factors.",
+        "uz": "Maxsus muhofaza ostida bo‘lgan, sog‘lomlashtiruvchi tabiiy sharoitlar va omillar bilan ajralib turadigan hudud.",
+        "kk": "Ерекше қорғаудағы, сауықтыруға қолайлы табиғи жағдайлар мен факторларға ие аймақ."
       }
     }
   ]
