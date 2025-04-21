@@ -12,6 +12,7 @@ from app.schemas.hotel.category import (
     HotelCategoryFilter,
     HotelCategoryRead,
     HotelCategoryUpdate,
+    HotelCategoryUpdateInternal,
 )
 
 logger = logging.getLogger(__name__)
@@ -64,7 +65,9 @@ async def update_hotel_category(
 ):
     return await HotelCategoryDAO.update(
         session=session,
-        values=category_update_data,
+        values=HotelCategoryUpdateInternal(
+            **category_update_data.model_dump(),
+        ),
         filters=HotelCategoryFilter(id=category_id),
     )
 
