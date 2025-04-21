@@ -9,6 +9,7 @@ from app.schemas.payment import (
     PaymentUpdate,
     PaymentUpdateInternal,
 )
+from app.core.i18n.responses import BaseResponse
 
 router = APIRouter(
     tags=["Superuser Payment"],
@@ -54,6 +55,7 @@ async def create_payment_method(
 @router.put(
     "/{payment_id}",
     # dependencies=[Depends(get_current_superuser)],
+    response_model=BaseResponse,
 )
 async def update_payment_method(
     payment_id: int,
@@ -63,14 +65,14 @@ async def update_payment_method(
     payment_update = PaymentUpdateInternal(
         name=payment_update_data.to_dict_name(),
     )
-    # Create main hotel record
-    updated_payment = await PaymentDAO.update(
+    await PaymentDAO.update(
         session=session,
         values=payment_update,
         filters=PaymentFilter(
             id=payment_id,
         ),
     )
-    return {
-        "data": updated_payment,
-    }
+    return BaseResponse(
+        success=True,
+        message="Payment method updated successfully",
+    )
