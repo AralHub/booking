@@ -16,9 +16,11 @@ from app.dao.room.amenities import (
 from app.schemas.room.amenities import (
     RoomAmenityCategoryRead,
     RoomAmenityCreate,
+    RoomAmenityCreateInternal,
     RoomAmenityFilter,
     RoomAmenityRead,
     RoomAmenityUpdate,
+    RoomAmenityUpdateInternal,
 )
 
 router = APIRouter(
@@ -58,7 +60,10 @@ async def create_room_amenity(
 ):
     created_amenity = await RoomAmenityDAO.create(
         session=session,
-        values=amenity_create_data,
+        values=RoomAmenityCreateInternal(
+            name=amenity_create_data.to_dict_name(),
+            room_amenity_category_id=category_id,
+        ),
     )
     return DataResponse(
         data=created_amenity,
