@@ -14,6 +14,8 @@ from app.dao.room.amenities import (
     RoomAmenityDAO,
 )
 from app.schemas.room.amenities import (
+    RoomAmenityCategoryCreate,
+    RoomAmenityCategoryCreateInternal,
     RoomAmenityCategoryRead,
     RoomAmenityCreate,
     RoomAmenityCreateInternal,
@@ -115,4 +117,26 @@ async def delete_room_amenity(
     return BaseResponse(
         success=True,
         message=RESPONSE_MESSAGES.DELETE_SUCCESS,
+    )
+
+
+@router.post(
+    "/categories",
+)
+async def create_room_amenities_category(
+    room_amenity_category_data: RoomAmenityCategoryCreate,
+    session=TransactionSessionDep,
+):
+    """
+    Создать категорию удобств комнАт
+    """
+    await RoomAmenityCategoryDAO.create(
+        session=session,
+        values=RoomAmenityCategoryCreateInternal(
+            name=room_amenity_category_data.to_dict_name(),
+        ),
+    )
+    return BaseResponse(
+        success=True,
+        message=RESPONSE_MESSAGES.get("DATA_CREATED"),
     )
