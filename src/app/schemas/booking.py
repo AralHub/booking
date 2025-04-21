@@ -127,6 +127,7 @@ class BookingInitialRead(BookingInitialBase):
     total_days: int
     booking_type: BookingType
     rooms_info: list[RoomInfoRead]
+    booking_type: BookingType.PERSONAL
 
 
 class BookingInitialCreate(BookingInitialBase):
