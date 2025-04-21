@@ -63,12 +63,13 @@ async def update_hotel_category(
     hotel_category: HotelCategoryBase = Depends(validate_hotel_category_by_id),
     session=TransactionSessionDep,
 ):
+    update_values = HotelCategoryUpdateInternal(
+        name=category_update_data.to_dict_name(),
+        description=category_update_data.to_dict_description(),
+    )
     return await HotelCategoryDAO.update(
         session=session,
-        values=HotelCategoryUpdateInternal(
-            name=category_update_data.to_dict_name(),
-            description=category_update_data.to_dict_description(),
-        ),
+        values=update_values,
         filters=HotelCategoryFilter(id=category_id),
     )
 
