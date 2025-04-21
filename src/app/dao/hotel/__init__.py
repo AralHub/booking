@@ -450,6 +450,7 @@ class HotelDAO(BaseDAO):
     ):
         all_hotels = await cls.get_all(
             session=session,
+            filters=None,
         )
         all_hotels_full = []
         for hotel in all_hotels:
