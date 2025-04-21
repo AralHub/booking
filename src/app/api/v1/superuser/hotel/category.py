@@ -40,7 +40,7 @@ async def get_hotel_categories(
 
 
 @router.post(
-    "/",
+    "",
     dependencies=[Depends(get_current_superuser)],
 )
 async def create_hotel_category(
