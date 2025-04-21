@@ -25,7 +25,7 @@ async def create_room_types(
         for room_type in room_types_data["room_types"]:
             try:
                 room_type_create = RoomTypeCreateInternal(
-                    name=room_type,
+                    name=room_type.get("name"),
                 )
                 await RoomTypeDAO.create(
                     session=session,

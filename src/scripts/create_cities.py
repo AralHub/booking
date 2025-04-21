@@ -7,7 +7,7 @@ from app.core import db_helper
 from app.core.config import SOURCE_DIR
 from app.core.logger import logging
 from app.dao.location import CityDAO, CountryDAO
-from app.schemas.location import CityFilter, CountryFilter
+from app.schemas.location import CityCreateInternal, CountryFilter
 
 logger = logging.getLogger(__name__)
 
@@ -24,15 +24,24 @@ async def create_fake_db(
             name="Uzbekistan",
             code="UZ",
         )
-        country = await CountryDAO.create(
+        check_country = await CountryDAO.get_one_or_none(
             session=session,
-            values=country_create,
+            filters=CountryFilter(
+                name="Uzbekistan",
+                code="UZ",
+            ),
         )
-
+        if not check_country:
+            country = await CountryDAO.create(
+                session=session,
+                values=country_create,
+            )
+        else:
+            country = check_country
         # Create cities
         for city_data in fake_data:
             try:
-                city_create = CityFilter(
+                city_create = CityCreateInternal(
                     name=city_data["name"],
                     slug=city_data["slug"],
                     properties_count=city_data["properties_count"],
@@ -50,7 +59,9 @@ async def create_fake_db(
                     values=city_create,
                 )
             except Exception as e:
-                logger.error(f"Failed to add city {city_data.get('name', 'unknown')}: {e}")
+                logger.error(
+                    f"Failed to add city {city_data.get('name', 'unknown')}: {e}"
+                )
                 continue
 
         await session.commit()

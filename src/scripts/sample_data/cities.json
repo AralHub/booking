@@ -1,10 +1,14 @@
 [
     {
-
-        "name": "Ташкент",
+        "name": {
+            "ru": "Ташкент",
+            "en": "Tashkent",
+            "uz": "Toshkent",
+            "kk": "Ташкент"
+        },
         "slug": "tashkent",
         "properties_count": 0,
-        "image": "https://mybooking.uz/frontend/images/noavatar_220x220.jpg",
+        "image": "https://cf.bstatic.com/xdata/images/city/600x600/686023.jpg?k=315b82bac9991c71d6f14f8618e68a9b6d3f45b61b9ceb335523918d0e086dbf&o=",
         "geocode_lat": "41.31648036782486",
         "geocode_lng": "69.24936529118317",
         "aero_geocode_lat": "41.26309528479779",
@@ -13,11 +17,15 @@
         "rail_geocode_lng": "69.22595161307265"
     },
     {
-
-        "name": "Самарканд",
+        "name": {
+            "ru": "Самарканд",
+            "en": "Samarkand",
+            "uz": "Samarqand",
+            "kk": "Самарқан"
+        },
         "slug": "samarkand",
         "properties_count": 0,
-        "image": "https://mybooking.uz/uploads/cities/1580881651MGru_220x220.png",
+        "image": "https://cf.bstatic.com/xdata/images/city/600x600/916707.jpg?k=92d3c6a6f59fe96b7044218defba0d9e1b9b376b424121dbb29db63a45c62d24&o=",
         "geocode_lat": "39.65419097545837",
         "geocode_lng": "66.95970600409196",
         "aero_geocode_lat": "39.69662085337442",
@@ -26,11 +34,15 @@
         "rail_geocode_lng": "66.92902541855172"
     },
     {
-
-        "name": "Бухара",
+        "name": {
+            "ru": "Бухара",
+            "en": "Bukhara",
+            "uz": "Buxoro",
+            "kk": "Бұхара"
+        },
         "slug": "bukhara",
         "properties_count": 0,
-        "image": "https://mybooking.uz/uploads/cities/1637998072kDik_220x220.jpg",
+        "image": "https://cf.bstatic.com/xdata/images/city/600x600/948982.jpg?k=df876b79aa087808adf33387dfdad56350813a328ca436dbad74fb9fa597bc16&o=",
         "geocode_lat": "39.76750117322343",
         "geocode_lng": "64.42312288612071",
         "aero_geocode_lat": "39.766952012232316",
@@ -39,8 +51,12 @@
         "rail_geocode_lng": "64.54771602560444"
     },
     {
-
-        "name": "Бостанлыкский район",
+        "name": {
+            "ru": "Бостанлыкский район",
+            "en": "Bostanlyk District",
+            "uz": "Boʻstonliq tumani",
+            "kk": "Бостандық ауданы"
+        },
         "slug": "bostanlykskij-rajon",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1619847086kSuD_220x220.jpg",
@@ -52,8 +68,12 @@
         "rail_geocode_lng": "69.86846864147111"
     },
     {
-
-        "name": "Хива",
+        "name": {
+            "ru": "Хива",
+            "en": "Khiva",
+            "uz": "Xiva",
+            "kk": "Хиуа"
+        },
         "slug": "khiva",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1531146585HeGh_220x220.jpg",
@@ -65,8 +85,12 @@
         "rail_geocode_lng": "60.37666789477362"
     },
     {
-
-        "name": "Гиждуван",
+        "name": {
+            "ru": "Гиждуван",
+            "en": "Gijduvan",
+            "uz": "Gʻijduvon",
+            "kk": "Гиждуан"
+        },
         "slug": "gizhduvan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1565946898Nyhg_220x220.jpg",
@@ -78,8 +102,12 @@
         "rail_geocode_lng": "64.54836845397949"
     },
     {
-
-        "name": "Ургенч",
+        "name": {
+            "ru": "Ургенч",
+            "en": "Urgench",
+            "uz": "Urganch",
+            "kk": "Үргеніш"
+        },
         "slug": "urgench",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1581052378Xk9h_220x220.jpg",
@@ -91,8 +119,12 @@
         "rail_geocode_lng": "60.63229852147223"
     },
     {
-
-        "name": "Фергана",
+        "name": {
+            "ru": "Фергана",
+            "en": "Fergana",
+            "uz": "Fargʻona",
+            "kk": "Ферғана"
+        },
         "slug": "fergana",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1531213816pQbe_220x220.jpg",
@@ -104,8 +136,12 @@
         "rail_geocode_lng": "71.7570601260361"
     },
     {
-
-        "name": "Маргилан",
+        "name": {
+            "ru": "Маргилан",
+            "en": "Margilan",
+            "uz": "Margʻilon",
+            "kk": "Маргилан"
+        },
         "slug": "margilan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1575284353hZV1_220x220.jpg",
@@ -117,8 +153,12 @@
         "rail_geocode_lng": "71.72300527686427"
     },
     {
-
-        "name": "Термез",
+        "name": {
+            "ru": "Термез",
+            "en": "Termez",
+            "uz": "Termiz",
+            "kk": "Термез"
+        },
         "slug": "termez",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1531153726b0zv_220x220.jpg",
@@ -130,8 +170,12 @@
         "rail_geocode_lng": "67.28736243810106"
     },
     {
-
-        "name": "Шахрисабз",
+        "name": {
+            "ru": "Шахрисабз",
+            "en": "Shakhrisabz",
+            "uz": "Shahrisabz",
+            "kk": "Шахрисабз"
+        },
         "slug": "shaxrisabz",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1531153136X74H_220x220.jpg",
@@ -143,8 +187,12 @@
         "rail_geocode_lng": "66.837704918644"
     },
     {
-
-        "name": "Коканд",
+        "name": {
+            "ru": "Коканд",
+            "en": "Kokand",
+            "uz": "Qoʻqon",
+            "kk": "Қоқан"
+        },
         "slug": "kokand",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/15312142237Qar_220x220.jpg",
@@ -156,8 +204,12 @@
         "rail_geocode_lng": "70.92851397979275"
     },
     {
-
-        "name": "Наманган",
+        "name": {
+            "ru": "Наманган",
+            "en": "Namangan",
+            "uz": "Namangan",
+            "kk": "Наманган"
+        },
         "slug": "namangan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1531214360KYll_220x220.jpg",
@@ -169,8 +221,12 @@
         "rail_geocode_lng": "71.64412131197655"
     },
     {
-
-        "name": "Навои",
+        "name": {
+            "ru": "Навои",
+            "en": "Navoi",
+            "uz": "Navoiy",
+            "kk": "Науаи"
+        },
         "slug": "navoi",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1531214888jDfj_220x220.jpg",
@@ -182,8 +238,12 @@
         "rail_geocode_lng": "65.39740090578594"
     },
     {
-
-        "name": "Карши",
+        "name": {
+            "ru": "Карши",
+            "en": "Karshi",
+            "uz": "Qarshi",
+            "kk": "Қаршы"
+        },
         "slug": "karshi",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1531152932GjCW_220x220.jpg",
@@ -195,8 +255,12 @@
         "rail_geocode_lng": "65.77705662948289"
     },
     {
-
-        "name": "Джизак",
+        "name": {
+            "ru": "Джизак",
+            "en": "Jizzakh",
+            "uz": "Jizzax",
+            "kk": "Жызақ"
+        },
         "slug": "jizzakh",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/15312151195ORO_220x220.jpg",
@@ -208,8 +272,12 @@
         "rail_geocode_lng": "67.84306216104508"
     },
     {
-
-        "name": "Андижан",
+        "name": {
+            "ru": "Андижан",
+            "en": "Andijan",
+            "uz": "Andijon",
+            "kk": "Әндіжан"
+        },
         "slug": "andijan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/15312144412olj_220x220.jpg",
@@ -221,8 +289,12 @@
         "rail_geocode_lng": "72.35063552856445"
     },
     {
-
-        "name": "Нукус",
+        "name": {
+            "ru": "Нукус",
+            "en": "Nukus",
+            "uz": "Nukus",
+            "kk": "Нүкіс"
+        },
         "slug": "nukus",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/15312147878ReC_220x220.jpg",
@@ -234,8 +306,12 @@
         "rail_geocode_lng": "59.642738531848956"
     },
     {
-
-        "name": "Мубарек",
+        "name": {
+            "ru": "Мубарек",
+            "en": "Mubarek",
+            "uz": "Muborak",
+            "kk": "Мүбарак"
+        },
         "slug": "mubarek",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1674464581iLGu_356x246.jpg",
@@ -247,8 +323,12 @@
         "rail_geocode_lng": "65.77521906564883"
     },
     {
-
-        "name": "Чирчик",
+        "name": {
+            "ru": "Чирчик",
+            "en": "Chirchik",
+            "uz": "Chirchiq",
+            "kk": "Шыршық"
+        },
         "slug": "chirchik",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1565946712KdDC_220x220.jpg",
@@ -260,8 +340,12 @@
         "rail_geocode_lng": "69.59703777073202"
     },
     {
-
-        "name": "Зарафшан",
+        "name": {
+            "ru": "Зарафшан",
+            "en": "Zarafshan",
+            "uz": "Zarafshon",
+            "kk": "Зарафшан"
+        },
         "slug": "zarafshan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/15659467813QLQ_220x220.jpg",
@@ -273,8 +357,12 @@
         "rail_geocode_lng": "65.39740562438965"
     },
     {
-
-        "name": "Гулистан",
+        "name": {
+            "ru": "Гулистан",
+            "en": "Gulistan",
+            "uz": "Guliston",
+            "kk": "Гүлістан"
+        },
         "slug": "gulistan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1531215759cLyI_220x220.png",
@@ -286,8 +374,12 @@
         "rail_geocode_lng": "68.76537437247352"
     },
     {
-
-        "name": "Денау",
+        "name": {
+            "ru": "Денау",
+            "en": "Denau",
+            "uz": "Denov",
+            "kk": "Денау"
+        },
         "slug": "denau",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1579942502uw1B_220x220.jpg",
@@ -299,8 +391,12 @@
         "rail_geocode_lng": "67.9062948452512"
     },
     {
-
-        "name": "Бекабад",
+        "name": {
+            "ru": "Бекабад",
+            "en": "Bekabad",
+            "uz": "Bekobod",
+            "kk": "Бекабад"
+        },
         "slug": "bekabad",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1575284257fzvD_220x220.jpg",
@@ -312,8 +408,12 @@
         "rail_geocode_lng": "69.22801755899303"
     },
     {
-
-        "name": "Нурата",
+        "name": {
+            "ru": "Нурата",
+            "en": "Nurata",
+            "uz": "Nurota",
+            "kk": "Нұрата"
+        },
         "slug": "nurata",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1565946856R3kp_220x220.jpg",
@@ -325,8 +425,12 @@
         "rail_geocode_lng": "65.39731979370117"
     },
     {
-
-        "name": "Заамин",
+        "name": {
+            "ru": "Заамин",
+            "en": "Zaamin",
+            "uz": "Zomin",
+            "kk": "Заамин"
+        },
         "slug": "zamin",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1565946814RLoI_220x220.jpg",
@@ -338,8 +442,12 @@
         "rail_geocode_lng": "67.84294157910769"
     },
     {
-
-        "name": "Чуст",
+        "name": {
+            "ru": "Чуст",
+            "en": "Chust",
+            "uz": "Chust",
+            "kk": "Шуст"
+        },
         "slug": "chust",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1612525880kn0o_220x220.jpg",
@@ -351,8 +459,12 @@
         "rail_geocode_lng": "71.24113492191532"
     },
     {
-
-        "name": "Кунград",
+        "name": {
+            "ru": "Кунград",
+            "en": "Kungrad",
+            "uz": "Qoʻngʻirot",
+            "kk": "Қоңырат"
+        },
         "slug": "kungrad",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1612879846lstG_220x220.jpg",
@@ -364,8 +476,12 @@
         "rail_geocode_lng": "58.84032726287842"
     },
     {
-
-        "name": "Китаб",
+        "name": {
+            "ru": "Китаб",
+            "en": "Kitab",
+            "uz": "Kitob",
+            "kk": "Кітап"
+        },
         "slug": "kitab",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/16177952100Dw6_220x220.JPG",
@@ -377,8 +493,12 @@
         "rail_geocode_lng": "65.7772403451536"
     },
     {
-
-        "name": "Каттакурган",
+        "name": {
+            "ru": "Каттакурган",
+            "en": "Katta-Kurgan",
+            "uz": "Kattaqoʻrgʻon",
+            "kk": "Каттақорған"
+        },
         "slug": "kattakurgan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1619847139Chv0_220x220.jpg",
@@ -390,8 +510,12 @@
         "rail_geocode_lng": "66.24585022785337"
     },
     {
-
-        "name": "Байсун",
+        "name": {
+            "ru": "Байсун",
+            "en": "Boysun",
+            "uz": "Boysun",
+            "kk": "Байсын"
+        },
         "slug": "bajsun",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1620103219Awh8_220x220.jpg",
@@ -403,8 +527,12 @@
         "rail_geocode_lng": "67.19845492982519"
     },
     {
-
-        "name": "Ахангаран",
+        "name": {
+            "ru": "Ахангаран",
+            "en": "Ohangaron",
+            "uz": "Ohangaron",
+            "kk": "Ахангаран"
+        },
         "slug": "ahangaran",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/16214900047YgH_220x220.jpg",
@@ -416,8 +544,12 @@
         "rail_geocode_lng": "69.28699765937043"
     },
     {
-
-        "name": "Ангрен",
+        "name": {
+            "ru": "Ангрен",
+            "en": "Angren",
+            "uz": "Angren",
+            "kk": "Ангрен"
+        },
         "slug": "angren",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1621491407I2Ab_220x220.jpg",
@@ -429,8 +561,12 @@
         "rail_geocode_lng": "70.08238562764042"
     },
     {
-
-        "name": "Ургут",
+        "name": {
+            "ru": "Ургут",
+            "en": "Urgut",
+            "uz": "Urgut",
+            "kk": "Үргіт"
+        },
         "slug": "urgut",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1621835268NZii_220x220.jpg",
@@ -442,8 +578,12 @@
         "rail_geocode_lng": "66.92899442582969"
     },
     {
-
-        "name": "Учкудук",
+        "name": {
+            "ru": "Учкудук",
+            "en": "Uchkuduk",
+            "uz": "Uchquduq",
+            "kk": "Үшқұдық"
+        },
         "slug": "uchkuduk",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1622268974zaMO_220x220.jpg",
@@ -455,8 +595,12 @@
         "rail_geocode_lng": "65.39768467929747"
     },
     {
-
-        "name": "Турткуль",
+        "name": {
+            "ru": "Турткуль",
+            "en": "Turtkul",
+            "uz": "Toʻrtkoʻl",
+            "kk": "Төрткүл"
+        },
         "slug": "turtkul",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1636436569XHng_220x220.png",
@@ -468,8 +612,12 @@
         "rail_geocode_lng": "61.03259325027466"
     },
     {
-
-        "name": "Пап",
+        "name": {
+            "ru": "Пап",
+            "en": "Pap",
+            "uz": "Pop",
+            "kk": "Пап"
+        },
         "slug": "pop",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1637045829c3oD_220x220.png",
@@ -481,8 +629,12 @@
         "rail_geocode_lng": "71.14934921264648"
     },
     {
-
-        "name": "Каган",
+        "name": {
+            "ru": "Каган",
+            "en": "Kogon",
+            "uz": "Kogon",
+            "kk": "Қаған"
+        },
         "slug": "kagan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1638428918rWJV_356x246.jpg",
@@ -494,8 +646,12 @@
         "rail_geocode_lng": "64.54836845397949"
     },
     {
-
-        "name": "Акташ",
+        "name": {
+            "ru": "Акташ",
+            "en": "Oqtosh",
+            "uz": "Oqtosh",
+            "kk": "Ақтас"
+        },
         "slug": "aktash",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1674468051qj37_356x246.jpg",
@@ -507,8 +663,12 @@
         "rail_geocode_lng": "65.92809677124023"
     },
     {
-
-        "name": "Кибрай",
+        "name": {
+            "ru": "Кибрай",
+            "en": "Qibray",
+            "uz": "Qibray",
+            "kk": "Қибрай"
+        },
         "slug": "kibraj",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1648025041SbgV_356x246.png",
@@ -520,8 +680,12 @@
         "rail_geocode_lng": "69.45596873760223"
     },
     {
-
-        "name": "Питнак",
+        "name": {
+            "ru": "Питнак",
+            "en": "Pitnak",
+            "uz": "Pitnak",
+            "kk": "Питнак"
+        },
         "slug": "pitnak",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1674465863NMT1_356x246.jpg",
@@ -533,8 +697,12 @@
         "rail_geocode_lng": "61.30842626094818"
     },
     {
-
-        "name": "Янгиюль",
+        "name": {
+            "ru": "Янгиюль",
+            "en": "Yangiyul",
+            "uz": "Yangiyoʻl",
+            "kk": "Жаңажол"
+        },
         "slug": "jangijul",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1674467404iKjm_356x246.jpeg",
@@ -546,8 +714,12 @@
         "rail_geocode_lng": "69.10370349884033"
     },
     {
-
-        "name": "Каракуль",
+        "name": {
+            "ru": "Каракуль",
+            "en": "Karakul",
+            "uz": "Qorakoʻl",
+            "kk": "Қаракөл"
+        },
         "slug": "karakul",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1674467810VNvq_356x246.jpg",
@@ -559,8 +731,12 @@
         "rail_geocode_lng": "63.84622525377891"
     },
     {
-
-        "name": "Алмалык",
+        "name": {
+            "ru": "Алмалык",
+            "en": "Olmaliq",
+            "uz": "Olmaliq",
+            "kk": "Алмалық"
+        },
         "slug": "almalyk",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/16744676125Jve_356x246.jpg",
@@ -572,8 +748,12 @@
         "rail_geocode_lng": "69.2261795828911"
     },
     {
-
-        "name": "Муйнак",
+        "name": {
+            "ru": "Муйнак",
+            "en": "Muynak",
+            "uz": "Moʻynoq",
+            "kk": "Мойнақ"
+        },
         "slug": "mujnak",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1674463884ygaG_356x246.jpg",
@@ -585,8 +765,12 @@
         "rail_geocode_lng": "59.64254796240213"
     },
     {
-
-        "name": "Гузар",
+        "name": {
+            "ru": "Гузар",
+            "en": "Guzar",
+            "uz": "Gʻuzor",
+            "kk": "Гузар"
+        },
         "slug": "guzar",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1717663462roM2_356x246.jpg",
@@ -598,8 +782,12 @@
         "rail_geocode_lng": "66.25722527503969"
     },
     {
-
-        "name": "Кумкурган",
+        "name": {
+            "ru": "Кумкурган",
+            "en": "Kumkurgan",
+            "uz": "Qumqoʻrgʻon",
+            "kk": "Құмқорған"
+        },
         "slug": "kumkurgan",
         "properties_count": 0,
         "image": "https://mybooking.uz/uploads/cities/1718789988mIIi_356x246.jpg",
