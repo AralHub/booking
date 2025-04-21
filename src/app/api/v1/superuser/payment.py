@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.core import SessionDep, TransactionSessionDep
+from app.core.i18n.responses import BaseResponse
 from app.dao.payment import PaymentDAO
 from app.schemas.payment import (
     PaymentCreate,
@@ -9,7 +10,6 @@ from app.schemas.payment import (
     PaymentUpdate,
     PaymentUpdateInternal,
 )
-from app.core.i18n.responses import BaseResponse
 
 router = APIRouter(
     tags=["Superuser Payment"],

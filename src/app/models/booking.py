@@ -109,8 +109,4 @@ class Booking(
             "check_in_date < check_out_date",
             name="check_in_date_before_check_out_date",
         ),
-        CheckConstraint(
-            "(booking_type = 'PERSONAL') OR (booking_type = 'BUSINESS' AND company_id IS NOT NULL)",
-            name="business_booking_must_have_company",
-        ),
     )

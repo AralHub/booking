@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
+from .mixins import MultilingualNameBase, MultilingualNameBaseUpdate
+
 
 # region Country
 class CountryBase(BaseModel):
@@ -39,12 +41,11 @@ class CountryFilter(BaseModel):
 # region City
 
 
-class CityBase(BaseModel):
-    name: str
+class CityBase(MultilingualNameBase):
     country_id: int
 
 
-class CityRead(CityBase):
+class CityRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     country_id: int
@@ -57,27 +58,43 @@ class CityRead(CityBase):
     rail_lng: float
     geocode_lng: float
     geocode_lat: float
+    name: dict[str, str]
 
 
-class CityCreate(BaseModel):
-    name: str
+class CityCreate(CityBase):
+    pass
 
 
-class CityCreateInternal(CityCreate):
+class CityCreateInternal(BaseModel):
+    name: dict[str, str]
+    slug: str
+    properties_count: int | None = None
+    image: str | None = None
+    geocode_lng: float
+    geocode_lat: float
+    aero_lat: float
+    aero_lng: float
+    rail_lat: float
+    rail_lng: float
     country_id: int
 
 
-class CityUpdate(BaseModel):
-    name: str | None = None
+class CityUpdate(MultilingualNameBaseUpdate):
+    geocode_lng: float | None = None
+    geocode_lat: float | None = None
+    aero_lat: float | None = None
+    aero_lng: float | None = None
+    rail_lat: float | None = None
+    rail_lng: float | None = None
+    image: str | None = None
 
 
 class CityUpdateInternal(CityUpdate):
-    country_id: int
+    country_id: int | None = None
 
 
 class CityFilter(BaseModel):
     id: int | None = None
-    name: str | None = None
     country_id: int | None = None
     slug: str | None = None
     properties_count: int | None = None

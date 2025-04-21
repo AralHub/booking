@@ -4,7 +4,7 @@ from sqlalchemy import Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
-from app.models.mixins import IntIdPkMixin
+from app.models.mixins import IntIdPkMixin, MultilingualNameMixin
 
 if TYPE_CHECKING:
     from app.models.hotel.location import HotelLocation
@@ -28,11 +28,11 @@ class Country(IntIdPkMixin, Base):
     )
 
 
-class City(IntIdPkMixin, Base):
-    name: Mapped[str] = mapped_column(
-        String,
-        unique=True,
-    )
+class City(
+    IntIdPkMixin,
+    MultilingualNameMixin,
+    Base,
+):
     slug: Mapped[str] = mapped_column(String(255), unique=True)
     properties_count: Mapped[int] = mapped_column(Integer)
     geocode_lng: Mapped[float] = mapped_column(Float)

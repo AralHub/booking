@@ -175,7 +175,6 @@ class HotelDAO(BaseDAO):
                 "category_id": hotel.hotel_category.id,
                 "category": hotel.hotel_category.name if hotel.hotel_category else None,
                 "created_at": hotel.created_at,
-                "is_active": hotel.is_active,
                 "rating": (
                     hotel.hotel_rating.average_rating if hotel.hotel_rating else None
                 ),

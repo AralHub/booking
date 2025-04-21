@@ -43,12 +43,11 @@ class VerifyPhoneNumber(BaseModel):
 class UserBase(BaseModel):
     phone_number: PHONE_NUMBER_FIELD
     first_name: NAME_FIELD
-    last_name: NAME_FIELD
+    last_name: NAME_FIELD_UPDATE
 
 
 class UserRead(UserBase, TimestampSchema):
     id: int
-    last_name: str | None = None
     birthday: BIRTHDAY_FIELD | None = None
     gender: GENDER_FIELD | None = None
     country_id: int | None = None

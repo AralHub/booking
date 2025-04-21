@@ -1,20 +1,22 @@
 from pydantic import BaseModel
 
+from ..mixins import MultilingualNameBase, MultilingualNameBaseUpdate
 
-class RoomTypeBase(BaseModel):
-    name: str
+
+class RoomTypeBase(MultilingualNameBase):
+    pass
 
 
 class RoomTypeCreate(RoomTypeBase):
     pass
 
 
-class RoomTypeCreateInternal(RoomTypeCreate):
+class RoomTypeCreateInternal(BaseModel):
+    name: dict[str, str]
+
+
+class RoomTypeUpdate(MultilingualNameBaseUpdate):
     pass
-
-
-class RoomTypeUpdate(BaseModel):
-    name: str | None = None
 
 
 class RoomTypeUpdateInternal(RoomTypeUpdate):
@@ -23,7 +25,6 @@ class RoomTypeUpdateInternal(RoomTypeUpdate):
 
 class RoomTypeFilter(BaseModel):
     id: int | None = None
-    name: str | None = None
 
 
 class RoomTypeRead(RoomTypeBase):

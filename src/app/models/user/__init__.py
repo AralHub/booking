@@ -11,7 +11,8 @@ from app.models.mixins import IntIdPkMixin, SoftDeleteMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.booking import Booking
-    from app.models.company import Company
+
+    # from app.models.company import Company
     from app.models.favorites import UserFavorite
     from app.models.review import Review
 
@@ -75,10 +76,6 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         server_default=text("'PERSONAL'"),
     )
     # relationships
-    country_id: Mapped[int] = mapped_column(
-        ForeignKey("countries.id"),
-        nullable=True,
-    )
     bookings: Mapped[list["Booking"]] = relationship(
         "Booking",
         back_populates="user",
@@ -91,8 +88,8 @@ class User(IntIdPkMixin, TimestampMixin, SoftDeleteMixin, Base):
         "UserFavorite",
         back_populates="user",
     )
-    company: Mapped[Optional["Company"]] = relationship(
-        "Company",
-        back_populates="user",
-        uselist=False,
-    )
+    # company: Mapped[Optional["Company"]] = relationship(
+    #     "Company",
+    #     back_populates="user",
+    #     uselist=False,
+    # )

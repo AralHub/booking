@@ -1,4 +1,5 @@
 from datetime import date
+
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
