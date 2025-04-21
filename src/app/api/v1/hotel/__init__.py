@@ -1,5 +1,5 @@
 import logging
-
+from datetime import date
 from fastapi import APIRouter, Depends, Query
 
 from app.api.dependencies.hotel import validate_hotel, validate_hotel_by_slug
@@ -9,7 +9,7 @@ from app.api.dependencies.partner import (
 )
 from app.core import SessionDep, TransactionSessionDep
 from app.core.config import settings
-from app.core.exceptions.http_exceptions import NotFoundException
+from app.core.exceptions.http_exceptions import BadRequestException, NotFoundException
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     DataResponse,
@@ -75,6 +75,14 @@ async def search_hotels(
     page_size: int = Query(10, ge=1),
     session=SessionDep,
 ):
+    if search_data.check_in < date.today() or search_data.check_out < date.today():
+        raise BadRequestException(
+            error_code=ErrorCode.INVALID_DATE_FORMAT,
+        )
+    if search_data.check_out < search_data.check_in:
+        raise BadRequestException(
+            error_code=ErrorCode.INVALID_DATE_FORMAT,
+        )
     hotels = await HotelSearchDAO.find_hotels_for_booking(
         session=session,
         city=search_data.city,

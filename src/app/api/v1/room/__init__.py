@@ -1,3 +1,4 @@
+from datetime import date
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
@@ -6,9 +7,8 @@ from app.api.dependencies.room import validate_hotel_room, validate_hotel_room_b
 from app.core import SessionDep, TransactionSessionDep
 
 # from app.core.config import settings
-from app.core.exceptions.http_exceptions import (
-    NotFoundException,
-)
+from app.core.i18n.translations import ErrorCode
+from app.core.exceptions.http_exceptions import NotFoundException, BadRequestException
 from app.core.i18n.responses import (
     RESPONSE_MESSAGES,
     BaseResponse,
@@ -48,6 +48,14 @@ async def search_rooms_for_booking(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=SessionDep,
 ):
+    if search_data.check_in < date.today() or search_data.check_out < date.today():
+        raise BadRequestException(
+            error_code=ErrorCode.INVALID_DATE_FORMAT,
+        )
+    if search_data.check_out < search_data.check_in:
+        raise BadRequestException(
+            error_code=ErrorCode.INVALID_DATE_FORMAT,
+        )
     rooms = await RoomSearchDAO.find_rooms_for_booking(
         session=session,
         hotel_id=hotel.id,

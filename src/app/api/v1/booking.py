@@ -1,3 +1,4 @@
+from datetime import date
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.hotel import validate_hotel_by_slug
@@ -7,7 +8,9 @@ from app.api.dependencies.user import (
     get_current_active_user_or_partner,
 )
 from app.core import SessionDep, TransactionSessionDep
+from app.core.exceptions.http_exceptions import BadRequestException
 from app.core.i18n.responses import BaseResponse
+from app.core.i18n.translations import ErrorCode
 from app.core.utils import redis_booking
 from app.dao.booking import BookingDAO
 from app.models.booking import BookingStatus
@@ -58,6 +61,17 @@ async def create_booking_initial(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=TransactionSessionDep,
 ):
+    if (
+        booking_create_data.check_in_date < date.today()
+        or booking_create_data.check_out_date < date.today()
+    ):
+        raise BadRequestException(
+            error_code=ErrorCode.INVALID_DATE_FORMAT,
+        )
+    if booking_create_data.check_out_date < booking_create_data.check_in_date:
+        raise BadRequestException(
+            error_code=ErrorCode.INVALID_DATE_FORMAT,
+        )
     booking_data = await BookingDAO.prepare_booking_data_for_redis(
         session=session,
         booking_data=booking_create_data,
@@ -84,6 +98,17 @@ async def create_booking(
     hotel: HotelNameRead = Depends(validate_hotel_by_slug),
     session=TransactionSessionDep,
 ):
+    if (
+        booking_create_data.check_in_date < date.today()
+        or booking_create_data.check_out_date < date.today()
+    ):
+        raise BadRequestException(
+            error_code=ErrorCode.INVALID_DATE_FORMAT,
+        )
+    if booking_create_data.check_out_date < booking_create_data.check_in_date:
+        raise BadRequestException(
+            error_code=ErrorCode.INVALID_DATE_FORMAT,
+        )
     return await BookingDAO.create_booking(
         session=session,
         booking_data=booking_create_data,
