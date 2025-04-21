@@ -29,8 +29,8 @@ class RoomAmenityUpdate(MultilingualNameBaseUpdate):
     room_amenity_category_id: int | None = None
 
 
-class RoomAmenityUpdateInternal(RoomAmenityUpdate):
-    pass
+class RoomAmenityUpdateInternal(BaseModel):
+    name: dict[str, str]
 
 
 class RoomAmenityFilter(BaseModel):
