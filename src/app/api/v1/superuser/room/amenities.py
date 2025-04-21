@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.amenities import validate_room_amenity
+from app.api.dependencies.amenities import (
+    validate_room_amenity,
+    validate_room_amenities_category,
+)
 from app.api.dependencies.user import get_current_superuser
 from app.core import SessionDep, TransactionSessionDep
 from app.core.i18n.responses import (
@@ -23,6 +26,9 @@ from app.schemas.room.amenities import (
     RoomAmenityRead,
     RoomAmenityUpdate,
     RoomAmenityUpdateInternal,
+    RoomAmenityCategoryFilter,
+    RoomAmenityCategoryUpdate,
+    RoomAmenityCategoryUpdateInternal,
 )
 
 router = APIRouter(
@@ -117,6 +123,37 @@ async def delete_room_amenity(
     return BaseResponse(
         success=True,
         message=RESPONSE_MESSAGES.DELETE_SUCCESS,
+    )
+
+
+@router.put(
+    "/categories/{category_id}",
+    dependencies=[Depends(get_current_superuser)],
+)
+async def update_room_amenities_category(
+    category_id: int,
+    amenity_update_data: RoomAmenityCategoryUpdate,
+    room_amenities_category=Depends(validate_room_amenities_category),
+    session=TransactionSessionDep,
+):
+    """
+    Обновить категории удобств комнат
+    """
+    await RoomAmenityCategoryDAO.update(
+        session=session,
+        filters=RoomAmenityCategoryFilter(
+            id=category_id,
+        ),
+        values=RoomAmenityCategoryUpdateInternal(
+            name=amenity_update_data.to_dict_name(),
+        ),
+    )
+    return BaseResponse(
+        success=True,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Room amenities category updated successfully",
+        ),
     )
 
 
