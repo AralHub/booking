@@ -29,13 +29,12 @@ async def get_hotels(
     superuser: UserRead = Depends(get_current_superuser),
     session=SessionDep,
 ):
-    hotels = await HotelDAO.get_all(
+    all_hotels = await HotelDAO.get_all_hotels_for_superuser(
         session=session,
-        filters=None,
     )
     return {
-        "data": hotels,
-        "total": len(hotels),
+        "data": all_hotels,
+        "total": len(all_hotels),
     }
 
 

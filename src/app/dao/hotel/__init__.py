@@ -443,3 +443,19 @@ class HotelDAO(BaseDAO):
         return partner_hotels_full
 
     # endregion
+    @classmethod
+    async def get_all_hotels_for_superuser(
+        cls,
+        session: AsyncSession,
+    ):
+        all_hotels = await cls.get_all(
+            session=session,
+        )
+        all_hotels_full = []
+        for hotel in all_hotels:
+            hotel_full = await cls.get_full_hotel_by_id(
+                hotel_id=hotel.id,
+                session=session,
+            )
+            all_hotels_full.append(hotel_full)
+        return all_hotels_full
