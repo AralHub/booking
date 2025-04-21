@@ -73,7 +73,6 @@ async def create_room_amenity(
 @router.put(
     "/amenities/{amenity_id}",
     dependencies=[Depends(get_current_superuser)],
-    response_model=DataResponse[RoomAmenityRead],
 )
 async def update_room_amenity(
     amenity_id: int,
@@ -84,7 +83,7 @@ async def update_room_amenity(
     """
     Обновить удобство в категории
     """
-    updated_amenity = await RoomAmenityDAO.update(
+    await RoomAmenityDAO.update(
         session=session,
         filters=RoomAmenityFilter(
             id=amenity_id,
@@ -93,8 +92,12 @@ async def update_room_amenity(
             name=amenity_update_data.to_dict_name(),
         ),
     )
-    return DataResponse(
-        data=updated_amenity,
+    return BaseResponse(
+        success=True,
+        message=RESPONSE_MESSAGES.get(
+            "DATA_UPDATED",
+            "Room amenities updated successfully",
+        ),
     )
 
 
