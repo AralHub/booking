@@ -8,27 +8,35 @@
 ```shell
 mkdir -p ./src/certs
 ```
+
 #### Генерируем приватный RSA ключ размером 2048 бит
 
 ```shell
 openssl genrsa -out ./src/certs/jwt-private.pem 2048
 ```
+
 #### Извлекаем публичный ключ из пары ключей
+
 ```shell
 openssl rsa -in ./src/certs/jwt-private.pem -outform PEM -pubout -out ./src/certs/jwt-public.pem
 ```
+
 ## Запуск с Docker Compose
 
 ```sh
 make build
 ```
+
 Затем
+
 ```sh
 make start
 ```
+
 ## Создание Суперпользователя
 
 Суперюзер создастся при запуске docker. Также можно создать вручную
+
 ```sh
 cd src
 python -m scripts.create_first_superuser
@@ -76,7 +84,6 @@ poetry run alembic revision --autogenerate
 ```sh
 poetry run alembic upgrade head
 ```
-
 
 ## Запуск ARQ Worker
 

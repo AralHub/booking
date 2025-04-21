@@ -19,13 +19,13 @@ WORKDIR /code
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-RUN pip install black  
+RUN pip install black
 
 COPY ./src/app /code/app
 
 #copy migrations
-COPY ./src/migrations /code/migrations  
-COPY ./src/alembic.ini /code/alembic.ini 
+COPY ./src/migrations /code/migrations
+COPY ./src/alembic.ini /code/alembic.ini
 # Добавляем /code в PYTHONPATH
 ENV PYTHONPATH=/code
 # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

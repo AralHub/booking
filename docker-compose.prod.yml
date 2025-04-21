@@ -85,6 +85,6 @@ services:
       sh -c "
         python -m src.scripts.create_fakedb
       "
-volumes:  
+volumes:
   postgres-data:
   redis-data: #pgadmin-data:

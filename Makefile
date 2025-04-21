@@ -36,4 +36,4 @@ remove_prod:
 restart_prod:
 	docker-compose -f docker-compose.prod.yml down
 	docker-compose -f docker-compose.prod.yml up -d --build
-	
+
