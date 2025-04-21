@@ -85,6 +85,8 @@ async def get_optional_active_auth_user(
     session: AsyncSession = Depends(db_helper.session_getter),
 ) -> dict | None:
     try:
+        if not payload:
+            return None
         validate_token_type(payload, ACCESS_TOKEN_TYPE)
         user = await get_user_by_token_sub(
             session=session,
