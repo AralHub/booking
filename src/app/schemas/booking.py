@@ -117,7 +117,7 @@ class RoomInfoCreateInternal(RoomInfoRead):
 class BookingInitialBase(BaseModel):
     check_in_date: date
     check_out_date: date
-    booking_type: BookingType.PERSONAL
+    booking_type: BookingType = BookingType.PERSONAL
 
 
 class BookingInitialRead(BookingInitialBase):
