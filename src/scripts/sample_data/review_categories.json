@@ -4,49 +4,63 @@
             "id": 1,
             "name": {
                 "en": "Location",
-                "ru": "Расположение"
+                "ru": "Расположение",
+                "uz": "Manzil",
+                "kk": "Жайласыу"
             }
         },
         {
             "id": 2,
             "name": {
                 "en": "Cleanliness",
-                "ru": "Чистота"
+                "ru": "Чистота",
+                "uz": "Tozalik",
+                "kk": "Тазалық"
             }
         },
         {
             "id": 3,
             "name": {
                 "en": "Price/quality ratio",
-                "ru": "Соотношение цена/качество"
+                "ru": "Соотношение цена/качество",
+                "uz": "Narx/sifat nisbati",
+                "kk": "Баға/сапа арақатынасы"
             }
         },
         {
             "id": 4,
             "name": {
                 "en": "Comfort",
-                "ru": "Комфорт"
+                "ru": "Комфорт",
+                "uz": "Qulaylik",
+                "kk": "Жайлылық"
             }
         },
         {
-                "id": 5,
+            "id": 5,
             "name": {
                 "en": "Staff",
-                "ru": "Персонал"
+                "ru": "Персонал",
+                "uz": "Xodimlar",
+                "kk": "Қызметкерлер"
             }
         },
         {
             "id": 6,
             "name": {
                 "en": "Free Wi-Fi",
-                "ru": "Бесплатный Wi-Fi"
+                "ru": "Бесплатный Wi-Fi",
+                "uz": "Bepul Wi-Fi",
+                "kk": "Тегін Wi-Fi"
             }
         },
         {
             "id": 7,
             "name": {
                 "en": "Amenities",
-                "ru": "Удобства"
+                "ru": "Удобства",
+                "uz": "Qulayliklar",
+                "kk": "Ыңғайлылықтар"
             }
         }
     ]
