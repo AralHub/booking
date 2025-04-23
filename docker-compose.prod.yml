@@ -8,8 +8,10 @@ services:
     ports:
       - "8022:8000"
     depends_on:
-      - db
-      - redis
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     volumes:
       - ./src/migrations:/code/migrations
       - ./src/alembic.ini:/code/alembic.ini
@@ -28,8 +30,10 @@ services:
     env_file:
       - ./src/.env.prod
     depends_on:
-      - db
-      - redis
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     volumes:
       - ./src/.env.prod:/code/.env
       - ./src/app:/code/app
@@ -42,6 +46,11 @@ services:
       - postgres-data:/var/lib/postgresql/data
     expose:
       - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:alpine
@@ -49,6 +58,11 @@ services:
       - redis-data:/data
     expose:
       - "6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   adminer:
     image: adminer
@@ -58,6 +72,10 @@ services:
       - ADMINER_DESIGN=dracula
     ports:
       - "8023:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+        
   init_scripts:
     build:
       context: .
